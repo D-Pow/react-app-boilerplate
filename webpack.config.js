@@ -7,9 +7,16 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const packageJson = require('./package.json');
+
+const indexHtmlTitle = 'React App Boilerplate';
+const indexHtmlMetaTagData = {
+    description: packageJson.description,
+    keywords: packageJson.keywords.join(', '),
+    'theme-color': '#3800FF'
+};
 
 const publicUrl = 'static'; // directory of build output files relative to index.html
-const title = 'React App Boilerplate';
 
 const env = dotenv.config({
     path: './.env'
@@ -119,11 +126,9 @@ module.exports = {
         new webpack.DefinePlugin({ 'process.env': JSON.stringify(publicEnv) }),
         // injects tags like <script> into index.html
         new HtmlWebpackPlugin({
-            title,
+            title: indexHtmlTitle,
             template: './src/index.html',
-            meta: {
-                'theme-color': '#3800FF'
-            }
+            meta: indexHtmlMetaTagData
         }),
         // replaces %PUBLIC_URL% in index.html with env entry
         new InterpolateHtmlPlugin(publicEnv),

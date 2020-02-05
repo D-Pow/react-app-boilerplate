@@ -22,6 +22,9 @@ const Home = React.lazy(() => homeImportPromise);
 const aboutImportPromise = import(/* webpackChunkName: 'About' */ 'components/About');
 const About = React.lazy(() => aboutImportPromise);
 
+const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ 'components/AnimeSearch');
+const AnimeSearch = React.lazy(() => animeSearchImportPromise);
+
 const routes = [
     {
         path: '/',
@@ -39,6 +42,12 @@ const routes = [
         path: '/about',
         component: About,
         name: 'About'
+    },
+    {
+        path: '/animeSearch',
+        component: AnimeSearch,
+        name: 'AnimeSearch',
+        exact: true
     }
 ];
 

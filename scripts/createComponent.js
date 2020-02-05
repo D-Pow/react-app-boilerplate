@@ -1,4 +1,3 @@
-/* globals require, process */
 const fs = require('fs');
 
 const COMPONENT_NAME_INDEX = 2;

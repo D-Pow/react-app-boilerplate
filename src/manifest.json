@@ -1,0 +1,26 @@
+{
+  "short_name": "react-app-boilerplate",
+  "name": "A better create-react-app",
+  "icons": [
+    {
+      "src": "favicon-144.png",
+      "sizes": "144x144 64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512 384x384 256x256",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "scope": "../",
+  "display": "standalone",
+  "theme_color": "#3800FF",
+  "background_color": "#3800FF"
+}

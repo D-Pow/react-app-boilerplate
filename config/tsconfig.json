@@ -1,0 +1,39 @@
+{
+    /**
+     * Processed in webpack.config.js
+     *
+     * Run locally with: npx tsc -p config/tsconfig.json
+     * But make sure it uses a JSON file without comments.
+     *
+     * Walkthrough that's pretty old
+     * https://dev.to/open-wc/generating-typescript-definition-files-from-javascript-5bp2
+     *
+     * TS compiler options
+     * https://www.typescriptlang.org/docs/handbook/compiler-options.html
+     */
+    "compilerOptions": {
+        "target": "es6", // transpile code to ES6; this is okay b/c webpack transpiles this output down further
+        "lib": [ // include libraries that allow usage of modern JS features via esnext
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "module": "esnext", // how this app's code will be imported when turned into a module
+        "moduleResolution": "node", // use `import` instead of `require`
+        "allowJs": true,
+        "skipLibCheck": true, // skip checking typings.d.ts files for JS imports
+        // "declaration": true, // generates typings.d.ts files
+        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts
+        "esModuleInterop": true, // goes along with `allowSyntheticDefaultImports`
+        "resolveJsonModule": true, // allow importing json files
+        "isolatedModules": true, // make compatible with other typscript-processing plugins, e.g. babel
+        // "noEmit": true, // don't emit outputs
+        "strict": true,
+        "baseUrl": "../src", // equivalent of NODE_PATH for typescript
+        "outDir": "../tsDist", // output of running `npx tsc`
+        "jsx": "react"
+    },
+    "include": [
+        "../src"
+    ]
+}

@@ -1,0 +1,11 @@
+.grid {
+    display: grid;
+}
+
+.grid-rows-height-flex {
+    grid-auto-rows: minmax(0, 1fr);
+}
+
+.grid-rows-height-min {
+    grid-auto-rows: min-content;
+}

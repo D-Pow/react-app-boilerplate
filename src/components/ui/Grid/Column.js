@@ -16,7 +16,8 @@ class Column extends React.Component {
 Column.propTypes = {
     className: PropTypes.string,
     colSpan: PropTypes.number,
-    gridArea: PropTypes.string
+    gridArea: PropTypes.string,
+    children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ])
 };
 
 Column.defaultProps = {

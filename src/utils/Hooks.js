@@ -66,7 +66,7 @@ export function useWindowEvent(
         return () => {
             window.removeEventListener(eventType, eventListener);
         };
-    }, useEffectInputs);
+    }, [ eventType, ...useEffectInputs ]);
 
     return [ eventState, setEventState ];
 }

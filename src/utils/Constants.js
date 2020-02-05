@@ -26,7 +26,7 @@ export const MOBILE_BROWSER_REGEX = new RegExp(mobileBrowserRegexBase.replace('{
 export const MOBILE_OR_TABLET_REGEX = new RegExp(mobileBrowserRegexBase.replace('{}', '|ipad'), 'i');
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#Basic_validation
-export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const LINKS = {
     GitHub: 'https://github.com/'

@@ -33,7 +33,8 @@ process.env = {
 const publicEnv = {
     NODE_ENV: process.env.NODE_ENV,
     NODE_PATH: process.env.NODE_PATH,
-    PUBLIC_URL: process.env.PUBLIC_URL
+    PUBLIC_URL: process.env.PUBLIC_URL,
+    MOCK: process.env.MOCK
 };
 
 // output path for webpack build on machine, not relative paths for index.html
@@ -50,13 +51,26 @@ const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
+const clientEntryFiles = [ '@babel/polyfill', path.resolve(__dirname, 'src/index.js') ];
+const babelLoaderIncludeDirs = [ path.resolve(__dirname, 'src') ];
+
+if (process.env.MOCK === 'true') {
+    var mockDir = path.resolve(__dirname, 'mocks');
+    var mockEntryFiles = path.resolve(mockDir, 'MockConfig.js');
+
+    // Update entry files and babel-loader's include directories
+    clientEntryFiles.push(mockEntryFiles);
+    babelLoaderIncludeDirs.push(mockDir);
+    console.log('Network mocks activated by MockRequests\n');
+}
+
 module.exports = {
     module: {
         rules: [
             {
                 test: jsRegex,
                 exclude: /node_modules/,
-                include: /src/,
+                include: babelLoaderIncludeDirs,
                 use: 'babel-loader'
             },
             {
@@ -113,7 +127,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
+        client: clientEntryFiles,
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {

@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server",
+    "mock": "cross-env MOCK=true npm start",
     "clean": "npx shx rm -rf dist",
     "prebuild": "npm run clean",
     "build": "cross-env NODE_ENV=production webpack --mode production",
@@ -57,6 +58,7 @@
     "interpolate-html-plugin": "^3.0.0",
     "jest": "^25.1.0",
     "mini-css-extract-plugin": "^0.6.0",
+    "mock-requests": "^1.1.12",
     "node-sass": "^4.13.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",

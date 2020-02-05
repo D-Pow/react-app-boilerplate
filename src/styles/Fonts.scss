@@ -1,0 +1,19 @@
+@for $i from 0 through 10 {
+    .font-size-#{$i}vh {
+        font-size: $i * 1vh;
+    }
+
+    .font-size-#{$i}em {
+        font-size: $i * 1em;
+    }
+
+    @for $j from 1 through 9 {
+        .font-size-#{$i}-#{$j}vh {
+            font-size: ($i * 1vh) + ($j * 0.1vh);
+        }
+
+        .font-size-#{$i}-#{$j}em {
+            font-size: ($i * 1em) + ($j * 0.1em);
+        }
+    }
+}

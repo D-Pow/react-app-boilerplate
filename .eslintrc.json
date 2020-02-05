@@ -9,7 +9,16 @@
     ],
     "globals": {
         "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
+        "SharedArrayBuffer": "readonly",
+        "require": "readonly",
+        "process": "writable",
+        "module": "writable",
+        "__dirname": "readonly",
+        "global": "writable",
+        "jest": "writable",
+        "describe": "readonly",
+        "it": "readonly",
+        "expect": "readonly"
     },
     "parser": "babel-eslint",
     "parserOptions": {

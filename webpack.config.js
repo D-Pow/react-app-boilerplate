@@ -51,8 +51,9 @@ const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
-const clientEntryFiles = [ '@babel/polyfill', path.resolve(__dirname, 'src/index.js') ];
-const babelLoaderIncludeDirs = [ path.resolve(__dirname, 'src') ];
+const srcDir = path.resolve(__dirname, 'src');
+const clientEntryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
+const babelLoaderIncludeDirs = [ srcDir ];
 
 if (process.env.MOCK === 'true') {
     var mockDir = path.resolve(__dirname, 'mocks');

@@ -1,11 +1,4 @@
-import { kitsuTitleSearchUrl } from 'services/Urls';
-import {
-    kimiNoNaWaUrl,
-    narutoUrl,
-    bleachUrl,
-    fullmetalUrl,
-    attackOnTitanUrl
-} from './Urls';
+import { kitsuTitleSearchUrl, getSearchUrl } from 'services/Urls';
 import {
     kimiNoNaWaResponse,
     narutoResponse,
@@ -13,19 +6,29 @@ import {
     fullmetalResponse,
     attackOnTitanResponse
 } from './StaticResponses';
-import { chooseMockBasedOnQuery } from './DynamicResponses';
 
-export const searchMocksConfig = {
-    [kimiNoNaWaUrl]: kimiNoNaWaResponse,
-    [narutoUrl]: narutoResponse,
-    [bleachUrl]: bleachResponse,
-    [fullmetalUrl]: fullmetalResponse,
-    [attackOnTitanUrl]: attackOnTitanResponse
+export function getKitsuTitleSearchUrl(searchText) {
+    return getSearchUrl(kitsuTitleSearchUrl, searchText);
+}
+
+const kimiNoNaWaSearchQuery = 'kimi no na wa';
+const narutoSearchQuery = 'naruto';
+const bleachSearchQuery = 'bleach';
+const fullmetalSearchQuery = 'fullmetal alchemist';
+const attackOnTitanSearchQuery = 'attack on titan';
+
+export const kitsuSearchQueryParamKey = kitsuTitleSearchUrl.substring(kitsuTitleSearchUrl.indexOf('?') + 1, kitsuTitleSearchUrl.indexOf('='));
+
+export const queryParamResponseMap = {
+    [kimiNoNaWaSearchQuery]: kimiNoNaWaResponse,
+    [narutoSearchQuery]: narutoResponse,
+    [bleachSearchQuery]: bleachResponse,
+    [fullmetalSearchQuery]: fullmetalResponse,
+    [attackOnTitanSearchQuery]: attackOnTitanResponse
 };
 
-export const dynamicSearchConfigFromQueries = {
-    [kitsuTitleSearchUrl]: {
-        dynamicResponseModFn: chooseMockBasedOnQuery,
-        usePathnameForAllQueries: true
-    }
-};
+export const staticUrlResponseConfig = Object.keys(queryParamResponseMap).reduce((fullUrlConfig, searchQuery) => {
+    fullUrlConfig[getKitsuTitleSearchUrl(searchQuery)] = queryParamResponseMap[searchQuery];
+
+    return fullUrlConfig;
+}, {});

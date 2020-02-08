@@ -160,6 +160,52 @@ export function attemptParseObjLiteral(obj) {
 }
 
 /**
+ * Higher-order function that restricts `func` calls to only fire once per `delay` milliseconds.
+ * Optionally, bind the value of `this` to its value when `debounce()` is called.
+ * Optionally, call `func` when its first called instead of waiting `delay` milliseconds before its first call;
+ * will still debounce subsequent calls.
+ *
+ * @param {function} func - Function to debounce
+ * @param {number} delay - Milliseconds to wait before calling `func`
+ * @param {Object} options - Options for debounced function
+ * @param {boolean} [options.callOnFirstFuncCall=false] - Allow `func` to be called on first debounced function call
+ * @param {boolean} [options.bindThis=false] - Binds the value of `this` to its value when `debounce()` is called
+ * @returns {function(...[*]=)}
+ */
+export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis = false } = {}) {
+    let timeout;
+    let self;
+
+    if (bindThis) {
+        self = this;
+    }
+
+    return (...args) => {
+        if (!bindThis) {
+            self = this;
+        }
+
+        // timeout == null only when the func is called (either first call or when setTimeout fires)
+        // so this is false on subsequent calls
+        const isFirstCall = callOnFirstFuncCall && timeout == null;
+
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            timeout = null;
+
+            if (!isFirstCall) { // don't call func again if it was called on first run, only on subsequent runs
+                func.call(self, ...args);
+            }
+        }, delay);
+
+        if (isFirstCall) {
+            func.call(self, ...args);
+        }
+    };
+}
+
+/**
  * Gets the path from the clicked element to the root.
  *
  * @param {Object} event - Click Event

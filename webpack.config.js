@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const resolveMocks = require('mock-requests/bin/resolve-mocks');
 const packageJson = require('./package.json');
 
 const indexHtmlTitle = 'React App Boilerplate';
@@ -51,19 +52,7 @@ const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
-const srcDir = path.resolve(__dirname, 'src');
-const clientEntryFiles = [ '@babel/polyfill', srcDir + '/index.js' ];
-const babelLoaderIncludeDirs = [ srcDir ];
-
-if (process.env.MOCK === 'true') {
-    var mockDir = path.resolve(__dirname, 'mocks');
-    var mockEntryFiles = path.resolve(mockDir, 'MockConfig.js');
-
-    // Update entry files and babel-loader's include directories
-    clientEntryFiles.push(mockEntryFiles);
-    babelLoaderIncludeDirs.push(mockDir);
-    console.log('Network mocks activated by MockRequests\n');
-}
+const resolvedMocks = resolveMocks('mocks', 'mocks/MockConfig.js', process.env.MOCK === 'true');
 
 module.exports = {
     module: {
@@ -71,7 +60,7 @@ module.exports = {
             {
                 test: jsRegex,
                 exclude: /node_modules/,
-                include: babelLoaderIncludeDirs,
+                include: [ /src/, ...resolvedMocks.include ],
                 use: 'babel-loader'
             },
             {
@@ -128,7 +117,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: clientEntryFiles,
+        client: [ '@babel/polyfill', './src/index.js', ...resolvedMocks.entry ],
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Redirect } from "react-router";
 
-function Home(): React.ReactElement {
-    const [ redirect, setRedirect ] = useState<string>();
+function Home() {
+    const [ redirect, setRedirect ] = useState();
 
     if (redirect) {
         return <Redirect push to={redirect} />;

@@ -51,10 +51,12 @@ const routes = [
     }
 ];
 
+const blockMicrosoftBrowsers = false;
+
 function App() {
     const { contextState, setContextState } = useContext(AppContext.Context);
 
-    if (isMicrosoftBrowser()) {
+    if (blockMicrosoftBrowsers && isMicrosoftBrowser()) {
         return <IncompatibleBrowserFallback />
     }
 

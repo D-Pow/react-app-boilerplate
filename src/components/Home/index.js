@@ -1,3 +1,3 @@
-import Home from 'components/Home/Home.js';
+import Home from './Home.js';
 
 export default Home;

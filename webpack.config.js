@@ -117,7 +117,7 @@ module.exports = {
         ]
     },
     entry: {
-        client: [ 'core-js', './src/index.js', ...resolvedMocks.entry ],
+        client: [ 'core-js', 'isomorphic-fetch', './src/index.js', ...resolvedMocks.entry ],
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {

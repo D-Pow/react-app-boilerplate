@@ -121,7 +121,7 @@ module.exports = {
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {
-        path: path.resolve(__dirname, buildOutputPath),
+        path: path.resolve(__dirname, buildOutputPath), // output path for webpack build on machine, not relative paths for index.html
         filename: `${publicUrl}/js/[name].[hash:8].bundle.js`,
         chunkFilename: `${publicUrl}/js/[name].[hash:8].chunk.js`
     },

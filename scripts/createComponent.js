@@ -49,26 +49,6 @@ export default ${componentName};
     );
 }
 
-function processArgs(args) {
-    const functionalComponentFlagIndex = args.indexOf('func');
-    const functionalComponentFlag = functionalComponentFlagIndex >= 0;
-
-    if (functionalComponentFlag) {
-        args.splice(functionalComponentFlagIndex, 1);
-    }
-
-    switch (args.length) {
-        case 3:
-            createClass(args[COMPONENT_NAME_INDEX], 'components', functionalComponentFlag);
-            break;
-        case 4:
-            createClass(args[COMPONENT_NAME_INDEX], args[DIR_NAME_INDEX], functionalComponentFlag);
-            break;
-        default:
-            printUsage();
-    }
-}
-
 function createClass(componentName, dirName = 'components', functionalComponent = false) {
     const dir = `./src/${dirName}/${componentName}`;
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
@@ -95,6 +75,7 @@ function createClass(componentName, dirName = 'components', functionalComponent 
     });
 }
 
+
 function printUsage() {
     const usage = "Creates a component inside its own folder in the src/ directory along with an index.js file" +
         "\nUsage: createComponent NAME [directory under src/] [func|make functional component]";
@@ -105,6 +86,26 @@ function printUsage() {
 function error(err) {
     console.error(err);
     process.exit(1);
+}
+
+function processArgs(args) {
+    const functionalComponentFlagIndex = args.indexOf('func');
+    const functionalComponentFlag = functionalComponentFlagIndex >= 0;
+
+    if (functionalComponentFlag) {
+        args.splice(functionalComponentFlagIndex, 1);
+    }
+
+    switch (args.length) {
+        case 3:
+            createClass(args[COMPONENT_NAME_INDEX], 'components', functionalComponentFlag);
+            break;
+        case 4:
+            createClass(args[COMPONENT_NAME_INDEX], args[DIR_NAME_INDEX], functionalComponentFlag);
+            break;
+        default:
+            printUsage();
+    }
 }
 
 processArgs(process.argv);

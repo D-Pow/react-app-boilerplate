@@ -9,6 +9,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
 const packageJson = require('../package.json');
+const babelConfig = require('./babel.config.json');
 
 const paths = { // resolved relative to root dir since that's where the initial npm script is run
     root: path.resolve('./')
@@ -65,14 +66,20 @@ module.exports = {
                 test: jsRegex,
                 exclude: /node_modules/,
                 include: [ /src/, ...resolvedMocks.include ],
-                use: 'babel-loader'
+                use: {
+                    loader: 'babel-loader',
+                    options: babelConfig
+                }
             },
             {
                 test: tsRegex,
                 exclude: /node_modules/,
                 include: /src/,
                 use: [
-                    'babel-loader',
+                    {
+                        loader: 'babel-loader',
+                        options: babelConfig
+                    },
                     {
                         loader: 'ts-loader',
                         options: {

@@ -77,6 +77,9 @@
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1"
   },
+  "eslintConfig": {
+    "extends": "./config/.eslintrc.json"
+  },
   "jest": {
     "setupFiles": [
       "<rootDir>/config/jest.config.js"

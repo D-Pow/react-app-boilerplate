@@ -8,7 +8,11 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
-const packageJson = require('./package.json');
+const packageJson = require('../package.json');
+
+const paths = { // resolved relative to root dir since that's where the initial npm script is run
+    root: path.resolve('./')
+};
 
 const indexHtmlTitle = 'React App Boilerplate';
 const indexHtmlMetaTagData = {
@@ -20,7 +24,7 @@ const indexHtmlMetaTagData = {
 const publicUrl = 'static'; // directory of build output files relative to index.html
 
 const env = dotenv.config({
-    path: './.env'
+    path: paths.root + '/.env'
 }).parsed;
 
 process.env = {
@@ -43,7 +47,7 @@ const buildOutputPaths = {
     development: '',
     production: 'dist'
 };
-const buildOutputPath = process.env.NODE_ENV === 'production' ? buildOutputPaths.production : buildOutputPaths.development;
+const buildOutputPath = path.resolve(paths.root, process.env.NODE_ENV === 'production' ? buildOutputPaths.production : buildOutputPaths.development);
 
 const jsRegex = /\.jsx?$/;
 const tsRegex = /\.tsx?$/;
@@ -112,16 +116,16 @@ module.exports = {
     resolve: {
         extensions: ['*', '.js', '.jsx'],
         modules: [
-            path.resolve(__dirname, 'src'),
+            paths.root + '/src',
             'node_modules'
         ]
     },
     entry: {
-        client: [ 'core-js', 'isomorphic-fetch', './src/index.js', ...resolvedMocks.entry ],
+        client: [ 'core-js', 'isomorphic-fetch', paths.root + '/src/index.js', ...resolvedMocks.entry ],
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {
-        path: path.resolve(__dirname, buildOutputPath), // output path for webpack build on machine, not relative paths for index.html
+        path: buildOutputPath, // output path for webpack build on machine, not relative paths for index.html
         filename: `${publicUrl}/js/[name].[hash:8].bundle.js`,
         chunkFilename: `${publicUrl}/js/[name].[hash:8].chunk.js`
     },
@@ -131,7 +135,7 @@ module.exports = {
         // injects tags like <script> into index.html
         new HtmlWebpackPlugin({
             title: indexHtmlTitle,
-            template: './src/index.html',
+            template: paths.root + '/src/index.html',
             meta: indexHtmlMetaTagData
         }),
         // replaces %PUBLIC_URL% in index.html with env entry

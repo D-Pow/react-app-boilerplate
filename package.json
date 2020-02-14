@@ -10,11 +10,11 @@
     "url": "git+https://github.com/D-Pow/react-app-boilerplate.git"
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --config ./config/webpack.config.js",
     "mock": "cross-env MOCK=true npm start",
     "clean": "npx shx rm -rf dist",
     "prebuild": "npm run clean",
-    "build": "cross-env NODE_ENV=production webpack --mode production",
+    "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.js",
     "test": "jest --coverage tests",
     "create": "node scripts/createComponent.js",
     "predeploy": "npm run build",

@@ -38,6 +38,10 @@
             "checkAttributes": true,
             "indentLogicalExpressions": true
         }],
+        "react/jsx-closing-bracket-location": [ "error", {
+            "selfClosing": "tag-aligned",
+            "nonEmpty": "tag-aligned"
+        }],
         "react/prop-types": "warn",
         "react/display-name": "off", // don't error on arrow-function components
         "react-hooks/rules-of-hooks": "error",

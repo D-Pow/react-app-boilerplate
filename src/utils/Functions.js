@@ -160,6 +160,50 @@ export function attemptParseObjLiteral(obj) {
 }
 
 /**
+ * Deep-copies an object. Prevents pointers from being reused/changes being shared
+ * between the passed object and returned obj.
+ *
+ * @param {Object} obj - Object to copy
+ * @returns {Object} - Deep-copied object
+ */
+export function deepCopyObj(obj) {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Determines if two objects are equal.
+ * Objects can only contain primitive values, i.e. those that are acceptable
+ * in standard JSON format (booleans, strings, numbers, objects, arrays, and null).
+ *
+ * Optionally, ignore if values from objects are stringified or not,
+ * e.g. if { key: 25 } should equal { key: "25" } or not.
+ *
+ * @param {Object} obj1 - 1 of 2 objects to be compared
+ * @param {Object} obj2 - 2 of 2 objects to be compared
+ * @param {boolean} castStrings - If stringified values should equal non-stringified values
+ * @returns {boolean} - If the stringified version of obj1 equals that of obj2
+ */
+export function objEquals(obj1, obj2, castStrings = true) {
+    const serializeObjPrimitive = obj => {
+        let asString = JSON.stringify(obj);
+
+        if (castStrings) {
+            asString = asString.replace(/\\*"/g, '');
+        }
+
+        return asString
+            .split('')
+            .sort()
+            .join('');
+    };
+
+    const serializedObj1 = serializeObjPrimitive(obj1);
+    const serializedObj2 = serializeObjPrimitive(obj2);
+
+    return serializedObj1 === serializedObj2;
+}
+
+/**
  * Higher-order function that restricts `func` calls to only fire once per `delay` milliseconds.
  * Optionally, bind the value of `this` to its value when `debounce()` is called.
  * Optionally, call `func` when its first called instead of waiting `delay` milliseconds before its first call;

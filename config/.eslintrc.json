@@ -33,7 +33,9 @@
         "react-hooks"
     ],
     "rules": {
-        "indent": [ "error", 4 ],
+        "indent": [ "error", 4, {
+            "ignoredNodes": [ "TemplateLiteral" ]
+        }],
         "react/jsx-indent": [ "error", 4, {
             "checkAttributes": true,
             "indentLogicalExpressions": true

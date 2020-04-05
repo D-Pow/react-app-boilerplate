@@ -3,7 +3,7 @@ import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
 import SpinnerCircle from 'components/ui/SpinnerCircle';
 import IncompatibleBrowserFallback from 'components/IncompatibleBrowserFallback';
 import AppContext from 'utils/AppContext';
-import { isMicrosoftBrowser } from 'utils/Functions';
+import { isMicrosoftBrowser } from 'utils/BrowserIdentification';
 
 /**
  * Lazy-load components so the page spinner is prioritized, loaded quickly, and unblocked from animating.

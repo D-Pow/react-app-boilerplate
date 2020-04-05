@@ -1,4 +1,4 @@
-import { deepCopyObj, objEquals, validateObjNestedFields } from '../src/utils/Functions';
+import { deepCopyObj, objEquals, validateObjNestedFields } from '../../src/utils/Objects';
 
 describe('Object utils', () => {
     describe('deepCopyObj', () => {

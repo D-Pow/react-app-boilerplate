@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useEffect, useRef } from 'react';
-import { asNumber, elementIsInClickPath, getClickPath } from 'utils/Functions';
+import { elementIsInClickPath, getClickPath } from 'utils/Events';
 
 /**
  * @callback hookedChildRenderer

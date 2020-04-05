@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Row from './Row';
 import Column from './Column';
-import { childIsOfType, getChildName } from 'utils/Functions';
+import { childIsOfType, getChildName } from 'utils/ReactParsing';
 
 class Grid extends React.Component {
     static Row = Row;

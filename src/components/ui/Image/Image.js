@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { importImageAsync } from 'utils/Functions';
+import { importImageAsync } from 'utils/Events';
 import AppContext, { AppContextFields } from 'utils/AppContext';
 
 function Image(props) {

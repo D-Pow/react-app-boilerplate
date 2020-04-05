@@ -10,7 +10,7 @@ than create-react-app in that:
     - Will update the app in a cache-then-network response so any changes will be shown in the next page load/refresh.
 * Processes SCSS files to CSS and post-processes the CSS to make it cross-browser functional
 * Allows both JavaScript and TypeScript codebases
-* Has front-end mocking system built in natively along with usage examples
+* Has front-end mocking system built in natively along with usage examples (using [MockRequests](https://github.com/D-Pow/MockRequests))
 * All configurations are moved to the `config/` folder for cleaner root directory and purpose distinction
 
 Note: If using WebStorm, it doesn't properly interpret all of the

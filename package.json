@@ -84,6 +84,9 @@
     "setupFiles": [
       "<rootDir>/config/jest.config.js"
     ],
+    "modulePaths": [
+      "<rootDir>/src"
+    ],
     "transform": {
       "\\.[tj]sx?$": "<rootDir>/config/jestTransformer.js"
     },

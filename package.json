@@ -82,7 +82,7 @@
   },
   "jest": {
     "setupFiles": [
-      "<rootDir>/config/jest.config.js"
+      "<rootDir>/config/jestSetup.js"
     ],
     "modulePaths": [
       "<rootDir>/src"

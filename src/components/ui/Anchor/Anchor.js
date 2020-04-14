@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function Link(props) {
+function Anchor(props) {
     const cls = [ props.className ];
 
     if (props.underlineText) {
@@ -15,7 +15,7 @@ function Link(props) {
     );
 }
 
-Link.propTypes = {
+Anchor.propTypes = {
     className: PropTypes.string,
     href: PropTypes.string,
     children: PropTypes.node,
@@ -23,7 +23,7 @@ Link.propTypes = {
     aria: PropTypes.object
 };
 
-Link.defaultProps = {
+Anchor.defaultProps = {
     className: '',
     href: '',
     children: '',
@@ -31,4 +31,4 @@ Link.defaultProps = {
     aria: {}
 };
 
-export default Link;
+export default Anchor;

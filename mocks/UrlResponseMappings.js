@@ -11,11 +11,11 @@ export function getKitsuTitleSearchUrl(searchText) {
     return getSearchUrl(kitsuTitleSearchUrl, searchText);
 }
 
-const kimiNoNaWaSearchQuery = 'kimi no na wa';
-const narutoSearchQuery = 'naruto';
-const bleachSearchQuery = 'bleach';
-const fullmetalSearchQuery = 'fullmetal alchemist';
-const attackOnTitanSearchQuery = 'attack on titan';
+export const kimiNoNaWaSearchQuery = 'kimi no na wa';
+export const narutoSearchQuery = 'naruto';
+export const bleachSearchQuery = 'bleach';
+export const fullmetalSearchQuery = 'fullmetal alchemist';
+export const attackOnTitanSearchQuery = 'attack on titan';
 
 export const kitsuSearchQueryParamKey = kitsuTitleSearchUrl.substring(kitsuTitleSearchUrl.indexOf('?') + 1, kitsuTitleSearchUrl.indexOf('='));
 

@@ -118,7 +118,43 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: `${publicUrl}/assets/[name]-[hash:8].[ext]`
+                            name: absolutePathToAsset => {
+                                const assetName = absolutePathToAsset.slice(absolutePathToAsset.lastIndexOf('/') + 1);
+
+                                if (assetName.includes('favicon')) {
+                                    /**
+                                     * `[path]` == relative path from src folder,
+                                     * e.g. `src/assets/my-image.png` or `src/assets/images/my-image.png`.
+                                     *
+                                     * Don't append `[path]` for favicon files since they
+                                     * need to be in the output root directory.
+                                     *
+                                     * This, mixed with the removal of `static/` in the
+                                     * `outputPath` function results in outputting favicon
+                                     * files in output root directory.
+                                     */
+                                    return `[name].[ext]`;
+                                }
+
+                                return '[path][name]-[hash:8].[ext]';
+                            },
+                            outputPath: outputFromNameFunction => {
+                                /**
+                                 * Samples:
+                                 * '[path][name]-[hash:8].[ext]'   ->   `src/assets/MyImage-991ec5ea.png`
+                                 * '[name].[ext]'   ->   `MyImage.png`
+                                 */
+                                const indexForPathRelativeToSrc = outputFromNameFunction.indexOf('/') + 1;
+                                const pathRelativeToSrc = outputFromNameFunction.slice(indexForPathRelativeToSrc);
+
+                                if (pathRelativeToSrc.includes('favicon')) {
+                                    // Don't add `static/` to favicon images.
+                                    // Results in outputting them to output root directory.
+                                    return pathRelativeToSrc;
+                                }
+
+                                return `${transpiledSrcOutputPath}/${pathRelativeToSrc}`;
+                            }
                         }
                     }
                 ]
@@ -164,10 +200,6 @@ module.exports = {
             },
             {
                 from: 'src/ServiceWorker.js',
-                to: '[name].[ext]'
-            },
-            {
-                from: 'src/assets/favicon*',
                 to: '[name].[ext]'
             }
         ])

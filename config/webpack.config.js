@@ -22,7 +22,14 @@ const indexHtmlMetaTagData = {
     'theme-color': '#3800FF'
 };
 
-const publicUrl = 'static'; // directory of build output files relative to index.html
+// output path for webpack build on machine, not relative paths for index.html
+const relativeBuildOutputPaths = {
+    development: '',
+    production: 'dist'
+};
+const relativeBuildOutputPath = process.env.NODE_ENV === 'production' ? relativeBuildOutputPaths.production : relativeBuildOutputPaths.development;
+const absoluteBuildOutputPath = path.resolve(paths.root, relativeBuildOutputPath);
+const transpiledSrcOutputPath = 'static'; // directory of build output files relative to index.html
 
 const env = dotenv.config({
     path: paths.root + '/.env'
@@ -32,7 +39,7 @@ process.env = {
     ...process.env,
     ...env,
     NODE_ENV: process.env.NODE_ENV || 'development',
-    PUBLIC_URL: publicUrl,
+    PUBLIC_URL: transpiledSrcOutputPath,
     NODE_PATH: 'src/'
 };
 
@@ -42,13 +49,6 @@ const publicEnv = {
     PUBLIC_URL: process.env.PUBLIC_URL,
     MOCK: process.env.MOCK
 };
-
-// output path for webpack build on machine, not relative paths for index.html
-const buildOutputPaths = {
-    development: '',
-    production: 'dist'
-};
-const buildOutputPath = path.resolve(paths.root, process.env.NODE_ENV === 'production' ? buildOutputPaths.production : buildOutputPaths.development);
 
 const jsRegex = /\.jsx?$/;
 const tsRegex = /\.tsx?$/;
@@ -132,9 +132,9 @@ module.exports = {
         vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
     },
     output: {
-        path: buildOutputPath, // output path for webpack build on machine, not relative paths for index.html
-        filename: `${publicUrl}/js/[name].[hash:8].bundle.js`,
-        chunkFilename: `${publicUrl}/js/[name].[hash:8].chunk.js`
+        path: absoluteBuildOutputPath, // output path for webpack build on machine, not relative paths for index.html
+        filename: `${transpiledSrcOutputPath}/js/[name].[hash:8].bundle.js`,
+        chunkFilename: `${transpiledSrcOutputPath}/js/[name].[hash:8].chunk.js`
     },
     plugins: [
         // makes env available to src
@@ -149,7 +149,7 @@ module.exports = {
         new InterpolateHtmlPlugin(publicEnv),
         // splits CSS out from the rest of the code
         new MiniCssExtractPlugin({
-            filename: `${publicUrl}/css/[name].[contenthash:8].css`
+            filename: `${transpiledSrcOutputPath}/css/[name].[contenthash:8].css`
         }),
         // manually copies files from src to dest
         new CopyWebpackPlugin([

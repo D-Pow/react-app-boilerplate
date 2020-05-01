@@ -1,3 +1,19 @@
+@mixin font-face($font-family-name, $font-file-name) {
+    @font-face {
+        $fonts-path: "../assets/fonts/";
+        $font-file: "#{$fonts-path}#{$font-file-name}";
+
+        font-family: $font-family-name;
+        src: url("#{$font-file}.eot");
+        src: url("#{$font-file}.eot?#iefix") format('embedded-opentype'),
+             url("#{$font-file}.woff") format('woff'),
+             url("#{$font-file}.ttf") format('truetype');
+             //url($font-file + '.otf')  format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+}
+
 @for $i from 0 through 10 {
     .font-size-#{$i}vh {
         font-size: $i * 1vh;

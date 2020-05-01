@@ -122,6 +122,14 @@ $container-max-widths: (
   right: 0;
 }
 
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin: auto;
+}
+
 .m-auto {
   margin: auto;
 }

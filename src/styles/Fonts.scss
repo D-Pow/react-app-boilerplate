@@ -33,3 +33,13 @@
         }
     }
 }
+
+.font-didot-serif {
+    font-family: Didot, serif;
+}
+
+@include font-face('BrushScript', 'BrushScript');
+
+.font-brush-script {
+    font-family: 'Brush Script MT', BrushScript, cursive, fantasy, Didot, serif;
+}

@@ -96,6 +96,16 @@ $container-max-widths: (
   width: 100vw !important;
 }
 
+.full-width-minus-scrollbar {
+  // 100vw includes Y-scrollbar area, 100% does not
+  width: calc(100vw - (100vw - 100%)) !important;
+}
+
+.full-screen-minus-scrollbar {
+  @extend .full-screen;
+  @extend .full-width-minus-scrollbar;
+}
+
 .mt-10p {
   margin-top: 10%;
 }

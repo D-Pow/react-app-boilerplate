@@ -152,3 +152,17 @@ export function scrollWindowToTop() {
     // scrollTo() is supported on all browsers
     window.scrollTo(0, 0);
 }
+
+/**
+ * Sets the scrolling ability of the whole `document.body`.
+ * Useful for controlling the app's ability to scroll from any
+ * component.
+ *
+ * Since `document.body` is outside of the control of React,
+ * set the style manually. Default value is ''.
+ *
+ * @param allowScrolling
+ */
+export function setDocumentScrolling(allowScrolling = true) {
+    document.body.style.overflow = allowScrolling ? 'auto' : 'hidden';
+}

@@ -145,6 +145,10 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
     return elementIsInPath
 }
 
-export function resetWindowScroll() {
+/**
+ * Resets the window scroll location to the top of the screen
+ */
+export function scrollWindowToTop() {
+    // scrollTo() is supported on all browsers
     window.scrollTo(0, 0);
 }

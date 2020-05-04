@@ -84,3 +84,40 @@ export function objEquals(obj1, obj2, castStrings = true) {
 
     return serializedObj1 === serializedObj2;
 }
+
+/**
+ * Determines if a given variable is an object.
+ *
+ * @param {*} variable - Variable to check if it's an object
+ * @param {boolean} [includeNativeClasses=true] - If isObject() should return true for native JavaScript class instances
+ * @returns {boolean} - If the variable is an object
+ */
+export function isObject(variable, includeNativeClasses = true) {
+    /**
+     * JS variable breakdown:
+     *
+     *   Variable      |  typeof     |  obj.toString.call()  |  JSON.stringify  |  instanceof Object
+     *   --------------|-------------|-----------------------|------------------|-------------------
+     *   string        |  string     |  [object String]      |  variable        |  false
+     *   number        |  number     |  [object Number]      |  variable        |  false
+     *   boolean       |  boolean    |  [object Boolean]     |  variable        |  false
+     *   null          |  object     |  [object Null]        |  variable        |  false
+     *   undefined     |  undefined  |  [object Undefined]   |  variable        |  false
+     *   symbol        |  symbol     |  [object Symbol]      |  undefined       |  false
+     *   object        |  object     |  [object Object]      |  variable        |  true
+     *   array         |  object     |  [object Array]       |  variable        |  true
+     *   function      |  function   |  [object Function]    |  undefined       |  true
+     *   native class  |  object     |  e.g. [object Date]   |  {varies}        |  true
+     *   custom class  |  object     |  [object Object]      |  {varies}        |  true
+     */
+    const obj = {};
+    const isObjectLiteralOrCustomClassInstance = obj.toString.call(variable) === obj.toString();
+    const isObjectOrArrayInstance = (typeof variable === typeof obj) && (variable instanceof Object);
+    const isNotArray = !Array.isArray(variable);
+
+    if (!includeNativeClasses) {
+        return isObjectLiteralOrCustomClassInstance;
+    }
+
+    return (isObjectOrArrayInstance && isNotArray);
+}

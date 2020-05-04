@@ -1,4 +1,4 @@
-import { deepCopyObj, objEquals, validateObjNestedFields } from 'utils/Objects';
+import { isObject, deepCopyObj, objEquals, validateObjNestedFields } from 'utils/Objects';
 
 describe('Object utils', () => {
     describe('deepCopyObj', () => {
@@ -157,6 +157,86 @@ describe('Object utils', () => {
 
         it('should optionally consider two objects equal regardless of levels of JSON.stringify calls', () => {
             expect(objEquals(equal3Obj1, equal3Obj2)).toBe(true);
+        });
+    });
+
+    describe('isObject', () => {
+        class SampleCustomClass {
+            a = 'A';
+            b = 'B';
+            func() {
+                return this.a;
+            }
+        }
+
+        const variablesOfEachType = [
+            {
+                variable: 'hello',
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: 5,
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: true,
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: null,
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: undefined,
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: Symbol(),
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: () => {},
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: [],
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: false
+            },
+            {
+                variable: {},
+                isObjectLiteralOrCustomClass: true,
+                isAnyTypeOfObject: true
+            },
+            {
+                variable: new SampleCustomClass(),
+                isObjectLiteralOrCustomClass: true,
+                isAnyTypeOfObject: true
+            },
+            {
+                variable: new Date(),
+                isObjectLiteralOrCustomClass: false,
+                isAnyTypeOfObject: true
+            },
+        ];
+
+        it('should determine if a variable is an object literal or custom class instance', () => {
+            variablesOfEachType.forEach(sample => {
+                expect(isObject(sample.variable, false)).toBe(sample.isObjectLiteralOrCustomClass);
+            });
+        });
+
+        it('should determine if a variable is an object literal or custom/native class instance', () => {
+            variablesOfEachType.forEach(sample => {
+                expect(isObject(sample.variable, true)).toBe(sample.isAnyTypeOfObject);
+            });
         });
     });
 });

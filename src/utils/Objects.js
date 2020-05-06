@@ -89,10 +89,23 @@ export function objEquals(obj1, obj2, castStrings = true) {
  * Determines if a given variable is an object.
  *
  * @param {*} variable - Variable to check if it's an object
- * @param {boolean} [includeNativeClasses=true] - If isObject() should return true for native JavaScript class instances
- * @returns {boolean} - If the variable is an object
+ * @param {{}} options - What to include in is-object check
+ * @param {boolean} [options.includeNativeClasses=true] - If native JavaScript class instances should return true.
+ * @param {boolean} [options.includeCustomClasses=true] - If custom JavaScript class instances should return true.
+ * @param {boolean} [options.includeArraysAndMimics=false] - If arrays and array-like objects should return true.
+ *                                                           If this is true, classes will be included.
+ * @param {boolean} [options.includeFunctions=false] - If functions should return true.
+ *                                                     If this is true, classes will be included.
+ * @param {boolean} [options.includeNull=false] - If null should return true.
+ * @returns {boolean} - If the variable is an object as described by the passed options.
  */
-export function isObject(variable, includeNativeClasses = true) {
+export function isObject(variable, {
+    includeNativeClasses = true,
+    includeCustomClasses = true,
+    includeArraysAndMimics = false,
+    includeFunctions = false,
+    includeNull = false
+} = {}) {
     /**
      * JS variable breakdown:
      *
@@ -107,17 +120,56 @@ export function isObject(variable, includeNativeClasses = true) {
      *   object        |  object     |  [object Object]      |  variable        |  true
      *   array         |  object     |  [object Array]       |  variable        |  true
      *   function      |  function   |  [object Function]    |  undefined       |  true
-     *   native class  |  object     |  e.g. [object Date]   |  {varies}        |  true
+     *   native class  |  object     |  [object ClassName]   |  {varies}        |  true
      *   custom class  |  object     |  [object Object]      |  {varies}        |  true
      */
-    const obj = {};
-    const isObjectLiteralOrCustomClassInstance = obj.toString.call(variable) === obj.toString();
-    const isObjectOrArrayInstance = (typeof variable === typeof obj) && (variable instanceof Object);
-    const isNotArray = !Array.isArray(variable);
-
-    if (!includeNativeClasses) {
-        return isObjectLiteralOrCustomClassInstance;
+    if (variable == null) {
+        return (includeNull && variable !== undefined);
     }
 
-    return (isObjectOrArrayInstance && isNotArray);
+    const toObjectString = type => Object.prototype.toString.call(type);
+    const isObjectLike = variable instanceof Object;
+    const isObjectLiteral = Object.getPrototypeOf(variable) === Object.getPrototypeOf({});
+
+    const nonObjectSamples = [ '', 1, true, Symbol() ]; // array/function handled below
+    const nonObjectsToString = nonObjectSamples.map(toObjectString);
+    const variableToObjectString = toObjectString(variable);
+    const isObjectLiteralOrNativeOrCustomClassInstance = !nonObjectsToString.includes(variableToObjectString);
+    const isObjectLiteralOrCustomClassInstance = variableToObjectString === toObjectString({});
+
+    const isFunction = typeof variable === typeof (() => {});
+
+    const isArray = Array.isArray(variable);
+    const isArrayLength = lengthValue => (
+        typeof lengthValue === typeof 1
+        && lengthValue > -1
+        && lengthValue % 1 === 0
+        && lengthValue <= Number.MAX_SAFE_INTEGER
+    );
+    const isArrayLike = !isFunction && isArrayLength(variable.length);
+
+    const checks = [ isObjectLike ];
+
+    if (!includeFunctions) {
+        checks.push(!isFunction);
+    }
+
+    if (!includeArraysAndMimics) {
+        checks.push(!isArray && !isArrayLike);
+    }
+
+    const objectLikesAreAcceptable = (includeFunctions || includeArraysAndMimics);
+
+    if (!objectLikesAreAcceptable) {
+        if (!includeNativeClasses && !includeCustomClasses) {
+            checks.push(isObjectLiteral);
+        } else if (!includeNativeClasses) {
+            checks.push(isObjectLiteralOrCustomClassInstance);
+        } else if (!includeCustomClasses) {
+            const isNotCustomClass = (isObjectLiteral || !isObjectLiteralOrCustomClassInstance);
+            checks.push(isObjectLiteralOrNativeOrCustomClassInstance && isNotCustomClass);
+        }
+    }
+
+    return checks.every(bool => bool);
 }

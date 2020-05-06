@@ -161,81 +161,109 @@ describe('Object utils', () => {
     });
 
     describe('isObject', () => {
-        class SampleCustomClass {
-            a = 'A';
-            b = 'B';
-            func() {
-                return this.a;
-            }
-        }
+        it('should return false for all non-object-like variables', () => {
+            const nonObjectVariables = [
+                'hello',
+                5,
+                true,
+                undefined,
+                Symbol()
+            ];
 
-        const variablesOfEachType = [
-            {
-                variable: 'hello',
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: 5,
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: true,
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: null,
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: undefined,
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: Symbol(),
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: () => {},
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: [],
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: false
-            },
-            {
-                variable: {},
-                isObjectLiteralOrCustomClass: true,
-                isAnyTypeOfObject: true
-            },
-            {
-                variable: new SampleCustomClass(),
-                isObjectLiteralOrCustomClass: true,
-                isAnyTypeOfObject: true
-            },
-            {
-                variable: new Date(),
-                isObjectLiteralOrCustomClass: false,
-                isAnyTypeOfObject: true
-            },
-        ];
-
-        it('should determine if a variable is an object literal or custom class instance', () => {
-            variablesOfEachType.forEach(sample => {
-                expect(isObject(sample.variable, false)).toBe(sample.isObjectLiteralOrCustomClass);
+            nonObjectVariables.forEach(type => {
+                expect(isObject(type)).toBe(false);
             });
         });
 
-        it('should determine if a variable is an object literal or custom/native class instance', () => {
-            variablesOfEachType.forEach(sample => {
-                expect(isObject(sample.variable, true)).toBe(sample.isAnyTypeOfObject);
+        it('should process object-like variables according to the respective option boolean', () => {
+            class ArrayMimic {
+                length = 0;
+            }
+
+            const likeObjects = [
+                {
+                    variable: null,
+                    field: 'includeNull'
+                },
+                {
+                    variable: [],
+                    field: 'includeArraysAndMimics'
+                },
+                {
+                    variable: new ArrayMimic(),
+                    field: 'includeArraysAndMimics'
+                },
+                {
+                    variable: () => {},
+                    field: 'includeFunctions'
+                }
+            ];
+            const includeValues = [ true, false ];
+
+            likeObjects.forEach(sample => {
+                includeValues.forEach(expected => {
+                    const { variable, field } = sample;
+                    const received = isObject(variable, {
+                        [field]: expected
+                    });
+
+                    expect(received).toBe(expected);
+                });
+            });
+        });
+
+        it('should process different types of real objects according to the respective options', () => {
+            class SampleCustomClass {
+                a = 'A';
+                b = 'B';
+                func() {
+                    return this.a;
+                }
+            }
+
+            const objectTypes = [
+                {
+                    variable: {},
+                    isObjectLiteral: true,
+                    resultIfFieldIsFalse: {
+                        includeNativeClasses: true,
+                        includeCustomClasses: true
+                    }
+                },
+                {
+                    variable: new SampleCustomClass(),
+                    isObjectLiteral: false,
+                    resultIfFieldIsFalse: {
+                        includeNativeClasses: true,
+                        includeCustomClasses: false
+                    }
+                },
+                {
+                    variable: new Date(),
+                    isObjectLiteral: false,
+                    resultIfFieldIsFalse: {
+                        includeNativeClasses: false,
+                        includeCustomClasses: true
+                    }
+                },
+            ];
+
+            objectTypes.forEach(objectType => {
+                const { variable, isObjectLiteral, resultIfFieldIsFalse } = objectType;
+
+                expect(isObject(variable)).toBe(true);
+                expect(isObject(variable, {
+                    includeNativeClasses: false,
+                    includeCustomClasses: false
+                })).toBe(isObjectLiteral);
+                expect(isObject(variable, {
+                    includeNativeClasses: false,
+                    includeCustomClasses: true
+                })).toBe(resultIfFieldIsFalse.includeNativeClasses);
+                expect(isObject(variable, {
+                    includeNativeClasses: true,
+                    includeCustomClasses: false
+                })).toBe(resultIfFieldIsFalse.includeCustomClasses);
             });
         });
     });

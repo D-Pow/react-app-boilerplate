@@ -140,13 +140,6 @@ export function isObject(variable, {
     const isFunction = typeof variable === typeof (() => {});
 
     const isArray = Array.isArray(variable);
-    const isArrayLength = lengthValue => (
-        typeof lengthValue === typeof 1
-        && lengthValue > -1
-        && lengthValue % 1 === 0
-        && lengthValue <= Number.MAX_SAFE_INTEGER
-    );
-    const isArrayLike = !isFunction && isArrayLength(variable.length);
 
     const checks = [ isObjectLike ];
 

@@ -92,8 +92,8 @@ export function objEquals(obj1, obj2, castStrings = true) {
  * @param {{}} options - What to include in is-object check
  * @param {boolean} [options.includeNativeClasses=true] - If native JavaScript class instances should return true.
  * @param {boolean} [options.includeCustomClasses=true] - If custom JavaScript class instances should return true.
- * @param {boolean} [options.includeArraysAndMimics=false] - If arrays and array-like objects should return true.
- *                                                           If this is true, classes will be included.
+ * @param {boolean} [options.includeArrays=false] - If arrays should return true.
+ *                                                  If this is true, classes will be included.
  * @param {boolean} [options.includeFunctions=false] - If functions should return true.
  *                                                     If this is true, classes will be included.
  * @param {boolean} [options.includeNull=false] - If null should return true.
@@ -102,7 +102,7 @@ export function objEquals(obj1, obj2, castStrings = true) {
 export function isObject(variable, {
     includeNativeClasses = true,
     includeCustomClasses = true,
-    includeArraysAndMimics = false,
+    includeArrays = false,
     includeFunctions = false,
     includeNull = false
 } = {}) {
@@ -154,11 +154,11 @@ export function isObject(variable, {
         checks.push(!isFunction);
     }
 
-    if (!includeArraysAndMimics) {
-        checks.push(!isArray && !isArrayLike);
+    if (!includeArrays) {
+        checks.push(!isArray);
     }
 
-    const objectLikesAreAcceptable = (includeFunctions || includeArraysAndMimics);
+    const objectLikesAreAcceptable = (includeFunctions || includeArrays);
 
     if (!objectLikesAreAcceptable) {
         if (!includeNativeClasses && !includeCustomClasses) {

@@ -176,10 +176,6 @@ describe('Object utils', () => {
         });
 
         it('should process object-like variables according to the respective option boolean', () => {
-            class ArrayMimic {
-                length = 0;
-            }
-
             const likeObjects = [
                 {
                     variable: null,
@@ -187,11 +183,7 @@ describe('Object utils', () => {
                 },
                 {
                     variable: [],
-                    field: 'includeArraysAndMimics'
-                },
-                {
-                    variable: new ArrayMimic(),
-                    field: 'includeArraysAndMimics'
+                    field: 'includeArrays'
                 },
                 {
                     variable: () => {},

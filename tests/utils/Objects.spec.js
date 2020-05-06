@@ -204,7 +204,7 @@ describe('Object utils', () => {
             });
         });
 
-        it('should process different types of real objects according to the respective options', () => {
+        it('should process classes vs object literals according to the respective options', () => {
             class SampleCustomClass {
                 a = 'A';
                 b = 'B';
@@ -213,49 +213,19 @@ describe('Object utils', () => {
                 }
             }
 
-            const objectTypes = [
-                {
-                    variable: {},
-                    isObjectLiteral: true,
-                    resultIfFieldIsFalse: {
-                        includeNativeClasses: true,
-                        includeCustomClasses: true
-                    }
-                },
-                {
-                    variable: new SampleCustomClass(),
-                    isObjectLiteral: false,
-                    resultIfFieldIsFalse: {
-                        includeNativeClasses: true,
-                        includeCustomClasses: false
-                    }
-                },
-                {
-                    variable: new Date(),
-                    isObjectLiteral: false,
-                    resultIfFieldIsFalse: {
-                        includeNativeClasses: false,
-                        includeCustomClasses: true
-                    }
-                },
+            const classTypes = [
+                new SampleCustomClass(), // custom class
+                new Date(), // native class
+                new String() // primitive wrapper
             ];
 
-            objectTypes.forEach(objectType => {
-                const { variable, isObjectLiteral, resultIfFieldIsFalse } = objectType;
+            expect(isObject({})).toBe(true);
+            expect(isObject({}, { includeClasses: false })).toBe(true);
 
-                expect(isObject(variable)).toBe(true);
-                expect(isObject(variable, {
-                    includeNativeClasses: false,
-                    includeCustomClasses: false
-                })).toBe(isObjectLiteral);
-                expect(isObject(variable, {
-                    includeNativeClasses: false,
-                    includeCustomClasses: true
-                })).toBe(resultIfFieldIsFalse.includeNativeClasses);
-                expect(isObject(variable, {
-                    includeNativeClasses: true,
-                    includeCustomClasses: false
-                })).toBe(resultIfFieldIsFalse.includeCustomClasses);
+            classTypes.forEach(classType => {
+                expect(isObject(classType)).toBe(true);
+                expect(isObject(classType, { includeClasses: false })).toBe(false);
+                expect(isObject(classType, { includeClasses: true })).toBe(true);
             });
         });
     });

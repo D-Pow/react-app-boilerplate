@@ -90,8 +90,7 @@ export function objEquals(obj1, obj2, castStrings = true) {
  *
  * @param {*} variable - Variable to check if it's an object
  * @param {{}} options - What to include in is-object check
- * @param {boolean} [options.includeNativeClasses=true] - If native JavaScript class instances should return true.
- * @param {boolean} [options.includeCustomClasses=true] - If custom JavaScript class instances should return true.
+ * @param {boolean} [options.includeClasses=true] - If native/custom JavaScript class instances should return true.
  * @param {boolean} [options.includeArrays=false] - If arrays should return true.
  *                                                  If this is true, classes will be included.
  * @param {boolean} [options.includeFunctions=false] - If functions should return true.
@@ -100,8 +99,7 @@ export function objEquals(obj1, obj2, castStrings = true) {
  * @returns {boolean} - If the variable is an object as described by the passed options.
  */
 export function isObject(variable, {
-    includeNativeClasses = true,
-    includeCustomClasses = true,
+    includeClasses = true,
     includeArrays = false,
     includeFunctions = false,
     includeNull = false
@@ -127,18 +125,9 @@ export function isObject(variable, {
         return (includeNull && variable !== undefined);
     }
 
-    const toObjectString = type => Object.prototype.toString.call(type);
     const isObjectLike = variable instanceof Object;
     const isObjectLiteral = Object.getPrototypeOf(variable) === Object.getPrototypeOf({});
-
-    const nonObjectSamples = [ '', 1, true, Symbol() ]; // array/function handled below
-    const nonObjectsToString = nonObjectSamples.map(toObjectString);
-    const variableToObjectString = toObjectString(variable);
-    const isObjectLiteralOrNativeOrCustomClassInstance = !nonObjectsToString.includes(variableToObjectString);
-    const isObjectLiteralOrCustomClassInstance = variableToObjectString === toObjectString({});
-
     const isFunction = typeof variable === typeof (() => {});
-
     const isArray = Array.isArray(variable);
 
     const checks = [ isObjectLike ];
@@ -153,15 +142,8 @@ export function isObject(variable, {
 
     const objectLikesAreAcceptable = (includeFunctions || includeArrays);
 
-    if (!objectLikesAreAcceptable) {
-        if (!includeNativeClasses && !includeCustomClasses) {
-            checks.push(isObjectLiteral);
-        } else if (!includeNativeClasses) {
-            checks.push(isObjectLiteralOrCustomClassInstance);
-        } else if (!includeCustomClasses) {
-            const isNotCustomClass = (isObjectLiteral || !isObjectLiteralOrCustomClassInstance);
-            checks.push(isObjectLiteralOrNativeOrCustomClassInstance && isNotCustomClass);
-        }
+    if (!objectLikesAreAcceptable && !includeClasses) {
+        checks.push(isObjectLiteral);
     }
 
     return checks.every(bool => bool);

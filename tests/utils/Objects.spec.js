@@ -100,6 +100,9 @@ describe('Object utils', () => {
                         c: false,
                         d: {
                             e: null
+                        },
+                        f: {
+                            g: {}
                         }
                     },
                     c: [
@@ -120,6 +123,9 @@ describe('Object utils', () => {
                         c: true,
                         d: {
                             e: undefined
+                        },
+                        f: {
+                            g: {}
                         }
                     },
                     c: [
@@ -166,20 +172,30 @@ describe('Object utils', () => {
                 a: [
                     [ 0, 1 ]
                 ],
-                b: [ 'a', 'b' ]
+                b: [ 'a', 'b' ],
+                c: [
+                    { x: 3, y: 4 }
+                ],
+                d: [ 0, 1 ]
             };
             const b = {
                 a: [
                     [ 0, 2 ]
                 ],
-                b: [ 'a', 'b', 'c' ]
+                b: [ 'a', 'b', 'c' ],
+                c: [
+                    { x: 3, y: 5, z: 6 }
+                ],
+                d: [ 0, 1 ]
             };
 
             const delta = diffObjects(a, b, false);
 
-            expect(delta.size).toBe(2);
+            expect(delta.size).toBe(4);
             expect(delta).toContain('a');
             expect(delta).toContain('b');
+            expect(delta).toContain('c.y');
+            expect(delta).toContain('c.z');
         });
 
         it('should work for classes', () => {
@@ -226,11 +242,19 @@ describe('Object utils', () => {
         it('should diff arrays with and without optional boolean index value inclusion', () => {
             const a = [
                 [ 'a', 'b', 'c' ],
-                [ 'd', 'e', 'f' ]
+                [ 'd', 'e', 'f' ],
+                [ {}, {}, {} ],
+                {
+                    g: 'G'
+                }
             ];
             const b = [
                 [ 'a', 'W', 'X' ],
-                [ 'd', 'Y', 'Z' ]
+                [ 'd', 'Y', 'Z' ],
+                [ {}, {}, {} ],
+                {
+                    g: 'G'
+                }
             ];
 
             const deltaWithIndexVals = diffObjects(a, b);

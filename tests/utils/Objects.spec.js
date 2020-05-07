@@ -201,6 +201,51 @@ describe('Object utils', () => {
             expect(deltaDiffModifiedField).toContain(fieldToModify);
             expect(deltaDiffModifiedField).toContain('c');
         });
+
+        it('should work for variables that are not "real" objects', () => {
+            const nonObjectTypes = [
+                [ 'a', 'b' ],
+                [ 1, 2 ],
+                [ null, undefined ],
+                [ () => {}, () => {'a'} ]
+            ];
+
+            const testDiffForNonObjects = (a, b) => {
+                const deltaString = diffObjects(a, b);
+                expect(deltaString.size).toBe(1);
+                expect(deltaString).toContain('.');
+            };
+
+            nonObjectTypes.forEach(([ arg1, arg2 ]) => {
+                testDiffForNonObjects(arg1, arg2);
+                expect(diffObjects(arg1, arg1).size).toBe(0);
+                expect(diffObjects(arg2, arg2).size).toBe(0);
+            });
+        });
+
+        it('should diff arrays with and without optional boolean index value inclusion', () => {
+            const a = [
+                [ 'a', 'b', 'c' ],
+                [ 'd', 'e', 'f' ]
+            ];
+            const b = [
+                [ 'a', 'W', 'X' ],
+                [ 'd', 'Y', 'Z' ]
+            ];
+
+            const deltaWithIndexVals = diffObjects(a, b);
+            const deltaWithoutIndexVals = diffObjects(a, b, false);
+
+            expect(deltaWithIndexVals.size).toBe(4);
+            expect(deltaWithIndexVals).toContain('[0][1]');
+            expect(deltaWithIndexVals).toContain('[0][2]');
+            expect(deltaWithIndexVals).toContain('[1][1]');
+            expect(deltaWithIndexVals).toContain('[1][2]');
+
+            expect(deltaWithoutIndexVals.size).toBe(2);
+            expect(deltaWithoutIndexVals).toContain('[0]');
+            expect(deltaWithoutIndexVals).toContain('[1]');
+        });
     });
 
     describe('objEquals', () => {

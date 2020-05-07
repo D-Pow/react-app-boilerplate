@@ -53,36 +53,115 @@ export function deepCopyObj(obj) {
 }
 
 /**
- * Determines if two objects are equal.
- * Objects can only contain primitive values, i.e. those that are acceptable
- * in standard JSON format (booleans, strings, numbers, objects, arrays, and null).
+ * Determines the differences between two objects, returning all nested
+ * paths of differences.
  *
- * Optionally, ignore if values from objects are stringified or not,
- * e.g. if { key: 25 } should equal { key: "25" } or not.
+ * Ignores prototypes and inheritance.
  *
  * @param {Object} obj1 - 1 of 2 objects to be compared
  * @param {Object} obj2 - 2 of 2 objects to be compared
- * @param {boolean} castStrings - If stringified values should equal non-stringified values
- * @returns {boolean} - If the stringified version of obj1 equals that of obj2
+ * @param {boolean} [showArrayIndex=true] - If the index of arrays should be included in diff set
+ * @returns {Set<string>} - Set showing paths to nested differences
  */
-export function objEquals(obj1, obj2, castStrings = true) {
-    const serializeObjPrimitive = obj => {
-        let asString = JSON.stringify(obj);
+export function diffObjects(obj1, obj2, showArrayIndex = true) {
+    // object literals, class instances, arrays, and functions
+    const areBothRealObjects = (a, b) => ((a instanceof Object) && (b instanceof Object));
+    const functionType = typeof (diffObjects);
+    const areBothFunctions = (a, b) => ((typeof a === functionType) && (typeof b === functionType));
+    const areBothArrays = (a, b) => (Array.isArray(a) && Array.isArray(b));
 
-        if (castStrings) {
-            asString = asString.replace(/\\*"/g, '');
+    const differences = [];
+
+    function handleDifferentTypes(a, b, key) {
+        if (typeof a !== typeof b) {
+            differences.push(key);
+
+            return true;
         }
 
-        return asString
-            .split('')
-            .sort()
-            .join('');
-    };
+        return false;
+    }
 
-    const serializedObj1 = serializeObjPrimitive(obj1);
-    const serializedObj2 = serializeObjPrimitive(obj2);
+    function handleNonObjects(a, b, key) {
+        if (!areBothRealObjects(a, b)) {
+            // anything not a "real" object:
+            // strings, numbers, booleans, null, undefined, and symbols
+            if (a !== b) {
+                differences.push(key);
+            }
 
-    return serializedObj1 === serializedObj2;
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleFunctions(a, b, key) {
+        if (areBothFunctions(a, b)) {
+            if (a.toString() !== b.toString()) {
+                differences.push(key);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleArrays(a, b, key) {
+        if (areBothArrays(a, b)) {
+            for (let i = 0; (i < a.length || i < b.length); i++) {
+                const nestedKey = `${key}` + (showArrayIndex ? `[${i}]` : '');
+
+                handleAllValues(a[i], b[i], nestedKey);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleObjects(a, b, key) {
+        diffObjects(a, b).forEach(nestedKey => {
+            differences.push(`${key}.${nestedKey}`);
+        });
+
+        return true;
+    }
+
+    function handleAllValues(a, b, key) {
+        return (
+            handleDifferentTypes(a, b, key)
+            || handleNonObjects(a, b, key)
+            || handleFunctions(a, b, key)
+            || handleArrays(a, b, key)
+            || handleObjects(a, b, key)
+        );
+    }
+
+    const allKeysForBothObjects = new Set(Object.keys(obj1).concat(Object.keys(obj2)));
+
+    allKeysForBothObjects.forEach(key => {
+        const value1 = obj1[key];
+        const value2 = obj2[key];
+
+        handleAllValues(value1, value2, key);
+    });
+
+    return new Set(differences);
+}
+
+/**
+ * Determines if two objects are equal.
+ * Ignores prototypes and inheritance.
+ *
+ * @param {Object} obj1 - 1 of 2 objects to be compared
+ * @param {Object} obj2 - 2 of 2 objects to be compared
+ * @returns {boolean} - If the stringified version of obj1 equals that of obj2
+ */
+export function objEquals(obj1, obj2) {
+    return diffObjects(obj1, obj2).size === 0;
 }
 
 /**

@@ -1,6 +1,14 @@
-import { isObject, deepCopyObj, objEquals, validateObjNestedFields } from 'utils/Objects';
+import { isObject, deepCopyObj, diffObjects, objEquals, validateObjNestedFields } from 'utils/Objects';
 
 describe('Object utils', () => {
+    class SampleCustomClass {
+        a = 'A';
+        b = 'B';
+        func() {
+            return this.a;
+        }
+    }
+
     describe('deepCopyObj', () => {
         const objToCopy = {
             a: {
@@ -84,79 +92,168 @@ describe('Object utils', () => {
         });
     });
 
+    describe('diffObjects', () => {
+        it('should find modified fields of any type in nested objects', () => {
+            const a = {
+                a: {
+                    b: {
+                        c: false,
+                        d: {
+                            e: null
+                        }
+                    },
+                    c: [
+                        {
+                            a: () => {}
+                        },
+                        {
+                            a: () => {'a';}
+                        }
+                    ]
+                },
+                arr: [ 'a', 'b' ]
+            };
+
+            const b = {
+                a: {
+                    b: {
+                        c: true,
+                        d: {
+                            e: undefined
+                        }
+                    },
+                    c: [
+                        {
+                            a: () => {}
+                        },
+                        {
+                            a: () => {'b';}
+                        }
+                    ]
+                },
+                arr: [ 'a', 'b', 'c' ]
+            };
+
+            const delta = diffObjects(a, b);
+
+            expect(delta.size).toBe(4);
+            expect(delta).toContain('a.b.c');
+            expect(delta).toContain('a.b.d.e');
+            expect(delta).toContain('a.c[1].a');
+            expect(delta).toContain('arr[2]');
+        });
+
+        it('should find elements that differ in nested arrays', () => {
+            const a = {
+                a: [
+                    [ 0, 1 ]
+                ]
+            };
+            const b = {
+                a: [
+                    [ 0, 2 ]
+                ]
+            };
+
+            const delta = diffObjects(a, b);
+
+            expect(delta.size).toBe(1);
+            expect(delta).toContain('a[0][1]');
+        });
+
+        it('should optionally exclude array index values', () => {
+            const a = {
+                a: [
+                    [ 0, 1 ]
+                ],
+                b: [ 'a', 'b' ]
+            };
+            const b = {
+                a: [
+                    [ 0, 2 ]
+                ],
+                b: [ 'a', 'b', 'c' ]
+            };
+
+            const delta = diffObjects(a, b, false);
+
+            expect(delta.size).toBe(2);
+            expect(delta).toContain('a');
+            expect(delta).toContain('b');
+        });
+
+        it('should work for classes', () => {
+            const a = new SampleCustomClass();
+            const b = new SampleCustomClass();
+            const fieldToModify = 'a';
+
+            const deltaSame = diffObjects(a, b);
+            expect(deltaSame.size).toBe(0);
+
+            b.c = 7;
+            const deltaDiffNewField = diffObjects(a, b);
+            expect(deltaDiffNewField.size).toBe(1);
+            expect(deltaDiffNewField).toContain('c');
+
+            a[fieldToModify] = 7;
+            const deltaDiffModifiedField = diffObjects(a, b);
+            expect(deltaDiffModifiedField.size).toBe(2);
+            expect(deltaDiffModifiedField).toContain(fieldToModify);
+            expect(deltaDiffModifiedField).toContain('c');
+        });
+    });
+
     describe('objEquals', () => {
-        const equal1Obj1 = {
+        const notEqual1Obj1 = {
             a: {
                 b: 25
             }
         };
-        const equal1Obj2 = {
+        const notEqual1Obj2 = {
             a: {
                 b: '25'
             }
         };
-        const equal2Obj1 = {
+        const notEqual2Obj1 = {
             a: {
                 b: 'B',
                 c: 25,
                 d: [ 1, 2, 3, 4 ]
             }
         };
-        const equal2Obj2 = {
-            a: JSON.stringify({
-                b: 'B',
-                c: '25',
-                d: [ 2, 1, 4, 3 ]
-            })
-        };
-        const equal2Obj3 = {
-            a: JSON.stringify({
-                c: '25',
-                d: [ 2, 1, 4, 3 ],
-                b: 'B'
-            })
-        };
-        const equal3Obj1 = {
+        const notEqual2Obj2 = {
             a: {
                 b: 'B',
-                c: '25',
-                d: {
-                    e: [ 2, 1, 4, 3 ]
-                }
+                c: 25,
+                d: [ 2, 1, 4, 3 ]
             }
         };
-        const equal3Obj2 = {
-            a: JSON.stringify({
-                c: '25',
-                d: JSON.stringify(JSON.stringify({
-                    e: [ 2, 1, 4, 3 ]
-                })),
+        const equalObj1 = {
+            a: {
+                b: 'B',
+                c: 25,
+                d: [ 2, 1, 4, 3 ]
+            }
+        };
+        const equalObj2 = {
+            a: {
+                c: 25,
+                d: [ 2, 1, 4, 3 ],
                 b: 'B'
-            })
+            }
         };
 
-        it('should consider two objects that differ in ways other than types to not be equal', () => {
-            expect(objEquals(equal1Obj1, equal2Obj1)).toBe(false);
+        it('should consider two objects equal only if values have the same types', () => {
+            expect(objEquals(notEqual1Obj1, equalObj1)).toBe(false);
+            expect(objEquals(notEqual1Obj1, notEqual1Obj2)).toBe(false);
         });
 
-        it('should optionally consider two objects equal only if values have the same types', () => {
-            expect(objEquals(equal1Obj1, equal1Obj2, false)).toBe(false);
-            expect(objEquals(equal2Obj1, equal2Obj2, false)).toBe(false);
+        it('should take array order into account', () => {
+            expect(objEquals(notEqual2Obj1, notEqual2Obj2)).toBe(false);
         });
 
-        it('should optionally consider two objects equal even if values do not have the same types', () => {
-            expect(objEquals(equal1Obj1, equal1Obj2)).toBe(true);
-            expect(objEquals(equal2Obj1, equal2Obj2)).toBe(true);
-        });
-
-        it('should optionally consider two objects equal regardless of order of key-val declarations', () => {
-            expect(objEquals(equal2Obj1, equal2Obj2)).toBe(true);
-            expect(objEquals(equal2Obj2, equal2Obj3)).toBe(true);
-            expect(objEquals(equal2Obj1, equal2Obj3)).toBe(true);
-        });
-
-        it('should optionally consider two objects equal regardless of levels of JSON.stringify calls', () => {
-            expect(objEquals(equal3Obj1, equal3Obj2)).toBe(true);
+        it('should consider two objects equal regardless of order of key-val declarations', () => {
+            expect(objEquals(equalObj1, equalObj2)).toBe(true);
         });
     });
 
@@ -205,14 +302,6 @@ describe('Object utils', () => {
         });
 
         it('should process classes vs object literals according to the respective options', () => {
-            class SampleCustomClass {
-                a = 'A';
-                b = 'B';
-                func() {
-                    return this.a;
-                }
-            }
-
             const classTypes = [
                 new SampleCustomClass(), // custom class
                 new Date(), // native class

@@ -45,6 +45,9 @@ export function attemptParseObjLiteral(obj) {
  * Deep-copies an object. Prevents pointers from being reused/changes being shared
  * between the passed object and returned obj.
  *
+ * Only works for objects comprised of JSON standard variables
+ * (booleans, strings, numbers, objects, arrays, and null).
+ *
  * @param {Object} obj - Object to copy
  * @returns {Object} - Deep-copied object
  */

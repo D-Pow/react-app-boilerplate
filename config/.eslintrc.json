@@ -34,6 +34,7 @@
     ],
     "rules": {
         "indent": [ "error", 4, {
+            "SwitchCase": 1,
             "ignoredNodes": [ "TemplateLiteral" ]
         }],
         "react/jsx-indent": [ "error", 4, {

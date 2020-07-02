@@ -19,6 +19,47 @@ export function Hooked({ hook, hookArgs, children }) {
 }
 
 /**
+ * Reads and updates window's localStorage and sessionStorage while allowing
+ * React components to re-render based on changes to the value of the stored
+ * key.
+ *
+ * @param {String} key - Key used in storage.
+ * @param {Object} options - Options for storage handling.
+ * @param {(String|Number|Object|Array|boolean|null)} [options.initialValue=null] - Initial value to use if storage lacks the passed key.
+ * @param {String} [options.type="local"] - Type of window storage to use ('local' or 'session').
+ * @returns {[(String|Number|Object|Array|boolean|null), function]} - Parsed state value and setState function.
+ */
+export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
+    const storage = window[`${type}Storage`];
+    const functionType = typeof (() => {});
+
+    const [ storedState, setStoredState ] = useState(() => {
+        // use stored value in storage before using initial value
+        const initialStoredState = storage.getItem(key);
+        return initialStoredState ? JSON.parse(initialStoredState) : initialValue;
+    });
+
+    const setState = value => {
+        let valueToStore = value;
+
+        try {
+            if (typeof value === functionType) {
+                // normal setState functionality if function is passed
+                valueToStore = value(storedState);
+            }
+
+            setStoredState(valueToStore);
+
+            storage.setItem(key, JSON.stringify(valueToStore));
+        } catch (e) {
+            console.error(`Could not store value (${value}) to ${type}Storage. Error =`, e);
+        }
+    }
+
+    return [ storedState, setState ];
+}
+
+/**
  * Custom state handler function for useWindowEvent()
  *
  * @callback handleWindowEvent

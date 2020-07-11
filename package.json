@@ -62,7 +62,7 @@
     "jest": "^25.1.0",
     "mini-css-extract-plugin": "^0.6.0",
     "mock-requests": "^1.1.13",
-    "node-sass": "^4.13.1",
+    "node-sass": "^4.14.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
@@ -74,7 +74,7 @@
     "url-loader": "^1.1.2",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.11.0"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.json"

@@ -21,4 +21,4 @@ Usage Notes
         `--esModuleInterop true --jsx react`
 
     * Since `NODE_PATH` is defined in config/webpack.config.js instead of .env, WebStorm doesn't correctly mark
-    src/ as the root for imports. This can be resolved by right-clicking on src/ -> Mark Directory as -> Resource Root.
+    src/ as the root for imports. This can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.

@@ -19,7 +19,7 @@
     }
   ],
   "start_url": "/",
-  "scope": "../",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#3800FF",
   "background_color": "#3800FF"

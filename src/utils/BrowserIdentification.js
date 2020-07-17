@@ -57,3 +57,7 @@ export function isMicrosoftBrowser(includeEdge = true) {
 export function isChromeBrowser() {
     return Boolean(window.chrome);
 }
+
+export function isFirefoxBrowser() {
+    return navigator.userAgent.toLowerCase().includes('firefox');
+}

@@ -18,7 +18,7 @@
             "dom.iterable",
             "esnext"
         ],
-        "module": "esnext", // how this app's code will be imported when turned into a module
+        "module": "esnext", // how this app's code will be imported when turned into a module; umd for both node & browsers
         "moduleResolution": "node", // use `import` instead of `require`
         "allowJs": true,
         "skipLibCheck": true, // skip checking typings.d.ts files for JS imports

@@ -24,6 +24,10 @@ describe('Object utils', () => {
             const received = JSON.stringify(copiedObj);
 
             expect(received).toEqual(expected);
+
+            objToCopy.a.d[0] = 'test';
+
+            expect(JSON.stringify(copiedObj)).not.toEqual(JSON.stringify(objToCopy))
         });
 
         it('should have new pointers for arrays in the copied object', () => {

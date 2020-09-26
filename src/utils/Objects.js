@@ -42,20 +42,6 @@ export function attemptParseObjLiteral(obj) {
 }
 
 /**
- * Deep-copies an object. Prevents pointers from being reused/changes being shared
- * between the passed object and returned obj.
- *
- * Only works for objects comprised of JSON standard variables
- * (booleans, strings, numbers, objects, arrays, and null).
- *
- * @param {Object} obj - Object to copy
- * @returns {Object} - Deep-copied object
- */
-export function deepCopyObj(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-
-/**
  * Determines the differences between two objects, returning all nested
  * paths of differences.
  *
@@ -239,4 +225,65 @@ export function isObject(variable, {
     }
 
     return checks.every(bool => bool);
+}
+
+/**
+ * Deep-copies an object. Prevents pointers from being reused/changes being shared
+ * between the passed object and returned obj.
+ *
+ * Note: `Symbol` keys/values in the cloned object are the same as that of the original one.
+ *
+ * @param {Object} obj - Object to copy
+ * @returns {Object} - Deep-copied object
+ */
+export function deepCopyObj(obj) {
+    function deepCopyArray(arr) {
+        return arr.map(deepCopyObj);
+    }
+
+    if (!isObject(obj)) {
+        if (Array.isArray(obj)) {
+            return deepCopyArray(obj);
+        }
+
+        return obj; // primitives and functions don't need copying
+    }
+
+    // TODO classes like Map, Set, etc.
+
+    /*
+     * `Object.create()` copies over prototype and property descriptors
+     * but fails to re-bind `this` on arrow functions and re-instantiate
+     * fields (e.g. modifying obj.someArray[0] after copying it will still
+     * modify copy.someArray[0]). Thus, deep-copy each of them.
+     *
+     * Also, `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
+     * they will be inaccessible by `Object.entries()`, `for (val in descriptors)`, etc.
+     * so manually get the keys first, followed by individual `Object.getOwnPropertyDescriptor()`
+     * calls
+     */
+    const copy = Object.create(obj);
+    const objKeys = Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj));
+
+    objKeys.forEach(key => {
+        const origKeyProperties = Object.getOwnPropertyDescriptor(obj, key);
+        let copiedVal = deepCopyObj(origKeyProperties.value);
+
+        if (typeof copiedVal === typeof deepCopyObj) {
+            /*
+             * Any functions that appear in `Object.getOwnPropertyDescriptor()`
+             * are bound functions, e.g. arrow functions, and need to be re-bound
+             * to the new object.
+             */
+            console.log(copiedVal.toString())
+            copiedVal = copiedVal.bind(copy);
+        }
+
+        Object.defineProperty(copy, key, {
+            ...origKeyProperties,
+            value: copiedVal
+        });
+    });
+
+    return copy;
 }

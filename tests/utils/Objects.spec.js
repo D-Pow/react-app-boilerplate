@@ -18,6 +18,38 @@ describe('Object utils', () => {
             }
         };
 
+        const symbolKey = Symbol(80);
+
+        class MyClass {
+            var = 'hi';
+            hiddenVal;
+            arr = [
+                {
+                    a: 'A'
+                },
+                {
+                    a: 'B'
+                }
+            ];
+            [symbolKey] = 'val';
+
+            getVar() {
+                return `Var is ${this.var}`;
+            }
+
+            arrowFunc = () => {
+                return this.getVar() + '!';
+            };
+
+            get val() {
+                return this.hiddenVal;
+            }
+
+            set val(newVal) {
+                this.hiddenVal = newVal;
+            }
+        }
+
         it('should deep copy an object, including arrays and objects', () => {
             const copiedObj = deepCopyObj(objToCopy);
             const expected = JSON.stringify(objToCopy);
@@ -36,6 +68,60 @@ describe('Object utils', () => {
             copiedObj.a.d.push('newVal');
 
             expect(copiedObj.a.d.length).toEqual(objToCopy.a.d.length + 1);
+        });
+
+        it('should copy functions, variables, arrays, etc. from classes', () => {
+            const orig = new MyClass();
+            const xVal = 20;
+            const yVal = 40;
+            Object.defineProperties(orig, {
+                x: {
+                    value: xVal,
+                    writable: true
+                },
+                y: {
+                    value: yVal,
+                    writable: false
+                }
+            });
+
+            const reference = new MyClass();
+            const copy = deepCopyObj(orig);
+
+            orig.hiddenVal = 'test';
+            orig.var = 'test';
+            orig.arr[0].a = 'test';
+            orig.val = 'test';
+            orig.x = 30;
+
+            expect(copy.var).not.toEqual(orig.var);
+            expect(copy.arr).not.toEqual(orig.arr);
+            expect(copy[symbolKey]).toEqual(orig[symbolKey]);
+            expect(copy.getVar).toBeDefined();
+            expect(copy.getVar()).not.toEqual(orig.getVar());
+            expect(copy.getVar()).toEqual(reference.getVar());
+            expect(copy.arrowFunc).toBeDefined();
+            // TODO fix _this not allowing secondary binding from babel transform
+            expect(copy.arrowFunc()).not.toEqual(orig.arrowFunc());
+            expect(copy.arrowFunc()).toEqual(reference.arrowFunc());
+            expect(copy.val).not.toEqual(orig.val);
+            expect(copy.val).toEqual(reference.val);
+
+            const newVal = 'test2';
+            const newX = 30;
+            copy.val = newVal;
+            copy.x = newX;
+
+            expect(copy.val).toEqual(newVal);
+            expect(copy.val).not.toEqual(orig.val);
+            expect(copy.val).not.toEqual(reference.val);
+            expect(copy.x).not.toEqual(xVal);
+            expect(copy.x).not.toEqual(orig.x);
+            expect(copy.x).not.toEqual(reference.x);
+            expect(copy.x).toEqual(newX);
+            expect(copy.y).toEqual(yVal);
+            expect(Object.getOwnPropertyDescriptor(copy, 'x').writable).toBe(true);
+            expect(Object.getOwnPropertyDescriptor(copy, 'y').writable).toBe(false);
         });
     });
 

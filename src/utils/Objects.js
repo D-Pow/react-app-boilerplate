@@ -218,8 +218,8 @@ export function isObject(variable, {
     }
 
     const isObjectLike = variable instanceof Object;
-    const isObjectLiteral = Object.getPrototypeOf(variable) === Object.getPrototypeOf({});
-    const isFunction = typeof variable === typeof (() => {});
+    const isObjectLiteral = Object.getPrototypeOf(variable) === Object.prototype;
+    const isFunction = typeof variable === typeof isObject;
     const isArray = Array.isArray(variable);
 
     const checks = [ isObjectLike ];

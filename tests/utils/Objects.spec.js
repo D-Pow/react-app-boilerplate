@@ -15,6 +15,9 @@ describe('Object utils', () => {
                 b: 'B',
                 c: 25,
                 d: [ 1, 2, 3, 4 ]
+            },
+            getBinA() {
+                return this.a.b;
             }
         };
 
@@ -58,8 +61,10 @@ describe('Object utils', () => {
             expect(received).toEqual(expected);
 
             objToCopy.a.d[0] = 'test';
+            objToCopy.a.b = 'test';
 
-            expect(JSON.stringify(copiedObj)).not.toEqual(JSON.stringify(objToCopy))
+            expect(copiedObj).not.toEqual(objToCopy);
+            expect(copiedObj.getBinA()).not.toEqual(objToCopy.getBinA());
         });
 
         it('should have new pointers for arrays in the copied object', () => {

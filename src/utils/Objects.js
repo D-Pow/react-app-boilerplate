@@ -246,7 +246,7 @@ export function deepCopyObj(obj) {
             return deepCopyArray(obj);
         }
 
-        return obj; // primitives and functions don't need copying
+        return obj; // primitives don't need copying; functions handled in previous call
     }
 
     // TODO classes like Map, Set, etc.
@@ -254,15 +254,14 @@ export function deepCopyObj(obj) {
     /*
      * `Object.create()` copies over prototype and property descriptors
      * but fails to re-bind `this` on arrow functions and re-instantiate
-     * fields (e.g. modifying obj.someArray[0] after copying it will still
-     * modify copy.someArray[0]). Thus, deep-copy each of them.
+     * fields. Thus, call new on constructor.
      *
      * Also, `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
      * they will be inaccessible by `Object.entries()`, `for (val in descriptors)`, etc.
      * so manually get the keys first, followed by individual `Object.getOwnPropertyDescriptor()`
      * calls
      */
-    const copy = Object.create(obj);
+    const copy = new obj.constructor();
     const objKeys = Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj));
 
     objKeys.forEach(key => {
@@ -270,19 +269,28 @@ export function deepCopyObj(obj) {
         let copiedVal = deepCopyObj(origKeyProperties.value);
 
         if (typeof copiedVal === typeof deepCopyObj) {
-            /*
-             * Any functions that appear in `Object.getOwnPropertyDescriptor()`
-             * are bound functions, e.g. arrow functions, and need to be re-bound
-             * to the new object.
-             */
-            console.log(copiedVal.toString())
-            copiedVal = copiedVal.bind(copy);
-        }
+            if (obj.constructor === Object) {
+                /*
+                 * Both class and arrow functions on classes will be taken care of in
+                 * `new obj.constructor()` call. However, object literals will not be
+                 * included in this.
+                 *
+                 * Any functions that appear in `Object.getOwnPropertyDescriptor()`
+                 * are bound functions, including arrow functions, and need to be re-bound
+                 * to the new object.
+                 */
 
-        Object.defineProperty(copy, key, {
-            ...origKeyProperties,
-            value: copiedVal
-        });
+                Object.defineProperty(copy, key, {
+                    ...origKeyProperties,
+                    value: copiedVal.bind(copy)
+                });
+            }
+        } else {
+            Object.defineProperty(copy, key, {
+                ...origKeyProperties,
+                value: copiedVal
+            });
+        }
     });
 
     return copy;

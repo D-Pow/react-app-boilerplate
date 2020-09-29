@@ -112,6 +112,7 @@ describe('Object utils', () => {
             expect(copy.arrowFunc()).toEqual(reference.arrowFunc());
             expect(copy.val).not.toEqual(orig.val);
             expect(copy.val).toEqual(reference.val);
+            expect(copy[symbolKey]).toEqual(orig[symbolKey]);
 
             const newVal = 'test2';
             const newX = 50;

@@ -99,6 +99,8 @@ describe('Object utils', () => {
             orig.val = 'test';
             orig.x = 30;
 
+            expect(copy.constructor.name).toEqual(orig.constructor.name);
+            expect(copy instanceof MyClass).toBe(true);
             expect(copy.var).not.toEqual(orig.var);
             expect(copy.arr).not.toEqual(orig.arr);
             expect(copy[symbolKey]).toEqual(orig[symbolKey]);

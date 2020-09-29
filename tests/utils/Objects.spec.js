@@ -106,14 +106,13 @@ describe('Object utils', () => {
             expect(copy.getVar()).not.toEqual(orig.getVar());
             expect(copy.getVar()).toEqual(reference.getVar());
             expect(copy.arrowFunc).toBeDefined();
-            // TODO fix _this not allowing secondary binding from babel transform
             expect(copy.arrowFunc()).not.toEqual(orig.arrowFunc());
             expect(copy.arrowFunc()).toEqual(reference.arrowFunc());
             expect(copy.val).not.toEqual(orig.val);
             expect(copy.val).toEqual(reference.val);
 
             const newVal = 'test2';
-            const newX = 30;
+            const newX = 50;
             copy.val = newVal;
             copy.x = newX;
 

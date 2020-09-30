@@ -81,7 +81,7 @@ describe('Object utils', () => {
             expect(copiedObj.a.d.length).toEqual(objToCopy.a.d.length + 1);
         });
 
-        it('should copy functions, variables, arrays, etc. from classes', async () => {
+        it('should copy functions, variables, arrays, etc. from classes', () => {
             const constructorVal = 'constVal';
             const orig = new MyClass(constructorVal);
             const xVal = 20;
@@ -106,7 +106,7 @@ describe('Object utils', () => {
             });
 
             const reference = new MyClass();
-            const copy = await deepCopy(orig);
+            const copy = deepCopy(orig);
 
             orig.hiddenVal = 'test';
             orig.var = 'test';

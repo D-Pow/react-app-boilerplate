@@ -245,9 +245,87 @@ export function deepCopyObj(obj) {
         return obj; // primitives don't need copying; functions handled in previous call
     }
 
-    // TODO classes like Map, Set, HTML elements, RegExp etc.
+    // TODO classes like HTML elements, etc.
     // TODO circular references
-    // TODO node buffer?
+
+    if (obj instanceof Map) {
+        const copy = new obj.constructor();
+
+        obj.forEach((val, key) => {
+            copy.set(key, val);
+        });
+
+        return copy;
+    }
+
+    if (obj instanceof Set) {
+        const copy = new obj.constructor();
+
+        obj.forEach(key => {
+            copy.add(key);
+        });
+
+        return copy;
+    }
+
+    if (obj instanceof RegExp) {
+        return new RegExp(obj);
+    }
+
+    if (obj instanceof Date) {
+        return new Date(obj.getTime());
+    }
+
+    if (obj instanceof Error) {
+        const copy = new obj.constructor(obj.message);
+
+        for (let key of [ 'stack', 'code', 'errno', 'syscall' ]) {
+            if (obj[key]) {
+                copy[key] = obj[key];
+            }
+        }
+
+        return copy;
+    }
+
+    if (typeof Promise !== 'undefined' && obj instanceof Promise) {
+        return new Promise(
+            res => {
+                obj.then(res);
+            },
+            rej => {
+                obj.catch(rej);
+            });
+    }
+
+    const getTag = x => Object.prototype.toString.call(x);
+    const getTypeFromTag = x => getTag(x).match(/(?:\[object )([^\]]+)\]/)[1];
+
+    const typedArrayRegex = /((.+Array)|(Array.+))/; // TypedArray has extra text before/after "Array"
+    const isTypedArray = typedArrayRegex.test(getTypeFromTag(obj));
+
+    if (isTypedArray) {
+        // (TypedArray.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice)
+        // technically returns a shallow copy, but since their entries are only ever primitives, this is acceptable.
+        try {
+            return obj.slice();
+        } catch (e) {
+            const copy = new obj.constructor(obj.length);
+            copy.set(obj);
+            return copy;
+        }
+    }
+
+    if (typeof Buffer !== 'undefined' && Buffer.isBuffer(obj)) {
+        try {
+            return Buffer.from(obj);
+        } catch (e) {
+            // Node.js < 5.10
+            const copy = new obj.constructor(obj.length);
+            obj.copy(copy);
+            return copy;
+        }
+    }
 
     /*
      * `Object.create()` copies over prototype and property descriptors

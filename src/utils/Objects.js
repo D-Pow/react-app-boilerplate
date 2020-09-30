@@ -252,7 +252,7 @@ export function deepCopy(obj) {
         const copy = new obj.constructor();
 
         obj.forEach((val, key) => {
-            copy.set(key, val);
+            copy.set(deepCopy(key), deepCopy(val));
         });
 
         return copy;
@@ -262,7 +262,7 @@ export function deepCopy(obj) {
         const copy = new obj.constructor();
 
         obj.forEach(key => {
-            copy.add(key);
+            copy.add(deepCopy(key));
         });
 
         return copy;

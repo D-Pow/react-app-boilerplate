@@ -88,8 +88,11 @@ describe('Object utils', () => {
             const yVal = 40;
             const mapKey = 'mapKey';
             const mapVal = 'mapVal';
+            const mapObjKey = 'myObj';
+            const mapObjVal = { a: 'A' };
 
             orig.map.set(mapKey, mapVal);
+            orig.map.set(mapObjKey, mapObjVal);
 
             Object.defineProperties(orig, {
                 x: {
@@ -162,9 +165,13 @@ describe('Object utils', () => {
             expect(orig.map.get(newVal)).toBeUndefined();
 
             copy.map.set(mapKey, newComputed);
+            copy.map.get(mapObjKey).a = newInit;
 
             expect(copy.map.get(mapKey)).toEqual(newComputed);
             expect(orig.map.get(mapKey)).toEqual(mapVal);
+            expect(orig.map.get(mapObjKey)).toEqual(mapObjVal);
+            expect(copy.map.get(mapObjKey)).not.toEqual(orig.map.get(mapObjKey));
+            expect(copy.map.get(mapObjKey).a).toEqual(newInit);
         });
     });
 

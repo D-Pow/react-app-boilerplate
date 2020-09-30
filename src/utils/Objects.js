@@ -228,38 +228,38 @@ export function isObject(variable, {
 }
 
 /**
- * Deep-copies an object. Prevents pointers from being reused/changes being shared
- * between the passed object and returned obj.
+ * Deep-copies an object. Prevents pointers from being reused, and changes from being
+ * shared between the passed object and returned obj.
  *
  * Note: `Symbol` keys/values in the cloned object are the same as that of the original one.
  *
- * @param {Object} obj - Object to copy
- * @returns {Object} - Deep-copied object
+ * @param {Object} obj - Object to copy.
+ * @returns {Object} - Deep-copied object.
  */
 export function deepCopyObj(obj) {
-    function deepCopyArray(arr) {
-        return arr.map(deepCopyObj);
-    }
-
     if (!isObject(obj)) {
         if (Array.isArray(obj)) {
-            return deepCopyArray(obj);
+            return obj.map(deepCopyObj);
         }
 
         return obj; // primitives don't need copying; functions handled in previous call
     }
 
-    // TODO classes like Map, Set, etc.
+    // TODO classes like Map, Set, HTML elements, RegExp etc.
+    // TODO circular references
+    // TODO node buffer?
 
     /*
      * `Object.create()` copies over prototype and property descriptors
      * but fails to re-bind `this` on arrow functions and re-instantiate
-     * fields. Thus, call new on constructor.
+     * fields.
+     * Thus, call new on constructor.
      *
      * Also, `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
      * they will be inaccessible by `Object.entries()`, `for (val in descriptors)`, etc.
-     * so manually get the keys first, followed by individual `Object.getOwnPropertyDescriptor()`
-     * calls
+     * so manually get the keys first (both "normal" and Symbol keys), followed by individual
+     * `Object.getOwnPropertyDescriptor()` calls.
+     * This combo will end up copying over values initialized/passed in the `obj`'s constructor.
      */
     const copy = new obj.constructor();
     const objKeys = Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj));
@@ -279,7 +279,6 @@ export function deepCopyObj(obj) {
                  * are bound functions, including arrow functions, and need to be re-bound
                  * to the new object.
                  */
-
                 Object.defineProperty(copy, key, {
                     ...origKeyProperties,
                     value: copiedVal.bind(copy)

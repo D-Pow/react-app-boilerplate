@@ -1,4 +1,4 @@
-import { isObject, deepCopyObj, diffObjects, objEquals, validateObjNestedFields } from 'utils/Objects';
+import { isObject, deepCopy, diffObjects, objEquals, validateObjNestedFields } from 'utils/Objects';
 
 describe('Object utils', () => {
     class SampleCustomClass {
@@ -9,7 +9,7 @@ describe('Object utils', () => {
         }
     }
 
-    describe('deepCopyObj', () => {
+    describe('deepCopy', () => {
         const objToCopy = {
             a: {
                 b: 'B',
@@ -60,7 +60,7 @@ describe('Object utils', () => {
         }
 
         it('should deep copy an object, including arrays and objects', () => {
-            const copiedObj = deepCopyObj(objToCopy);
+            const copiedObj = deepCopy(objToCopy);
             const expected = JSON.stringify(objToCopy);
             const received = JSON.stringify(copiedObj);
 
@@ -74,7 +74,7 @@ describe('Object utils', () => {
         });
 
         it('should have new pointers for arrays in the copied object', () => {
-            const copiedObj = deepCopyObj(objToCopy);
+            const copiedObj = deepCopy(objToCopy);
 
             copiedObj.a.d.push('newVal');
 
@@ -103,7 +103,7 @@ describe('Object utils', () => {
             });
 
             const reference = new MyClass();
-            const copy = await deepCopyObj(orig);
+            const copy = await deepCopy(orig);
 
             orig.hiddenVal = 'test';
             orig.var = 'test';

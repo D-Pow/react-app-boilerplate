@@ -332,19 +332,34 @@ export function deepCopy(obj) {
         }
     }
 
-    /*
-     * `Object.create()` copies over prototype and property descriptors
-     * but fails to re-bind `this` on arrow functions and re-instantiate
-     * fields.
-     * Thus, call new on constructor.
-     *
-     * Also, `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
+    let copy;
+
+    try {
+        /*
+         * `Object.create()` copies over prototype and property descriptors
+         * but fails to re-bind `this` on arrow functions and re-instantiate
+         * fields.
+         * Thus, call new on constructor.
+         */
+        copy = new obj.constructor();
+    } catch (e) {
+        /*
+         * If all else fails (usually from error thrown in constructor),
+         * create new object from `obj`'s prototype.
+         *
+         * This will not re-bind arrow functions, but that is unavoidable
+         * if not calling `new obj.constructor()`.
+         */
+        copy = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
+    }
+
+    /**
+     * `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
      * they will be inaccessible by `Object.entries()`, `for (val in descriptors)`, etc.
      * so manually get the keys first (both "normal" and Symbol keys), followed by individual
      * `Object.getOwnPropertyDescriptor()` calls.
      * This combo will end up copying over values initialized/passed in the `obj`'s constructor.
      */
-    const copy = new obj.constructor();
     const objKeys = Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj));
 
     objKeys.forEach(key => {

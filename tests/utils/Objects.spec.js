@@ -173,6 +173,28 @@ describe('Object utils', () => {
             expect(copy.map.get(mapObjKey)).not.toEqual(orig.map.get(mapObjKey));
             expect(copy.map.get(mapObjKey).a).toEqual(newInit);
         });
+
+        it('should handle circular references', () => {
+            const origA = { x: 'X' };
+            const origB = { y: 'Y' };
+            const a = {...origA};
+            const b = {...origB};
+
+            a.b = b;
+            b.a = a;
+
+            const copiedCircularA = deepCopy(a);
+            const newX = 'Z';
+
+            copiedCircularA.x = newX;
+
+            expect(copiedCircularA.x).not.toEqual(a.x);
+            expect(copiedCircularA.b.a).not.toEqual(a);
+            expect(copiedCircularA.b.a).toEqual(copiedCircularA);
+            expect(copiedCircularA.b.a.x).toEqual(newX);
+            expect(a.b.a.x).not.toEqual(newX);
+            expect(a.b.a.x).toEqual('X');
+        });
     });
 
     describe('validateObjNestedFields', () => {

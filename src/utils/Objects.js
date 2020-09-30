@@ -237,25 +237,29 @@ export function isObject(variable, {
  * @returns {Object} - Deep-copied object.
  */
 export function deepCopy(obj) {
+    const circularReferenceMap = [...arguments][1] || new WeakMap();
+
+    if (circularReferenceMap.has(obj)) {
+        return circularReferenceMap.get(obj);
+    }
+
     if (obj instanceof HTMLElement || obj instanceof Node) {
         return obj;
     }
 
     if (!isObject(obj)) {
         if (Array.isArray(obj)) {
-            return obj.map(deepCopy);
+            return obj.map(entry => deepCopy(entry, circularReferenceMap));
         }
 
         return obj; // primitives don't need copying; functions handled in previous call
     }
 
-    // TODO circular references
-
     if (obj instanceof Map) {
         const copy = new obj.constructor();
 
         obj.forEach((val, key) => {
-            copy.set(deepCopy(key), deepCopy(val));
+            copy.set(deepCopy(key, circularReferenceMap), deepCopy(val, circularReferenceMap));
         });
 
         return copy;
@@ -265,7 +269,7 @@ export function deepCopy(obj) {
         const copy = new obj.constructor();
 
         obj.forEach(key => {
-            copy.add(deepCopy(key));
+            copy.add(deepCopy(key, circularReferenceMap));
         });
 
         return copy;
@@ -353,6 +357,8 @@ export function deepCopy(obj) {
         copy = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
     }
 
+    circularReferenceMap.set(obj, copy);
+
     /**
      * `Object.getOwnPropertyDescriptors()` will return `Symbol` keys, but
      * they will be inaccessible by `Object.entries()`, `for (val in descriptors)`, etc.
@@ -364,7 +370,7 @@ export function deepCopy(obj) {
 
     objKeys.forEach(key => {
         const origKeyProperties = Object.getOwnPropertyDescriptor(obj, key);
-        let copiedVal = deepCopy(origKeyProperties.value);
+        let copiedVal = deepCopy(origKeyProperties.value, circularReferenceMap);
 
         if (typeof copiedVal === typeof deepCopy) {
             if (obj.constructor === Object) {

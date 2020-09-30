@@ -237,6 +237,10 @@ export function isObject(variable, {
  * @returns {Object} - Deep-copied object.
  */
 export function deepCopy(obj) {
+    if (obj instanceof HTMLElement || obj instanceof Node) {
+        return obj;
+    }
+
     if (!isObject(obj)) {
         if (Array.isArray(obj)) {
             return obj.map(deepCopy);
@@ -245,7 +249,6 @@ export function deepCopy(obj) {
         return obj; // primitives don't need copying; functions handled in previous call
     }
 
-    // TODO classes like HTML elements, etc.
     // TODO circular references
 
     if (obj instanceof Map) {

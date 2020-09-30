@@ -35,6 +35,12 @@ describe('Object utils', () => {
                 }
             ];
             [symbolKey] = 'val';
+            map = new Map();
+
+            constructor(initVal) {
+                this.initVal = initVal;
+                this.computedVal = this.getVar();
+            }
 
             getVar() {
                 return `Var is ${this.var}`;
@@ -75,10 +81,16 @@ describe('Object utils', () => {
             expect(copiedObj.a.d.length).toEqual(objToCopy.a.d.length + 1);
         });
 
-        it('should copy functions, variables, arrays, etc. from classes', () => {
-            const orig = new MyClass();
+        it('should copy functions, variables, arrays, etc. from classes', async () => {
+            const constructorVal = 'constVal';
+            const orig = new MyClass(constructorVal);
             const xVal = 20;
             const yVal = 40;
+            const mapKey = 'mapKey';
+            const mapVal = 'mapVal';
+
+            orig.map.set(mapKey, mapVal);
+
             Object.defineProperties(orig, {
                 x: {
                     value: xVal,
@@ -91,7 +103,7 @@ describe('Object utils', () => {
             });
 
             const reference = new MyClass();
-            const copy = deepCopyObj(orig);
+            const copy = await deepCopyObj(orig);
 
             orig.hiddenVal = 'test';
             orig.var = 'test';
@@ -101,6 +113,10 @@ describe('Object utils', () => {
 
             expect(copy.constructor.name).toEqual(orig.constructor.name);
             expect(copy instanceof MyClass).toBe(true);
+            expect(copy instanceof MyClass).toBe(true);
+            expect(orig.initVal).toEqual(constructorVal);
+            expect(copy.initVal).toEqual(orig.initVal);
+            expect(copy.computedVal).toEqual(orig.computedVal);
             expect(copy.var).not.toEqual(orig.var);
             expect(copy.arr).not.toEqual(orig.arr);
             expect(copy[symbolKey]).toEqual(orig[symbolKey]);
@@ -113,15 +129,26 @@ describe('Object utils', () => {
             expect(copy.val).not.toEqual(orig.val);
             expect(copy.val).toEqual(reference.val);
             expect(copy[symbolKey]).toEqual(orig[symbolKey]);
+            expect([...copy.map.entries()]).toEqual([...orig.map.entries()]);
 
             const newVal = 'test2';
             const newX = 50;
+            const newInit = 'newInitVal';
+            const newComputed = newVal + newInit;
             copy.val = newVal;
+            copy.initVal = newInit;
+            copy.computedVal = newComputed;
             copy.x = newX;
+            copy.map.set(newVal, newInit);
 
             expect(copy.val).toEqual(newVal);
             expect(copy.val).not.toEqual(orig.val);
             expect(copy.val).not.toEqual(reference.val);
+            expect(orig.initVal).toEqual(constructorVal);
+            expect(copy.initVal).not.toEqual(orig.initVal);
+            expect(copy.initVal).toEqual(newInit);
+            expect(copy.computedVal).not.toEqual(orig.computedVal);
+            expect(copy.computedVal).toEqual(newComputed);
             expect(copy.x).not.toEqual(xVal);
             expect(copy.x).not.toEqual(orig.x);
             expect(copy.x).not.toEqual(reference.x);
@@ -129,6 +156,15 @@ describe('Object utils', () => {
             expect(copy.y).toEqual(yVal);
             expect(Object.getOwnPropertyDescriptor(copy, 'x').writable).toBe(true);
             expect(Object.getOwnPropertyDescriptor(copy, 'y').writable).toBe(false);
+            expect(copy.map.size).not.toEqual(orig.map.size);
+            expect(copy.map.get(mapKey)).toEqual(orig.map.get(mapKey));
+            expect(copy.map.get(newVal)).toEqual(newInit);
+            expect(orig.map.get(newVal)).toBeUndefined();
+
+            copy.map.set(mapKey, newComputed);
+
+            expect(copy.map.get(mapKey)).toEqual(newComputed);
+            expect(orig.map.get(mapKey)).toEqual(mapVal);
         });
     });
 

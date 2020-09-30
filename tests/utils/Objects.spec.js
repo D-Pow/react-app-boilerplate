@@ -1,4 +1,11 @@
-import { isObject, deepCopy, diffObjects, objEquals, validateObjNestedFields } from 'utils/Objects';
+import {
+    isObject,
+    deepCopy,
+    deepCopyStructuredClone,
+    diffObjects,
+    objEquals,
+    validateObjNestedFields
+} from 'utils/Objects';
 
 describe('Object utils', () => {
     class SampleCustomClass {
@@ -47,6 +54,134 @@ describe('Object utils', () => {
         }
     }
 
+    async function testComplexClassDeepCopy(isStructuredClone = false) {
+        const constructorVal = 'constVal';
+        const orig = new SampleComplexClass(constructorVal);
+        const xVal = 20;
+        const yVal = 40;
+        const mapKey = 'mapKey';
+        const mapVal = 'mapVal';
+        const mapObjKey = 'myObj';
+        const mapObjVal = { a: 'A' };
+
+        orig.map.set(mapKey, mapVal);
+        orig.map.set(mapObjKey, mapObjVal);
+
+        Object.defineProperties(orig, {
+            x: {
+                value: xVal,
+                writable: true
+            },
+            y: {
+                value: yVal,
+                writable: false
+            }
+        });
+
+        const reference = new SampleComplexClass();
+        let copy;
+
+        if (isStructuredClone) {
+            copy = await deepCopyStructuredClone(orig);
+        } else {
+            copy = deepCopy(orig);
+        }
+
+        orig.hiddenVal = 'test';
+        orig.var = 'test';
+        orig.arr[0].a = 'test';
+        orig.val = 'test';
+        orig.x = 30;
+
+        expect(copy.constructor.name).toEqual(orig.constructor.name);
+        expect(copy instanceof SampleComplexClass).toBe(true);
+        expect(copy instanceof SampleComplexClass).toBe(true);
+        expect(orig.initVal).toEqual(constructorVal);
+        expect(copy.initVal).toEqual(orig.initVal);
+        expect(copy.computedVal).toEqual(orig.computedVal);
+        expect(copy.var).not.toEqual(orig.var);
+        expect(copy.arr).not.toEqual(orig.arr);
+        expect(copy[symbolKey]).toEqual(orig[symbolKey]);
+        expect(copy.getVar).toBeDefined();
+        expect(copy.getVar()).not.toEqual(orig.getVar());
+        expect(copy.getVar()).toEqual(reference.getVar());
+        expect(copy.arrowFunc).toBeDefined();
+        expect(copy.arrowFunc()).not.toEqual(orig.arrowFunc());
+        expect(copy.arrowFunc()).toEqual(reference.arrowFunc());
+        expect(copy.val).not.toEqual(orig.val);
+        expect(copy.val).toEqual(reference.val);
+        expect(copy[symbolKey]).toEqual(orig[symbolKey]);
+        expect([...copy.map.entries()]).toEqual([...orig.map.entries()]);
+
+        const newVal = 'test2';
+        const newX = 50;
+        const newInit = 'newInitVal';
+        const newComputed = newVal + newInit;
+        copy.val = newVal;
+        copy.initVal = newInit;
+        copy.computedVal = newComputed;
+        copy.x = newX;
+        copy.map.set(newVal, newInit);
+
+        expect(copy.val).toEqual(newVal);
+        expect(copy.val).not.toEqual(orig.val);
+        expect(copy.val).not.toEqual(reference.val);
+        expect(orig.initVal).toEqual(constructorVal);
+        expect(copy.initVal).not.toEqual(orig.initVal);
+        expect(copy.initVal).toEqual(newInit);
+        expect(copy.computedVal).not.toEqual(orig.computedVal);
+        expect(copy.computedVal).toEqual(newComputed);
+        expect(copy.x).not.toEqual(xVal);
+        expect(copy.x).not.toEqual(orig.x);
+        expect(copy.x).not.toEqual(reference.x);
+        expect(copy.x).toEqual(newX);
+        expect(copy.y).toEqual(yVal);
+        expect(Object.getOwnPropertyDescriptor(copy, 'x').writable).toBe(true);
+        expect(Object.getOwnPropertyDescriptor(copy, 'y').writable).toBe(false);
+        expect(copy.map.size).not.toEqual(orig.map.size);
+        expect(copy.map.get(mapKey)).toEqual(orig.map.get(mapKey));
+        expect(copy.map.get(newVal)).toEqual(newInit);
+        expect(orig.map.get(newVal)).toBeUndefined();
+
+        copy.map.set(mapKey, newComputed);
+        copy.map.get(mapObjKey).a = newInit;
+
+        expect(copy.map.get(mapKey)).toEqual(newComputed);
+        expect(orig.map.get(mapKey)).toEqual(mapVal);
+        expect(orig.map.get(mapObjKey)).toEqual(mapObjVal);
+        expect(copy.map.get(mapObjKey)).not.toEqual(orig.map.get(mapObjKey));
+        expect(copy.map.get(mapObjKey).a).toEqual(newInit);
+    }
+
+    async function testCircularReferenceDeepCopy(isStructuredClone = false) {
+        const origA = { x: 'X' };
+        const origB = { y: 'Y' };
+        const a = {...origA};
+        const b = {...origB};
+
+        a.b = b;
+        b.a = a;
+
+        let copiedCircularA;
+
+        if (isStructuredClone) {
+            copiedCircularA = await deepCopyStructuredClone(a);
+        } else {
+            copiedCircularA = deepCopy(a);
+        }
+
+        const newX = 'Z';
+
+        copiedCircularA.x = newX;
+
+        expect(copiedCircularA.x).not.toEqual(a.x);
+        expect(copiedCircularA.b.a).not.toEqual(a);
+        expect(copiedCircularA.b.a).toEqual(copiedCircularA);
+        expect(copiedCircularA.b.a.x).toEqual(newX);
+        expect(a.b.a.x).not.toEqual(newX);
+        expect(a.b.a.x).toEqual('X');
+    }
+
     describe('deepCopy', () => {
         const objToCopy = {
             a: {
@@ -81,119 +216,12 @@ describe('Object utils', () => {
             expect(copiedObj.a.d.length).toEqual(objToCopy.a.d.length + 1);
         });
 
-        it('should copy functions, variables, arrays, etc. from classes', () => {
-            const constructorVal = 'constVal';
-            const orig = new SampleComplexClass(constructorVal);
-            const xVal = 20;
-            const yVal = 40;
-            const mapKey = 'mapKey';
-            const mapVal = 'mapVal';
-            const mapObjKey = 'myObj';
-            const mapObjVal = { a: 'A' };
-
-            orig.map.set(mapKey, mapVal);
-            orig.map.set(mapObjKey, mapObjVal);
-
-            Object.defineProperties(orig, {
-                x: {
-                    value: xVal,
-                    writable: true
-                },
-                y: {
-                    value: yVal,
-                    writable: false
-                }
-            });
-
-            const reference = new SampleComplexClass();
-            const copy = deepCopy(orig);
-
-            orig.hiddenVal = 'test';
-            orig.var = 'test';
-            orig.arr[0].a = 'test';
-            orig.val = 'test';
-            orig.x = 30;
-
-            expect(copy.constructor.name).toEqual(orig.constructor.name);
-            expect(copy instanceof SampleComplexClass).toBe(true);
-            expect(copy instanceof SampleComplexClass).toBe(true);
-            expect(orig.initVal).toEqual(constructorVal);
-            expect(copy.initVal).toEqual(orig.initVal);
-            expect(copy.computedVal).toEqual(orig.computedVal);
-            expect(copy.var).not.toEqual(orig.var);
-            expect(copy.arr).not.toEqual(orig.arr);
-            expect(copy[symbolKey]).toEqual(orig[symbolKey]);
-            expect(copy.getVar).toBeDefined();
-            expect(copy.getVar()).not.toEqual(orig.getVar());
-            expect(copy.getVar()).toEqual(reference.getVar());
-            expect(copy.arrowFunc).toBeDefined();
-            expect(copy.arrowFunc()).not.toEqual(orig.arrowFunc());
-            expect(copy.arrowFunc()).toEqual(reference.arrowFunc());
-            expect(copy.val).not.toEqual(orig.val);
-            expect(copy.val).toEqual(reference.val);
-            expect(copy[symbolKey]).toEqual(orig[symbolKey]);
-            expect([...copy.map.entries()]).toEqual([...orig.map.entries()]);
-
-            const newVal = 'test2';
-            const newX = 50;
-            const newInit = 'newInitVal';
-            const newComputed = newVal + newInit;
-            copy.val = newVal;
-            copy.initVal = newInit;
-            copy.computedVal = newComputed;
-            copy.x = newX;
-            copy.map.set(newVal, newInit);
-
-            expect(copy.val).toEqual(newVal);
-            expect(copy.val).not.toEqual(orig.val);
-            expect(copy.val).not.toEqual(reference.val);
-            expect(orig.initVal).toEqual(constructorVal);
-            expect(copy.initVal).not.toEqual(orig.initVal);
-            expect(copy.initVal).toEqual(newInit);
-            expect(copy.computedVal).not.toEqual(orig.computedVal);
-            expect(copy.computedVal).toEqual(newComputed);
-            expect(copy.x).not.toEqual(xVal);
-            expect(copy.x).not.toEqual(orig.x);
-            expect(copy.x).not.toEqual(reference.x);
-            expect(copy.x).toEqual(newX);
-            expect(copy.y).toEqual(yVal);
-            expect(Object.getOwnPropertyDescriptor(copy, 'x').writable).toBe(true);
-            expect(Object.getOwnPropertyDescriptor(copy, 'y').writable).toBe(false);
-            expect(copy.map.size).not.toEqual(orig.map.size);
-            expect(copy.map.get(mapKey)).toEqual(orig.map.get(mapKey));
-            expect(copy.map.get(newVal)).toEqual(newInit);
-            expect(orig.map.get(newVal)).toBeUndefined();
-
-            copy.map.set(mapKey, newComputed);
-            copy.map.get(mapObjKey).a = newInit;
-
-            expect(copy.map.get(mapKey)).toEqual(newComputed);
-            expect(orig.map.get(mapKey)).toEqual(mapVal);
-            expect(orig.map.get(mapObjKey)).toEqual(mapObjVal);
-            expect(copy.map.get(mapObjKey)).not.toEqual(orig.map.get(mapObjKey));
-            expect(copy.map.get(mapObjKey).a).toEqual(newInit);
+        it('should copy functions, variables, arrays, etc. from classes', async () => {
+            await testComplexClassDeepCopy(false);
         });
 
-        it('should handle circular references', () => {
-            const origA = { x: 'X' };
-            const origB = { y: 'Y' };
-            const a = {...origA};
-            const b = {...origB};
-
-            a.b = b;
-            b.a = a;
-
-            const copiedCircularA = deepCopy(a);
-            const newX = 'Z';
-
-            copiedCircularA.x = newX;
-
-            expect(copiedCircularA.x).not.toEqual(a.x);
-            expect(copiedCircularA.b.a).not.toEqual(a);
-            expect(copiedCircularA.b.a).toEqual(copiedCircularA);
-            expect(copiedCircularA.b.a.x).toEqual(newX);
-            expect(a.b.a.x).not.toEqual(newX);
-            expect(a.b.a.x).toEqual('X');
+        it('should handle circular references', async () => {
+            await testCircularReferenceDeepCopy(false);
         });
     });
 

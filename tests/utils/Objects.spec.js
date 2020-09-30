@@ -225,6 +225,19 @@ describe('Object utils', () => {
         });
     });
 
+    // TODO add polyfill for MessageChannel in jest
+    /*
+    describe('deepCopyStructuredClone', async () => {
+        it('should copy functions, variables, arrays, etc. from classes', async () => {
+            await testComplexClassDeepCopy(true);
+        });
+
+        it('should handle circular references', async () => {
+            await testCircularReferenceDeepCopy(true);
+        });
+    });
+    */
+
     describe('validateObjNestedFields', () => {
         const objToValidate = {
             response: {

@@ -9,6 +9,44 @@ describe('Object utils', () => {
         }
     }
 
+    const symbolKey = Symbol(80);
+
+    class SampleComplexClass {
+        var = 'hi';
+        hiddenVal;
+        arr = [
+            {
+                a: 'A'
+            },
+            {
+                a: 'B'
+            }
+        ];
+        [symbolKey] = 'val';
+        map = new Map();
+
+        constructor(initVal) {
+            this.initVal = initVal;
+            this.computedVal = this.getVar();
+        }
+
+        getVar() {
+            return `Var is ${this.var}`;
+        }
+
+        arrowFunc = () => {
+            return this.getVar() + '!';
+        };
+
+        get val() {
+            return this.hiddenVal;
+        }
+
+        set val(newVal) {
+            this.hiddenVal = newVal;
+        }
+    }
+
     describe('deepCopy', () => {
         const objToCopy = {
             a: {
@@ -20,44 +58,6 @@ describe('Object utils', () => {
                 return this.a.b;
             }
         };
-
-        const symbolKey = Symbol(80);
-
-        class MyClass {
-            var = 'hi';
-            hiddenVal;
-            arr = [
-                {
-                    a: 'A'
-                },
-                {
-                    a: 'B'
-                }
-            ];
-            [symbolKey] = 'val';
-            map = new Map();
-
-            constructor(initVal) {
-                this.initVal = initVal;
-                this.computedVal = this.getVar();
-            }
-
-            getVar() {
-                return `Var is ${this.var}`;
-            }
-
-            arrowFunc = () => {
-                return this.getVar() + '!';
-            };
-
-            get val() {
-                return this.hiddenVal;
-            }
-
-            set val(newVal) {
-                this.hiddenVal = newVal;
-            }
-        }
 
         it('should deep copy an object, including arrays and objects', () => {
             const copiedObj = deepCopy(objToCopy);
@@ -83,7 +83,7 @@ describe('Object utils', () => {
 
         it('should copy functions, variables, arrays, etc. from classes', () => {
             const constructorVal = 'constVal';
-            const orig = new MyClass(constructorVal);
+            const orig = new SampleComplexClass(constructorVal);
             const xVal = 20;
             const yVal = 40;
             const mapKey = 'mapKey';
@@ -105,7 +105,7 @@ describe('Object utils', () => {
                 }
             });
 
-            const reference = new MyClass();
+            const reference = new SampleComplexClass();
             const copy = deepCopy(orig);
 
             orig.hiddenVal = 'test';
@@ -115,8 +115,8 @@ describe('Object utils', () => {
             orig.x = 30;
 
             expect(copy.constructor.name).toEqual(orig.constructor.name);
-            expect(copy instanceof MyClass).toBe(true);
-            expect(copy instanceof MyClass).toBe(true);
+            expect(copy instanceof SampleComplexClass).toBe(true);
+            expect(copy instanceof SampleComplexClass).toBe(true);
             expect(orig.initVal).toEqual(constructorVal);
             expect(copy.initVal).toEqual(orig.initVal);
             expect(copy.computedVal).toEqual(orig.computedVal);

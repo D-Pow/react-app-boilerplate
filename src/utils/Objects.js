@@ -272,7 +272,9 @@ export function deepCopy(obj) {
     }
 
     if (obj instanceof RegExp) {
-        return new RegExp(obj);
+        const copy = new RegExp(obj);
+        copy.lastIndex = obj.lastIndex;
+        return copy;
     }
 
     if (obj instanceof Date) {

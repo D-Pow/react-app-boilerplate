@@ -398,3 +398,27 @@ export function deepCopy(obj) {
 
     return copy;
 }
+
+/**
+ * Deep-copies an object using JavaScript's internal [Structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).
+ *
+ * Note: `Symbol` keys/values in the cloned object are the same as that of the original one.
+ *
+ * @param {Object} obj - Object to copy.
+ * @returns {Promise<Object>} - Deep-copied object.
+ */
+export async function deepCopyStructuredClone(obj) {
+    // Shamelessly taken from https://stackoverflow.com/a/57542053/5771107
+    if (typeof MessageChannel !== 'undefined') {
+        return await new Promise(res => {
+            const { port1, port2 } = new MessageChannel();
+
+            port2.onmessage = messageEvent => {
+                console.log(messageEvent.data)
+                res(messageEvent.data);
+            };
+            port1.postMessage(obj);
+            port1.close();
+        });
+    }
+}

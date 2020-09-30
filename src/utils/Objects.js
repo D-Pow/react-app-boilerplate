@@ -236,10 +236,10 @@ export function isObject(variable, {
  * @param {Object} obj - Object to copy.
  * @returns {Object} - Deep-copied object.
  */
-export function deepCopyObj(obj) {
+export function deepCopy(obj) {
     if (!isObject(obj)) {
         if (Array.isArray(obj)) {
-            return obj.map(deepCopyObj);
+            return obj.map(deepCopy);
         }
 
         return obj; // primitives don't need copying; functions handled in previous call
@@ -344,9 +344,9 @@ export function deepCopyObj(obj) {
 
     objKeys.forEach(key => {
         const origKeyProperties = Object.getOwnPropertyDescriptor(obj, key);
-        let copiedVal = deepCopyObj(origKeyProperties.value);
+        let copiedVal = deepCopy(origKeyProperties.value);
 
-        if (typeof copiedVal === typeof deepCopyObj) {
+        if (typeof copiedVal === typeof deepCopy) {
             if (obj.constructor === Object) {
                 /*
                  * Both class and arrow functions on classes will be taken care of in

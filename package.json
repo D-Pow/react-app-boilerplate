@@ -1,7 +1,7 @@
 {
   "name": "react-app-boilerplate",
   "version": "0.1.0",
-  "description": "A simplified boilerplate app for websites that's better organized than create-react-app",
+  "description": "A simpler React boilerplate than CRA with more useful built-in features",
   "main": "index.js",
   "author": "D-Pow",
   "license": "MIT",

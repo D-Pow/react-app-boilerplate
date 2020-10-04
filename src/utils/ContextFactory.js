@@ -9,26 +9,33 @@ import React, { useState } from 'react';
  * created `Provider.props.value` so that consuming components can update the context's state.
  *
  * Usage:
- * 1) First, create the context with `ContextFactory(defaultStateValueToStart)`:
+ * 1) First, create the context with `ContextFactory(defaultStateValueToStart)`. e.g.
  *    const { Consumer, Provider, Context } = ContextFactory({ firstColor: 'blue', secondColor: 'red'});
+ * 2) In a parent, next your component that uses the context inside the Provider
+ *     <Provider>
+ *         <MyComponent />
+ *     </Provider>
+ * 3) Access the Context based on standard React Context API access methods, e.g.
+ *    a) Class components: set the returned {@code MyContext.Context} to the static {@code contextType} field:
+ *        class MyComponent {
+ *            static contextType = MyContext.Context;
  *
- * 2) Nest child components inside the Provider; use either Consumer or Context depending on
- *    if using class or functional components:
- *    1) Class components: use the returned `Consumer` component, which takes a function as children:
- *        <Provider>
- *            <Consumer>
- *                {({ contextState, setContextState }) => (
+ *            render() {
+ *                const { contextState, setContextState } = this.context;
+ *
+ *                return (
  *                    <MyChild color={contextState.firstColor} />
  *                    <MyChild color={contextState.secondColor} />
  *                    <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
  *                        Click to change context!
  *                    </button>
- *                )}
- *            </Consumer>
- *        </Provider>
- *    2) Functional components: use the returned `Context` object inside a `useContext()` call:
+ *                );
+ *            }
+ *        }
+ *    b) Functional components: use the returned `Context` object inside a `useContext()` call:
  *        function MyComponent() {
- *            const { contextState, setContextState } = useContext(Context);
+ *            const { contextState, setContextState } = useContext(MyContext.Context);
+ *
  *            return (
  *                <div>
  *                    <MyChild color={contextState.firstColor} />
@@ -39,10 +46,6 @@ import React, { useState } from 'react';
  *                </div>
  *            );
  *        }
- *        // Elsewhere, place your component inside the Provider
- *        <Provider>
- *            <MyComponent />
- *        </Provider>
  *
  * @param {*} defaultValue - Default value for the context
  * @returns {{Consumer: React.Component, Provider: React.Component, Context: Object }} - The newly-created Context-related objects

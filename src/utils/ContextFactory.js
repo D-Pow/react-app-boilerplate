@@ -32,6 +32,18 @@ import React, { useState } from 'react';
  *                );
  *            }
  *        }
+ *    a.i) As described in the [React docs](https://reactjs.org/docs/context.html#consuming-multiple-contexts),
+ *         using multiple contexts in class components requires using functions in the render function, which
+ *         would be better off separating into a separate/intermediate component. e.g.
+ *         <FirstContext.Consumer>
+ *             {({ contextState: firstContextState, setContextState: setFistContextState }) => (
+ *                 <SecondContext.Consumer>
+ *                     {({ contextState: secondContextState, setContextState: setSecondContextState }) => (
+ *                         <MyChild firstColor={firstContextState.color} secondColor={secondContextState.color} />
+ *                     )}
+ *                 </SecondContext.Consumer>
+ *             )}
+ *         </FirstContext.Consumer>
  *    b) Functional components: use the returned `Context` object inside a `useContext()` call:
  *        function MyComponent() {
  *            const { contextState, setContextState } = useContext(MyContext.Context);

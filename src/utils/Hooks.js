@@ -1,5 +1,7 @@
 import React, { useState, useReducer, useEffect, useRef } from 'react';
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from 'utils/Events';
+import { getQueryParams, pushQueryParamOnHistory } from 'utils/BrowserNavigation';
+import { objEquals } from 'utils/Objects';
 
 /**
  * Valid JSON primitive types.
@@ -134,6 +136,50 @@ export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
     }
 
     return [ storedState, setState ];
+}
+
+/**
+ * Hook to read URL query parameters and update a specific key-value pair.
+ *
+ * @returns {[ Object, function(key:(string|Object), val:string): void ]} -
+ *          Query param key-value map, and respective setState(key, value) function.
+ */
+export function useQueryParams() {
+    const functionType = typeof (() => {});
+    const [ queryParamsObj, setQueryParamsObj ] = useState(getQueryParams());
+
+    const setQueryParam = (key, value) => {
+        if (typeof key === typeof {}) {
+            const newQueryParams = {...key};
+
+            setQueryParamsObj(newQueryParams);
+            pushQueryParamOnHistory(newQueryParams);
+
+            return;
+        }
+
+        const newQueryParams = {...queryParamsObj};
+        let valueToStore = value;
+
+        if (typeof value === functionType) {
+            // normal setState functionality if function is passed
+            valueToStore = value(queryParamsObj[key]);
+        }
+
+        newQueryParams[key] = valueToStore;
+        setQueryParamsObj(newQueryParams);
+        pushQueryParamOnHistory(key, valueToStore);
+    };
+
+    useEffect(() => {
+        const updatedQueryParams = getQueryParams();
+
+        if (!objEquals(queryParamsObj, updatedQueryParams)) {
+            setQueryParam(updatedQueryParams);
+        }
+    }, [ window.location.search ]);
+
+    return [ queryParamsObj, setQueryParam ];
 }
 
 /**

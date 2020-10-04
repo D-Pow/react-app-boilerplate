@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useEffect, useRef } from 'react';
-import { elementIsInClickPath, getClickPath } from 'utils/Events';
+import { elementIsInClickPath, getClickPath, setDocumentScrolling } from 'utils/Events';
 
 /**
  * Valid JSON primitive types.
@@ -307,3 +307,63 @@ export function useHover(overrideBoundingClientRect) {
 
     return [ ref, isHovered ];
 }
+
+/**
+ * Blocks the `document.body` from being scrollable as long as the
+ * `shouldBlockScrolling` function returns true.
+ *
+ * Keeps track of all other `useBlockDocumentScrolling()` instances such
+ * that even if one instance returns false, the `document.body` is still not
+ * scrollable if another returns true.
+ *
+ * @function
+ * @param {function(): boolean} shouldBlockScrolling - Function to determine if scrolling should be disabled.
+ */
+export const useBlockDocumentScrolling = (() => {
+    function useBlockDocumentScrollingHook(shouldBlockScrolling, allHooksBlockingScrollingGlobalState, id) {
+        /**
+         * Don't return a cleanup function to handle activating scrolling.
+         *
+         * React calls cleanup functions upon both component unmount
+         * and component re-render.
+         *
+         * If re-activating scrolling were returned in the cleanup function,
+         * then anytime the component re-rendered, document scrolling
+         * would be re-activated, even if the `shouldBlockScrolling()` returned true.
+         *
+         * Thus, handle the cleanup manually in else-block.
+         */
+        const blockScrolling = shouldBlockScrolling();
+        const otherHooksBlockingScrolling = allHooksBlockingScrollingGlobalState
+            .filter(entry => entry.id !== id)
+            .some(entry => entry.isBlockingScrolling);
+
+        useEffect(() => {
+            if (blockScrolling) {
+                setDocumentScrolling(false);
+            } else if (!otherHooksBlockingScrolling) {
+                setDocumentScrolling();
+            }
+        }, [ blockScrolling, otherHooksBlockingScrolling ]);
+
+        return blockScrolling;
+    }
+
+    function setTrackAllHookCallsState(prevGlobalState, setGlobalState, hookReturnVal, id) {
+        const thisHookEntry = prevGlobalState.find(entries => entries.id === id);
+
+        if (thisHookEntry == null) {
+            prevGlobalState.push({ id, isBlockingScrolling: hookReturnVal });
+            setGlobalState(prevGlobalState);
+        } else if (thisHookEntry.isBlockingScrolling !== hookReturnVal) {
+            thisHookEntry.isBlockingScrolling = hookReturnVal;
+            setGlobalState(prevGlobalState);
+        }
+    }
+
+    return withGlobalState(
+        useBlockDocumentScrollingHook,
+        setTrackAllHookCallsState,
+        []
+    )
+})();

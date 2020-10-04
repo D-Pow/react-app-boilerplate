@@ -9,57 +9,64 @@ import React, { useState } from 'react';
  * created `Provider.props.value` so that consuming components can update the context's state.
  *
  * Usage:
- * 1) First, create the context with `ContextFactory(defaultStateValueToStart)`. e.g.
- *    const { Consumer, Provider, Context } = ContextFactory({ firstColor: 'blue', secondColor: 'red'});
- * 2) In a parent, next your component that uses the context inside the Provider
+ *
+ * 1. First, create the context with `ContextFactory(defaultStateValueToStart)`.
+ *     @example
+ *     const { Consumer, Provider, Context } = ContextFactory({ firstColor: 'blue', secondColor: 'red' });
+ * 2. In a parent, nest your component that uses the context inside the Provider.
+ *     @example
  *     <Provider>
  *         <MyComponent />
  *     </Provider>
- * 3) Access the Context based on standard React Context API access methods, e.g.
- *    a) Class components: set the returned {@code MyContext.Context} to the static {@code contextType} field:
- *        class MyComponent {
- *            static contextType = MyContext.Context;
+ * 3. Access the Context based on standard React Context API access methods.
+ *      a. Class components: set the returned `MyContext.Context` to the static `contextType` field.
+ *          @example
+ *          class MyComponent {
+ *              static contextType = MyContext.Context;
  *
- *            render() {
- *                const { contextState, setContextState } = this.context;
+ *              render() {
+ *                  const { contextState, setContextState } = this.context;
  *
- *                return (
- *                    <MyChild color={contextState.firstColor} />
- *                    <MyChild color={contextState.secondColor} />
- *                    <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
- *                        Click to change context!
- *                    </button>
- *                );
- *            }
- *        }
- *    a.i) As described in the [React docs](https://reactjs.org/docs/context.html#consuming-multiple-contexts),
- *         using multiple contexts in class components requires using functions in the render function, which
- *         would be better off separating into a separate/intermediate component. e.g.
- *         <FirstContext.Consumer>
- *             {({ contextState: firstContextState, setContextState: setFistContextState }) => (
- *                 <SecondContext.Consumer>
- *                     {({ contextState: secondContextState, setContextState: setSecondContextState }) => (
- *                         <MyChild firstColor={firstContextState.color} secondColor={secondContextState.color} />
- *                     )}
- *                 </SecondContext.Consumer>
- *             )}
- *         </FirstContext.Consumer>
- *    b) Functional components: use the returned `Context` object inside a `useContext()` call:
- *        function MyComponent() {
- *            const { contextState, setContextState } = useContext(MyContext.Context);
+ *                  return (
+ *                      <MyChild color={contextState.firstColor} />
+ *                      <MyChild color={contextState.secondColor} />
+ *                      <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
+ *                          Click to change context!
+ *                      </button>
+ *                  );
+ *              }
+ *          }
+ *          a.i. As described in the {@link https://reactjs.org/docs/context.html#consuming-multiple-contexts React docs},
+ *               using multiple contexts in class components requires using functions in the render function, which
+ *               would be better off separating into an intermediate component.
+ *               @example
+ *               <FirstContext.Consumer>
+ *                   {({ contextState: firstContextState, setContextState: setFistContextState }) => (
+ *                       <SecondContext.Consumer>
+ *                           {({ contextState: secondContextState, setContextState: setSecondContextState }) => (
+ *                               <MyChild firstColor={firstContextState.color} secondColor={secondContextState.color} />
+ *                           )}
+ *                       </SecondContext.Consumer>
+ *                   )}
+ *               </FirstContext.Consumer>
+ *     b. Functional components: use the returned `Context` object inside a `useContext()` call.
+ *         @example
+ *         function MyComponent() {
+ *             const { contextState, setContextState } = useContext(MyContext.Context);
  *
- *            return (
- *                <div>
- *                    <MyChild color={contextState.firstColor} />
- *                    <MyChild color={contextState.secondColor} />
- *                    <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
- *                        Click to change context!
- *                    </button>
- *                </div>
- *            );
- *        }
- * 4) Use the returned {@code Context}'s {@code setContextState()} function as you would a hook, using
- *    the {@code prevState} function to set the new context. e.g. For a class component, use:
+ *             return (
+ *                 <div>
+ *                     <MyChild color={contextState.firstColor} />
+ *                     <MyChild color={contextState.secondColor} />
+ *                     <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
+ *                         Click to change context!
+ *                     </button>
+ *                 </div>
+ *             );
+ *         }
+ * 4. Use the returned `Context.setContextState()` function as you would a hook, using
+ *    the `prevState` function to set the new context. e.g. For a class component, use:
+ *    @example
  *     this.context.setContextState(prevState => ({
  *         ...prevState,
  *         myContextStateKey: prevState.myContextStateKey + 1

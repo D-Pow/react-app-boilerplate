@@ -92,15 +92,13 @@ export default function ContextFactory(defaultValue = null, displayName = '') {
         const [ contextState, hookSetContextState ] = useState(defaultValue);
 
         const setContextState = args => {
-            if (!(args instanceof Object) || Array.isArray(args)) {
-                // primitive or array: State is either a simple JSON primitive or
-                // an Array; set state directly.
-                hookSetContextState(args);
-            } else if (typeof args === typeof ContextFactory) {
-                // function: Expects to use standard `prevState` API.
+            if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
+                // State is either a simple JSON primitive, an array, or a function,
+                // so setState can be called directly.
                 hookSetContextState(args);
             } else if (typeof args === typeof {}) {
-                // object: Expects to use standard 'this.setState` API with individual key.
+                // State is an object, user expects to use standard 'this.setState` API with an individual key/val.
+                // Preserve previous state and set new state key/val.
                 hookSetContextState(prevState => ({
                     ...prevState,
                     ...args

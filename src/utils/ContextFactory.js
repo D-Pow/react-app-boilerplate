@@ -64,13 +64,18 @@ import React, { useState } from 'react';
  *                 </div>
  *             );
  *         }
- * 4. Use the returned `Context.setContextState()` function as you would a hook, using
- *    the `prevState` function to set the new context. e.g. For a class component, use:
+ * 4. Use the returned `Context.setContextState()` function as you would any other `setState()` method,
+ *    including class component individual keys `setContextState({ certainKey: newVal })`
+ *    or `setContextState(prevState => ...)`:
  *    @example
  *     this.context.setContextState(prevState => ({
  *         ...prevState,
  *         myContextStateKey: prevState.myContextStateKey + 1
  *     }));
+ *     // or
+ *     this.context.setContextState({
+ *         mySecondContextStateKey: prevState.myContextStateKey + 1
+ *     }); // preserves value of `myFirstContextStateKey`
  *
  * @param {*} defaultValue - Default value for the context
  * @param {string} displayName - Optional display name for the context
@@ -84,7 +89,24 @@ export default function ContextFactory(defaultValue = null, displayName = '') {
     }
 
     const Provider = props => {
-        const [ contextState, setContextState ] = useState(defaultValue);
+        const [ contextState, hookSetContextState ] = useState(defaultValue);
+
+        const setContextState = args => {
+            if (!(args instanceof Object) || Array.isArray(args)) {
+                // primitive or array: State is either a simple JSON primitive or
+                // an Array; set state directly.
+                hookSetContextState(args);
+            } else if (typeof args === typeof ContextFactory) {
+                // function: Expects to use standard `prevState` API.
+                hookSetContextState(args);
+            } else if (typeof args === typeof {}) {
+                // object: Expects to use standard 'this.setState` API with individual key.
+                hookSetContextState(prevState => ({
+                    ...prevState,
+                    ...args
+                }));
+            }
+        };
 
         return (
             <Context.Provider value={{ contextState, setContextState }} {...props} />

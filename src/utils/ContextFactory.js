@@ -58,6 +58,12 @@ import React, { useState } from 'react';
  *                </div>
  *            );
  *        }
+ * 4) Use the returned {@code Context}'s {@code setContextState()} function as you would a hook, using
+ *    the {@code prevState} function to set the new context. e.g. For a class component, use:
+ *     this.context.setContextState(prevState => ({
+ *         ...prevState,
+ *         myContextStateKey: prevState.myContextStateKey + 1
+ *     }));
  *
  * @param {*} defaultValue - Default value for the context
  * @returns {{Consumer: React.Component, Provider: React.Component, Context: Object }} - The newly-created Context-related objects

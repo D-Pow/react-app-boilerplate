@@ -66,10 +66,15 @@ import React, { useState } from 'react';
  *     }));
  *
  * @param {*} defaultValue - Default value for the context
+ * @param {string} displayName - Optional display name for the context
  * @returns {{Consumer: React.Component, Provider: React.Component, Context: Object }} - The newly-created Context-related objects
  */
-export default function ContextFactory(defaultValue = null) {
+export default function ContextFactory(defaultValue = null, displayName = '') {
     const Context = React.createContext();
+
+    if (displayName && (typeof displayName === typeof '')) {
+        Context.displayName = displayName;
+    }
 
     const Provider = props => {
         const [ contextState, setContextState ] = useState(defaultValue);

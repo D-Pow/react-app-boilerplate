@@ -2,6 +2,25 @@ import React, { useState, useReducer, useEffect, useRef } from 'react';
 import { elementIsInClickPath, getClickPath } from 'utils/Events';
 
 /**
+ * Valid JSON primitive types.
+ *
+ * @typedef {(string|number|Object|Array|boolean|null)} JsonPrimitive
+ */
+/**
+ * The type of a hook's setState(value) function's {@code value} parameter.
+ * Can either be the new state value or a function that takes in the previous
+ * state's value and returns the new state value.
+ *
+ * @typedef {(JsonPrimitive | function(prevState:JsonPrimitive):JsonPrimitive)} HookSetStateParam
+ */
+/**
+ * A hook's setState() function, which receives a {@link HookSetStateParam} that
+ * is either the new state value or a function that returns the new state value.
+ *
+ * @typedef {function(value:HookSetStateParam): void} HookSetStateFunction
+ */
+
+/**
  * @callback hookedChildRenderer
  * @param {(*|Array<*>)} hookReturnVal - Value returned from useMyHook()
  * @returns {React.Component} - Children to render using hookReturnVal
@@ -27,7 +46,7 @@ export function Hooked({ hook, hookArgs, children }) {
  * @param {Object} options - Options for storage handling.
  * @param {(String|Number|Object|Array|boolean|null)} [options.initialValue=null] - Initial value to use if storage lacks the passed key.
  * @param {String} [options.type="local"] - Type of window storage to use ('local' or 'session').
- * @returns {[(String|Number|Object|Array|boolean|null), function]} - Parsed state value and setState function.
+ * @returns {[ JsonPrimitive, HookSetStateFunction ]} - Parsed state value and setState function.
  */
 export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
     const storage = window[`${type}Storage`];

@@ -200,16 +200,18 @@ module.exports = {
             filename: `${transpiledSrcOutputPath}/css/[name].[contenthash:8].css`
         }),
         // manually copies files from src to dest
-        new CopyWebpackPlugin([
-            {
-                from: 'src/manifest.json',
-                to: '[name].[ext]'
-            },
-            {
-                from: 'src/ServiceWorker.js',
-                to: '[name].[ext]'
-            }
-        ])
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'src/manifest.json',
+                    to: '[name].[ext]'
+                },
+                {
+                    from: 'src/ServiceWorker.js',
+                    to: '[name].[ext]'
+                }
+            ]
+        })
     ],
     optimization: {
         minimizer: [ new TerserJSPlugin(), new OptimizeCSSAssetsPlugin() ],

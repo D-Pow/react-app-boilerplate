@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 /**
- * Creates a new Context and returns both the Consumer, Provider, and Context for component use.
- * Creates a new Context each time this function is called so it may be helpful to call outside
+ * Creates a new Context and returns the Consumer, Provider, and Context for component use.
+ * A new Context is created each time this function is called so it may be helpful to call outside
  * your component declaration depending on your use case.
  *
  * The context created passes both a `contextState` field and `setContextState` function to the
@@ -70,11 +70,11 @@ import React, { useState } from 'react';
  *    @example
  *     this.context.setContextState(prevState => ({
  *         ...prevState,
- *         myContextStateKey: prevState.myContextStateKey + 1
+ *         myFirstContextStateKey: prevState.myFirstContextStateKey + 1
  *     }));
  *     // or
  *     this.context.setContextState({
- *         mySecondContextStateKey: prevState.myContextStateKey + 1
+ *         mySecondContextStateKey: 'something'
  *     }); // preserves value of `myFirstContextStateKey`
  *
  * @param {*} defaultValue - Default value for the context

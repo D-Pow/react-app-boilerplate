@@ -38,6 +38,64 @@ export function Hooked({ hook, hookArgs, children }) {
 }
 
 /**
+ * @callback hookModifiedForGlobalState
+ * @param {*} origHookParams - Parameters for the original hook, passed by calling component.
+ * @param {*} globalHookState - The global state for all hook instances.
+ * @param {number} hookCallerId - Unique ID of the parent that is calling the hook.
+ * @returns {*} - Value returned from original hook.
+ */
+/**
+ * @callback setGlobalStateForWrappedHook
+ * @param {*} globalHookState - The global state for all hook instances.
+ * @param {function} setGlobalHookState - Standard {@link useState} {@code setState} function.
+ * @param {*} hookReturnVal - Return value of passed {@code hook}.
+ * @param {number} hookCallerId - Unique ID of the parent that is calling the hook.
+ * @returns {undefined}
+ */
+/**
+ * Wraps a hook such that all hook instances can access a single global
+ * state. Returns the original hook that accepts caller arguments
+ * as well as global state arguments.
+ *
+ * @param {hookModifiedForGlobalState} hook - The hook to wrap.
+ * @param {setGlobalStateForWrappedHook} setGlobalState - {@code setState} function for global state.
+ * @param {*} initialGlobalStateVal - Initial value for global state.
+ * @returns {function} - The original hook wrapped with global state functionality.
+ */
+export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
+    /*
+     * Mimic `useState` since this isn't a hook.
+     * This will still cause React to re-render if `globalHookState` changes because the
+     * passed `hook` is modified to read and react to its value.
+     */
+    let globalHookState = initialGlobalStateVal;
+
+    function setGlobalHookState(newState) {
+        if (typeof newState === typeof withGlobalState) {
+            globalHookState = newState(globalHookState);
+        } else {
+            globalHookState = newState;
+        }
+    }
+
+    return (...hookArgs) => {
+        // Assign a unique ID to each hook caller in the event
+        // that the wrapped hook needs to know which caller it is
+        const [ hookCallerId ] = useState(Math.random());
+        const hookReturnVal = hook(...hookArgs, globalHookState, hookCallerId);
+
+        setGlobalState(
+            globalHookState,
+            setGlobalHookState,
+            hookReturnVal,
+            hookCallerId
+        );
+
+        return hookReturnVal;
+    };
+}
+
+/**
  * Reads and updates window's localStorage and sessionStorage while allowing
  * React components to re-render based on changes to the value of the stored
  * key.

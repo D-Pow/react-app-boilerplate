@@ -5,6 +5,10 @@ import AppContext from 'utils/AppContext';
 import registerServiceWorker from './registerServiceWorker';
 import 'styles/index.scss';
 
+// TODO - Import from personal website:
+//  ServiceWorker updates
+//  AlterFileAfterBuild
+
 const { Provider } = AppContext;
 const renderedApp = (
     <Provider>

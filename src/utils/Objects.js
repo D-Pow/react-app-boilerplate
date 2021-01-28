@@ -36,7 +36,7 @@ export function validateObjNestedFields(obj, ...nestedFields) {
 export function attemptParseObjLiteral(obj) {
     try {
         return JSON.parse(JSON.stringify(obj));
-    } catch {
+    } catch (e) {
         return obj;
     }
 }

@@ -1,5 +1,5 @@
-var CACHE_NAME = 'cache-v1.0.0';
-var urlsToCache = []; // filenames change in each build (via appended filename hashes), so they can't be predicted here
+var CACHE_NAME = 'cache-VERSION';
+var urlsToCache = []; // filenames change in each build (via appended filename hashes) and are injected during webpack build
 
 function removeOldCaches() {
     return caches.keys()
@@ -13,6 +13,32 @@ function removeOldCaches() {
                 })
             );
         });
+}
+
+function clearCache(cache, exceptUrls) {
+    if (typeof exceptUrls === typeof '') {
+        exceptUrls = [ exceptUrls ];
+    } else if (exceptUrls == null) {
+        exceptUrls = [];
+    }
+
+    function clearCacheEntries(cacheObj) {
+        return cacheObj.keys().then(function(requests) {
+            return Promise.all(
+                requests.filter(function(request) {
+                    return !exceptUrls.includes(request.url);
+                }).map(function(request) {
+                    return cacheObj.delete(request);
+                })
+            );
+        });
+    }
+
+    if (cache == null) {
+        return caches.open(CACHE_NAME).then(clearCacheEntries);
+    }
+
+    return clearCacheEntries(cache);
 }
 
 function fetchAndCache(event, cache) {
@@ -54,9 +80,12 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE_NAME).then(function(cache) {
             return cache.match(event.request).then(function(response) {
                 var url = event.request.url;
-                var isIndexHtml = url[url.length-1] === '/' || url.split('/').pop() === 'index.html';
+                var fileRequested = url.split('/').pop();
+                var isIndexHtml = url[url.length-1] === '/' || fileRequested === 'index.html';
+                var isResourceFile = Boolean(fileRequested.match(/\.\w{2,6}$/)) && event.request.method === 'GET';
 
-                if (response) { // Cache hit - return response served from ServiceWorker
+                if (response) {
+                    // Cache hit - return response served from ServiceWorker
                     if (isIndexHtml) {
                         /**
                          * If a root level file (like index.html) is requested, then function in a cache-then-network
@@ -67,13 +96,32 @@ self.addEventListener('fetch', event => {
                          * will reflect once the page is reloaded. Any change in this service worker will best be
                          * handled by unregistering old ones.
                          */
-                        fetchAndCache(event, cache);
+                        var newIndexHtmlResponse = fetchAndCache(event, cache);
+                        var newIndexHtmlBody = newIndexHtmlResponse.then(function(res) {
+                            return res.text();
+                        });
+                        var oldIndexHtmlBody = response.clone().text();
+
+                        Promise.all([ newIndexHtmlBody, oldIndexHtmlBody ])
+                            .then(function(htmlStrings) {
+                                var newIndexHtmlText = htmlStrings[0];
+                                var oldIndexHtmlText = htmlStrings[1];
+
+                                if (newIndexHtmlText !== oldIndexHtmlText) {
+                                    clearCache(cache, url);
+                                    console.log('New website version is available, deleting old cache content');
+                                }
+                            });
                     }
 
                     return response;
-                } else { // Not cached - fetch it and then store for future network requests
+                } else if (isResourceFile || isIndexHtml) {
+                    // Not cached - fetch it and then store for future network requests
                     return fetchAndCache(event, cache);
                 }
+
+                // Not a resource file (e.g. is an endpoint request) - do not cache it so it's fresh on every request
+                return fetch(event.request);
             });
         })
     );

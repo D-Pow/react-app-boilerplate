@@ -8,6 +8,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
+const AlterFilePostBuildPlugin = require('../scripts/AlterFilePostBuildPlugin');
 const packageJson = require('../package.json');
 const babelConfig = require('./babel.config.json');
 
@@ -27,7 +28,8 @@ const relativeBuildOutputPaths = {
     development: '',
     production: 'dist'
 };
-const relativeBuildOutputPath = process.env.NODE_ENV === 'production' ? relativeBuildOutputPaths.production : relativeBuildOutputPaths.development;
+const isProduction = process.env.NODE_ENV === 'production';
+const relativeBuildOutputPath = isProduction ? relativeBuildOutputPaths.production : relativeBuildOutputPaths.development;
 const absoluteBuildOutputPath = path.resolve(paths.root, relativeBuildOutputPath);
 const transpiledSrcOutputPath = 'static'; // directory of build output files relative to index.html
 
@@ -211,7 +213,29 @@ module.exports = {
                     to: '[name].[ext]'
                 }
             ]
-        })
+        }),
+        new AlterFilePostBuildPlugin(
+            'ServiceWorker.js',
+            /urlsToCache ?= ?\[\]/g,
+            relativeEmittedFilePaths => {
+                const pathsWithoutServiceWorkerOrFonts = relativeEmittedFilePaths
+                    .filter(path => !path.includes('ServiceWorker.js') && !path.includes('fonts'));
+                const fileUrlsToCache = pathsWithoutServiceWorkerOrFonts.map(path => `"./${path}"`); // ServiceWorker exists at root level
+
+                // `/` isn't a file but is routed to /index.html automatically.
+                // Add it manually so the URL can be mapped to a file.
+                fileUrlsToCache.push('"./"');
+
+                return `urlsToCache=[${fileUrlsToCache.join(',')}]`;
+            },
+            isProduction
+        ),
+        new AlterFilePostBuildPlugin(
+            'ServiceWorker.js',
+            'VERSION',
+            packageJson.version,
+            isProduction
+        )
     ],
     optimization: {
         minimizer: [ new TerserJSPlugin(), new OptimizeCSSAssetsPlugin() ],

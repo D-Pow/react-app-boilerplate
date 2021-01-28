@@ -63,6 +63,7 @@ self.addEventListener('install', function(event) {
                 console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
+            .then(removeOldCaches)
             .then(function() {
                 return self.skipWaiting(); // needed to force new service workers to overwrite old ones
             })

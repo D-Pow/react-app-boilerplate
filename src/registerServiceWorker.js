@@ -1,3 +1,5 @@
+import { UPDATE_BROADCAST } from 'utils/Constants';
+
 /**
  * This lets the app load faster on subsequent visits in production, and gives
  * it offline capabilities. However, it also means that developers (and users)
@@ -50,6 +52,16 @@ export default function register() {
     }
 }
 
+function broadcastMessage(message) {
+    try {
+        const broadcastChannel = new BroadcastChannel(process.env.BROADCAST_CHANNEL);
+
+        broadcastChannel.postMessage(message);
+    } catch(e) {
+        // BroadcastChannel not defined, likely because client is using Safari or IE
+    }
+}
+
 function registerValidSW(swUrl) {
     navigator.serviceWorker
         .register(swUrl)
@@ -64,7 +76,7 @@ function registerValidSW(swUrl) {
                             // It's the perfect time to display a "New content is
                             // available; please refresh." message in your web app.
                             console.log('New content is available; please refresh.');
-                            // TODO notify user of new content available
+                            broadcastMessage(UPDATE_BROADCAST);
                         } else {
                             // At this point, everything has been precached.
                             // It's the perfect time to display a

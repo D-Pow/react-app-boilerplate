@@ -1,5 +1,7 @@
 var CACHE_NAME = 'cache-VERSION';
 var urlsToCache = []; // filenames change in each build (via appended filename hashes) and are injected during webpack build
+var BROADCAST_CHANNEL = 'BRD_CHANNEL';
+var UPDATE_BROADCAST = 'UPDATE';
 
 function removeOldCaches() {
     return caches.keys()
@@ -53,6 +55,16 @@ function fetchAndCache(event, cache) {
         .catch(function(fetchError) {
             console.log('Could not fetch url:', event.request.url, 'Failed with fetch error:', fetchError);
         });
+}
+
+function postMessageToClient(message) {
+    try {
+        var channel = new BroadcastChannel(BROADCAST_CHANNEL);
+
+        channel.postMessage(message);
+    } catch(e) {
+        // BroadcastChannel not defined, likely because client is using Safari or IE
+    }
 }
 
 self.addEventListener('install', function(event) {
@@ -109,8 +121,16 @@ self.addEventListener('fetch', event => {
                                 var oldIndexHtmlText = htmlStrings[1];
 
                                 if (newIndexHtmlText !== oldIndexHtmlText) {
-                                    clearCache(cache, url);
-                                    console.log('New website version is available, deleting old cache content');
+                                    setTimeout(function() {
+                                        /* Service worker will determine if index.html changed
+                                         * before the page actually loads, so add a timeout to
+                                         * message broadcast to allow the website to continue loading
+                                         * before receiving the message.
+                                         */
+                                        postMessageToClient(UPDATE_BROADCAST);
+                                        clearCache(cache, url);
+                                        console.log('New website version is available, deleting old cache content');
+                                    }, 5000);
                                 }
                             });
                     }

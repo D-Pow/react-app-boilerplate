@@ -22,6 +22,7 @@ const indexHtmlMetaTagData = {
     keywords: packageJson.keywords.join(', '),
     'theme-color': '#3800FF'
 };
+const broadcastChannel = packageJson.name;
 
 // output path for webpack build on machine, not relative paths for index.html
 const relativeBuildOutputPaths = {
@@ -49,6 +50,7 @@ const publicEnv = {
     NODE_ENV: process.env.NODE_ENV,
     NODE_PATH: process.env.NODE_PATH,
     PUBLIC_URL: process.env.PUBLIC_URL,
+    BROADCAST_CHANNEL: broadcastChannel,
     MOCK: process.env.MOCK
 };
 
@@ -234,6 +236,12 @@ module.exports = {
             'ServiceWorker.js',
             'VERSION',
             packageJson.version,
+            isProduction
+        ),
+        new AlterFilePostBuildPlugin(
+            'ServiceWorker.js',
+            'BRD_CHANNEL',
+            broadcastChannel,
             isProduction
         )
     ],

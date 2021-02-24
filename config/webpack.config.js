@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const InterpolateHtmlPlugin = require('interpolate-html-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -208,8 +207,6 @@ module.exports = {
             template: paths.root + '/src/index.html',
             meta: indexHtmlMetaTagData
         }),
-        // replaces %PUBLIC_URL% in index.html with env entry
-        new InterpolateHtmlPlugin(publicEnv),
         // splits CSS out from the rest of the code
         new MiniCssExtractPlugin({
             filename: `${transpiledSrcOutputPath}/css/[name].[contenthash:8].css`

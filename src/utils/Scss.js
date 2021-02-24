@@ -1,5 +1,7 @@
 import { asNumber } from 'utils/Numbers';
-import { themeColors, gridBreakpoints } from 'styles/Common.scss';
+import CommonStyles from 'styles/Common.scss';
+
+const { themeColors, gridBreakpoints } = CommonStyles;
 
 /**
  * Parses a map into a JS object. Every value for any key will be a string

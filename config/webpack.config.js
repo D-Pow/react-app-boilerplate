@@ -96,22 +96,23 @@ module.exports = {
             {
                 test: scssRegex,
                 use: [
-                    {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            hmr: hotReloading,
-                        }
-                    },
+                    MiniCssExtractPlugin.loader,
                     {
                         loader: 'css-loader',
                         options: {
+                            // Prevent URL re-writing (e.g. `background: url('image.png')` -> `url('./image.png')`.
+                            // Necessary so the Fonts.scss can access output files via relative paths.
                             url: false
                         }
                     },
                     {
                         loader: 'postcss-loader',
                         options: {
-                            plugins: () => require('postcss-preset-env')
+                            postcssOptions: {
+                                plugins: [
+                                    'postcss-preset-env'
+                                ]
+                            }
                         }
                     },
                     'sass-loader'
@@ -147,12 +148,12 @@ module.exports = {
                                     return '[path][name].[ext]';
                                 }
 
-                                return '[path][name]-[hash:8].[ext]';
+                                return '[path][name]-[contenthash:8].[ext]';
                             },
                             outputPath: outputFromNameFunction => {
                                 /**
                                  * Samples:
-                                 * '[path][name]-[hash:8].[ext]'   ->   `src/assets/MyImage-991ec5ea.png`
+                                 * '[path][name]-[contenthash:8].[ext]'   ->   `src/assets/MyImage-991ec5ea.png`
                                  * '[name].[ext]'   ->   `MyImage.png`
                                  */
                                 const indexForPathRelativeToSrc = outputFromNameFunction.indexOf('/') + 1;
@@ -181,12 +182,22 @@ module.exports = {
     },
     entry: {
         client: [ 'core-js', 'isomorphic-fetch', paths.root + '/src/index.js', ...resolvedMocks.entry ],
-        vendor: ['react', 'react-dom', 'react-router-dom', 'prop-types']
+        vendor: [ 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
     },
     output: {
         path: absoluteBuildOutputPath, // output path for webpack build on machine, not relative paths for index.html
-        filename: `${transpiledSrcOutputPath}/js/[name].[hash:8].bundle.js`,
-        chunkFilename: `${transpiledSrcOutputPath}/js/[name].[hash:8].chunk.js`
+        filename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].bundle.js`,
+        chunkFilename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].chunk.js`,
+        environment: {
+            // toggle options for output JS target browsers; to target ES5, set all to false
+            arrowFunction: false,
+            bigIntLiteral: false, // BigInt as literal (123n)
+            const: false, // const/let
+            destructuring: false, // var { a, b } = obj;
+            dynamicImport: false, // import()
+            forOf: false,
+            module: false // import X from 'X';
+        }
     },
     plugins: [
         // makes env available to src
@@ -251,7 +262,7 @@ module.exports = {
             cacheGroups: {
                 vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor',
+                    name: 'vendor-chunk',
                     chunks: 'all'
                 },
                 styles: {

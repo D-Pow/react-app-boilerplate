@@ -14,7 +14,7 @@ export function randomNumber(min, max) {
         return Math.random();
     }
 
-    return (Math.random() * (max - min)) + min;
+    return lerp(min, max, Math.random());
 }
 
 /**

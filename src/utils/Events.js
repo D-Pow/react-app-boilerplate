@@ -166,3 +166,27 @@ export function scrollWindowToTop() {
 export function setDocumentScrolling(allowScrolling = true) {
     document.body.style.overflow = allowScrolling ? 'auto' : 'hidden';
 }
+
+export function downloadDataAsFile(data, fileName, mimeType = 'text/plain;charset=utf-8') {
+    const dataBlob = new Blob([ data ], { type: mimeType });
+
+    // IE & Edge
+    if (window.navigator && navigator.msSaveOrOpenBlob) {
+        // Download prompt allows for saving or opening the file
+        // navigator.msSaveBlob(dataBlob, fileName) only downloads it
+        navigator.msSaveOrOpenBlob(dataBlob, fileName);
+
+        return;
+    }
+
+    const dataBlobUrl = URL.createObjectURL(dataBlob);
+    const anchor = document.createElement('a');
+
+    anchor.style.display = 'none';
+    anchor.download = fileName;
+    anchor.href = dataBlobUrl;
+
+    document.body.appendChild(anchor); // Required for Firefox
+    anchor.click();
+    document.body.removeChild(anchor);
+}

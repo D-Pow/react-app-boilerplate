@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+const STARTING_POSITION = 'STARTING_POSITION';
+
 const Frequencies = {
     WEEKLY: 'WEEKLY',
     MONTHLY: 'MONTHLY',
@@ -8,6 +10,15 @@ const Frequencies = {
 };
 
 const FrequencySvgPropsMapping = {
+    [STARTING_POSITION]: {
+        path: {
+            d: 'M0 141C0 141 0 141 0 141'
+        },
+        circle: {
+            cx: '0',
+            cy: '141'
+        }
+    },
     [Frequencies.WEEKLY]: {
         path: {
             d: 'M0 141C0 141 315.711 123.5 480 5'
@@ -57,7 +68,7 @@ class InvestmentGrowthSvg extends React.Component {
     constructor(props) {
         super(props);
 
-        this.previousFrequency.current = Frequencies.NEVER;
+        this.previousFrequency.current = STARTING_POSITION;
     }
 
     /**

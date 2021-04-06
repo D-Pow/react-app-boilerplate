@@ -56,10 +56,12 @@ class InvestmentGrowthSvg extends React.Component {
         circle: 'growth-plot-end'
     };
 
-    animationDefaultProps = {
-        fill: 'freeze',
-        dur: '150ms'
-    };
+    get animationDefaultProps() {
+        return {
+            fill: 'freeze',
+            dur: this.previousFrequency.current === STARTING_POSITION ? '700ms' : '150ms'
+        };
+    }
 
     // Track previous props (i.e. "state" of the SVG's <animate.from> attribute)
     // using a ref with shouldComponentUpdate()

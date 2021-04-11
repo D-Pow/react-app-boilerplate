@@ -19,9 +19,11 @@ export function getQueryParams() {
  * @returns {string} - Query parameters as they would appear in the URL bar.
  */
 export function getQueryParamsAsString(queryParams = getQueryParams()) {
-    return Object.keys(queryParams).length > 0
+    const queryParamEntries = Object.entries(queryParams);
+
+    return queryParamEntries.length > 0
         ? `?${
-            [...Object.entries(queryParams)]
+            queryParamEntries
                 .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
                 .join('&')
         }`

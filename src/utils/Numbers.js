@@ -35,6 +35,8 @@ export function lerp(start, end, factor) {
  * Gets the factor/percent that {@code value}
  * is between {@code start} and {@code end}.
  *
+ * Inverse of `lerp()`
+ *
  * @param {number} start - Min value of range.
  * @param {number} end - Max value of range.
  * @param {number} value - Number between {@code start} and {@code end}.

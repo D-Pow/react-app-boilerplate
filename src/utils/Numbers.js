@@ -97,3 +97,65 @@ export function distributeValuesEvenlyBetween(start, end, numValues) {
             return lerp(start, end, distanceFactorOfEntry);
         });
 }
+
+/**
+ * Calculates the factorial of a number, i.e. `num!`.
+ *
+ * 5! = 5 * 4 * 3 * 2 * 1
+ *
+ * @param {number} num - Number for which to get the factorial.
+ * @returns {number} - Factorial of the number.
+ */
+export function factorial(num) {
+    return Array.from({ length: num }).reduce((fact, nul, i) => fact*(i+1), 1);
+}
+
+/**
+ * Gets the permutation (ORDER MATTERS) for the number of choices in the number
+ * of items.
+ *
+ * Without replacement (default):
+ * permutation(nItems, kChoices)  =  n! / (n - k)!
+ *
+ * With replacement:
+ * permutation(nItems, kChoices)  =  n^k
+ *
+ * @param {number} nItems - Total number of items available.
+ * @param {number} kChoices - Number of choices, i.e. "want" number.
+ * @param {boolean} [withReplacement=false] - If replacement is allowed
+ * @returns {number} - The permutation of items/choices.
+ */
+export function permutation(nItems, kChoices, withReplacement = false) {
+    if (withReplacement) {
+        return Math.pow(nItems, kChoices);
+    }
+
+    return factorial(nItems) / factorial(nItems - kChoices);
+}
+
+/**
+ * Gets the combination (ORDER DOES NOT MATTER) for the number of choices in the number
+ * of items.
+ *
+ * Without replacement (default):
+ * combination(nItems, kChoices)  =  n! / (k! * (n - k)!)
+ *
+ * With replacement:
+ * combination(nItems, kChoices)  =  (n + k - 1)! / (k! * ((n + k - 1) - k)!)
+ * i.e.
+ * combination(nItems, kChoices)  =  (n + k - 1)! / (k! * (n - 1)!)
+ *
+ * Note: These can be re-written using permutation (seen below).
+ *
+ * @param {number} nItems - Total number of items available.
+ * @param {number} kChoices - Number of choices, i.e. "want" number.
+ * @param {boolean} [withReplacement=false] - If replacement is allowed
+ * @returns {number} - The combination of items/choices.
+ */
+export function combination(nItems, kChoices, withReplacement = false) {
+    if (withReplacement) {
+        return combination(nItems + kChoices - 1, kChoices, false);
+    }
+
+    return permutation(nItems, kChoices, false) / factorial(kChoices);
+}

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { WebpackPluginInstance, Compiler } = require('webpack/types');
+const { WebpackPluginInstance, Compiler } = require('webpack');
 
 /**
  * @extends WebpackPluginInstance

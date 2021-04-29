@@ -7,7 +7,7 @@ const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const resolveMocks = require('mock-requests/bin/resolve-mocks');
-const AlterFilePostBuildPlugin = require('../scripts/AlterFilePostBuildPlugin');
+const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
 const packageJson = require('../package.json');
 const babelConfig = require('./babel.config.json');
 

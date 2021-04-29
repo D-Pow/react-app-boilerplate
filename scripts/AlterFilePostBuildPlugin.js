@@ -1,5 +1,9 @@
 const fs = require('fs');
+const { WebpackPluginInstance, Compiler } = require('webpack/types');
 
+/**
+ * @extends WebpackPluginInstance
+ */
 class AlterFilePostBuildPlugin {
     /**
      * @callback replaceTextCallback
@@ -21,6 +25,9 @@ class AlterFilePostBuildPlugin {
         this.run = run;
     }
 
+    /**
+     * @param {Compiler} compiler
+     */
     apply(compiler) {
         if (!this.run) {
             return;

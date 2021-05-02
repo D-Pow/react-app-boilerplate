@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { WebpackPluginInstance, Compiler } = require('webpack');
+const { WebpackPluginInstance, Compiler, NormalModule } = require('webpack');
 
 /**
  * @extends WebpackPluginInstance
@@ -82,6 +82,27 @@ class AlterFilePostBuildPlugin {
         } catch(e) {
             console.error(`Error replacing text in ${fileAbsPath}. Error:`, e)
         }
+    }
+
+    /**
+     * To alter a file before building it, you'd have to add your own loader to it
+     * since that's exactly what loaders do.
+     *
+     * Example: https://github.com/artemirq/modify-source-webpack-plugin/blob/master/src/ModifySourcePlugin.ts
+     *
+     * @param {Compiler} compiler
+     * @param {string} srcFilePath - Source file to modify before transpilation/build.
+     */
+    modifySourceBeforeBuild(compiler, srcFilePath) {
+        compiler.hooks.compilation.tap(this.constructor.name, compilation => {
+            NormalModule.getCompilationHooks(compilation).beforeLoaders.tap(this.constructor.name, (loaderItems, normalModule, obj) => {
+                const originalFileAbsPath = normalModule.userRequest;
+
+                if (originalFileAbsPath.includes(srcFilePath)) {
+                    console.log(originalFileAbsPath)
+                }
+            });
+        });
     }
 }
 

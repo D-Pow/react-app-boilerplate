@@ -1,36 +1,39 @@
 {
     /**
-     * Processed in webpack.config.js
+     * Using `tsc -b config.json` instead of `-p` because
+     * has more features (e.g. respecting project properties,
+     * only updating files that have changed, etc.).
+     * See: https://www.typescriptlang.org/docs/handbook/project-references.html#build-mode-for-typescript
      *
-     * Run locally with: npx tsc -p config/tsconfig.json
-     * But make sure it uses a JSON file without comments.
+     * TS options:
+     * Config file: https://www.typescriptlang.org/tsconfig
+     * CLI: https://www.typescriptlang.org/docs/handbook/compiler-options.html
      *
      * Walkthrough that's pretty old
      * https://dev.to/open-wc/generating-typescript-definition-files-from-javascript-5bp2
-     *
-     * TS compiler options
-     * https://www.typescriptlang.org/docs/handbook/compiler-options.html
      */
     "compilerOptions": {
-        "target": "es6", // transpile code to ES6; this is okay b/c webpack transpiles this output down further
-        "lib": [ // include libraries that allow usage of modern JS features via esnext
-            "dom",
-            "dom.iterable",
-            "esnext"
+//        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
+        "target": "ES6", // transpile code to ES6; this is okay b/c webpack transpiles this output down further
+        "lib": [
+            "ESNext", // modern JS features
+            "DOM" // fetch/XMLHttpRequest
         ],
-        "module": "esnext", // how this app's code will be imported when turned into a module; umd for both node & browsers
+        "module": "ESNext", // how resulting tsc output module(s) will be imported by those who install our library; UMD for both node & browsers
         "moduleResolution": "node", // use `import` instead of `require`
         "allowJs": true,
         "skipLibCheck": true, // skip checking typings.d.ts files for JS imports
-        // "declaration": true, // generates typings.d.ts files
-        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts
-        "esModuleInterop": true, // goes along with `allowSyntheticDefaultImports`
+//        "declaration": true, // generates typings.d.ts files
+        "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`
+        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
         "resolveJsonModule": true, // allow importing json files
-        "isolatedModules": true, // make compatible with other typscript-processing plugins, e.g. babel
-        // "noEmit": true, // don't emit outputs
+        "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
+//        "noEmit": true, // don't emit outputs
         "strict": true,
-        "baseUrl": "../src", // equivalent of NODE_PATH for typescript
-        "outDir": "../tsDist", // output of running `npx tsc`
+//        "rootDir": "..", // where to start looking for input files; doesn't impact other tsconfig fields, like `include`, `exclude`, `files`, etc.
+                           // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
+        "baseUrl": "../src", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
+        "outDir": "../tsDist", // output dir of running `npx tsc`
         "jsx": "react"
     },
     "include": [

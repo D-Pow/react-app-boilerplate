@@ -8,6 +8,15 @@ import {
 } from 'utils/Objects';
 
 describe('Object utils', () => {
+
+    describe('sortObjects', () => {
+        ['base', 'accent', 'case', 'variant'].reduce((obj, sensitivity) => {
+            obj[sensitivity] = ['á', 'A'].map(letter => 'a'.localeCompare(letter, undefined, { sensitivity }));
+            return obj;
+        }, {});
+    });
+
+
     class SampleCustomClass {
         a = 'A';
         b = 'B';

@@ -42,6 +42,105 @@ export function attemptParseObjLiteral(obj) {
 }
 
 /**
+ * Sorts objects by the specified fields.
+ * Casts number strings to numbers for comparisons.
+ *
+ * @param {Object[]} list - List of objects to sort.
+ * @param {string[]} byFields - Fields by which to sort, in order of decreasing priority.
+ * @param {Object} options - Sorting options
+ * @param {boolean} [options.reverse=false] - Sort in reverse order.
+ * @param {boolean} [options.inPlace=true] - Sort in-place.
+ * @param {boolean} [options.stringIgnoreCase=false] - Ignore upper/lower casing in strings.
+ * @param {boolean} [options.stringIgnoreDiacritics=false] - Ignore accents and other letter variations.
+ * @param {boolean} [options.stringLocale] - Specific locale/language to use (defaults to that set by the user's browser).
+ * @returns {Object[]} - Sorted list
+ */
+export function sortObjects(
+    list,
+    byFields,
+    {
+        reverse = false,
+        inPlace = true,
+        stringIgnoreCase = false,
+        stringIgnoreDiacritics = false,
+        stringLocale
+    } = {}
+) {
+    if (!list || list.length === 0 || !byFields || byFields.length === 0) {
+        return list;
+    }
+
+    if (!inPlace) {
+        list = [...list];
+    }
+
+    return list.sort((obj1, obj2) => byFields.reduce((prevComparatorVal, field) => {
+        if (prevComparatorVal !== 0) {
+            // Previous (higher priority) field in `byFields` already returned a value, so use that instead.
+            return prevComparatorVal;
+        }
+
+        const val1 = obj1[field];
+        const val2 = obj2[field];
+
+
+        // Sensitivity options: https://tc39.es/ecma402/#sec-collator-comparestrings
+        const CollatorSensitivities = {
+            LENIENT: 'base',        // a == A  |  a == á
+            ACCENT_ONLY: 'accent',  // a == A  |  a != á
+            CASE_ONLY: 'case',      // a != A  |  a == á
+            STRICT: 'variant'       // a != A  |  a != á
+        }
+        const sensitivity = (stringIgnoreCase && stringIgnoreDiacritics)
+            ? CollatorSensitivities.LENIENT
+            : (!stringIgnoreCase && !stringIgnoreDiacritics)
+                ? CollatorSensitivities.STRICT
+                : stringIgnoreCase
+                    ? CollatorSensitivities.ACCENT_ONLY
+                    : CollatorSensitivities.CASE_ONLY;
+        // locale of `undefined` defaults to that set by the user's browser
+        let comparatorVal = `${val1}`.localeCompare(`${val2}`, stringLocale, { sensitivity });
+
+
+        const val1IsNumber = !isNaN(Number(val1)) && !isNaN(parseFloat(val1));
+        const val2IsNumber = !isNaN(Number(val2)) && !isNaN(parseFloat(val2));
+
+        if (val1IsNumber && val2IsNumber) {
+            /*
+             * Note that `String(numA).localeCompare(String(numB), undefined, { numeric: true })` doesn't actually
+             * cast the strings to numbers, so there are some edge cases where it doesn't work, e.g. if the number of
+             * decimal places for each value are different:
+             * '5.16'.localeCompare('5.3', undefined, { numeric: true }) === 1 // should be -1 because 5.16 < 5.3
+             *
+             * Thus:
+             *
+             * Use Number() to avoid coercing strings that happen to contain numbers in them into numbers.
+             * e.g.
+             *   Number('5x') === NaN
+             *   parseFloat('5x') === 5
+             *
+             * Use parseFloat() to avoid coercing strings that only contain whitespace into numbers.
+             * e.g.
+             *   Number('\n\t ') === 0
+             *   parseFloat('\n\t ') === NaN
+             *
+             * See: https://stackoverflow.com/questions/12227594/which-is-better-numberx-or-parsefloatx/13676265#13676265
+             */
+            const num1 = Number(val1);
+            const num2 = Number(val2);
+
+            comparatorVal = num1 < num2
+                ? -1
+                : num1 > num2
+                    ? 1
+                    : 0;
+        }
+
+        return reverse ? (-1 * comparatorVal) : comparatorVal;
+    }, 0));
+}
+
+/**
  * Determines the differences between two objects, returning all nested
  * paths of differences.
  *

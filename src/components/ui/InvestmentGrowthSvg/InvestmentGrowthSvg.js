@@ -112,7 +112,7 @@ class InvestmentGrowthSvg extends React.Component {
     triggerSvgAnimation = animateElemRef => {
         // Inline ref callbacks are called twice, first with null, then with element.
         // See: https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
-        if (animateElemRef != null) {
+        if (animateElemRef != null && animateElemRef.beginElement) {
             animateElemRef.beginElement();
         }
     };

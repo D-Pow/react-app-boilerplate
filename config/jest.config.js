@@ -38,6 +38,10 @@ const jestConfig = {
     },
     collectCoverage: true,
     coveragePathIgnorePatterns: nonSrcJestDirs
+    // TODO Add custom CLI arg to activate showing coverage for all src files, not just those used in tests
+    // collectCoverageFrom: [
+    //     'src/**/*.[jt]s?(x)'
+    // ]
 };
 
 module.exports = jestConfig;

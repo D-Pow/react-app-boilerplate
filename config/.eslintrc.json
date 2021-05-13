@@ -1,7 +1,8 @@
 {
     "env": {
         "browser": true,
-        "es6": true
+        "es6": true,
+        "jest": true
     },
     "extends": [
         "eslint:recommended",
@@ -14,11 +15,7 @@
         "process": "writable",
         "module": "writable",
         "__dirname": "readonly",
-        "global": "writable",
-        "jest": "writable",
-        "describe": "readonly",
-        "it": "readonly",
-        "expect": "readonly"
+        "global": "writable"
     },
     "parser": "babel-eslint",
     "parserOptions": {

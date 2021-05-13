@@ -1,4 +1,5 @@
 import {
+    sortObjects,
     isObject,
     deepCopy,
     deepCopyStructuredClone,
@@ -10,10 +11,88 @@ import {
 describe('Object utils', () => {
 
     describe('sortObjects', () => {
-        ['base', 'accent', 'case', 'variant'].reduce((obj, sensitivity) => {
-            obj[sensitivity] = ['á', 'A'].map(letter => 'a'.localeCompare(letter, undefined, { sensitivity }));
-            return obj;
-        }, {});
+        let objectList;
+
+        beforeEach(() => {
+            objectList = [
+                { key1: 'a', key2: 500, key3: 'Some Capitalized String' },
+                { key1: 'd', key2: 100, key3: 'some capitalized string' },
+                { key1: 'b', key2: 500, key3: 'another string' },
+                { key1: 'c', key2: 20, key3: 'Another String' }
+            ];
+        });
+
+        const getObjIds = objList => objList.map(obj => obj.key1);
+        const testKeyPriorityResultsInObjOrder = (expected, keyPriority, opts) => {
+            const received = sortObjects(objectList, keyPriority, opts);
+            const receivedIds = getObjIds(received);
+            const origListIds = getObjIds(objectList);
+
+            expect(receivedIds).toEqual(expected);
+
+            if (opts && opts.inPlace === false) {
+                expect(received).not.toEqual(objectList);
+                expect(origListIds).not.toEqual(expected);
+            } else {
+                expect(received).toEqual(objectList);
+                expect(origListIds).toEqual(expected);
+            }
+        };
+
+        it('should sort by user-defined key priorities', () => {
+            const keyPriority1 = [ 'key1', 'key2', 'key3' ];
+            const expected1 = [ 'a', 'b', 'c', 'd' ];
+
+            testKeyPriorityResultsInObjOrder(expected1, keyPriority1);
+
+            const keyPriority2 = [ 'key2', 'key1', 'key3' ];
+            const expected2 = [ 'c', 'd', 'a', 'b' ];
+
+            testKeyPriorityResultsInObjOrder(expected2, keyPriority2);
+
+            const keyPriority3 = [ 'key3', 'key2', 'key1' ];
+            const expected3 = [ 'b', 'c', 'd', 'a' ];
+
+            testKeyPriorityResultsInObjOrder(expected3, keyPriority3);
+        });
+
+        it('should allow reverse sorting', () => {
+            const keyPriority1 = [ 'key1', 'key2', 'key3' ];
+            const expected1 = [ 'd', 'c', 'b', 'a' ];
+
+            testKeyPriorityResultsInObjOrder(expected1, keyPriority1, { reverse: true });
+
+            const keyPriority2 = [ 'key2', 'key1', 'key3' ];
+            const expected2 = [ 'b', 'a', 'd', 'c' ];
+
+            testKeyPriorityResultsInObjOrder(expected2, keyPriority2, { reverse: true });
+
+            const keyPriority3 = [ 'key3', 'key2', 'key1' ];
+            const expected3 = [ 'a', 'd', 'c', 'b' ];
+
+            testKeyPriorityResultsInObjOrder(expected3, keyPriority3, { reverse: true });
+        });
+
+        it('should allow sorting that is not in-place', () => {
+            const keyPriority = [ 'key2', 'key1', 'key3' ];
+            const expected = [ 'c', 'd', 'a', 'b' ];
+
+            testKeyPriorityResultsInObjOrder(expected, keyPriority, { inPlace: false });
+            testKeyPriorityResultsInObjOrder(expected, keyPriority, { inPlace: true });
+        });
+
+        it('should allow ignoring string casing', () => {
+            const keyPriority = [ 'key3' ];
+            const expectedStringCasingRespected = [ 'b', 'c', 'd', 'a' ];
+            // If casing is ignored, then original list order is maintained
+            const expectedStringCasingIgnored = [ 'b', 'c', 'a', 'd' ];
+
+            testKeyPriorityResultsInObjOrder(expectedStringCasingIgnored, keyPriority, { stringIgnoreCase: true });
+            testKeyPriorityResultsInObjOrder(expectedStringCasingRespected, keyPriority);
+            // Again, if casing is ignored, then the list should not be changed due to string casing,
+            // so expect it to equal the result from previous test
+            testKeyPriorityResultsInObjOrder(expectedStringCasingRespected, keyPriority, { stringIgnoreCase: true });
+        });
     });
 
 

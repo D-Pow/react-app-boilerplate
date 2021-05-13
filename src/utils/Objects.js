@@ -85,6 +85,7 @@ export function sortObjects(
 
 
         // Sensitivity options: https://tc39.es/ecma402/#sec-collator-comparestrings
+        // Note: if two characters are equal, then original list order is maintained, e.g. 'a'.localeCompare('A', {'base'}) === 0
         const CollatorSensitivities = {
             LENIENT: 'base',        // a == A  |  a == á
             ACCENT_ONLY: 'accent',  // a == A  |  a != á

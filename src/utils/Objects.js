@@ -45,7 +45,7 @@ export function attemptParseObjLiteral(obj) {
  * Sorts objects by the specified fields.
  * Casts number strings to numbers for comparisons.
  *
- * @param {Object[]} list - List of objects to sort.
+ * @param {Object[]} objList - List of objects to sort.
  * @param {string[]} byFields - Fields by which to sort, in order of decreasing priority.
  * @param {Object} options - Sorting options
  * @param {boolean} [options.reverse=false] - Sort in reverse order.
@@ -56,7 +56,7 @@ export function attemptParseObjLiteral(obj) {
  * @returns {Object[]} - Sorted list
  */
 export function sortObjects(
-    list,
+    objList,
     byFields,
     {
         reverse = false,
@@ -66,15 +66,15 @@ export function sortObjects(
         stringLocale
     } = {}
 ) {
-    if (!list || list.length === 0 || !byFields || byFields.length === 0) {
-        return list;
+    if (!objList || objList.length === 0 || !byFields || byFields.length === 0) {
+        return objList;
     }
 
     if (!inPlace) {
-        list = [...list];
+        objList = [...objList];
     }
 
-    return list.sort((obj1, obj2) => byFields.reduce((prevComparatorVal, field) => {
+    return objList.sort((obj1, obj2) => byFields.reduce((prevComparatorVal, field) => {
         if (prevComparatorVal !== 0) {
             // Previous (higher priority) field in `byFields` already returned a value, so use that instead.
             return prevComparatorVal;

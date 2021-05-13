@@ -12,7 +12,7 @@
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.js",
     "mock": "cross-env MOCK=true npm start",
-    "test": "jest --coverage tests",
+    "test": "jest --config config/jest.config.js tests",
     "create": "node scripts/createComponent.js",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.js",
     "prebuild": "npm run clean",
@@ -80,26 +80,6 @@
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.json"
-  },
-  "jest": {
-    "setupFiles": [
-      "<rootDir>/config/jestSetup.js"
-    ],
-    "modulePaths": [
-      "<rootDir>/src"
-    ],
-    "transform": {
-      "\\.[tj]sx?$": "<rootDir>/config/jestTransformer.js"
-    },
-    "modulePathIgnorePatterns": [
-      "<rootDir>/dist"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/config"
-    ],
-    "moduleNameMapper": {
-      "\\.(s?css|png|gif|jpe?g|svg|ico|pdf|tex)": "<rootDir>/config/jestFileMock.js"
-    }
   },
   "keywords": [
     "boilerplate",

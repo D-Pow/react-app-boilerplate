@@ -2,6 +2,7 @@
 
 A simplified boilerplate app for websites that's better organized
 than create-react-app in that:
+
 * Dependencies not required for the build are moved to devDependencies
 * npm scripts are more clearly defined
 * webpack.config.js is exposed and configurable
@@ -14,6 +15,7 @@ than create-react-app in that:
 * All configurations are moved to the `config/` folder for cleaner root directory and purpose distinction
 
 Usage Notes
+
 * If using WebStorm
     - It doesn't properly interpret the tsconfig.json file because it contains comments and is not in the root directory. So, in order to point to the correct tsconfig.json file, update your settings to fix it by adding the line below in <br/>
     **WebStorm Settings | Languages & Frameworks | TypeScript | Options**:

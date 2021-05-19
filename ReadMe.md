@@ -15,10 +15,10 @@ than create-react-app in that:
 
 Usage Notes
 * If using WebStorm
-    * It doesn't properly interpret all of the tsconfig.json file because it contains comments, so add the following
-    line under **WebStorm Settings | Languages & Frameworks | TypeScript | Options**:
+    - It doesn't properly interpret the tsconfig.json file because it contains comments and is not in the root directory. So, in order to point to the correct tsconfig.json file, update your settings to fix it by adding the line below in <br/>
+    **WebStorm Settings | Languages & Frameworks | TypeScript | Options**:
 
-        `--esModuleInterop true --jsx react`
+        `-p config/tsconfig.json`
 
     * Since `NODE_PATH` is defined in config/webpack.config.js instead of .env, WebStorm doesn't correctly mark
     src/ as the root for imports. This can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.

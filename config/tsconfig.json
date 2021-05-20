@@ -34,7 +34,8 @@
                            // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
         "baseUrl": "../src", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
 //        "outDir": "../tsDist", // output dir of running `npx tsc`
-        "jsx": "react"
+        "jsx": "react",
+        "experimentalDecorators": true
     },
     "include": [
         "../src"

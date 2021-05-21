@@ -283,10 +283,41 @@ module.exports = {
     },
     stats: { modules: false, children: false }, // clean up npm output
     devServer: {
+        // host: '192.168.0.10', // changes the domain from `localhost` to a specific name; e.g. LAN IP to access dev server from other devices, or `localhost.example.com` to access CORS APIs for your website
         port: 3000,
         stats: 'minimal',  // silence superfluous webpack-dev-server "emitted" output
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js
-        historyApiFallback: true // For React Router
+        historyApiFallback: true, // For React Router
+        // disableHostCheck: true, // allows others on the LAN to access this webpack-dev-server
+        // https: true, // use HTTPS instead of HTTP
+        /*
+         * For forwarding the specified URLs made to `devServer.host` to a different domain.
+         *
+         * Useful for:
+         *   - Hitting another local server's endpoints if developing new APIs locally.
+         *   - Accessing CORS resources. This requires `host` to be the same domain as the website, which might require `https` as well.
+         *
+         * Can have multiple of these objects for routing to different domains.
+         * e.g.
+         *   `/api` --> `api.example.com`
+         *   `/auth` --> `third-party-auth.com`
+         *   `/api/newEndpoint` --> `localhost:8080`  for a new endpoint being created locally
+         *
+         * Can also use an object instead of array if `context.length === 1`:
+         * proxy: {
+         *     '/api': { ...everythingExceptContext },
+         *     '/auth': { ...everythingExceptContext }
+         */
+        // proxy: [{
+        //     // domain to which you want to forward all URLs specified by `context` (instead of having them be made to `devServer.host`)
+        //     // e.g. fetch('/api/getUser')
+        //     //      Original URL: 'https://localhost/api/user'
+        //     //      Proxied URL: 'https://test-env.example.com/api/user'
+        //     target: 'https://test-env.example.com',
+        //     context: [ '/**/*' ], // all URLs you want to be proxied to `target`. Here, we forward everything containing 2 slashes so that dev server's resource files are still served from `host`.
+        //     secure: false, // allows using HTTPS without a valid certificate (which is the default case, unless you manually add a localhost cert yourself).
+        //     changeOrigin: true // changes the origin of the request to be that of `target` (required for CORS).
+        // }]
     }
 };

@@ -99,7 +99,11 @@ module.exports = {
                         options: {
                             // Prevent URL re-writing (e.g. `background: url('image.png')` -> `url('./image.png')`.
                             // Necessary so the Fonts.scss can access output files via relative paths.
-                            url: false
+                            url: false,
+                            modules: {
+                                // Don't default to CSS-Modules; parse as normal CSS
+                                compileType: 'icss'
+                            }
                         }
                     },
                     {

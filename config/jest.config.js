@@ -22,7 +22,8 @@ const jestConfig = {
     ...defaults,
     rootDir: '..',
     setupFiles: [
-        '<rootDir>/config/jestSetup.js'
+        '<rootDir>/config/jestSetup.js',
+        '<rootDir>/mocks/MockConfig.js' // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],
     modulePaths: [
         '<rootDir>/src'

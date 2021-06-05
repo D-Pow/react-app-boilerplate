@@ -1,1 +1,1 @@
-module.exports = require('babel-jest').createTransformer(require('./babel.config.json'));
+module.exports = require('babel-jest').default.createTransformer(require('./babel.config.json'));

@@ -21,6 +21,7 @@ const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory
 const jestConfig = {
     ...defaults,
     rootDir: '..',
+    testEnvironment: 'jsdom',
     setupFiles: [
         '<rootDir>/config/jestSetup.js',
         '<rootDir>/mocks/MockConfig.js' // Mock network requests using default MockRequests configuration in mocks/MockConfig.js

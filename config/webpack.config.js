@@ -63,6 +63,26 @@ const hotReloading = false; // process.env.NODE_ENV === 'development';
 
 module.exports = {
     module: {
+        /**
+         * Webpack uses template strings when generating output files.
+         *
+         * Examples:
+         * '[path][name]-[contenthash:8].[ext]'   ->   `src/assets/MyImage-991ec5ea.png`
+         * '[name][ext]' or '[base]'   ->   `MyImage.png`
+         * Even though [ext] is supposed to contain the preceding '.', it seems [name].[ext] and [name][ext] are the same
+         *
+         * @see [TemplateStrings]{@link https://webpack.js.org/configuration/output/#template-strings} for more information.
+         */
+        /**
+         * Quick note on loaders:
+         *
+         * Webpack@<5   |  Webpack@>=5     |  result
+         * file-loader  |  asset/resource  |  outputs the file; gives a URL reference to usages in src
+         * url-loader   |  asset/inline    |  no file output; converts usage in src files to Base64 data URI string
+         * raw-loader   |  asset/source    |  no file output; simply injects the file contents as a string to usages in src (not duplicated with multiple imports, though)
+         *
+         * @see {@link https://v4.webpack.js.org/loaders/file-loader/} and related loader URLs for more information.
+         */
         rules: [
             {
                 test: jsRegex,
@@ -119,58 +139,84 @@ module.exports = {
                     'sass-loader'
                 ]
             },
+            /**
+             * Use [Asset Modules]{@link https://webpack.js.org/guides/asset-modules/}
+             * instead of (file|url|raw)-loader since those are being deprecated and
+             * Asset Modules are built-in with webpack@5
+             */
             {
-                test: [ assetRegex, fontRegex ],
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: absolutePathToAsset => {
-                                const assetName = absolutePathToAsset.slice(absolutePathToAsset.lastIndexOf('/') + 1);
+                test: assetRegex,
+                type: 'asset/resource',
+                /** @type {import('webpack/types').AssetResourceGeneratorOptions} */
+                generator: {
+                    // Webpack docs don't include all these fields in any of its GeneratorOptionsByModuleTypeKnown
+                    // entries so specify them manually in case they're needed in future use
+                    filename: ({
+                        /** @type {import('webpack/types').NormalModule} */
+                        module,
+                        /** @type {string} */
+                        runtime,
+                        /** @type {string} */
+                        filename,
+                        /** @type {import('webpack/lib/ChunkGraph.js').ChunkGraphChunk} */
+                        chunkGraph,
+                        /** @type {string} */
+                        contentHash
+                    }) => {
+                        /*
+                         * Many combinations of the examples below were attempted, but each of them
+                         * either included `src/` or excluded `assets/`.
+                         *
+                         * - [path][name]-[contenthash:8].[ext]
+                         * - [name]-[contenthash:8].[ext]
+                         * - etc.
+                         *
+                         * Thus, we have to specify the output path manually such that the files' output is
+                         * `(dist)/static/assets/allTheFiles`
+                         */
 
-                                if (assetName.includes('favicon')) {
-                                    /**
-                                     * `[path]` == relative path from src folder,
-                                     * e.g. `src/assets/my-image.png` or `src/assets/images/my-image.png`.
-                                     *
-                                     * Don't append `[path]` for favicon files since they
-                                     * need to be in the output root directory.
-                                     *
-                                     * This, mixed with the removal of `static/` in the
-                                     * `outputPath` function results in outputting favicon
-                                     * files in output root directory.
-                                     */
-                                    return `[name].[ext]`;
-                                }
+                        const faviconFileNames = [ 'favicon', 'apple-touch-icon' ];
+                        const faviconRegex = new RegExp(`(${faviconFileNames.join('|')})`);
 
-                                if (fontRegex.test(assetName)) {
-                                    // Don't append hash to font file outputs
-                                    // so that the SCSS mixin can work with the direct file name
-                                    return '[path][name].[ext]';
-                                }
-
-                                return '[path][name]-[contenthash:8].[ext]';
-                            },
-                            outputPath: outputFromNameFunction => {
-                                /**
-                                 * Samples:
-                                 * '[path][name]-[contenthash:8].[ext]'   ->   `src/assets/MyImage-991ec5ea.png`
-                                 * '[name].[ext]'   ->   `MyImage.png`
-                                 */
-                                const indexForPathRelativeToSrc = outputFromNameFunction.indexOf('/') + 1;
-                                const pathRelativeToSrc = outputFromNameFunction.slice(indexForPathRelativeToSrc);
-
-                                if (pathRelativeToSrc.includes('favicon')) {
-                                    // Don't add `static/` to favicon images.
-                                    // Results in outputting them to output root directory.
-                                    return pathRelativeToSrc;
-                                }
-
-                                return `${transpiledSrcOutputPath}/${pathRelativeToSrc}`;
-                            }
+                        if (faviconRegex.test(filename)) {
+                            /**
+                             * `[path]` == relative path from src folder,
+                             * e.g. `src/assets/my-image.png` or `src/assets/images/my-image.png`.
+                             *
+                             * Don't append `[path]` for favicon files since they
+                             * need to be in the root of the output directory.
+                             *
+                             * Note that this removes `static/` from the output path
+                             * so that favicon files exist in the root directory with index.html.
+                             */
+                            return '[base]'; // equivalent to [name][ext]
                         }
+
+                        const assetsPathToFileRelativeToSrc = filename.replace(/src\//, '');
+
+                        return `${transpiledSrcOutputPath}/${assetsPathToFileRelativeToSrc}`;
                     }
-                ]
+                }
+            },
+            {
+                test: fontRegex,
+                type: 'asset/resource',
+                generator: {
+                    filename: ({ filename }) => {
+                        /*
+                         * Don't append hash to font file outputs so that the SCSS
+                         * mixin can work with the direct file name.
+                         *
+                         * Note: attempts like `[path][name].[ext]` were made, but like
+                         * the `assetRegex.generator` above, they either included `src/`
+                         * or excluded `assets/`, so handle the name manually.
+                         */
+                        const assetsPathToFileRelativeToSrc = filename.replace(/src\//, '');
+                        const outputPathMaintainingAssetsFontsDirStructure = `${transpiledSrcOutputPath}/${assetsPathToFileRelativeToSrc}`;
+
+                        return outputPathMaintainingAssetsFontsDirStructure;
+                    }
+                }
             }
         ]
     },
@@ -189,6 +235,13 @@ module.exports = {
         path: absoluteBuildOutputPath, // output path for webpack build on machine, not relative paths for index.html
         filename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].bundle.js`,
         chunkFilename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].chunk.js`,
+        /**
+         * Default output name for [Asset Modules]{@link https://webpack.js.org/guides/asset-modules/}.
+         * Will be overridden by any `module.rule` that specifies `generator.filename`.
+         *
+         * @see [output.assetModuleFilename]{@link https://webpack.js.org/configuration/output/#outputassetmodulefilename}
+         */
+        assetModuleFilename: `${transpiledSrcOutputPath}/assets/[name].[contenthash:8][ext]`,
         environment: {
             // toggle options for output JS target browsers; to target ES5, set all to false
             arrowFunction: false,

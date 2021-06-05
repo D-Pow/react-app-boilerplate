@@ -56,7 +56,8 @@ const publicEnv = {
 const jsRegex = /\.jsx?$/;
 const tsRegex = /\.tsx?$/;
 const scssRegex = /\.s?css$/;
-const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf|tex)$/;
+const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf)$/;
+const textRegex = /\.(txt|md|log|tex)$/;
 const fontRegex = /\.(ttf|woff2?|eot)$/;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
@@ -217,6 +218,10 @@ module.exports = {
                         return outputPathMaintainingAssetsFontsDirStructure;
                     }
                 }
+            },
+            {
+                test: textRegex,
+                type: 'asset/source'
             }
         ]
     },

@@ -8,8 +8,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
-const packageJson = require('../package.json');
 const babelConfig = require('./babel.config.json');
+const packageJson = require('../package.json');
+const manifestJson = require('../src/manifest.json');
 
 const paths = { // resolved relative to root dir since that's where the initial npm script is run
     root: path.resolve('./')
@@ -19,7 +20,7 @@ const indexHtmlTitle = 'React App Boilerplate';
 const indexHtmlMetaTagData = {
     description: packageJson.description,
     keywords: packageJson.keywords.join(', '),
-    'theme-color': '#3800FF',
+    'theme-color': manifestJson.theme_color,
     viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
 };
 

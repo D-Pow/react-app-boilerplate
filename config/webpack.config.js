@@ -19,8 +19,10 @@ const indexHtmlTitle = 'React App Boilerplate';
 const indexHtmlMetaTagData = {
     description: packageJson.description,
     keywords: packageJson.keywords.join(', '),
-    'theme-color': '#3800FF'
+    'theme-color': '#3800FF',
+    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
 };
+
 const broadcastChannel = packageJson.name;
 
 // output path for webpack build on machine, not relative paths for index.html

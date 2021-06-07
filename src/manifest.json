@@ -1,11 +1,23 @@
 {
   "short_name": "react-app-boilerplate",
   "name": "A better create-react-app",
-  "icons": {
-    "144": "favicon-144.png",
-    "192": "favicon-192.png",
-    "512": "favicon.png"
-  },
+  "icons": [
+    {
+      "src": "favicon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

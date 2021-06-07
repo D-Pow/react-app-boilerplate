@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
+const { getOutputFileName } = require('./utils');
 const babelConfig = require('./babel.config.json');
 const packageJson = require('../package.json');
 const manifestJson = require('../src/manifest.json');
@@ -168,37 +169,22 @@ module.exports = {
                         contentHash
                     }) => {
                         /*
-                         * Many combinations of the examples below were attempted, but each of them
-                         * either included `src/` or excluded `assets/`.
+                         * Maintain nested directory structure when generating output file names while
+                         * also removing the beginning `src/` from the output path.
                          *
-                         * - [path][name]-[contenthash:8].[ext]
-                         * - [name]-[contenthash:8].[ext]
-                         * - etc.
-                         *
-                         * Thus, we have to specify the output path manually such that the files' output is
-                         * `(dist)/static/assets/allTheFiles`
+                         * Exception: Favicon files, which should be in the root of the output directory
+                         * and should not contain hashes.
+                         * TODO Dynamically generate manifest.json's favicon entries from webpack hash so
+                         *  that new favicon versions are served rather than the old/cached version.
                          */
-
                         const faviconFileNames = [ 'favicon', 'apple-touch-icon' ];
                         const faviconRegex = new RegExp(`(${faviconFileNames.join('|')})`);
 
                         if (faviconRegex.test(filename)) {
-                            /**
-                             * `[path]` == relative path from src folder,
-                             * e.g. `src/assets/my-image.png` or `src/assets/images/my-image.png`.
-                             *
-                             * Don't append `[path]` for favicon files since they
-                             * need to be in the root of the output directory.
-                             *
-                             * Note that this removes `static/` from the output path
-                             * so that favicon files exist in the root directory with index.html.
-                             */
-                            return '[base]'; // equivalent to [name][ext]
+                            return getOutputFileName(filename, { hashLength: 0, maintainFolderStructure: false });
                         }
 
-                        const assetsPathToFileRelativeToSrc = filename.replace(/src\//, '');
-
-                        return `${transpiledSrcOutputPath}/${assetsPathToFileRelativeToSrc}`;
+                        return getOutputFileName(filename, { nestInFolder: transpiledSrcOutputPath });
                     }
                 }
             },
@@ -210,15 +196,8 @@ module.exports = {
                         /*
                          * Don't append hash to font file outputs so that the SCSS
                          * mixin can work with the direct file name.
-                         *
-                         * Note: attempts like `[path][name].[ext]` were made, but like
-                         * the `assetRegex.generator` above, they either included `src/`
-                         * or excluded `assets/`, so handle the name manually.
                          */
-                        const assetsPathToFileRelativeToSrc = filename.replace(/src\//, '');
-                        const outputPathMaintainingAssetsFontsDirStructure = `${transpiledSrcOutputPath}/${assetsPathToFileRelativeToSrc}`;
-
-                        return outputPathMaintainingAssetsFontsDirStructure;
+                        return getOutputFileName(filename, { nestInFolder: transpiledSrcOutputPath, hashLength: false });
                     }
                 }
             },

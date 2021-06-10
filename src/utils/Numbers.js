@@ -2,6 +2,44 @@ export function asNumber(str) {
     return Number(str.replace(/[^\d.]/g, ''));
 }
 
+export function sum(...nums) {
+    if (nums.length === 1 && Array.isArray(nums[0])) {
+        nums = nums[0];
+    }
+
+    return nums.reduce((sum, num) => sum + num, 0);
+}
+
+export function average(...nums) {
+    if (nums.length === 1 && Array.isArray(nums[0])) {
+        nums = nums[0];
+    }
+
+    return nums.reduce((avg, num, i) => {
+        const prevNumCount = i;
+        const prevSum = avg * prevNumCount;
+        const newNumCount = i + 1; // i starts at 0, make it start at 1
+
+        return (prevSum + num) / newNumCount;
+    }, 0);
+}
+
+export function median(...nums) {
+    if (nums.length === 1 && Array.isArray(nums[0])) {
+        nums = nums[0];
+    }
+
+    const sortedNums = [...nums].sort((a, b) => a - b);
+    const isOdd = sortedNums.length % 2 !== 0;
+    const mid = Math.floor(sortedNums.length / 2);
+
+    if (isOdd) {
+        return sortedNums[mid];
+    }
+
+    return (sortedNums[mid-1] + sortedNums[mid]) / 2;
+}
+
 export function randomNumber(min, max) {
     if (max == null) {
         max = min;

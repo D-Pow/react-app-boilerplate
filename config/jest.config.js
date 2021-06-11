@@ -1,21 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { defaults } = require('jest-config');
-const { FileTypeRegexes } = require('./utils');
-
-// TODO improve listing and move to shared config file
-const Paths = {
-    ROOT: '..',
-    get ROOT_ABS() {
-        return path.resolve(__dirname, Paths.ROOT);
-    },
-    SRC: 'src',
-    TESTS: 'test',
-    CONFIG: 'config',
-    get CONFIG_ABS() {
-        return path.resolve(Paths.ROOT_ABS, Paths.CONFIG);
-    }
-};
+const { Paths, FileTypeRegexes } = require('./utils');
 
 const allAppDirectories = fs.readdirSync(Paths.ROOT_ABS, { withFileTypes: true })
     .filter(directoryEntry => directoryEntry.isDirectory())

@@ -28,19 +28,19 @@ const FileTypeRegexes = {
     TypeScript: /\.tsx?$/,
     JsAndTs: /\.[tj]sx?$/,
     Styles: /\.s?css$/,
-    Svg: /\.svg$/,
 
     get Assets() {
         const assetFiles = [
+            FileTypeRegexes.Svg,
             FileTypeRegexes.Binaries,
             FileTypeRegexes.Fonts,
-            FileTypeRegexes.Svg,
             FileTypeRegexes.Text
         ];
         const assetFileRegexes = FileTypeRegexes.combineRegexes(...assetFiles);
 
         return assetFileRegexes;
     },
+    Svg: /\.svg$/,
     Binaries: /\.(png|gif|jpe?g|ico|pdf)$/,
     Text: /\.(txt|md|log|tex)$/,
     Fonts: /\.(ttf|woff2?|eot)$/,

@@ -34,6 +34,7 @@ const FileTypeRegexes = {
         const assetFiles = [
             FileTypeRegexes.Binaries,
             FileTypeRegexes.Fonts,
+            FileTypeRegexes.Svg,
             FileTypeRegexes.Text
         ];
         const assetFileRegexes = FileTypeRegexes.combineRegexes(...assetFiles);

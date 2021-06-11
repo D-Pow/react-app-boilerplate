@@ -20,6 +20,20 @@ module.exports = {
             };
         }
 
+        if (FileTypeRegexes.Svg.test(filePath)) {
+            return {
+                code: `
+                    const React = require('react');
+
+                    // Mimic default (URL) and named (React.Component) exports from @svgr.
+                    // String constructor must be used so we can set new fields on it, which can't be done with string primitives,
+                    // i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
+                    module.exports = new String(${JSON.stringify(path.basename(filePath))});
+                    module.exports.ReactComponent = React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props }));
+                `
+            };
+        }
+
         // Binary files (images, fonts, etc.) are processed by webpack to use URLs instead of file content,
         // so reflect that in jest tests by exporting only the name to form a "pretend" URL.
         return {

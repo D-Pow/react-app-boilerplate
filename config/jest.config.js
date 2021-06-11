@@ -10,7 +10,7 @@ const allAppDirsFormattedForJest = allAppDirectories.map(dir => `<rootDir>/${dir
 const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory.includes(Paths.SRC));
 
 const scriptFiles = FileTypeRegexes.regexToString(FileTypeRegexes.JsAndTs);
-const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.Assets);
+const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(FileTypeRegexes.Assets, FileTypeRegexes.Styles));
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const jestConfig = {

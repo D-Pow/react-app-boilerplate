@@ -1,4 +1,5 @@
 const path = require('path');
+const JestCssModulesTransformer = require('jest-css-modules-transform');
 const { FileTypeRegexes } = require('./utils');
 
 /** @type {import('@jest/core/node_modules/@jest/transform/build/types').SyncTransformer} */
@@ -31,6 +32,18 @@ module.exports = {
                     module.exports = new String(${JSON.stringify(path.basename(filePath))});
                     module.exports.ReactComponent = React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props }));
                 `
+            };
+        }
+
+        if (FileTypeRegexes.Styles.test(filePath)) {
+            /**
+             * `jest-css-modules-transform` has a bug where they [don't support jest@>=27]{@link https://github.com/Connormiha/jest-css-modules-transform/issues/39}.
+             * So nest its call here to get the config option they are supposed to use until the bug is fixed.
+             */
+            const allTranspiledCssCode = JestCssModulesTransformer.process(fileContents, filePath, options.config);
+
+            return {
+                code: allTranspiledCssCode
             };
         }
 

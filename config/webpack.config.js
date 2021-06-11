@@ -152,6 +152,27 @@ module.exports = {
              * Asset Modules are built-in with webpack@5
              */
             {
+                test: FileTypeRegexes.Svg,
+                use: [
+                    {
+                        loader: '@svgr/webpack',
+                        options: {
+                            // See: https://react-svgr.com/docs/options/
+                            // outDir: `${transpiledSrcOutputPath}/assets`,
+                            ref: true
+                        }
+                    },
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: absPath => getOutputFileName(absPath, {
+                                nestInFolder: transpiledSrcOutputPath
+                            })
+                        }
+                    }
+                ]
+            },
+            {
                 test: Binaries,
                 type: 'asset/resource',
                 /** @type {import('webpack/types').AssetResourceGeneratorOptions} */

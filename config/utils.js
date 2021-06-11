@@ -28,6 +28,7 @@ const FileTypeRegexes = {
     TypeScript: /\.tsx?$/,
     JsAndTs: /\.[tj]sx?$/,
     Styles: /\.s?css$/,
+    Svg: /\.svg$/,
 
     get Assets() {
         const assetFiles = [
@@ -39,7 +40,7 @@ const FileTypeRegexes = {
 
         return assetFileRegexes;
     },
-    Binaries: /\.(png|gif|jpe?g|svg|ico|pdf)$/,
+    Binaries: /\.(png|gif|jpe?g|ico|pdf)$/,
     Text: /\.(txt|md|log|tex)$/,
     Fonts: /\.(ttf|woff2?|eot)$/,
 

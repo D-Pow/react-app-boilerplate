@@ -199,7 +199,7 @@ module.exports = {
                          * Don't append hash to font file outputs so that the SCSS
                          * mixin can work with the direct file name.
                          */
-                        return getOutputFileName(filename, { nestInFolder: transpiledSrcOutputPath, hashLength: false });
+                        return getOutputFileName(filename, { hashLength: 0, nestInFolder: transpiledSrcOutputPath });
                     }
                 }
             },

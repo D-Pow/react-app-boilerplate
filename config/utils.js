@@ -1,5 +1,19 @@
 const path = require('path');
 
+const Paths = {
+    ROOT: '..',
+    get ROOT_ABS() {
+        return path.resolve(__dirname, Paths.ROOT);
+    },
+    SRC: 'src',
+    TESTS: 'test',
+    CONFIG: 'config',
+    get CONFIG_ABS() {
+        return path.resolve(Paths.ROOT_ABS, Paths.CONFIG);
+    }
+};
+
+
 const FileTypeRegexes = {
     get Code() {
         const codeFiles = [
@@ -120,6 +134,7 @@ function getOutputFileName(
 }
 
 module.exports = {
+    Paths,
     FileTypeRegexes,
     getOutputFileName,
 };

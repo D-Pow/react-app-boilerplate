@@ -41,16 +41,14 @@ const jestConfig = {
     modulePathIgnorePatterns: [
         '<rootDir>/dist'
     ],
-    moduleNameMapper: {
-        [assetFiles]: '<rootDir>/config/jestFileMock.js'
-    },
     transform: {
         [scriptFiles]: [
             'babel-jest',
             {
                 configFile: path.resolve(Paths.CONFIG_ABS, 'babel.config.json')
             }
-        ]
+        ],
+        [assetFiles]: '<rootDir>/config/jestAssetTransformer.js'
     },
     collectCoverage: true,
     coveragePathIgnorePatterns: nonSrcJestDirs

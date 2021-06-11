@@ -111,6 +111,11 @@ function getOutputFileName(
      *
      * Note: !(nestInFolder || hashLength || maintainFolderStructure) === '[base]'
      */
+    // Remove absolute path up to the root directory, if they exist.
+    // Depending on the loader/plugin options, the path may be relative or absolute,
+    // so handle all cases to ensure consistent output.
+    filenameWithRelativePath = filenameWithRelativePath.replace(new RegExp(Paths.ROOT_ABS + '/?'), '');
+
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
         ? fileNameFull.slice(fileNameFull.indexOf('.')) // babel.config.json  -->  .config.json

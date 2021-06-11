@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
-const { getOutputFileName } = require('./utils');
+const { FileTypeRegexes, getOutputFileName } = require('./utils');
 const babelConfig = require('./babel.config.json');
 const packageJson = require('../package.json');
 const manifestJson = require('../src/manifest.json');
@@ -57,12 +57,14 @@ const publicEnv = {
     MOCK: process.env.MOCK
 };
 
-const jsRegex = /\.jsx?$/;
-const tsRegex = /\.tsx?$/;
-const scssRegex = /\.s?css$/;
-const assetRegex = /\.(png|gif|jpe?g|svg|ico|pdf)$/;
-const textRegex = /\.(txt|md|log|tex)$/;
-const fontRegex = /\.(ttf|woff2?|eot)$/;
+const {
+    JavaScript,
+    TypeScript,
+    Styles,
+    Binaries,
+    Text,
+    Fonts,
+} = FileTypeRegexes;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
@@ -90,7 +92,7 @@ module.exports = {
          */
         rules: [
             {
-                test: jsRegex,
+                test: JavaScript,
                 exclude: /node_modules/,
                 include: /src/,
                 use: {
@@ -99,7 +101,7 @@ module.exports = {
                 }
             },
             {
-                test: tsRegex,
+                test: TypeScript,
                 exclude: /node_modules/,
                 include: /src/,
                 use: [
@@ -116,7 +118,7 @@ module.exports = {
                 ]
             },
             {
-                test: scssRegex,
+                test: Styles,
                 use: [
                     MiniCssExtractPlugin.loader,
                     {
@@ -150,7 +152,7 @@ module.exports = {
              * Asset Modules are built-in with webpack@5
              */
             {
-                test: assetRegex,
+                test: Binaries,
                 type: 'asset/resource',
                 /** @type {import('webpack/types').AssetResourceGeneratorOptions} */
                 generator: {
@@ -189,7 +191,7 @@ module.exports = {
                 }
             },
             {
-                test: fontRegex,
+                test: Fonts,
                 type: 'asset/resource',
                 generator: {
                     filename: ({ filename }) => {
@@ -202,7 +204,7 @@ module.exports = {
                 }
             },
             {
-                test: textRegex,
+                test: Text,
                 type: 'asset/source'
             }
         ]
@@ -310,7 +312,7 @@ module.exports = {
                     chunks: 'all'
                 },
                 styles: {
-                    test: scssRegex,
+                    test: Styles,
                     name: 'styles',
                     chunks: 'all',
                     enforce: true // collect all CSS into a single file since the separated CSS files contained only duplicate code

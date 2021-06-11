@@ -1,5 +1,65 @@
 const path = require('path');
 
+const FileTypeRegexes = {
+    get Code() {
+        const codeFiles = [
+            FileTypeRegexes.JsAndTs,
+            FileTypeRegexes.Styles
+        ];
+        const codeFileRegexes = FileTypeRegexes.combineRegexes(...codeFiles);
+
+        return codeFileRegexes;
+    },
+    JavaScript: /\.jsx?$/,
+    TypeScript: /\.tsx?$/,
+    JsAndTs: /\.[tj]sx?$/,
+    Styles: /\.s?css$/,
+
+    get Assets() {
+        const assetFiles = [
+            FileTypeRegexes.Binaries,
+            FileTypeRegexes.Fonts,
+            FileTypeRegexes.Text
+        ];
+        const assetFileRegexes = FileTypeRegexes.combineRegexes(...assetFiles);
+
+        return assetFileRegexes;
+    },
+    Binaries: /\.(png|gif|jpe?g|svg|ico|pdf)$/,
+    Text: /\.(txt|md|log|tex)$/,
+    Fonts: /\.(ttf|woff2?|eot)$/,
+
+    /**
+     * Converts a RegExp to an accurate regex string representation.
+     * Strips leading '/' characters from the beginning/end of the RegExp.
+     *
+     * @param {RegExp} regex
+     * @returns {string}
+     */
+    regexToString(regex) {
+        const regexStr = regex.toString();
+        const regexStrWithoutSurroundingSlashes = regexStr.substring(1, regexStr.length-1);
+
+        return regexStrWithoutSurroundingSlashes;
+    },
+
+    /**
+     * Combines multiple RegExp entries to a single one, OR-ing each
+     * entry.
+     *
+     * e.g. `combineRegexes(/a/, /b/) --> /(a)|(b)/`
+     *
+     * @param {RegExp[]} regexes
+     * @returns {RegExp}
+     */
+    combineRegexes(...regexes) {
+        const regexStrings = regexes.map(FileTypeRegexes.regexToString);
+
+        return new RegExp(`(${regexStrings.join(')|(')})`);
+    },
+};
+
+
 /**
  * Generates a custom output file name for a single file.
  * Similar to Webpack's TemplateStrings, except with a bit more customization.
@@ -60,5 +120,6 @@ function getOutputFileName(
 }
 
 module.exports = {
-    getOutputFileName
+    FileTypeRegexes,
+    getOutputFileName,
 };

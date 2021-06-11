@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { defaults } = require('jest-config');
+const { FileTypeRegexes } = require('./utils');
 
 // TODO improve listing and move to shared config file
 const Paths = {
@@ -22,6 +23,9 @@ const allAppDirectories = fs.readdirSync(Paths.ROOT_ABS, { withFileTypes: true }
 const allAppDirsFormattedForJest = allAppDirectories.map(dir => `<rootDir>/${dir}`);
 const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory.includes(Paths.SRC));
 
+const scriptFiles = FileTypeRegexes.regexToString(FileTypeRegexes.JsAndTs);
+const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.Assets);
+
 /** @type {import('@jest/types').Config.InitialOptions} */
 const jestConfig = {
     ...defaults,
@@ -38,10 +42,10 @@ const jestConfig = {
         '<rootDir>/dist'
     ],
     moduleNameMapper: {
-        '\\.(s?css|png|gif|jpe?g|svg|ico|pdf|tex)': '<rootDir>/config/jestFileMock.js'
+        [assetFiles]: '<rootDir>/config/jestFileMock.js'
     },
     transform: {
-        '\\.[tj]sx?$': [
+        [scriptFiles]: [
             'babel-jest',
             {
                 configFile: path.resolve(Paths.CONFIG_ABS, 'babel.config.json')

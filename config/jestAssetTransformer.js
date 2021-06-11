@@ -1,7 +1,6 @@
 const path = require('path');
 const { FileTypeRegexes } = require('./utils');
 
-
 /** @type {import('@jest/core/node_modules/@jest/transform/build/types').SyncTransformer} */
 module.exports = {
     /**

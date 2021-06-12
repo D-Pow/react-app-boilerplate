@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
 const { FileTypeRegexes, getOutputFileName, LocalLanHostIpAddresses } = require('./utils');
@@ -330,7 +330,17 @@ module.exports = {
         )
     ],
     optimization: {
-        minimizer: [ new TerserJSPlugin(), new OptimizeCSSAssetsPlugin() ],
+        minimizer: [
+            new TerserJSPlugin(),
+            new CssMinimizerPlugin({
+                minimizerOptions: {
+                    preset: 'default', // discards non-important comments, removes duplicates, etc.
+                    discardComments: {
+                        // removeAll: true // also remove /*! comments
+                    },
+                },
+            }),
+        ],
         splitChunks: {
             cacheGroups: {
                 vendor: { // split node_modules (as vendor) from src (as client)

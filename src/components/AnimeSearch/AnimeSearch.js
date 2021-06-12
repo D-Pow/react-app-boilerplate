@@ -45,7 +45,7 @@ function AnimeSearch(props) {
             <h3>Anime search</h3>
             <input
                 className={'form-control input-large remove-focus-highlight'}
-                type={'text'}
+                type={'search'}
                 placeholder={'e.g. "Kimi no na wa"'}
                 value={searchText}
                 onChange={handleTyping}

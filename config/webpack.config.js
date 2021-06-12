@@ -330,6 +330,7 @@ module.exports = {
         )
     ],
     optimization: {
+        minimize: isProduction,
         minimizer: [
             new TerserJSPlugin(),
             new CssMinimizerPlugin({

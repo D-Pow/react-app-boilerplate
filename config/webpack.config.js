@@ -252,8 +252,11 @@ module.exports = {
         ]
     },
     entry: {
-        client: [ 'core-js', 'isomorphic-fetch', paths.root + '/src/index.js' ],
-        vendor: [ 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
+        client: {
+            import: paths.root + '/src/index.js',
+            dependOn: 'vendor'
+        },
+        vendor: [ 'core-js', 'isomorphic-fetch', 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
     },
     output: {
         path: absoluteBuildOutputPath, // output path for webpack build on machine, not relative paths for index.html

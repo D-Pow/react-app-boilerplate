@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 
-const path = require('path');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -10,17 +9,21 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
-const { FileTypeRegexes, getOutputFileName, LocalLanHostIpAddresses } = require('./utils');
+const {
+    Paths,
+    FileTypeRegexes,
+    getOutputFileName,
+    LocalLanHostIpAddresses
+} = require('./utils');
 const babelConfig = require('./babel.config.json');
 const packageJson = require('../package.json');
 const manifestJson = require('../src/manifest.json');
 
+
+const isProduction = process.env.NODE_ENV === 'production';
 const allowAccessFromOtherDevicesOnLan = false;
 const useHttps = false;
-
-const paths = { // resolved relative to root dir since that's where the initial npm script is run
-    root: path.resolve('./')
-};
+const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
 
 const indexHtmlTitle = 'React App Boilerplate';
 const indexHtmlMetaTagData = {
@@ -32,27 +35,16 @@ const indexHtmlMetaTagData = {
 
 const broadcastChannel = packageJson.name;
 
-// output path for webpack build on machine, not relative paths for index.html
-const relativeBuildOutputPaths = {
-    development: '',
-    production: 'dist'
-};
-const isProduction = process.env.NODE_ENV === 'production';
-const relativeBuildOutputPath = isProduction ? relativeBuildOutputPaths.production : relativeBuildOutputPaths.development;
-const absoluteBuildOutputPath = path.resolve(paths.root, relativeBuildOutputPath);
-const transpiledSrcOutputPath = 'static'; // directory of build output files relative to index.html
-const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
-
 const env = dotenv.config({
-    path: paths.root + '/.env'
+    path: Paths.getFileAbsPath(Paths.ROOT.ABS, '.env')
 }).parsed;
 
 process.env = {
     ...process.env,
     ...env,
     NODE_ENV: process.env.NODE_ENV || 'development',
-    PUBLIC_URL: transpiledSrcOutputPath,
-    NODE_PATH: 'src/'
+    PUBLIC_URL: Paths.BUILD_OUTPUT.REL,
+    NODE_PATH: `${Paths.SRC.REL}/`
 };
 
 const publicEnv = {
@@ -101,7 +93,7 @@ module.exports = {
             {
                 test: JavaScript,
                 exclude: /node_modules/,
-                include: /src/,
+                include: new RegExp(Paths.SRC.REL),
                 use: {
                     loader: 'babel-loader',
                     options: babelConfig
@@ -110,7 +102,7 @@ module.exports = {
             {
                 test: TypeScript,
                 exclude: /node_modules/,
-                include: /src/,
+                include: new RegExp(Paths.SRC.REL),
                 use: [
                     {
                         loader: 'babel-loader',
@@ -119,7 +111,7 @@ module.exports = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            configFile: 'config/tsconfig.json'
+                            configFile: `${Paths.CONFIG.REL}/tsconfig.json`
                         }
                     }
                 ]
@@ -172,7 +164,7 @@ module.exports = {
                         loader: '@svgr/webpack',
                         options: {
                             // See: https://react-svgr.com/docs/options/
-                            // outDir: `${transpiledSrcOutputPath}/assets`,
+                            // outDir: `${Paths.BUILD_OUTPUT.REL}/assets`,
                             ref: true
                         }
                     },
@@ -180,7 +172,7 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             name: absPath => getOutputFileName(absPath, {
-                                nestInFolder: transpiledSrcOutputPath
+                                nestInFolder: Paths.BUILD_OUTPUT.REL
                             })
                         }
                     }
@@ -221,7 +213,7 @@ module.exports = {
                             return getOutputFileName(filename, { hashLength: 0, maintainFolderStructure: false });
                         }
 
-                        return getOutputFileName(filename, { nestInFolder: transpiledSrcOutputPath });
+                        return getOutputFileName(filename, { nestInFolder: Paths.BUILD_OUTPUT.REL });
                     }
                 }
             },
@@ -234,7 +226,7 @@ module.exports = {
                          * Don't append hash to font file outputs so that the SCSS
                          * mixin can work with the direct file name.
                          */
-                        return getOutputFileName(filename, { hashLength: 0, nestInFolder: transpiledSrcOutputPath });
+                        return getOutputFileName(filename, { hashLength: 0, nestInFolder: Paths.BUILD_OUTPUT.REL });
                     }
                 }
             },
@@ -247,28 +239,28 @@ module.exports = {
     resolve: {
         extensions: ['*', '.js', '.jsx'],
         modules: [
-            paths.root + '/src',
+            Paths.SRC.ABS,
             'node_modules'
         ]
     },
     entry: {
         client: {
-            import: paths.root + '/src/index.js',
+            import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
             dependOn: 'vendor'
         },
         vendor: [ 'core-js', 'isomorphic-fetch', 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
     },
     output: {
-        path: absoluteBuildOutputPath, // output path for webpack build on machine, not relative paths for index.html
-        filename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].bundle.js`,
-        chunkFilename: `${transpiledSrcOutputPath}/js/[name].[contenthash:8].chunk.js`,
+        path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html
+        filename: `${Paths.BUILD_OUTPUT.REL}/js/[name].[contenthash:8].bundle.js`,
+        chunkFilename: `${Paths.BUILD_OUTPUT.REL}/js/[name].[contenthash:8].chunk.js`,
         /**
          * Default output name for [Asset Modules]{@link https://webpack.js.org/guides/asset-modules/}.
          * Will be overridden by any `module.rule` that specifies `generator.filename`.
          *
          * @see [output.assetModuleFilename]{@link https://webpack.js.org/configuration/output/#outputassetmodulefilename}
          */
-        assetModuleFilename: `${transpiledSrcOutputPath}/assets/[name].[contenthash:8][ext]`,
+        assetModuleFilename: `${Paths.BUILD_OUTPUT.REL}/assets/[name].[contenthash:8][ext]`,
         sourceMapFilename: '[base].map',
         environment: {
             // toggle options for output JS target browsers; to target ES5, set all to false
@@ -287,27 +279,27 @@ module.exports = {
         // injects tags like <script> into index.html
         new HtmlWebpackPlugin({
             title: indexHtmlTitle,
-            template: paths.root + '/src/index.html',
+            template: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.html'),
             meta: indexHtmlMetaTagData
         }),
         new MockRequestsWebpackPlugin(
-            'mocks',
+            Paths.MOCKS.REL,
             'MockConfig.js',
             process.env.MOCK === 'true'
         ),
         // splits CSS out from the rest of the code
         new MiniCssExtractPlugin({
-            filename: `${transpiledSrcOutputPath}/css/[name].[contenthash:8].css`
+            filename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].css`
         }),
         // manually copies files from src to dest
         new CopyWebpackPlugin({
             patterns: [
                 {
-                    from: 'src/manifest.json',
+                    from: `${Paths.SRC.REL}/manifest.json`,
                     to: '[name].[ext]'
                 },
                 {
-                    from: 'src/ServiceWorker.js',
+                    from: `${Paths.SRC.REL}/ServiceWorker.js`,
                     to: '[name].[ext]'
                 }
             ]

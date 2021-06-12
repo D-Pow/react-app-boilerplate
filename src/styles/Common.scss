@@ -110,17 +110,57 @@ $container-max-widths: (
   margin: 0;
 }
 
-.mt-10p {
-  margin-top: 10%;
-}
+$margin-units: (
+  '': 'px',
+  'p': '%',
+  'e': 'em'
+);
+@for $int from 0 through 100 {
+  @each $unit-name, $unit in $margin-units {
+    $cls-name: $int + $unit-name;
+    $margin-amount: $int + unquote($unit); // unquote() makes it literal CSS
 
-.mb-5p {
-  margin-bottom: 5%;
-}
+    .mt-#{$cls-name} {
+      margin-top: $margin-amount;
+    }
+    .mb-#{$cls-name} {
+      margin-bottom: $margin-amount;
+    }
+    .ml-#{$cls-name} {
+      margin-left: $margin-amount;
+    }
+    .mr-#{$cls-name} {
+      margin-right: $margin-amount;
+    }
 
-.mx-5p {
-  margin-left: 5%;
-  margin-right: 5%;
+    /*
+     * Note: Using @extend creates fewer classes in the final CSS output.
+     * e.g.
+     *
+     * Without @extend, you get 6 total class declarations:
+     * .mt-name {}
+     * .mb-name {}
+     * .ml-name {}
+     * .mr-name {}
+     * .mx-name {}
+     * .my-name {}
+     *
+     * With @extend, you get 4 total class declarations,
+     * just with .m[yx] attached to .m[tblr]:
+     * .mt-name, .my-name {}
+     * .mb-name, .my-name {}
+     * .ml-name, .mx-name {}
+     * .mr-name, .mx-name {}
+     */
+    .mx-#{$cls-name} {
+      @extend .ml-#{$cls-name};
+      @extend .mr-#{$cls-name};
+    }
+    .my-#{$cls-name} {
+      @extend .mt-#{$cls-name};
+      @extend .mb-#{$cls-name};
+    }
+  }
 }
 
 .absolute-center {

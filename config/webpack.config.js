@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 const path = require('path');
 const webpack = require('webpack');
 const dotenv = require('dotenv');
@@ -71,6 +73,7 @@ const {
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
+/** @type {import('webpack/types').WebpackOptionsNormalized} */
 module.exports = {
     module: {
         /**

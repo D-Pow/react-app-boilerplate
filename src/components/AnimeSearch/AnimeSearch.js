@@ -24,6 +24,22 @@ function AnimeSearch(props) {
         handleSubmit();
     }
 
+    const renderSearchResults = () => {
+        if (!searchResults.length) {
+            return;
+        }
+
+        return (
+            <React.Fragment>
+                <h5>Results</h5>
+
+                {searchResults.map((title, i) => (
+                    <div key={i}>{title}</div>
+                ))}
+            </React.Fragment>
+        )
+    }
+
     return (
         <div>
             <h3>Anime search</h3>
@@ -34,10 +50,11 @@ function AnimeSearch(props) {
                 value={searchText}
                 onChange={handleTyping}
             />
-            <h5>Results</h5>
-            {searchResults.map((title, i) => (
-                <div key={i}>{title}</div>
-            ))}
+            <button className={'mx-5'} onClick={handleSubmit}>
+                Search
+            </button>
+
+            {renderSearchResults()}
         </div>
     );
 }

@@ -1,13 +1,12 @@
 const fs = require('fs');
-const path = require('path');
 const { defaults } = require('jest-config');
 const { Paths, FileTypeRegexes } = require('./utils');
 
-const allAppDirectories = fs.readdirSync(Paths.ROOT_ABS, { withFileTypes: true })
+const allAppDirectories = fs.readdirSync(Paths.ROOT.ABS, { withFileTypes: true })
     .filter(directoryEntry => directoryEntry.isDirectory())
     .map(directory => directory.name);
 const allAppDirsFormattedForJest = allAppDirectories.map(dir => `<rootDir>/${dir}`);
-const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory.includes(Paths.SRC));
+const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory.includes(Paths.SRC.REL));
 
 const scriptFiles = FileTypeRegexes.regexToString(FileTypeRegexes.JsAndTs);
 const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(FileTypeRegexes.Assets, FileTypeRegexes.Styles));
@@ -15,32 +14,32 @@ const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(
 /** @type {import('@jest/types').Config.InitialOptions} */
 const jestConfig = {
     ...defaults,
-    rootDir: '..',
+    rootDir: Paths.ROOT.REL,
     testEnvironment: 'jsdom',
     setupFiles: [
-        '<rootDir>/config/jestSetup.js',
-        '<rootDir>/mocks/MockConfig.js' // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
+        Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestSetup.js'),
+        Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js') // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],
     modulePaths: [
-        '<rootDir>/src'
+        Paths.SRC.ABS
     ],
     modulePathIgnorePatterns: [
-        '<rootDir>/dist'
+        Paths.BUILD_ROOT.ABS
     ],
     transform: {
         [scriptFiles]: [
             'babel-jest',
             {
-                configFile: path.resolve(Paths.CONFIG_ABS, 'babel.config.json')
+                configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.json')
             }
         ],
-        [assetFiles]: '<rootDir>/config/jestAssetTransformer.js'
+        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestAssetTransformer.js')
     },
     collectCoverage: true,
-    coveragePathIgnorePatterns: nonSrcJestDirs
+    coveragePathIgnorePatterns: nonSrcJestDirs,
     // TODO Add custom CLI arg to activate showing coverage for all src files, not just those used in tests
     // collectCoverageFrom: [
-    //     'src/**/*.[jt]s?(x)'
+    //     `${Paths.SRC.REL}/**/*.[jt]s?(x)`
     // ]
 };
 

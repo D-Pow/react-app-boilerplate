@@ -29,20 +29,58 @@ const LocalLanHostIpAddresses = {
     getPublicPath: (exposeOnLan, protocol = 'http://') => exposeOnLan
         ? `${protocol || ''}${LocalLanHostIpAddresses.IPv4}:${LocalLanHostIpAddresses.port}`
         : '',
-}
-
-const Paths = {
-    ROOT: '..',
-    get ROOT_ABS() {
-        return path.resolve(__dirname, Paths.ROOT);
-    },
-    SRC: 'src',
-    TESTS: 'test',
-    CONFIG: 'config',
-    get CONFIG_ABS() {
-        return path.resolve(Paths.ROOT_ABS, Paths.CONFIG);
-    }
 };
+
+
+const Paths = (() => {
+    const ROOT = {
+        REL: '..',
+        ABS: null
+    };
+    const CONFIG = {
+        REL: 'config',
+        ABS: null
+    };
+    const SRC = {
+        REL: 'src',
+        ABS: null
+    };
+    const BUILD_ROOT = { // output path for webpack build on machine, holds entire app but isn't used by it
+        REL: 'dist',
+        ABS: null
+    };
+    const BUILD_OUTPUT = { // output path for app, used by index.html
+        REL: 'static',
+        ABS: null
+    };
+    const MOCKS = {
+        REL: 'mocks',
+        ABS: null
+    };
+    const TESTS = {
+        REL: 'tests',
+        ABS: null
+    };
+
+    ROOT.ABS = path.resolve(__dirname, ROOT.REL);
+
+    [ CONFIG, SRC, BUILD_ROOT, BUILD_OUTPUT, MOCKS, TESTS ].forEach(pathConfig => {
+        pathConfig.ABS = path.resolve(ROOT.ABS, pathConfig.REL);
+    });
+
+    const getFileAbsPath = (dirAbsPath, filename) => path.resolve(dirAbsPath, filename);
+
+    return {
+        ROOT,
+        CONFIG,
+        SRC,
+        BUILD_ROOT,
+        BUILD_OUTPUT,
+        MOCKS,
+        TESTS,
+        getFileAbsPath,
+    };
+})();
 
 
 const FileTypeRegexes = {
@@ -147,7 +185,7 @@ function getOutputFileName(
     // Remove absolute path up to the root directory, if they exist.
     // Depending on the loader/plugin options, the path may be relative or absolute,
     // so handle all cases to ensure consistent output.
-    filenameWithRelativePath = filenameWithRelativePath.replace(new RegExp(Paths.ROOT_ABS + '/?'), '');
+    filenameWithRelativePath = filenameWithRelativePath.replace(new RegExp(Paths.ROOT.ABS + '/?'), '');
 
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
@@ -155,7 +193,7 @@ function getOutputFileName(
         : path.extname(fileNameFull); // babel.config.json  -->  .json
     const fileNameWithoutExtension = fileNameFull.replace(fileExtension, '');
     const filePath = path.dirname(filenameWithRelativePath);
-    const filePathInsideSrc = filePath.replace(/\/?src\//, '');
+    const filePathInsideSrc = filePath.replace(new RegExp(`\\/?${Paths.SRC.REL}\\/`), '');
 
     const outputFileName = [
         fileNameWithoutExtension,

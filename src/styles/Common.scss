@@ -83,10 +83,6 @@ $container-max-widths: (
   }
 }
 
-.margin-clear {
-  margin: 0;
-}
-
 .overflow-hidden {
   overflow: hidden;
 }
@@ -104,6 +100,14 @@ $container-max-widths: (
 .full-screen-minus-scrollbar {
   @extend .full-screen;
   @extend .full-width-minus-scrollbar;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.margin-clear {
+  margin: 0;
 }
 
 .mt-10p {
@@ -137,10 +141,6 @@ $container-max-widths: (
   justify-content: center;
   align-items: center;
   align-content: center;
-  margin: auto;
-}
-
-.m-auto {
   margin: auto;
 }
 

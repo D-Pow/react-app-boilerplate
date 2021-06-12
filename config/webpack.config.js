@@ -41,6 +41,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const relativeBuildOutputPath = isProduction ? relativeBuildOutputPaths.production : relativeBuildOutputPaths.development;
 const absoluteBuildOutputPath = path.resolve(paths.root, relativeBuildOutputPath);
 const transpiledSrcOutputPath = 'static'; // directory of build output files relative to index.html
+const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
 
 const env = dotenv.config({
     path: paths.root + '/.env'
@@ -136,7 +137,8 @@ module.exports = {
                             modules: {
                                 // Don't default to CSS-Modules; parse as normal CSS
                                 compileType: 'icss'
-                            }
+                            },
+                            sourceMap,
                         }
                     },
                     {
@@ -146,10 +148,16 @@ module.exports = {
                                 plugins: [
                                     'postcss-preset-env'
                                 ]
-                            }
+                            },
+                            sourceMap,
                         }
                     },
-                    'sass-loader'
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap,
+                        }
+                    }
                 ]
             },
             /**
@@ -258,6 +266,7 @@ module.exports = {
          * @see [output.assetModuleFilename]{@link https://webpack.js.org/configuration/output/#outputassetmodulefilename}
          */
         assetModuleFilename: `${transpiledSrcOutputPath}/assets/[name].[contenthash:8][ext]`,
+        sourceMapFilename: '[base].map',
         environment: {
             // toggle options for output JS target browsers; to target ES5, set all to false
             arrowFunction: false,
@@ -362,6 +371,7 @@ module.exports = {
         hints: false // disable "entrypoint size limit" warning
     },
     stats: { modules: false, children: false }, // clean up npm output
+    devtool: sourceMap ? 'source-map' : false,
     devServer: {
         ...((exposeServerOnLan) => exposeServerOnLan
             // NOTE: You must allow webpack through your firewall for this to work.

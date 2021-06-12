@@ -27,7 +27,7 @@ const LocalLanHostIpAddresses = {
     IPv4: getOsHostnameAndLanIP(),
     IPv6: getOsHostnameAndLanIP(6),
     getPublicPath: (exposeOnLan, protocol = 'http://') => exposeOnLan
-        ? `${protocol || ''}${LocalLanHostIpAddresses.IPv4}:${LocalLanHostIpAddresses.port}/`
+        ? `${protocol || ''}${LocalLanHostIpAddresses.IPv4}:${LocalLanHostIpAddresses.port}`
         : '',
 }
 

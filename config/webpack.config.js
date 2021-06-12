@@ -8,10 +8,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
 const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
-const { FileTypeRegexes, getOutputFileName } = require('./utils');
+const { FileTypeRegexes, getOutputFileName, LocalLanHostIpAddresses } = require('./utils');
 const babelConfig = require('./babel.config.json');
 const packageJson = require('../package.json');
 const manifestJson = require('../src/manifest.json');
+
+const allowAccessFromOtherDevicesOnLan = false;
+const useHttps = false;
 
 const paths = { // resolved relative to root dir since that's where the initial npm script is run
     root: path.resolve('./')
@@ -346,14 +349,50 @@ module.exports = {
     },
     stats: { modules: false, children: false }, // clean up npm output
     devServer: {
-        // host: '192.168.0.10', // changes the domain from `localhost` to a specific name; e.g. LAN IP to access dev server from other devices, or `localhost.example.com` to access CORS APIs for your website
-        port: 3000,
+        ...((exposeServerOnLan) => exposeServerOnLan
+            // NOTE: You must allow webpack through your firewall for this to work.
+            ? {
+                // changes the domain from `localhost` to a specific name.
+                // e.g.
+                // * LAN IP to access dev server from other devices
+                // * `localhost.example.com` to access CORS APIs for your website
+                host: LocalLanHostIpAddresses.IPv4,
+
+                // The public URL exposed to other devices.
+                // This computer's IP address + port
+                public: LocalLanHostIpAddresses.getPublicPath(true, useHttps ? 'https://' : null),
+
+                // allows others on the LAN to access this webpack-dev-server
+                disableHostCheck: true,
+
+                // other possibly useful fields:
+                // contentBase: absoluteBuildOutputPath,
+                // inline: true,
+                // useLocalIp: true,
+                // allowedHosts: [ '*' ],
+
+                /**
+                 * If you want to log every attempt to connect to '/' and/or '/index.html'.
+                 *
+                 * @param {import('express')} app
+                 * @param {import('webpack-dev-server/lib/Server.js').Server} server
+                 * @param compiler
+                 */
+                // before: (app, server, compiler) => {
+                //     app.all('*', (req, res, next) => {
+                //         if (req.url === '/' || req.url.includes('index.html')) {
+                //             console.log({ ...req.headers, url: req.url });
+                //         }
+                //         next();
+                //     });
+                // }
+            } : {})(allowAccessFromOtherDevicesOnLan),
+        port: LocalLanHostIpAddresses.port,
         stats: 'minimal',  // silence superfluous webpack-dev-server "emitted" output
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js
         historyApiFallback: true, // For React Router
-        // disableHostCheck: true, // allows others on the LAN to access this webpack-dev-server
-        // https: true, // use HTTPS instead of HTTP
+        https: useHttps, // use HTTPS instead of HTTP
         /*
          * For forwarding the specified URLs made to `devServer.host` to a different domain.
          *
@@ -371,6 +410,7 @@ module.exports = {
          * proxy: {
          *     '/api': { ...everythingExceptContext },
          *     '/auth': { ...everythingExceptContext }
+         * }
          */
         // proxy: [{
         //     // domain to which you want to forward all URLs specified by `context` (instead of having them be made to `devServer.host`)

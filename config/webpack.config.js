@@ -171,9 +171,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: absPath => getOutputFileName(absPath, {
-                                nestInFolder: Paths.BUILD_OUTPUT.REL
-                            })
+                            name: absPath => getOutputFileName(absPath)
                         }
                     }
                 ]
@@ -210,10 +208,14 @@ module.exports = {
                         const faviconRegex = new RegExp(`(${faviconFileNames.join('|')})`);
 
                         if (faviconRegex.test(filename)) {
-                            return getOutputFileName(filename, { hashLength: 0, maintainFolderStructure: false });
+                            return getOutputFileName(filename, {
+                                hashLength: 0,
+                                maintainFolderStructure: false,
+                                nestInFolder: ''
+                            });
                         }
 
-                        return getOutputFileName(filename, { nestInFolder: Paths.BUILD_OUTPUT.REL });
+                        return getOutputFileName(filename);
                     }
                 }
             },
@@ -226,7 +228,7 @@ module.exports = {
                          * Don't append hash to font file outputs so that the SCSS
                          * mixin can work with the direct file name.
                          */
-                        return getOutputFileName(filename, { hashLength: 0, nestInFolder: Paths.BUILD_OUTPUT.REL });
+                        return getOutputFileName(filename, { hashLength: 0 });
                     }
                 }
             },

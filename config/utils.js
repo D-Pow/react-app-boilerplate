@@ -152,7 +152,7 @@ const FileTypeRegexes = {
  *
  * @param {string} filenameWithRelativePath - Relative path of original file from the app root (e.g. `src/components/App.js`).
  * @param {{}} options
- * @param {string} [options.nestInFolder=''] - Folder inside which to nest the output file (including path).
+ * @param {string} [options.nestInFolder=Paths.BUILD_OUTPUT.REL] - Folder inside which to nest the output file (including path).
  * @param {number} [options.hashLength=8] - Length of hash string to add to name; 0 if hash is undesired.
  * @param {boolean} [options.maintainFolderStructure=true] - If the directory structure inside `src/` should be maintained.
  * @param {boolean} [options.treatFileNameDotsAsExtension=true] - Keeps all dot-text as extension (e.g. `file.config-hash.js` vs `file-hash.config.js`).
@@ -163,7 +163,7 @@ const FileTypeRegexes = {
 function getOutputFileName(
     filenameWithRelativePath,
     {
-        nestInFolder = '',
+        nestInFolder = Paths.BUILD_OUTPUT.REL,
         hashLength = 8,
         maintainFolderStructure = true,
         treatFileNameDotsAsExtension = true

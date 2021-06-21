@@ -234,7 +234,7 @@ module.exports = {
             },
             {
                 test: Text,
-                type: 'asset/source'
+                type: 'asset/source',
             }
         ]
     },

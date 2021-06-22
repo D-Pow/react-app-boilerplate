@@ -1,3 +1,13 @@
+export function encodeToBase64(stringToEncode = '') {
+    try {
+        return btoa(stringToEncode);
+    } catch(e) {
+        // Could not encode
+    }
+
+    return null;
+}
+
 export function decodeBase64(base64 = '') {
     try {
         return atob(base64);

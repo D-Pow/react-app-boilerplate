@@ -22,7 +22,7 @@ export function getMimeTypeFromDataUrl(dataUrl = '') {
     return null;
 }
 
-export function getXmlTextFromDataUrl(dataUrl) {
+export function getTextFromDataUrl(dataUrl) {
     return decodeBase64(getBase64StringFromDataUrl(dataUrl));
 }
 
@@ -37,7 +37,7 @@ export function getXmlTextFromDataUrl(dataUrl) {
  */
 export function getXmlDocFromDataUrl(dataUrl) {
     const mimeType = getMimeTypeFromDataUrl(dataUrl);
-    const xmlText = getXmlTextFromDataUrl(dataUrl);
+    const xmlText = getTextFromDataUrl(dataUrl);
     const xmlParser = new DOMParser();
 
     return xmlParser.parseFromString(xmlText, mimeType || 'text/xml');

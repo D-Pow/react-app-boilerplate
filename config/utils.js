@@ -15,7 +15,11 @@ function getOsHostnameAndLanIP(protocolVersion = 4) {
             ));
 
             // return ipv4Addresses?.[0]?.address || localLanIp;
-            return ipv4Addresses.length ? ipv4Addresses[0].address : localLan;
+            return localLan || (
+                ipv4Addresses.length
+                    ? ipv4Addresses[0].address
+                    : ''
+            );
         }, '');
 
     return localLanIp;

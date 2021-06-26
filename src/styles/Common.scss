@@ -1,3 +1,5 @@
+@use "sass:math";
+
 $primary: rgb(56, 0, 255);
 $secondary: rgb(40, 0, 176);
 $tertiary: rgb(25, 0, 97);
@@ -212,7 +214,7 @@ $margin-units: (
 
   @each $colorName, $color in $theme-colors {
     @for $opacity from 0 through 9 {
-      $opacityVal: $opacity/10;
+      $opacityVal: math.div($opacity, 10);
       &.border-#{$colorName}-opacity-#{$opacity} {
         border-color: rgba($color, $opacityVal) !important;
       }
@@ -230,7 +232,8 @@ input.text-white::placeholder, textarea.text-white::placeholder {
   z-index: 100;
 }
 
+
 :export {
-  themeColors: #{$theme-colors};
-  gridBreakpoints: #{$grid-breakpoints};
+  themeColors: inspect($theme-colors);
+  gridBreakpoints: inspect($grid-breakpoints);
 }

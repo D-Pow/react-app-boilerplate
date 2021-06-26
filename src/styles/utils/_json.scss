@@ -69,21 +69,34 @@
 }
 
 @function _encode-list($list) {
-    $str: '';
-
-    @each $item in $list {
-        $str: $str + ', ' + json-stringify($item);
-    }
-
-    @return '[' + str-slice($str, 3) + ']'; // remove leading ', ' from ', entry1, entry2'
+    @return _encode-iterable($list);
 }
 
 @function _encode-map($map) {
-    $str: '';
+    @return _encode-iterable($map);
+}
 
-    @each $key, $value in $map {
-        $str: $str + ', ' + stringify($key) + ': ' + json-stringify($value);
+@function _encode-iterable($iterable) {
+    $is-list: type-of($iterable) == 'list';
+    $is-map: type-of($iterable) == 'map';
+
+    $str: '';
+    $opening-bracket: if($is-list, '[', '{');
+    $closing-bracket: if($is-list, ']', '}');
+
+    @each $key, $value in $iterable {
+        $entry-string: '';
+
+        @if ($is-list) {
+            $entry-string: json-stringify($key);
+        } @else if ($is-map) {
+            $entry-string: stringify($key) + ': ' + json-stringify($value);
+        }
+
+        $str: $str + ', ' + $entry-string;
     }
 
-    @return '{' + str-slice($str, 3) + '}'; // remove leading ', ' from ', entry1, entry2'
+    $str: str-slice($str, 3); // remove leading ', ' from ', entry1, entry2'
+
+    @return $opening-bracket + $str + $closing-bracket;
 }

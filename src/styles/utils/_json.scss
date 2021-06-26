@@ -1,8 +1,8 @@
 /*
  * SCSS types:
  * string
- * number
  * bool
+ * number
  * null
  * color
  * list
@@ -13,8 +13,8 @@
  * Examples:
  * type-of(asdf)   => string
  * type-of("asdf") => string
- * type-of(100px)  => number
  * type-of(true)   => bool
+ * type-of(100px)  => number
  * type-of(#fff)   => color
  * type-of(blue)   => color
  */
@@ -26,7 +26,7 @@
 /// #fff => "#fff"
 /// 100 => 100
 /// 100px => "100px"
-/// (num: 10, numWithUnits: 5px, str: hello, color: #fff, "keyAsStr": someVal)  => '{"num": 10, "numWithUnits": "5px", "str": "hello", "color": "#fff", "keyAsStr": "someVal"}'
+/// (num: 10, numWithUnits: 5px, str: hello, color: #fff, "keyAsStr": false)  => '{"num": 10, "numWithUnits": "5px", "str": "hello", "color": "#fff", "keyAsStr": "false"}'
 ///
 /// @param {*} $var - SCSS variable to stringify.
 /// @return {String} - JSON representation of the variable.
@@ -40,7 +40,7 @@
         @return call($encode-func, $var);
     }
 
-    @return $var; // strings, booleans, etc. don't need to be modified
+    @return $var; // strings and booleans don't need to be modified
 }
 
 @function stringify($var) {
@@ -58,6 +58,10 @@
     }
 
     @return stringify($number);
+}
+
+@function _encode-null($string) {
+    @return 'null';
 }
 
 @function _encode-color($color) {

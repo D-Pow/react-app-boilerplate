@@ -1,0 +1,85 @@
+/*
+ * SCSS types:
+ * string
+ * number
+ * bool
+ * null
+ * color
+ * list
+ * map
+ * function
+ * arglist
+ *
+ * Examples:
+ * type-of(asdf)   => string
+ * type-of("asdf") => string
+ * type-of(100px)  => number
+ * type-of(true)   => bool
+ * type-of(#fff)   => color
+ * type-of(blue)   => color
+ */
+
+/// Stringifies SCSS variables into JSON for easier JavaScript importing/parsing.
+///
+/// Examples:
+/// blue => "blue"
+/// #fff => "#fff"
+/// 100 => 100
+/// 100px => "100px"
+/// (num: 10, numWithUnits: 5px, str: hello, color: #fff, "keyAsStr": someVal)  => '{"num": 10, "numWithUnits": "5px", "str": "hello", "color": "#fff", "keyAsStr": "someVal"}'
+///
+/// @param {*} $var - SCSS variable to stringify.
+/// @return {String} - JSON representation of the variable.
+@function json-stringify($var) {
+    $var-type: type-of($var);
+    $encode-func-name: '_encode-#{$var-type}';
+
+    @if (function-exists($encode-func-name)) {
+        $encode-func: get-function($encode-func-name);
+
+        @return call($encode-func, $var);
+    }
+
+    @return $var; // strings, booleans, etc. don't need to be modified
+}
+
+@function stringify($var) {
+    @return '"#{$var}"';
+}
+
+
+@function _encode-string($string) {
+    @return stringify($string);
+}
+
+@function _encode-number($number) {
+    @if (unitless($number)) {
+        @return $number;
+    }
+
+    @return stringify($number);
+}
+
+@function _encode-color($color) {
+    @return stringify($color);
+}
+
+@function _encode-list($list) {
+    $str: '';
+
+    @each $item in $list {
+        $str: $str + ', ' + json-stringify($item);
+    }
+
+    @return '[' + str-slice($str, 3) + ']'; // remove leading ', ' from ', entry1, entry2'
+}
+
+@function _encode-map($map) {
+    $str: '';
+
+    @each $key, $value in $map {
+        $str: $str + ', ' + stringify($key) + ': ' + json-stringify($value);
+    }
+
+    @return '{' + str-slice($str, 3) + '}'; // remove leading ', ' from ', entry1, entry2'
+}

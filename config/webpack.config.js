@@ -337,6 +337,7 @@ module.exports = {
         )
     ],
     optimization: {
+        moduleIds: 'deterministic', // Prevent arbitrary moduleId incrementing, i.e. if the content hasn't changed, don't change the file's hash due to moduleId++. See: https://webpack.js.org/guides/caching/#module-identifiers
         minimize: isProduction,
         minimizer: [
             new TerserJSPlugin(),

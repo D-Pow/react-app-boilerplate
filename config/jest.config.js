@@ -2,9 +2,9 @@ const fs = require('fs');
 const { defaults } = require('jest-config');
 const { Paths, processArgs, FileTypeRegexes } = require('./utils');
 
-const { collectCoverage } = processArgs({
-    '--coverage': 'collectCoverage',
-});
+// const { collectCoverage } = processArgs({
+//     '--coverage': 'collectCoverage',
+// });
 
 const allAppDirectories = fs.readdirSync(Paths.ROOT.ABS, { withFileTypes: true })
     .filter(directoryEntry => directoryEntry.isDirectory())
@@ -39,7 +39,7 @@ const jestConfig = {
         ],
         [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestAssetTransformer.js')
     },
-    collectCoverage,
+    // collectCoverage,
     coveragePathIgnorePatterns: nonSrcJestDirs,
     // TODO Add custom CLI arg to activate showing coverage for all src files, not just those used in tests
     // collectCoverageFrom: [

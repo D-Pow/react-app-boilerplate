@@ -59,6 +59,7 @@ const {
     JavaScript,
     TypeScript,
     Styles,
+    Svg,
     Binaries,
     Text,
     Fonts,
@@ -158,7 +159,7 @@ module.exports = {
              * Asset Modules are built-in with webpack@5
              */
             {
-                test: FileTypeRegexes.Svg,
+                test: Svg,
                 use: [
                     {
                         loader: '@svgr/webpack',

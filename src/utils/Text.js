@@ -77,6 +77,17 @@ export function getXmlDocFromDataUrl(dataUrl) {
     return xmlParser.parseFromString(xmlText, mimeType || 'text/xml');
 }
 
+/*
+ * Useful description of RegExp flags: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags
+ * d - Generate indices for substring matches. (RegExp.prototype.hasIndices)
+ * m - Multi-line search. (RegExp.prototype.multiline)
+ * s - Allows . to match newline characters. (RegExp.prototype.dotAll)
+ * g - Global search. (RegExp.prototype.global)
+ * i - Case-insensitive search. (RegExp.prototype.ignoreCase)
+ * u - "unicode"; treat a pattern as a sequence of unicode code points. (RegExp.prototype.unicode)
+ * y - Perform a "sticky" search that matches starting at the current position in the target string. See [sticky]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/sticky}.
+ */
+
 /**
  * Extracts all quoted strings nested within a single string.
  *

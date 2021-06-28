@@ -26,7 +26,9 @@ export function getQueryParams({
             : '';
     }
 
-    return [...new URLSearchParams(fromUrl).entries()]
+    const urlSearchQuery = fromUrl.split('?')[1];
+
+    return [...new URLSearchParams(urlSearchQuery).entries()]
         .reduce((queryParams, nextQueryParam) => {
             const [ key, value ] = nextQueryParam;
             queryParams[key] = value;

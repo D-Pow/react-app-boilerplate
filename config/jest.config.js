@@ -2,6 +2,10 @@ const fs = require('fs');
 const { defaults } = require('jest-config');
 const { Paths, processArgs, FileTypeRegexes } = require('./utils');
 
+/*
+ * Note: Add the `--no-cache` CLI option during development of jest transformers
+ */
+
 // const { collectCoverage } = processArgs({
 //     '--coverage': 'collectCoverage',
 // });

@@ -28,6 +28,8 @@
 /// 100px => "100px"
 /// (num: 10, numWithUnits: 5px, str: hello, color: #fff, "keyAsStr": false)  => '{"num": 10, "numWithUnits": "5px", "str": "hello", "color": "#fff", "keyAsStr": "false"}'
 ///
+/// Inspired by: https://github.com/oddbird/sass-json-export
+///
 /// @param {*} $var - SCSS variable to stringify.
 /// @return {String} - JSON representation of the variable.
 @function json-stringify($var) {

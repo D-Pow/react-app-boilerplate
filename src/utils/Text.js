@@ -76,3 +76,27 @@ export function getXmlDocFromDataUrl(dataUrl) {
 
     return xmlParser.parseFromString(xmlText, mimeType || 'text/xml');
 }
+
+/**
+ * Extracts all quoted strings nested within a single string.
+ *
+ * @param {string} str - String from which to extract quoted string content.
+ * @returns {string[]} - All quoted strings.
+ */
+export function extractQuotedStrings(str) {
+    /**
+     * (quote)
+     * (non-capturing group since we don't care about the inner content without the outer strings
+     *   either:
+     *     anything that is not a quote nor a backslash - NOTE cannot use capture groups in [] or [^]
+     *     anything after a backslash (including quotes b/c escaping them keeps them in the string)
+     *     any number of newlines (since strings can span multiple lines)
+     * ) - any number of repetitions (allows empty and filled strings)
+     * the same quote that began the string
+     *
+     * @type {RegExp}
+     */
+    const quotedStringRegex = /(['"])(?:(?!\1|\\).|\\.|\n*)*\1/g; // change \1 to \2 if nesting this whole regex inside another group of parentheses
+
+    return str.match(quotedStringRegex);
+}

@@ -1,33 +1,37 @@
 /**
- * Gets URL query parameter entries as key-value pairs in an object.
+ * Gets URL query parameter entries as either key-value pairs in an object
+ * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
  *
+ * Defaults to getting the query parameters from the current page's URL as an object.
+ * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
+ *
+ * @param {Object} input
+ * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
+ * @param {Object} [input.fromObj] - Object to convert to query parameter string.
  * @returns {Object} - All query param key-value pairs.
  */
-export function getQueryParams() {
-    return [...new URLSearchParams(window.location.search).entries()]
+export function getQueryParams({
+    fromUrl = window.location.search,
+    fromObj,
+} = {}) {
+    if (fromObj) {
+        const queryParamEntries = Object.entries(fromObj);
+
+        return queryParamEntries.length > 0
+            ? `?${
+                queryParamEntries
+                    .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                    .join('&')
+            }`
+            : '';
+    }
+
+    return [...new URLSearchParams(fromUrl).entries()]
         .reduce((queryParams, nextQueryParam) => {
             const [ key, value ] = nextQueryParam;
             queryParams[key] = value;
             return queryParams;
         }, {});
-}
-
-/**
- * Gets URL query parameter entries as they would appear in the URL bar.
- *
- * @param {Object} [queryParams=getQueryParams()] - Optional query parameter key-value object.
- * @returns {string} - Query parameters as they would appear in the URL bar.
- */
-export function getQueryParamsAsString(queryParams = getQueryParams()) {
-    const queryParamEntries = Object.entries(queryParams);
-
-    return queryParamEntries.length > 0
-        ? `?${
-            queryParamEntries
-                .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
-                .join('&')
-        }`
-        : '';
 }
 
 /**
@@ -51,7 +55,7 @@ export function pushQueryParamOnHistory(key, value) {
         }
     }
 
-    const queryParamsString = getQueryParamsAsString(queryParams);
+    const queryParamsString = getQueryParams({ fromObj: queryParams });
     const newUrl = origin + pathname + queryParamsString + hash;
 
     history.pushState(

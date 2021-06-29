@@ -21,7 +21,7 @@ const manifestJson = require('../src/manifest.json');
 
 
 const isProduction = process.env.NODE_ENV === 'production';
-const allowAccessFromOtherDevicesOnLan = false;
+const allowAccessFromOtherDevicesOnLan = Boolean(process.env.ALLOW_LAN_ACCESS);
 const useHttps = false;
 const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
 

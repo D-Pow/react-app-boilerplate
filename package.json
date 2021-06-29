@@ -11,7 +11,9 @@
   },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.js",
+    "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start",
     "mock": "cross-env MOCK=true npm start",
+    "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock",
     "test": "jest --config config/jest.config.js tests",
     "create": "node scripts/createComponent.js",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.js",

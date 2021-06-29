@@ -351,6 +351,7 @@ module.exports = {
             }),
         ],
         splitChunks: {
+            chunks: 'all',
             cacheGroups: {
                 vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,

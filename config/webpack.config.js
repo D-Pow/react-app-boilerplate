@@ -240,7 +240,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['*', '.js', '.jsx'],
+        extensions: [ '.ts', '.tsx', '.js', '.jsx', '*' ],
         modules: [
             Paths.SRC.ABS,
             'node_modules'

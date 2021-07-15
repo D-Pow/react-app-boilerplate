@@ -84,6 +84,37 @@ export function objKeysToCamelCase(obj, keepPreviousKeys = false) {
 }
 
 /**
+ * Tests that the given variables are instances of the given class(es).
+ *
+ * Passing multiple classes allows the objects' types to be of any of the classes,
+ * but not necessarily the same class.
+ *
+ * To test only one variable instead of two, pass `undefined` as the second argument,
+ * e.g. `areVarsInstancesOf(myVar, undefined, RegExp, String)`
+ *
+ * @param {*} a - 1 of 2 variables to be compared.
+ * @param {*} b - 2 of 2 variables to be compared. Pass `undefined` to only test `a`.
+ * @param {...Class} classes - Acceptable classes that the variables can be instances of.
+ * @returns {boolean} - If the variables are instances of any of the acceptable classes.
+ */
+export function areVarsInstancesOf(a, b, ...classes) {
+    // Note: This works for `Array` as well unless the passed var/class were created in separate
+    // documents/contexts, e.g. `iframeArray instanceof window.Array === false`
+    const isInstanceOfClass = (variable, Cls) => (
+        (variable instanceof Cls)
+        || (Object.prototype.toString.call(variable) === Object.prototype.toString.call(Cls.prototype))
+    );
+
+    if (b === undefined) {
+        return classes.some(Cls => isInstanceOfClass(a, Cls));
+    }
+
+    return [ a, b ].every(variable =>
+        classes.some(Cls => isInstanceOfClass(variable, Cls))
+    );
+}
+
+/**
  * Sorts objects by the specified fields.
  * Casts number strings to numbers for comparisons.
  *
@@ -198,10 +229,9 @@ export function sortObjects(
  */
 export function diffObjects(obj1, obj2, showArrayIndex = true) {
     // object literals, class instances, arrays, and functions
-    const areBothRealObjects = (a, b) => ((a instanceof Object) && (b instanceof Object));
-    const functionType = typeof (diffObjects);
-    const areBothFunctions = (a, b) => ((typeof a === functionType) && (typeof b === functionType));
-    const areBothArrays = (a, b) => (Array.isArray(a) && Array.isArray(b));
+    const areBothRealObjects = (a, b) => areVarsInstancesOf(a, b, Object);
+    const areBothFunctions = (a, b) => areVarsInstancesOf(a, b, Function);
+    const areBothArrays = (a, b) => areVarsInstancesOf(a, b, Array);
 
     const differences = [];
 

@@ -77,6 +77,23 @@ export function getXmlDocFromDataUrl(dataUrl) {
     return xmlParser.parseFromString(xmlText, mimeType || 'text/xml');
 }
 
+
+/**
+ * Converts hyphen-case and snake_case to camelCase.
+ *
+ * @param {string} str - Hyphen/snake-case string to convert to camelCase.
+ * @returns {string} - camelCase version of the passed string.
+ * @see [String.replace(regex, func)]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_function_as_a_parameter}
+ */
+export function hyphenOrSnakeCaseToCamelCase(str) {
+    return str.replace(/[-_]([^-_])/g, (fullStrMatch, matchGroup) => {
+        // One match group: The letter after a hyphen/underscore.
+        // Uppercase it and discard the hyphen/underscore.
+        return matchGroup.toUpperCase();
+    });
+}
+
+
 /*
  * Useful description of RegExp flags: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags
  * d - Generate indices for substring matches. (RegExp.prototype.hasIndices)

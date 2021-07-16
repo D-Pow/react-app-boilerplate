@@ -43,11 +43,10 @@ import { isIpAddress } from 'utils/BrowserNavigation';
 const PDF_MIME_TYPE = 'application/pdf';
 const GOOGLE_PDF_VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=';
 
-const getEmbeddedViewerUrl = srcUrl => GOOGLE_PDF_VIEWER_URL + encodeURIComponent(srcUrl);
-
-function PdfViewer({
+function ResourceViewer({
     src,
     altLinkText,
+    mimeType,
     includeNestedEmbedTag,
     ...props
 }) {
@@ -56,13 +55,15 @@ function PdfViewer({
     }
 
     const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, true);
-    const backupHyperlinkSrc = getEmbeddedViewerUrl(src);
+    const backupHyperlinkSrc = mimeType === PDF_MIME_TYPE
+        ? GOOGLE_PDF_VIEWER_URL + encodeURIComponent(src)
+        : src;
     const embeddedViewerSrc = isHttpUrl ? backupHyperlinkSrc : src;
 
     return (
         <object
             data={embeddedViewerSrc}
-            type={PDF_MIME_TYPE}
+            type={mimeType}
             {...props}
         >
             <Anchor href={backupHyperlinkSrc}>
@@ -71,23 +72,25 @@ function PdfViewer({
             {includeNestedEmbedTag && (
                 <embed
                     src={src}
-                    type={PDF_MIME_TYPE}
+                    type={mimeType}
                 />
             )}
         </object>
     );
 }
 
-PdfViewer.propTypes = {
+ResourceViewer.propTypes = {
     src: PropTypes.string.isRequired,
     altLinkText: PropTypes.string.isRequired,
+    mimeType: PropTypes.string.isRequired,
     includeNestedEmbedTag: PropTypes.bool,
 };
 
-PdfViewer.defaultProps = {
+ResourceViewer.defaultProps = {
     src: '',
     altLinkText: '',
+    mimeType: PDF_MIME_TYPE,
     includeNestedEmbedTag: false,
 };
 
-export default PdfViewer;
+export default ResourceViewer;

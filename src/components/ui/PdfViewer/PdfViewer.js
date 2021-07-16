@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Anchor from 'components/ui/Anchor';
+import { isIpAddress } from 'utils/BrowserNavigation';
 
 /**
  * Embedding .pdf (and similar .doc, .docx, etc.) files is slightly more complicated
@@ -54,7 +55,7 @@ function PdfViewer({
         return null;
     }
 
-    const isHttpUrl = src.indexOf('http') === 0;
+    const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, true);
     const backupHyperlinkSrc = getEmbeddedViewerUrl(src);
     const embeddedViewerSrc = isHttpUrl ? backupHyperlinkSrc : src;
 

@@ -23,9 +23,9 @@ export function encodeToBase64(str, mimeType) {
     return null;
 }
 
-export function decodeBase64(base64 = '') {
+export function decodeBase64(base64String) {
     try {
-        return atob(base64);
+        return atob(base64String);
     } catch(e) {
         // Could not decode, likely a malformed Base64 string
     }

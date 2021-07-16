@@ -1,6 +1,21 @@
-export function encodeToBase64(stringToEncode = '') {
+/**
+ * Encodes a string with Base64.
+ *
+ * Optionally, creates a data URL if a `mimeType` is specified.
+ *
+ * @param {string} str - String to Base64-encode.
+ * @param {string} [mimeType] - Mime type of the content; include this if you want a [Data URL]{@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}.
+ * @returns {string} - Base64-encoded string.
+ */
+export function encodeToBase64(str, mimeType) {
     try {
-        return btoa(stringToEncode);
+        const base64String = btoa(str);
+
+        if (mimeType) {
+            return `data:${mimeType};base64,${base64String}`;
+        }
+
+        return base64String;
     } catch(e) {
         // Could not encode
     }

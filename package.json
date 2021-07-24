@@ -9,6 +9,10 @@
     "type": "git",
     "url": "git+https://github.com/D-Pow/react-app-boilerplate.git"
   },
+  "engines": {
+    "node": ">=13",
+    "npm": ">=7"
+  },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.js",
     "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start",

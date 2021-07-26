@@ -1,5 +1,5 @@
 export function asNumber(str) {
-    return Number(str.replace(/[^\d.]/g, ''));
+    return Number(`${str}`.replace(/[^\d.]/g, ''));
 }
 
 export function sum(...nums) {

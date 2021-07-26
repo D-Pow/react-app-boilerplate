@@ -1,6 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { WebpackPluginInstance, Compiler, NormalModule } = require('webpack');
+import * as fs from 'fs';
+import * as path from 'path';
+// These still need `await import()` because they're types, not actual classes, so it won't work in .js
+const { WebpackPluginInstance, Compiler, NormalModule } = await import('webpack');
 
 /**
  * @extends WebpackPluginInstance
@@ -106,4 +107,4 @@ class AlterFilePostBuildPlugin {
     }
 }
 
-module.exports = AlterFilePostBuildPlugin;
+export default AlterFilePostBuildPlugin;

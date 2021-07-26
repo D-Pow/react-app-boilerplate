@@ -5,7 +5,7 @@ than create-react-app in that:
 
 * Dependencies not required for the build are moved to devDependencies
 * npm scripts are more clearly defined
-* webpack.config.js is exposed and configurable
+* webpack config is exposed and configurable
 * The service-worker both
     - Caches dynamically-generated files that contain hashes in them
     - Will update the app in a cache-then-network response so any changes will be shown in the next page load/refresh.
@@ -22,5 +22,5 @@ Usage Notes
 
         `-p config/tsconfig.json`
 
-    * Since `NODE_PATH` is defined in config/webpack.config.js instead of .env, WebStorm doesn't correctly mark
+    * Since `NODE_PATH` is defined in config/webpack.config.mjs instead of .env, WebStorm doesn't correctly mark
     src/ as the root for imports. This can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.

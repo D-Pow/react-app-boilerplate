@@ -1,7 +1,26 @@
-const os = require('os');
-const path = require('path');
+import * as os from 'os';
+import * as path from 'path';
+import { createRequire } from 'module';
 
 const devServerPort = 3000;
+
+/**
+ * There are a couple ways to import CJS files:
+ *  - const { myFunc } = await import('myFunc.js');
+ *  - const MyCls = (await import('MyCls.js')).default  // Note the `.default` is needed for `module.exports = MyCls;`
+ *  - Using `module.createRequire()`.
+ *
+ * This uses `module.createRequire()` because it allows importing both JS and non-JS files,
+ * so .json, .txt, etc. can also be imported.
+ *
+ * @param {string} filePath - Path to the file desired to be imported.
+ * @returns {*} - Content of that file. JS files will be treated as normal and JSON files will be objects.
+ */
+function importNonEsmFile(filePath) {
+    const require = createRequire(import.meta.url);
+
+    return require(filePath);
+}
 
 /**
  * Attempt parsing value to a JavaScript variable.
@@ -113,7 +132,8 @@ const Paths = (() => {
         ABS: null
     };
 
-    ROOT.ABS = path.resolve(__dirname, ROOT.REL);
+    // `__dirname` doesn't exist in Node ESM
+    ROOT.ABS = path.resolve(process.cwd());
 
     [ CONFIG, SRC, BUILD_ROOT, BUILD_OUTPUT, MOCKS, TESTS ].forEach(pathConfig => {
         pathConfig.ABS = path.resolve(ROOT.ABS, pathConfig.REL);
@@ -260,11 +280,12 @@ function getOutputFileName(
     return path.join(...outputFilePath);
 }
 
-module.exports = {
+export {
     Paths,
     processArgs,
     FileTypeRegexes,
     getOutputFileName,
     LocalLanHostIpAddresses,
     attemptParseJson,
+    importNonEsmFile,
 };

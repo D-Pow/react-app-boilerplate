@@ -7,8 +7,11 @@ than create-react-app in that:
 * npm scripts are more clearly defined
 * webpack config is exposed and configurable
 * The service-worker both
-    - Caches dynamically-generated files that contain hashes in them
-    - Will update the app in a cache-then-network response so any changes will be shown in the next page load/refresh.
+    - Automatically caches all build output on first page load so subsequent visits/refreshes serve from cache (as opposed to needing two visits/one refresh before it caches them).
+    - Will serve the app in a cache-then-network response so any changes will be shown in the next page load/refresh.
+    - Dynamically caches non-build-output files that were requested after the app loads so they're ready for offline viewing.
+        + This should be tweaked based on your app's needs so you only cache the files you want.
+        + e.g. You don't want to cache images from user's posts in a social media app.
 * Processes SCSS files to CSS and post-processes the CSS to make it cross-browser functional
 * Allows both JavaScript and TypeScript codebases
 * Has front-end mocking system built in natively along with usage examples (using [MockRequests](https://github.com/D-Pow/MockRequests))

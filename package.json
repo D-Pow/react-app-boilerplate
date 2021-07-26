@@ -22,7 +22,7 @@
     "create": "node scripts/createComponent.js",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
     "prebuild": "npm run clean",
-    "clean": "npx shx rm -rf dist",
+    "clean": "npx shx rm -rf dist coverage",
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build"
   },

@@ -26,6 +26,17 @@
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build"
   },
+  "eslintConfig": {
+    "extends": "./config/.eslintrc.json"
+  },
+  "keywords": [
+    "boilerplate",
+    "web development",
+    "create-react-app",
+    "typescript",
+    "website",
+    "webpack"
+  ],
   "dependencies": {
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
@@ -81,16 +92,5 @@
     "webpack": "^5.37.0",
     "webpack-cli": "^4.7.0",
     "webpack-dev-server": "^3.11.2"
-  },
-  "eslintConfig": {
-    "extends": "./config/.eslintrc.json"
-  },
-  "keywords": [
-    "boilerplate",
-    "web development",
-    "create-react-app",
-    "typescript",
-    "website",
-    "webpack"
-  ]
+  }
 }

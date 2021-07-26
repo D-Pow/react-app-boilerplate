@@ -1,6 +1,6 @@
-const fs = require('fs');
-const { defaults } = require('jest-config');
-const { Paths, processArgs, FileTypeRegexes } = require('./utils');
+import * as fs from 'fs';
+import { defaults } from 'jest-config';
+import { Paths, processArgs, FileTypeRegexes } from './utils.mjs';
 
 /*
  * Note: Add the `--no-cache` CLI option during development of jest transformers
@@ -41,7 +41,7 @@ const jestConfig = {
                 configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.json')
             }
         ],
-        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestAssetTransformer.js')
+        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestAssetTransformer.mjs')
     },
     // collectCoverage,
     coveragePathIgnorePatterns: nonSrcJestDirs,
@@ -51,4 +51,4 @@ const jestConfig = {
     // ]
 };
 
-module.exports = jestConfig;
+export default jestConfig;

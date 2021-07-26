@@ -1,23 +1,24 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable */
 
-const webpack = require('webpack');
-const dotenv = require('dotenv');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MockRequestsWebpackPlugin = require('mock-requests/bin/MockRequestsWebpackPlugin');
-const AlterFilePostBuildPlugin = require('./AlterFilePostBuildPlugin');
-const {
+import webpack from 'webpack';
+import dotenv from 'dotenv';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import TerserJSPlugin from 'terser-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+const MockRequestsWebpackPlugin = (await import('mock-requests/bin/MockRequestsWebpackPlugin.js')).default;
+import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
+import {
     Paths,
     FileTypeRegexes,
     getOutputFileName,
-    LocalLanHostIpAddresses
-} = require('./utils');
-const babelConfig = require('./babel.config.json');
-const packageJson = require('../package.json');
-const manifestJson = require('../src/manifest.json');
+    LocalLanHostIpAddresses,
+    importNonEsmFile,
+} from './utils.mjs';
+const babelConfig = importNonEsmFile('./babel.config.json');
+const packageJson = importNonEsmFile('../package.json');
+const manifestJson = importNonEsmFile('../src/manifest.json');
 
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -68,7 +69,7 @@ const {
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
-module.exports = {
+const webpackConfig = {
     module: {
         /**
          * Webpack uses template strings when generating output files.
@@ -448,3 +449,5 @@ module.exports = {
         // }]
     }
 };
+
+export default webpackConfig;

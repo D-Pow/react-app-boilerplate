@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 
-const path = require('path');
-const JestCssModulesTransformer = require('jest-css-modules-transform');
-const { FileTypeRegexes } = require('./utils');
+import * as path from 'path';
+import JestCssModulesTransformer from 'jest-css-modules-transform';
+import { FileTypeRegexes } from './utils.mjs';
 
 
 /** @type {import('@jest/core/node_modules/@jest/transform/build/types').SyncTransformer} */
-module.exports = {
+const jestAssetTransformer = {
     /**
      * Processes source file contents to be usable in jest tests.
      * Since jest can't parse/understand all file types even after setting certain config
@@ -81,3 +81,5 @@ module.exports = {
         };
     }
 };
+
+export default jestAssetTransformer;

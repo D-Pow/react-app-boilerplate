@@ -13,6 +13,7 @@ than create-react-app in that:
 * Allows both JavaScript and TypeScript codebases
 * Has front-end mocking system built in natively along with usage examples (using [MockRequests](https://github.com/D-Pow/MockRequests))
 * All configurations are moved to the `config/` folder for cleaner root directory and purpose distinction
+* Uses ESM (`.mjs`) for Node scripts/configs while still allowing your source code to drop file extensions for `.js`/`.ts` files.
 
 Usage Notes
 

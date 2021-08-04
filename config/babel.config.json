@@ -4,7 +4,11 @@
             "@babel/preset-env",
             {
                 "useBuiltIns": "entry",
-                "corejs": "3.16",
+                "corejs": {
+                    "version": "3.16",
+                    "proposals": true
+                },
+                "shippedProposals": true,
                 "targets": {
                     "node": "current",
                     "browsers": "> 0.25%, not dead"

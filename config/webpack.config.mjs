@@ -250,9 +250,9 @@ const webpackConfig = {
     entry: {
         client: {
             import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
-            dependOn: 'vendor'
+            dependOn: 'common'
         },
-        vendor: [ 'isomorphic-fetch', 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
+        common: [ 'isomorphic-fetch', 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
     },
     output: {
         path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html
@@ -356,7 +356,7 @@ const webpackConfig = {
             cacheGroups: {
                 vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'vendor-chunk',
+                    name: 'vendor',
                     chunks: 'all'
                 },
                 styles: {

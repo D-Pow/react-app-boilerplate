@@ -51,12 +51,13 @@ const routes = [
     }
 ];
 
-const blockMicrosoftBrowsers = false;
+// TODO find a good polyfill for positive/negative look-ahead/-behind regex (not supported on IE)
+const blockInternetExplorer = true;
 
 function App() {
     const { contextState, setContextState } = useContext(AppContext.Context);
 
-    if (blockMicrosoftBrowsers && isMicrosoftBrowser()) {
+    if (blockInternetExplorer && isMicrosoftBrowser(false)) {
         return <IncompatibleBrowserFallback />
     }
 

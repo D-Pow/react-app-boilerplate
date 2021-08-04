@@ -132,6 +132,7 @@ const webpackConfig = {
                                 // Don't default to CSS-Modules; parse as normal CSS
                                 compileType: 'icss'
                             },
+                            importLoaders: 2,
                             sourceMap,
                         }
                     },

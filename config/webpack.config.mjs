@@ -366,7 +366,10 @@ const webpackConfig = {
                     enforce: true // collect all CSS into a single file since the separated CSS files contained only duplicate code
                 }
             }
-        }
+        },
+        runtimeChunk: {
+            name: 'runtime',
+        },
     },
     performance: {
         hints: false // disable "entrypoint size limit" warning

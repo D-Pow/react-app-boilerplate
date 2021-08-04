@@ -252,7 +252,7 @@ const webpackConfig = {
             import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
             dependOn: 'common'
         },
-        common: [ 'isomorphic-fetch', 'react', 'react-dom', 'react-router-dom', 'prop-types' ]
+        common: [ 'isomorphic-fetch' ]
     },
     output: {
         path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html

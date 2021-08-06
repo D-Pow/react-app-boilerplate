@@ -240,3 +240,42 @@ function mockObjProperty(
     return () => Object.defineProperty(obj, property, originalDescriptor);
 }
 global.mockObjProperty = mockObjProperty;
+
+
+/*** Configuration for jest itself ***/
+
+
+/**
+ * Ignore certain console messages from polluting jest output.
+ *
+ * For example, Enzyme has a known issue where it will falsely warn that
+ * a state change wasn't wrapped in `act()` even though it wasn't called from
+ * the jest test (e.g. state change within `useEffect()`) (see: https://github.com/enzymejs/enzyme/issues/2073).
+ *
+ * For cases like that, the message can be added to the ignore list here
+ * and then it won't be printed out.
+ *
+ * @param {function(...[*]): void} consoleMethod - `console.[method]()` for which to ignore messages.
+ * @param {...(string|RegExp)} toIgnoreMatchers - Matchers for messages to ignore.
+ * @returns {function(...[*]): void} - A decorated `console.[method]()` which ignores the specified messages.
+ */
+function withIgnoredMessages(consoleMethod, ...toIgnoreMatchers) {
+    const defaultMessagesToAlwaysIgnore = [
+        'test was not wrapped in act(...)',
+    ];
+    const consoleMessagesToIgnore = [
+        ...defaultMessagesToAlwaysIgnore,
+        ...toIgnoreMatchers,
+    ];
+
+    return (message, ...args) => {
+        const containsIgnoredMessage = consoleMessagesToIgnore.some(toIgnoreMatcher => message?.match(toIgnoreMatcher));
+
+        if (!containsIgnoredMessage) {
+            consoleMethod(message, ...args);
+        }
+    };
+}
+
+console.warn = jest.fn(withIgnoredMessages(console.warn));
+console.error = jest.fn(withIgnoredMessages(console.error));

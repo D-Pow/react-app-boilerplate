@@ -16,11 +16,20 @@ export function getQueryParams({
 } = {}) {
     if (fromObj) {
         const queryParamEntries = Object.entries(fromObj);
+        const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
 
         return queryParamEntries.length > 0
             ? `?${
                 queryParamEntries
-                    .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                    .map(([ queryKey, queryValue ]) => {
+                        if (Array.isArray(queryValue)) {
+                            return queryValue
+                                .map(val => getEncodedKeyValStr(queryKey, val))
+                                .join('&');
+                        }
+
+                        return getEncodedKeyValStr(queryKey, queryValue);
+                    })
                     .join('&')
             }`
             : '';
@@ -31,7 +40,17 @@ export function getQueryParams({
     return [...new URLSearchParams(urlSearchQuery).entries()]
         .reduce((queryParams, nextQueryParam) => {
             const [ key, value ] = nextQueryParam;
-            queryParams[key] = value;
+
+            if (key in queryParams) {
+                if (Array.isArray(queryParams[key])) {
+                    queryParams[key].push(value);
+                } else {
+                    queryParams[key] = [ queryParams[key], value ];
+                }
+            } else {
+                queryParams[key] = value;
+            }
+
             return queryParams;
         }, {});
 }

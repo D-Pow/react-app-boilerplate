@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from 'components/App';
-import AppContext from 'utils/AppContext';
-import registerServiceWorker from './registerServiceWorker';
-import 'styles/index.scss';
+import App from '/components/App';
+import AppContext from '/utils/AppContext';
+import registerServiceWorker from '/registerServiceWorker';
+import '/styles/index.scss';
 
 const { Provider } = AppContext;
 const renderedApp = (

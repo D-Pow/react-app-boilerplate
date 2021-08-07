@@ -1,4 +1,4 @@
-import { fetchKitsuTitleSearch } from 'services/KitsuAnimeSearchService';
+import { fetchKitsuTitleSearch } from '/services/KitsuAnimeSearchService';
 import { kimiNoNaWaSearchQuery } from '../../mocks/UrlResponseMappings';
 
 describe('Services', () => {

@@ -1,4 +1,4 @@
-import CancellablePromise from 'utils/CancellablePromise';
+import CancellablePromise from '/utils/CancellablePromise';
 
 function generateCancellablePromise({
     doTimeout = true,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { importImageAsync } from 'utils/Events';
-import AppContext, { AppContextFields } from 'utils/AppContext';
+import { importImageAsync } from '/utils/Events';
+import AppContext, { AppContextFields } from '/utils/AppContext';
 
 function Image(props) {
     const [ imageSrc, setImageSrc ] = useState('');

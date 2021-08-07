@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import Home from 'components/Home';
+import Home from '/components/Home';
 
 describe('Home', () => {
     it('should render the word "Home"', () => {

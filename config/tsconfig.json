@@ -34,6 +34,10 @@
                            // doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
                            // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
         "baseUrl": "../src", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
+        "paths": {
+            "@": [ "*" ],
+            "/": [ "*" ],
+        },
 //        "outDir": "../tsDist", // output dir of running `npx tsc`; don't use if using webpack/ts-loader
 //        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
     },

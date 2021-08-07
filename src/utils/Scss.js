@@ -1,5 +1,5 @@
-import { asNumber } from 'utils/Numbers';
-import CommonStyles from 'styles/Common.scss';
+import { asNumber } from '/utils/Numbers';
+import CommonStyles from '/styles/Common.scss';
 
 const { themeColors, gridBreakpoints } = CommonStyles;
 

@@ -1,4 +1,4 @@
-import { UPDATE_BROADCAST } from 'utils/Constants';
+import { UPDATE_BROADCAST } from '/utils/Constants';
 
 /**
  * This lets the app load faster on subsequent visits in production, and gives

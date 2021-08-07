@@ -1,4 +1,4 @@
-import { hyphenOrSnakeCaseToCamelCase } from 'utils/Text';
+import { hyphenOrSnakeCaseToCamelCase } from '/utils/Text';
 
 /**
  * Checks if all fields passed into the function exist nested

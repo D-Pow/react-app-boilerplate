@@ -45,12 +45,10 @@ process.env = {
     ...env,
     NODE_ENV: process.env.NODE_ENV || 'development',
     PUBLIC_URL: Paths.BUILD_OUTPUT.REL,
-    NODE_PATH: `${Paths.SRC.REL}/`
 };
 
 const publicEnv = {
     NODE_ENV: process.env.NODE_ENV,
-    NODE_PATH: process.env.NODE_PATH,
     PUBLIC_URL: process.env.PUBLIC_URL,
     BROADCAST_CHANNEL: broadcastChannel,
     MOCK: process.env.MOCK
@@ -246,7 +244,11 @@ const webpackConfig = {
         modules: [
             Paths.SRC.ABS,
             'node_modules'
-        ]
+        ],
+        alias: {
+            '@': Paths.SRC.ABS,
+            '/': Paths.SRC.ABS,
+        },
     },
     entry: {
         client: {

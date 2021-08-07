@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Anchor from 'components/ui/Anchor';
-import { isIpAddress } from 'utils/BrowserNavigation';
+import Anchor from '/components/ui/Anchor';
+import { isIpAddress } from '/utils/BrowserNavigation';
 
 /**
  * Embedding .pdf (and similar .doc, .docx, etc.) files is slightly more complicated

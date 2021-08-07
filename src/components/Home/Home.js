@@ -9,11 +9,11 @@ function Home() {
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className={'font-brush-script font-size-2em'}>Home</div>
             <button onClick={() => setRedirect('/about')}>Go to About</button>
             <button onClick={() => setRedirect('/animeSearch')}>Go to anime search</button>
-        </React.Fragment>
+        </>
     );
 }
 

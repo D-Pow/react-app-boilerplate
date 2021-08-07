@@ -30,13 +30,13 @@ function AnimeSearch(props) {
         }
 
         return (
-            <React.Fragment>
+            <>
                 <h5>Results</h5>
 
                 {searchResults.map((title, i) => (
                     <div key={i}>{title}</div>
                 ))}
-            </React.Fragment>
+            </>
         )
     }
 

@@ -10,9 +10,9 @@ class Row extends React.Component {
         });
 
         return (
-            <React.Fragment>
+            <>
                 {renderedColumns}
-            </React.Fragment>
+            </>
         );
     }
 }

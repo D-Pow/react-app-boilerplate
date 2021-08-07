@@ -71,9 +71,9 @@ function App() {
         >
             <div className={'app text-center'}>
                 <Router>
-                    <React.Fragment>
+                    <>
                         {renderedRoutes}
-                    </React.Fragment>
+                    </>
                 </Router>
             </div>
         </React.Suspense>

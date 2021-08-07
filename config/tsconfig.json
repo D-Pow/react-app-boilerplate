@@ -12,7 +12,7 @@
      * https://dev.to/open-wc/generating-typescript-definition-files-from-javascript-5bp2
      */
     "compilerOptions": {
-        "target": "ES6", // transpile code to ES6; this is okay b/c webpack transpiles this output down further
+        "target": "ESNext", // target environment to transpile down to; since we're using webpack/babel, do not transpile resulting JS b/c babel does a better job
         "lib": [
             "ESNext", // modern JS features
             "DOM" // fetch/XMLHttpRequest

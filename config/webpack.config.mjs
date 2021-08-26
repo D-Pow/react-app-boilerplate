@@ -420,6 +420,10 @@ const webpackConfig = {
         devMiddleware: {
             stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output
         },
+        client: {
+            overlay: true, // show full-screen display of compiler errors
+            // progress: true, // show compilation progress in browser console when webpack is (re-)compiling
+        },
         /*
          * For forwarding the specified URLs made to `devServer.host` to a different domain.
          *

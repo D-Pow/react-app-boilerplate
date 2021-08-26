@@ -1,3 +1,4 @@
+// TODO try AbortSignal: https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal
 class CancellablePromise extends Promise {
     cancelled = false; // If the promise has been cancelled
     children = []; // Hierarchy tracker so child promises are aware of parent promises' `cancelled` statuses

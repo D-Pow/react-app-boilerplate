@@ -10,6 +10,3 @@
 * [Tried, it was a pain] replace `babel-eslint` with `@babel-eslint-parser`
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically
-* ~~Remove `node_modules`/`vendor` from `webpack.entry`.~~
-    - [Ref](https://webpack.js.org/concepts/entry-points/#separate-app-and-vendor-entries)
-    - Test (again) on IE with MockRequests.

@@ -380,6 +380,7 @@ const webpackConfig = {
     },
     stats: { modules: false, children: false }, // clean up npm output
     devtool: sourceMap ? 'source-map' : false,
+    /** @type {import('@types/webpack-dev-server')} */
     devServer: {
         ...((exposeServerOnLan) => exposeServerOnLan
             // NOTE: You must allow webpack through your firewall for this to work.
@@ -388,19 +389,11 @@ const webpackConfig = {
                 // e.g.
                 // * LAN IP to access dev server from other devices
                 // * `localhost.example.com` to access CORS APIs for your website
-                host: LocalLanHostIpAddresses.IPv4,
-
-                // The public URL exposed to other devices.
-                // This computer's IP address + port
-                public: LocalLanHostIpAddresses.getPublicPath(true, useHttps ? 'https://' : null),
-
-                // allows others on the LAN to access this webpack-dev-server
-                disableHostCheck: true,
+                host: 'local-ipv4',
 
                 // other possibly useful fields:
                 // contentBase: absoluteBuildOutputPath,
                 // inline: true,
-                // useLocalIp: true,
                 // allowedHosts: [ '*' ],
 
                 /**
@@ -420,11 +413,13 @@ const webpackConfig = {
                 // }
             } : {})(allowAccessFromOtherDevicesOnLan),
         port: LocalLanHostIpAddresses.port,
-        stats: 'minimal',  // silence superfluous webpack-dev-server "emitted" output
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js
         historyApiFallback: true, // For React Router
         https: useHttps, // use HTTPS instead of HTTP
+        devMiddleware: {
+            stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output
+        },
         /*
          * For forwarding the specified URLs made to `devServer.host` to a different domain.
          *

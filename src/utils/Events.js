@@ -11,7 +11,7 @@
 export async function importImageAsync(image, base64 = false) {
     if (image != null && image !== '') {
         try {
-            const module = await import(`assets/${image}`);
+            const module = await import(`@/assets/${image}`);
             const imageSrc = module.default;
 
             if (base64) {

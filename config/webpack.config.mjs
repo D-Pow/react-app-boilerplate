@@ -242,7 +242,7 @@ const webpackConfig = {
     resolve: {
         extensions: [ '.ts', '.tsx', '.js', '.jsx', '*' ],
         modules: [
-            Paths.SRC.ABS,
+            // Paths.SRC.ABS, // allows treating src/* dirs/files as modules, i.e. `import X from 'dirUnderSrc/nested/File.ext';`. Unnecessary since src/* has been aliased to `/` and `@/`.
             'node_modules'
         ],
         alias: {

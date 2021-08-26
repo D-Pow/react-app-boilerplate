@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { objEquals } from '/utils/Objects';
 
 const STARTING_POSITION = 'STARTING_POSITION';
 
@@ -95,7 +96,7 @@ class InvestmentGrowthSvg extends React.Component {
             this.previousFrequency.current = this.props.frequency;
         }
 
-        return true;
+        return !objEquals(this.props, nextProps);
     }
 
     /**

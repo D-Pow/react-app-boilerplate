@@ -3,6 +3,7 @@
      * Use `tsc -b config.json` instead of `-p` because it has more features,
      * e.g. respecting project properties, only updating files that have changed, etc.
      * See: https://www.typescriptlang.org/docs/handbook/project-references.html#build-mode-for-typescript
+     * Exception: To specify other flags (e.g. --outDir), you must use `-p`.
      *
      * TS options:
      * Config file: https://www.typescriptlang.org/tsconfig

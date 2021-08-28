@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { fetchKitsuTitleSearch } from '/services/KitsuAnimeSearchService';
-import { useKeyboardEvent } from '/utils/Hooks';
+import { fetchKitsuTitleSearch } from '@/services/KitsuAnimeSearchService';
+import { useKeyboardEvent } from '@/utils/Hooks';
 
 function AnimeSearch(props) {
     const [ searchText, setSearchText ] = useState('');

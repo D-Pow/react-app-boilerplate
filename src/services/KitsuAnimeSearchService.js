@@ -1,4 +1,4 @@
-import { getSearchUrl, kitsuTitleSearchUrl } from '/services/Urls';
+import { getSearchUrl, kitsuTitleSearchUrl } from '@/services/Urls';
 
 export async function fetchKitsuTitleSearch(searchText) {
     try {

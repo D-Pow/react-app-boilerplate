@@ -28,9 +28,16 @@ const jestConfig = {
         Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestSetup.js'),
         Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js') // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],
-    modulePaths: [
-        Paths.SRC.ABS
-    ],
+    // Alternative to setting NODE_PATH (which defaults to `/`).
+    // `moduleNameMapper` allows more fine-grained control, which is better
+    // for our use case since we have multiple import aliases.
+    // modulePaths: [
+    //     Paths.SRC.ABS
+    // ],
+    moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^/(.*)$': '<rootDir>/$1',
+    },
     modulePathIgnorePatterns: [
         Paths.BUILD_ROOT.ABS
     ],

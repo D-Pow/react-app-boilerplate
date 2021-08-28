@@ -30,11 +30,10 @@
         [
             "babel-plugin-module-resolver",
             {
-                "root": [ "./src/" ],
+                "cwd": [ "packagejson" ],
                 "alias": {
                     "@": "./src/",
-                    "/": "./",
-                    "mocks": "./mocks/"
+                    "/": "./"
                 }
             }
         ]

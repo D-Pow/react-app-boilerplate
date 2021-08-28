@@ -1,5 +1,5 @@
-import { MOBILE_BROWSER_REGEX, MOBILE_OR_TABLET_REGEX } from '/utils/Constants';
-import { getGridBreakpoints } from '/utils/Scss';
+import { MOBILE_BROWSER_REGEX, MOBILE_OR_TABLET_REGEX } from '@/utils/Constants';
+import { getGridBreakpoints } from '@/utils/Scss';
 
 /**
  * Determines if the host browser is a mobile device.

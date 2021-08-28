@@ -1,4 +1,4 @@
-import { extractQuotedStrings } from '/utils/Text';
+import { extractQuotedStrings } from '@/utils/Text';
 
 describe('Text utils', () => {
     describe('extractQuotedStrings()', () => {

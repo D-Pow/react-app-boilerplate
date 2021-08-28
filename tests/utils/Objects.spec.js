@@ -6,7 +6,7 @@ import {
     diffObjects,
     objEquals,
     validateObjNestedFields
-} from '/utils/Objects';
+} from '@/utils/Objects';
 
 describe('Object utils', () => {
 

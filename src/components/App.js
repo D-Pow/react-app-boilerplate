@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
-import SpinnerCircle from '/components/ui/SpinnerCircle';
-import IncompatibleBrowserFallback from '/components/IncompatibleBrowserFallback';
-import AppContext from '/utils/AppContext';
-import { isMicrosoftBrowser } from '/utils/BrowserIdentification';
+import SpinnerCircle from '@/components/ui/SpinnerCircle';
+import IncompatibleBrowserFallback from '@/components/IncompatibleBrowserFallback';
+import AppContext from '@/utils/AppContext';
+import { isMicrosoftBrowser } from '@/utils/BrowserIdentification';
 
 /**
  * Lazy-load components so the page spinner is prioritized, loaded quickly, and unblocked from animating.
@@ -16,13 +16,13 @@ import { isMicrosoftBrowser } from '/utils/BrowserIdentification';
  * be loaded until the user traverses to /about.
  */
 
-const homeImportPromise = import(/* webpackChunkName: 'Home' */ 'components/Home');
+const homeImportPromise = import(/* webpackChunkName: 'Home' */ '@/components/Home');
 const Home = React.lazy(() => homeImportPromise);
 
-const aboutImportPromise = import(/* webpackChunkName: 'About' */ 'components/About');
+const aboutImportPromise = import(/* webpackChunkName: 'About' */ '@/components/About');
 const About = React.lazy(() => aboutImportPromise);
 
-const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ 'components/AnimeSearch');
+const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ '@/components/AnimeSearch');
 const AnimeSearch = React.lazy(() => animeSearchImportPromise);
 
 const routes = [

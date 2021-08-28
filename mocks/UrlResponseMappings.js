@@ -1,11 +1,11 @@
-import { kitsuTitleSearchUrl, getSearchUrl } from '/services/Urls';
+import { kitsuTitleSearchUrl, getSearchUrl } from '@/services/Urls';
 import {
     kimiNoNaWaResponse,
     narutoResponse,
     bleachResponse,
     fullmetalResponse,
     attackOnTitanResponse
-} from 'mocks/StaticResponses';
+} from '/mocks/StaticResponses';
 
 export function getKitsuTitleSearchUrl(searchText) {
     return getSearchUrl(kitsuTitleSearchUrl, searchText);

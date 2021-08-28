@@ -247,8 +247,7 @@ const webpackConfig = {
         ],
         alias: {
             '@': Paths.SRC.ABS,
-            '/': Paths.SRC.ABS,
-            mocks: Paths.MOCKS.ABS,
+            '/': Paths.ROOT.ABS,
         },
     },
     entry: {

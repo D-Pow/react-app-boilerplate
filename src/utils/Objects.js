@@ -30,6 +30,89 @@ export function validateObjNestedFields(obj, ...nestedFields) {
 }
 
 /**
+ * Attempts to parse a string into an object; stringifies anything else.
+ * Returns the original variable if it's not valid JSON.
+ *
+ * @param {(string|*)} variable - String to parse or object to stringify.
+ * @param {Object} options - Parsing options.
+ * @param {boolean} [options.keepFunctions=false] - Attempt maintaining function definitions when parsing `obj`.
+ * @param {number} [spaces=4] - Number of spaces to indent stringified object entries.
+ * @returns {*} - Vanilla JavaScript string or parsed object.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify}
+ */
+export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}) {
+    const funcToString = (key, val) => {
+        if (typeof val === typeof JSON.stringify) {
+            /*
+             * Function.prototype.toString() will keep original function names, but since
+             * the object has a key with the function name, we must replace it with `function` to avoid
+             * invalid syntax errors.
+             * Arrow functions remain unaffected.
+             *
+             * i.e.
+             * {
+             *   a: function(){}  -->  a: function(){},
+             *   b(){}  -->  b: b(){},  // invalid, so requires converting from `b()` to `function()`
+             *   c: () => {}  -->  c: () => {}
+             * }
+             */
+            return val.toString().replace(/^\w+/, 'function');
+        }
+
+        return val;
+    };
+    const stringToFunc = (key, val) => {
+        if (/^(function)?\(/.test(val)) {
+            /*
+             * Function constructor returns a new anonymous function with the content
+             * of the string passed to it.
+             * To keep the original function as-is, nest the string inside the anonymous
+             * function wrapper's return statement, then call that anonymous function
+             * to return the original function.
+             * It will automatically be set to `key` of the top-level object.
+             */
+            return new Function(`return ${val}`)();
+        }
+
+        return val;
+    }
+    const stringifier = keepFunctions ? funcToString : null;
+    const parser = keepFunctions ? stringToFunc : null;
+
+    try {
+        if (typeof variable === typeof '') {
+            try {
+                return JSON.parse(
+                    variable,
+                    parser
+                );
+            } catch (couldNotParseFunctions) {
+                return JSON.parse(
+                    variable,
+                    null
+                );
+            }
+        } else {
+            try {
+                return JSON.stringify(
+                    variable,
+                    stringifier,
+                    spaces
+                );
+            } catch (couldNotParseFunctions) {
+                return JSON.stringify(
+                    variable,
+                    null,
+                    spaces
+                );
+            }
+        }
+    } catch (invalidJsonFormat) {
+        return variable;
+    }
+}
+
+/**
  * Attempts to parse an object into a vanilla JavaScript object literal.
  *
  * @param {*} obj - Any type of object

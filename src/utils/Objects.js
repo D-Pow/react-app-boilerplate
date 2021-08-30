@@ -116,14 +116,15 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
  * Attempts to parse an object into a vanilla JavaScript object literal.
  *
  * @param {*} obj - Any type of object
- * @returns {(Object|*)} - Vanilla JavaScript object literal or original object on failure
+ * @param {Object} options - Parsing options.
+ * @param {boolean} [options.keepFunctions=false] - Attempt maintaining function definitions when parsing `obj`.
+ * @returns {*} - Vanilla JavaScript object literal or original object on failure
  */
-export function attemptParseObjLiteral(obj) {
-    try {
-        return JSON.parse(JSON.stringify(obj));
-    } catch (e) {
-        return obj;
-    }
+export function attemptParseObjLiteral(obj, { keepFunctions = false } = {}) {
+    return convertJson(
+        convertJson(obj, { keepFunctions }),
+        { keepFunctions }
+    );
 }
 
 /**

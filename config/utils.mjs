@@ -111,6 +111,10 @@ const Paths = (() => {
         CONFIG: {
             REL: 'config',
             ABS: null,
+            JEST: {
+                REL: 'jest',
+                ABS: null,
+            },
         },
         SRC: {
             REL: 'src',

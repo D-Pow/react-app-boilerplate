@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { defaults } from 'jest-config';
-import { Paths, processArgs, FileTypeRegexes } from './utils.mjs';
+import { Paths, processArgs, FileTypeRegexes } from '../utils.mjs';
 
 /*
  * Note: Add the `--no-cache` CLI option during development of jest transformers
@@ -22,10 +22,10 @@ const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(
 /** @type {import('@jest/types').Config.InitialOptions} */
 const jestConfig = {
     ...defaults,
-    rootDir: Paths.ROOT.REL,
+    rootDir: Paths.ROOT.ABS,
     testEnvironment: 'jsdom',
     setupFiles: [
-        Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestSetup.js'),
+        Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestSetup.js'),
         Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js') // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],
     // Alternative to setting NODE_PATH (which defaults to `/`).
@@ -48,7 +48,7 @@ const jestConfig = {
                 configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.json')
             }
         ],
-        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'jestAssetTransformer.mjs')
+        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestAssetTransformer.mjs')
     },
     // collectCoverage,
     coveragePathIgnorePatterns: nonSrcJestDirs,

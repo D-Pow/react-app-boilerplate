@@ -145,12 +145,23 @@ const Paths = (() => {
     //  }
     pathMappings.ROOT.ABS = path.resolve(process.cwd());
 
-    Object.entries(pathMappings).forEach(([ pathKey, pathConfig ]) => {
+    function setAbsPaths(pathConfig, prevRelPath) {
+        if (prevRelPath) {
+            pathConfig.REL = `${prevRelPath}/${pathConfig.REL}`;
+        }
+
         // Only set absolute path if not already defined
         if (!pathConfig.ABS) {
             pathConfig.ABS = path.resolve(pathMappings.ROOT.ABS, pathConfig.REL);
         }
-    });
+
+        // Recurse if nested path config present
+        Object.values(pathConfig)
+            .filter(configVal => configVal instanceof Object)
+            .forEach(nestedPathConfig => setAbsPaths(nestedPathConfig, pathConfig.REL));
+    }
+
+    Object.values(pathMappings).forEach(pathConfig => setAbsPaths(pathConfig));
 
     pathMappings.getFileAbsPath = (dirAbsPath, filename) => path.resolve(dirAbsPath, filename);
 

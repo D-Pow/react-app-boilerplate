@@ -103,54 +103,58 @@ const LocalLanHostIpAddresses = {
 
 
 const Paths = (() => {
-    const ROOT = {
-        REL: '..',
-        ABS: null
-    };
-    const CONFIG = {
-        REL: 'config',
-        ABS: null
-    };
-    const SRC = {
-        REL: 'src',
-        ABS: null
-    };
-    const BUILD_ROOT = { // output path for webpack build on machine, holds entire app but isn't used by it
-        REL: 'dist',
-        ABS: null
-    };
-    const BUILD_OUTPUT = { // output path for app, used by index.html
-        REL: 'static',
-        ABS: null
-    };
-    const MOCKS = {
-        REL: 'mocks',
-        ABS: null
-    };
-    const TESTS = {
-        REL: 'tests',
-        ABS: null
+    const pathMappings = {
+        ROOT: {
+            REL: '..',
+            ABS: null,
+        },
+        CONFIG: {
+            REL: 'config',
+            ABS: null,
+        },
+        SRC: {
+            REL: 'src',
+            ABS: null,
+        },
+        BUILD_ROOT: { // output path for webpack build on machine, holds entire app but isn't used by it
+            REL: 'dist',
+            ABS: null,
+        },
+        BUILD_OUTPUT: { // output path for app, used by index.html
+            REL: 'static',
+            ABS: null,
+        },
+        MOCKS: {
+            REL: 'mocks',
+            ABS: null,
+        },
+        TESTS: {
+            REL: 'tests',
+            ABS: null,
+        },
     };
 
     // `__dirname` doesn't exist in Node ESM
-    ROOT.ABS = path.resolve(process.cwd());
+    // Note: This only works when using `npm run <script>`.
+    // Otherwise, the CWD is the current shell's CWD.
+    // TODO convert to upward-recursive search for package.json, e.g.
+    //  thisFile = url.fileURLToPath(import.meta.url);
+    //  dir = path.dirname(thisFile);
+    //  while (!fs.existsSync(path.resolve(dir, 'package.json'))) {
+    //    dir = path.resolve(dir, '..');
+    //  }
+    pathMappings.ROOT.ABS = path.resolve(process.cwd());
 
-    [ CONFIG, SRC, BUILD_ROOT, BUILD_OUTPUT, MOCKS, TESTS ].forEach(pathConfig => {
-        pathConfig.ABS = path.resolve(ROOT.ABS, pathConfig.REL);
+    Object.entries(pathMappings).forEach(([ pathKey, pathConfig ]) => {
+        // Only set absolute path if not already defined
+        if (!pathConfig.ABS) {
+            pathConfig.ABS = path.resolve(pathMappings.ROOT.ABS, pathConfig.REL);
+        }
     });
 
-    const getFileAbsPath = (dirAbsPath, filename) => path.resolve(dirAbsPath, filename);
+    pathMappings.getFileAbsPath = (dirAbsPath, filename) => path.resolve(dirAbsPath, filename);
 
-    return {
-        ROOT,
-        CONFIG,
-        SRC,
-        BUILD_ROOT,
-        BUILD_OUTPUT,
-        MOCKS,
-        TESTS,
-        getFileAbsPath,
-    };
+    return pathMappings;
 })();
 
 

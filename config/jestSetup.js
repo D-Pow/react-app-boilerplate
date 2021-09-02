@@ -183,7 +183,7 @@ global.Request = jest.fn((url, options) => ({
  *
  * @param {Object} [obj=window] - Object for which to mock a property.
  * @param {string} property - Property of the `obj` to mock.
- * @param {PropertyDescriptor} mockDescriptor - Mocked value & configuration.
+ * @param {(PropertyDescriptor|*)} mockDescriptor - Either the mocked value or the configuration for `Object.defineProperty()`.
  * @returns {function} - Function to restore the mocked property back to its original value.
  */
 function mockObjProperty(

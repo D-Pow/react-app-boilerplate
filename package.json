@@ -27,7 +27,7 @@
     "predeploy": "npm run build"
   },
   "eslintConfig": {
-    "extends": "./config/.eslintrc.json"
+    "extends": "./config/.eslintrc.js"
   },
   "keywords": [
     "boilerplate",

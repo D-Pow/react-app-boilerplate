@@ -31,9 +31,12 @@ module.exports = {
         'react-hooks'
     ],
     rules: {
-        indent: [ 'error', 4, {
-            SwitchCase: 1,
+        indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
+            SwitchCase: 1, // Same for switch-case statements
             ignoredNodes: [ 'TemplateLiteral' ]
+        }],
+        eqeqeq: [ 'warn', 'always', {
+            null: 'ignore' // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
         }],
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,
@@ -44,7 +47,7 @@ module.exports = {
             nonEmpty: 'tag-aligned'
         }],
         'react/prop-types': 'warn',
-        'react/display-name': 'off', // don't error on arrow-function components
+        'react/display-name': 'off', // Don't error on arrow-function components
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
     },

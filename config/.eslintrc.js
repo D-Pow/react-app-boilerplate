@@ -1,3 +1,10 @@
+const path = require('path');
+
+// ESLint requires either JSON or CommonJS files, it doesn't support ESM.
+// Cannot `require()` .mjs files, so we must duplicate the code here.
+// Path is relative to package.json, much like the `eslintConfig.extends` entry.
+const babelConfigPath = path.resolve('./config/babel.config.json');
+
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
     env: {
@@ -18,15 +25,19 @@ module.exports = {
         __dirname: 'readonly',
         global: 'writable',
     },
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
     parserOptions: {
         ecmaVersion: 2021,
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
+        babelOptions: {
+            configFile: babelConfigPath,
+        },
     },
     plugins: [
+        '@babel',
         'react',
         'react-hooks'
     ],

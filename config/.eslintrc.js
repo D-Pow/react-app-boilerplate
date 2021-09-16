@@ -12,19 +12,6 @@ module.exports = {
         es6: true,
         jest: true,
     },
-    extends: [
-        'eslint:recommended',
-        'plugin:react/recommended',
-    ],
-    globals: {
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
-        require: 'readonly',
-        process: 'writable',
-        module: 'writable',
-        __dirname: 'readonly',
-        global: 'writable',
-    },
     parser: '@babel/eslint-parser',
     parserOptions: {
         ecmaVersion: 2021,
@@ -36,11 +23,24 @@ module.exports = {
             configFile: babelConfigPath,
         },
     },
+    extends: [
+        'eslint:recommended',
+        'plugin:react/recommended',
+    ],
     plugins: [
         '@babel',
         'react',
         'react-hooks'
     ],
+    globals: {
+        Atomics: 'readonly',
+        SharedArrayBuffer: 'readonly',
+        require: 'readonly',
+        process: 'writable',
+        module: 'writable',
+        __dirname: 'readonly',
+        global: 'writable',
+    },
     rules: {
         indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
             SwitchCase: 1, // Same for switch-case statements

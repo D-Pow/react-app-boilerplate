@@ -23,6 +23,10 @@ module.exports = {
             configFile: babelConfigPath,
         },
     },
+    ignorePatterns: [
+        '**/node_modules/**',
+        '**/.eslintrc*', // Since we're resolving the path from package.json, JetBrains throws error that `root/config/config/.eslintrc doesn't exist (fixed by simply ignoring this file)
+    ],
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',

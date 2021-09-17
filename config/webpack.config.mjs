@@ -255,7 +255,16 @@ const webpackConfig = {
             import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
             dependOn: 'common'
         },
-        common: [ 'isomorphic-fetch' ]
+        common: [
+            /*
+             * Polyfills not covered with core-js include:
+             * fetch, Proxy, BigInt, Intl, String.prototype.normalize
+             * See: https://github.com/zloirock/core-js#missing-polyfills
+             *
+             * Only polyfill `fetch()` since it's the only one used for now.
+             */
+            'isomorphic-fetch'
+        ]
     },
     output: {
         path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html

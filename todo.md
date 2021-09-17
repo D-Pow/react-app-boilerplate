@@ -7,6 +7,5 @@
         + Option: [html-webpack-multi-build-plugin](https://www.npmjs.com/package/html-webpack-multi-build-plugin)
 * Allow `type: module` in package.json without webpack crashing on src/ imports without extensions.
     - Starter: https://developpaper.com/browser-module-main-field-priority-you-dont-know-about-in-package-json/
-* [Tried, it was a pain] replace `babel-eslint` with `@babel-eslint-parser`
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically

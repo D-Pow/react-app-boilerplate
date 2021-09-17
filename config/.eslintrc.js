@@ -36,6 +36,12 @@ module.exports = {
         'react',
         'react-hooks'
     ],
+    // Settings for specific plugins
+    settings: {
+        react: { // `eslint-plugin-react` docs: https://github.com/yannickcr/eslint-plugin-react#configuration
+            version: 'detect', // Automatically detect React version
+        },
+    },
     globals: {
         Atomics: 'readonly',
         SharedArrayBuffer: 'readonly',

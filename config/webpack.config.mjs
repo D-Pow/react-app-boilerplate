@@ -16,9 +16,9 @@ import {
     LocalLanHostIpAddresses,
     importNonEsmFile,
 } from './utils.mjs';
-const babelConfig = importNonEsmFile('./babel.config.json');
-const packageJson = importNonEsmFile('../package.json');
-const manifestJson = importNonEsmFile('../src/manifest.json');
+const babelConfig = importNonEsmFile(Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.json'));
+const packageJson = importNonEsmFile(Paths.getFileAbsPath(Paths.ROOT.ABS, 'package.json'));
+const manifestJson = importNonEsmFile(Paths.getFileAbsPath(Paths.SRC.ABS, 'manifest.json'));
 
 
 const isProduction = process.env.NODE_ENV === 'production';

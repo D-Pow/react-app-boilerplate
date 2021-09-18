@@ -5,7 +5,7 @@
             {
                 "useBuiltIns": "usage",
                 "corejs": {
-                    "version": "3.16",
+                    "version": "3.17",
                     "proposals": true
                 },
                 "shippedProposals": true,

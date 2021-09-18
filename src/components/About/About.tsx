@@ -1,18 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-function About(): React.ReactElement {
+interface AboutProps {
+    className?: string;
+}
+
+function About(props: AboutProps = {}): React.ReactElement {
     return (
-        <div>About</div>
+        <>
+            <div className={props.className}>About</div>
+        </>
     );
 }
 
-About.propTypes = {
-
-};
-
 About.defaultProps = {
-
+    className: 'font-size-2em',
 };
 
 export default About;

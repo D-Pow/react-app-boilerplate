@@ -94,6 +94,38 @@ export function getXmlDocFromDataUrl(dataUrl) {
 
 
 /**
+ * Hashes a string with the specified algorithm.
+ *
+ * Algorithms can be selected from the `hash.ALGORITHMS` object.
+ *
+ * @param {string} text - String to hash.
+ * @param {string} [algorithm='SHA-256'] - The algorithm to use when hashing the supplied string; valid options can be used via the `hash.ALGORITHMS` object.
+ * @returns {Promise<string>} - The hashed string.
+ * @see [SubtleCrypt.digest]{@link https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string}
+ */
+export async function hash(text, algorithm = hash.ALGORITHMS.Sha256) {
+    const validAlgorithms = new Set(Object.values(hash.ALGORITHMS));
+
+    if (!validAlgorithms.has(algorithm)) {
+        throw new TypeError(`Error: Hash algorithm "${algorithm}" not supported. Valid values are: [ ${[...validAlgorithms].join(', ')} ].`);
+    }
+
+    const msgUint8 = new TextEncoder().encode(text);  // Encode as (utf-8) Uint8Array
+    const hashBuffer = await crypto.subtle.digest(algorithm, msgUint8);  // Hash the text
+    const hashArray = Array.from(new Uint8Array(hashBuffer));  // Convert buffer to byte array
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');  // Convert bytes to hex string
+
+    return hashHex;
+}
+hash.ALGORITHMS = {
+    Sha1: 'SHA-1',
+    Sha256: 'SHA-256',
+    Sha384: 'SHA-384',
+    Sha512: 'SHA-512',
+};
+
+
+/**
  * Converts hyphen-case and snake_case to camelCase.
  *
  * @param {string} str - Hyphen/snake-case string to convert to camelCase.

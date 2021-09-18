@@ -34,7 +34,7 @@ module.exports = {
     plugins: [
         '@babel',
         'react',
-        'react-hooks'
+        'react-hooks',
     ],
     // Settings for specific plugins
     settings: {
@@ -59,6 +59,23 @@ module.exports = {
         eqeqeq: [ 'warn', 'always', {
             null: 'ignore' // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
         }],
+        // Enforce spacing between square/curly braces except for nested arrays/objects
+        'object-curly-spacing': [ 'error', 'always', {
+            arraysInObjects: false,
+            objectsInObjects: false,
+        }],
+        'array-bracket-spacing': [ 'error', 'always', {
+            arraysInArrays: false,
+            objectsInArrays: false,
+        }],
+        'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
+        'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
+        semi: [ 'error', 'always' ], // Enforce semicolon usage
+        // Wait until https://github.com/eslint/eslint/issues/15078 is fixed, then uncomment below.
+        // 'no-unused-vars': [ 'error', {
+        //     // Prohibit unused vars unless they're functions
+        //     varsIgnorePattern: '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])',
+        // }],
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,
             indentLogicalExpressions: true

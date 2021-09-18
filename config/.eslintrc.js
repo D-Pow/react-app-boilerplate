@@ -76,6 +76,12 @@ module.exports = {
         //     // Prohibit unused vars unless they're functions
         //     varsIgnorePattern: '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])',
         // }],
+
+        // TODO Find out how to force imports to use aliases (unless ./File import)
+        //  I think we have to write our own plugin because none of the below work:
+        //  eslint-plugin-import, eslint-import-resolver-alias, eslint-plugin-import-alias
+        //  Starting point: https://stackoverflow.com/questions/66349222/how-to-enforce-a-rule-on-importing-path-using-alias-by-eslint
+
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,
             indentLogicalExpressions: true

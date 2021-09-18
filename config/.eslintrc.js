@@ -68,8 +68,16 @@ module.exports = {
             arraysInArrays: false,
             objectsInArrays: false,
         }],
+        'key-spacing': [ 'error', { // Add spaces after object keys' colons, `{ key: val }` instead of `{ key:val }`
+            beforeColon: false,
+            afterColon: true,
+        }],
         'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
         'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
+        'comma-spacing': [ 'error', { // Enforce spaces only after commas
+            before: false,
+            after: true,
+        }],
         semi: [ 'error', 'always' ], // Enforce semicolon usage
         // Wait until https://github.com/eslint/eslint/issues/15078 is fixed, then uncomment below.
         // 'no-unused-vars': [ 'error', {

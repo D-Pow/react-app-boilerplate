@@ -33,6 +33,7 @@ module.exports = {
     ],
     plugins: [
         '@babel',
+        '@typescript-eslint',
         'react',
         'react-hooks',
     ],
@@ -103,4 +104,10 @@ module.exports = {
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
     },
+    overrides: [
+        {
+            files: [ '*.ts?(x)' ],
+            parser: '@typescript-eslint/parser',
+        },
+    ],
 };

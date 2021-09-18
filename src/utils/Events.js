@@ -83,6 +83,40 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis = 
 }
 
 /**
+ * Throttles a function to only be called once per time limit.
+ *
+ * @param {function} func - Function to throttle.
+ * @param {number} timeLimit - Milliseconds to wait before allowing `func` to be called again.
+ * @param {Object} options
+ * @param {boolean} [options.bindThis=false] - Binds the value of `this` to its value when `throttle()` is called.
+ * @returns {function} - Decorated, throttled function.
+ */
+export function throttle(func, timeLimit, { bindThis = false } = {}) {
+    let wasCalled = false;
+    let self;
+
+    if (bindThis) {
+        self = this;
+    }
+
+    return (...args) => {
+        if (!wasCalled) {
+            wasCalled = true;
+
+            if (!bindThis) {
+                self = this;
+            }
+
+            func.call(self, ...args);
+
+            setTimeout(() => {
+                wasCalled = false;
+            }, timeLimit);
+        }
+    };
+}
+
+/**
  * Gets the path from the clicked element to the root.
  *
  * @param {Object} event - Click Event

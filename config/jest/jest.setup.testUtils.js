@@ -28,13 +28,13 @@
 function mockObjProperty(
     obj = window,
     property = '',
-    mockDescriptor
+    mockDescriptor,
 ) {
     const originalDescriptor = {
         // Default the value in case it was never defined in the first place
         value: undefined,
         // It's acceptable to spread `undefined`
-        ...Object.getOwnPropertyDescriptor(obj, property)
+        ...Object.getOwnPropertyDescriptor(obj, property),
     };
     // Get a default PropertyDescriptor with `configurable` and `enumerable` set to true.
     // Add in `writable`/`value` if `value` is specified, otherwise leave it out
@@ -50,12 +50,12 @@ function mockObjProperty(
             // Don't fill them in b/c e.g. `get() { return obj[property] }` will recurse indefinitely.
             // get() {}, // Property getter.
             // set(newVal) {}, // Property setter.
-        })
+        }),
     });
     const allowedGetterSetterKeys = new Set([ 'get', 'set' ]);
     const allowedKeys = new Set(
         Object.keys(getDefaultMockDescriptor(null))
-            .concat(...allowedGetterSetterKeys)
+            .concat(...allowedGetterSetterKeys),
     );
 
     if (

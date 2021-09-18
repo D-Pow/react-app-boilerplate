@@ -75,7 +75,7 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
         }
 
         return val;
-    }
+    };
     const stringifier = keepFunctions ? funcToString : null;
     const parser = keepFunctions ? stringToFunc : null;
 
@@ -84,12 +84,12 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
             try {
                 return JSON.parse(
                     variable,
-                    parser
+                    parser,
                 );
             } catch (couldNotParseFunctions) {
                 return JSON.parse(
                     variable,
-                    null
+                    null,
                 );
             }
         } else {
@@ -97,13 +97,13 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
                 return JSON.stringify(
                     variable,
                     stringifier,
-                    spaces
+                    spaces,
                 );
             } catch (couldNotParseFunctions) {
                 return JSON.stringify(
                     variable,
                     null,
-                    spaces
+                    spaces,
                 );
             }
         }
@@ -123,7 +123,7 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
 export function attemptParseObjLiteral(obj, { keepFunctions = false } = {}) {
     return convertJson(
         convertJson(obj, { keepFunctions }),
-        { keepFunctions }
+        { keepFunctions },
     );
 }
 
@@ -194,7 +194,7 @@ export function areVarsInstancesOf(a, b, ...classes) {
     }
 
     return [ a, b ].every(variable =>
-        classes.some(Cls => isInstanceOfClass(variable, Cls))
+        classes.some(Cls => isInstanceOfClass(variable, Cls)),
     );
 }
 
@@ -220,15 +220,15 @@ export function sortObjects(
         inPlace = true,
         stringIgnoreCase = false,
         stringIgnoreDiacritics = false,
-        stringLocale
-    } = {}
+        stringLocale,
+    } = {},
 ) {
     if (!objList || objList.length === 0 || !byFields || byFields.length === 0) {
         return objList;
     }
 
     if (!inPlace) {
-        objList = [...objList];
+        objList = [ ...objList ];
     }
 
     return objList.sort((obj1, obj2) => byFields.reduce((prevComparatorVal, field) => {
@@ -247,8 +247,8 @@ export function sortObjects(
             LENIENT: 'base',        // a == A  |  a == á
             ACCENT_ONLY: 'accent',  // a == A  |  a != á
             CASE_ONLY: 'case',      // a != A  |  a == á
-            STRICT: 'variant'       // a != A  |  a != á
-        }
+            STRICT: 'variant',      // a != A  |  a != á
+        };
         const sensitivity = (stringIgnoreCase && stringIgnoreDiacritics)
             ? CollatorSensitivities.LENIENT
             : (!stringIgnoreCase && !stringIgnoreDiacritics)
@@ -436,7 +436,7 @@ export function isObject(variable, {
     includeClasses = true,
     includeArrays = false,
     includeFunctions = false,
-    includeNull = false
+    includeNull = false,
 } = {}) {
     /**
      * JS variable breakdown:
@@ -641,13 +641,13 @@ export function deepCopy(obj) {
                  */
                 Object.defineProperty(copy, key, {
                     ...origKeyProperties,
-                    value: copiedVal.bind(copy)
+                    value: copiedVal.bind(copy),
                 });
             }
         } else {
             Object.defineProperty(copy, key, {
                 ...origKeyProperties,
-                value: copiedVal
+                value: copiedVal,
             });
         }
     });
@@ -670,7 +670,7 @@ export async function deepCopyStructuredClone(obj) {
             const { port1, port2 } = new MessageChannel();
 
             port2.onmessage = messageEvent => {
-                console.log(messageEvent.data)
+                console.log(messageEvent.data);
                 res(messageEvent.data);
             };
             port1.postMessage(obj);

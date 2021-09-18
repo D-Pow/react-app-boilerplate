@@ -42,7 +42,7 @@ export function isSafariBrowser() {
 export function isMicrosoftBrowser(includeEdge = true) {
     const userAgents = [
         'trident',  // IE 11
-        'msie'      // IE < 11
+        'msie',     // IE < 11
     ];
 
     if (includeEdge) {

@@ -4,7 +4,7 @@ function generateCancellablePromise({
     doTimeout = true,
     cancelInThen = false,
     throwInThen = false,
-    cancelInCatch = false
+    cancelInCatch = false,
 } = {}) {
     const p = new CancellablePromise((res, rej) => {
         if (doTimeout) {

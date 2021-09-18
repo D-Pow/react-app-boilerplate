@@ -54,7 +54,7 @@ function createClass(componentName, dirName = 'components', functionalComponent 
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
     const componentText = getComponentText(componentName, functionalComponent);
 
-    fs.mkdir(`${dir}`, {recursive: true}, err => {
+    fs.mkdir(`${dir}`, { recursive: true }, err => {
         if (err) {
             error(err);
         } else {

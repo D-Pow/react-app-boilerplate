@@ -18,7 +18,7 @@ export const COLORS = [
     'rosybrown',
     'royalblue',
     'salmon',
-    'sandybrown'
+    'sandybrown',
 ];
 
 const mobileBrowserRegexBase = '(android|bb\\d+|meego){}|avantgo|bada\\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\\.(browser|link)|vodafone|wap|windows ce|xda|xiino';
@@ -29,7 +29,7 @@ export const MOBILE_OR_TABLET_REGEX = new RegExp(mobileBrowserRegexBase.replace(
 export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const LINKS = {
-    GitHub: 'https://github.com/'
+    GitHub: 'https://github.com/',
 };
 
 export const UPDATE_BROADCAST = 'UPDATE';

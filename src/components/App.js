@@ -30,25 +30,25 @@ const routes = [
         path: '/',
         render: () => <Redirect to="/home" />,
         name: 'Home',
-        exact: true
+        exact: true,
     },
     {
         path: '/home',
         component: Home,
         name: 'Home',
-        exact: true
+        exact: true,
     },
     {
         path: '/about',
         component: About,
-        name: 'About'
+        name: 'About',
     },
     {
         path: '/animeSearch',
         component: AnimeSearch,
         name: 'AnimeSearch',
-        exact: true
-    }
+        exact: true,
+    },
 ];
 
 // TODO find a good polyfill for positive/negative look-ahead/-behind regex (not supported on IE)
@@ -58,7 +58,7 @@ function App() {
     const { contextState, setContextState } = useContext(AppContext.Context);
 
     if (blockInternetExplorer && isMicrosoftBrowser(false)) {
-        return <IncompatibleBrowserFallback />
+        return <IncompatibleBrowserFallback />;
     }
 
     const renderedRoutes = routes.map(routeAria => (

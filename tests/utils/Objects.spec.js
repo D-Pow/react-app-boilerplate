@@ -5,7 +5,7 @@ import {
     deepCopyStructuredClone,
     diffObjects,
     objEquals,
-    validateObjNestedFields
+    validateObjNestedFields,
 } from '@/utils/Objects';
 
 describe('Object utils', () => {
@@ -18,7 +18,7 @@ describe('Object utils', () => {
                 { key1: 'a', key2: 500, key3: 'Some Capitalized String' },
                 { key1: 'd', key2: 100, key3: 'some capitalized string' },
                 { key1: 'b', key2: 500, key3: 'another string' },
-                { key1: 'c', key2: 20, key3: 'Another String' }
+                { key1: 'c', key2: 20, key3: 'Another String' },
             ];
         });
 
@@ -111,11 +111,11 @@ describe('Object utils', () => {
         hiddenVal;
         arr = [
             {
-                a: 'A'
+                a: 'A',
             },
             {
-                a: 'B'
-            }
+                a: 'B',
+            },
         ];
         [symbolKey] = 'val';
         map = new Map();
@@ -158,12 +158,12 @@ describe('Object utils', () => {
         Object.defineProperties(orig, {
             x: {
                 value: xVal,
-                writable: true
+                writable: true,
             },
             y: {
                 value: yVal,
-                writable: false
-            }
+                writable: false,
+            },
         });
 
         const reference = new SampleComplexClass();
@@ -199,7 +199,7 @@ describe('Object utils', () => {
         expect(copy.val).not.toEqual(orig.val);
         expect(copy.val).toEqual(reference.val);
         expect(copy[symbolKey]).toEqual(orig[symbolKey]);
-        expect([...copy.map.entries()]).toEqual([...orig.map.entries()]);
+        expect([ ...copy.map.entries() ]).toEqual([ ...orig.map.entries() ]);
 
         const newVal = 'test2';
         const newX = 50;
@@ -244,8 +244,8 @@ describe('Object utils', () => {
     async function testCircularReferenceDeepCopy(isStructuredClone = false) {
         const origA = { x: 'X' };
         const origB = { y: 'Y' };
-        const a = {...origA};
-        const b = {...origB};
+        const a = { ...origA };
+        const b = { ...origB };
 
         a.b = b;
         b.a = a;
@@ -275,11 +275,11 @@ describe('Object utils', () => {
             a: {
                 b: 'B',
                 c: 25,
-                d: [ 1, 2, 3, 4 ]
+                d: [ 1, 2, 3, 4 ],
             },
             getBinA() {
                 return this.a.b;
-            }
+            },
         };
 
         it('should deep copy an object, including arrays and objects', () => {
@@ -332,10 +332,10 @@ describe('Object utils', () => {
                 data: {
                     someNestedData: 'myVal',
                     moreNesting: {
-                        moreNestedData: 'anotherVal'
-                    }
-                }
-            }
+                        moreNestedData: 'anotherVal',
+                    },
+                },
+            },
         };
 
         it('should check object validity by arguments of any length', () => {
@@ -367,10 +367,10 @@ describe('Object utils', () => {
         });
 
         it('should accept an array', () => {
-            const received1 = validateObjNestedFields(objToValidate, ['response', 'data', 'someNestedData']);
-            const received2 = validateObjNestedFields(objToValidate, ['response', 'data', 'moreNesting']);
-            const received3 = validateObjNestedFields(objToValidate, ['response', 'data', 'moreNesting', 'moreNestedData']);
-            const received4 = validateObjNestedFields(objToValidate, ['response']);
+            const received1 = validateObjNestedFields(objToValidate, [ 'response', 'data', 'someNestedData' ]);
+            const received2 = validateObjNestedFields(objToValidate, [ 'response', 'data', 'moreNesting' ]);
+            const received3 = validateObjNestedFields(objToValidate, [ 'response', 'data', 'moreNesting', 'moreNestedData' ]);
+            const received4 = validateObjNestedFields(objToValidate, [ 'response' ]);
             const received5 = validateObjNestedFields(objToValidate);
             const receivedInvalid = validateObjNestedFields(objToValidate, 'response-a', 'data', 'someNestedData');
 
@@ -390,22 +390,24 @@ describe('Object utils', () => {
                     b: {
                         c: false,
                         d: {
-                            e: null
+                            e: null,
                         },
                         f: {
-                            g: {}
-                        }
+                            g: {},
+                        },
                     },
                     c: [
                         {
-                            a: () => {}
+                            a: () => {},
                         },
                         {
-                            a: () => {'a';}
-                        }
-                    ]
+                            a: () => {
+                                'a';
+                            },
+                        },
+                    ],
                 },
-                arr: [ 'a', 'b' ]
+                arr: [ 'a', 'b' ],
             };
 
             const b = {
@@ -413,22 +415,24 @@ describe('Object utils', () => {
                     b: {
                         c: true,
                         d: {
-                            e: undefined
+                            e: undefined,
                         },
                         f: {
-                            g: {}
-                        }
+                            g: {},
+                        },
                     },
                     c: [
                         {
-                            a: () => {}
+                            a: () => {},
                         },
                         {
-                            a: () => {'b';}
-                        }
-                    ]
+                            a: () => {
+                                'b';
+                            },
+                        },
+                    ],
                 },
-                arr: [ 'a', 'b', 'c' ]
+                arr: [ 'a', 'b', 'c' ],
             };
 
             const delta = diffObjects(a, b);
@@ -443,13 +447,13 @@ describe('Object utils', () => {
         it('should find elements that differ in nested arrays', () => {
             const a = {
                 a: [
-                    [ 0, 1 ]
-                ]
+                    [ 0, 1 ],
+                ],
             };
             const b = {
                 a: [
-                    [ 0, 2 ]
-                ]
+                    [ 0, 2 ],
+                ],
             };
 
             const delta = diffObjects(a, b);
@@ -461,23 +465,23 @@ describe('Object utils', () => {
         it('should optionally exclude array index values', () => {
             const a = {
                 a: [
-                    [ 0, 1 ]
+                    [ 0, 1 ],
                 ],
                 b: [ 'a', 'b' ],
                 c: [
-                    { x: 3, y: 4 }
+                    { x: 3, y: 4 },
                 ],
-                d: [ 0, 1 ]
+                d: [ 0, 1 ],
             };
             const b = {
                 a: [
-                    [ 0, 2 ]
+                    [ 0, 2 ],
                 ],
                 b: [ 'a', 'b', 'c' ],
                 c: [
-                    { x: 3, y: 5, z: 6 }
+                    { x: 3, y: 5, z: 6 },
                 ],
-                d: [ 0, 1 ]
+                d: [ 0, 1 ],
             };
 
             const delta = diffObjects(a, b, false);
@@ -514,7 +518,9 @@ describe('Object utils', () => {
                 [ 'a', 'b' ],
                 [ 1, 2 ],
                 [ null, undefined ],
-                [ () => {}, () => {'a'} ]
+                [ () => {}, () => {
+                    'a';
+                } ],
             ];
 
             const testDiffForNonObjects = (a, b) => {
@@ -534,18 +540,18 @@ describe('Object utils', () => {
             const a = [
                 [ 'a', 'b', 'c' ],
                 [ 'd', 'e', 'f' ],
-                [ {}, {}, {} ],
+                [{}, {}, {}],
                 {
-                    g: 'G'
-                }
+                    g: 'G',
+                },
             ];
             const b = [
                 [ 'a', 'W', 'X' ],
                 [ 'd', 'Y', 'Z' ],
-                [ {}, {}, {} ],
+                [{}, {}, {}],
                 {
-                    g: 'G'
-                }
+                    g: 'G',
+                },
             ];
 
             const deltaWithIndexVals = diffObjects(a, b);
@@ -566,41 +572,41 @@ describe('Object utils', () => {
     describe('objEquals', () => {
         const notEqual1Obj1 = {
             a: {
-                b: 25
-            }
+                b: 25,
+            },
         };
         const notEqual1Obj2 = {
             a: {
-                b: '25'
-            }
+                b: '25',
+            },
         };
         const notEqual2Obj1 = {
             a: {
                 b: 'B',
                 c: 25,
-                d: [ 1, 2, 3, 4 ]
-            }
+                d: [ 1, 2, 3, 4 ],
+            },
         };
         const notEqual2Obj2 = {
             a: {
                 b: 'B',
                 c: 25,
-                d: [ 2, 1, 4, 3 ]
-            }
+                d: [ 2, 1, 4, 3 ],
+            },
         };
         const equalObj1 = {
             a: {
                 b: 'B',
                 c: 25,
-                d: [ 2, 1, 4, 3 ]
-            }
+                d: [ 2, 1, 4, 3 ],
+            },
         };
         const equalObj2 = {
             a: {
                 c: 25,
                 d: [ 2, 1, 4, 3 ],
-                b: 'B'
-            }
+                b: 'B',
+            },
         };
 
         it('should consider two objects equal only if values have the same types', () => {
@@ -624,7 +630,7 @@ describe('Object utils', () => {
                 5,
                 true,
                 undefined,
-                Symbol()
+                Symbol(),
             ];
 
             nonObjectVariables.forEach(type => {
@@ -636,16 +642,16 @@ describe('Object utils', () => {
             const likeObjects = [
                 {
                     variable: null,
-                    field: 'includeNull'
+                    field: 'includeNull',
                 },
                 {
                     variable: [],
-                    field: 'includeArrays'
+                    field: 'includeArrays',
                 },
                 {
                     variable: () => {},
-                    field: 'includeFunctions'
-                }
+                    field: 'includeFunctions',
+                },
             ];
             const includeValues = [ true, false ];
 
@@ -653,7 +659,7 @@ describe('Object utils', () => {
                 includeValues.forEach(expected => {
                     const { variable, field } = sample;
                     const received = isObject(variable, {
-                        [field]: expected
+                        [field]: expected,
                     });
 
                     expect(received).toBe(expected);
@@ -665,7 +671,7 @@ describe('Object utils', () => {
             const classTypes = [
                 new SampleCustomClass(), // custom class
                 new Date(), // native class
-                new String() // primitive wrapper
+                new String(), // primitive wrapper
             ];
 
             expect(isObject({})).toBe(true);

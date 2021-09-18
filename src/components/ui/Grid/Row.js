@@ -25,7 +25,7 @@ Row.propTypes = {
             }
         }
     },
-    gridTemplateAreas: PropTypes.arrayOf(PropTypes.string)
+    gridTemplateAreas: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Row;

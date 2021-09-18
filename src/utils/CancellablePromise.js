@@ -39,7 +39,7 @@ class CancellablePromise extends Promise {
                 }
 
                 return onError(catchResults);
-            }
+            },
         );
 
         // Add the newly-generated promise to the `children` array so that if it's cancelled, it's children can know about it
@@ -60,7 +60,7 @@ class CancellablePromise extends Promise {
                 }
 
                 return onError(catchResults);
-            }
+            },
         );
 
         this.children.push(resultingPromise);
@@ -78,7 +78,7 @@ class CancellablePromise extends Promise {
         const resultingPromise = super.then.call( // Call `.then()` since it has both success and fail handler functions
             this,
             handleFinally,
-            handleFinally
+            handleFinally,
         );
 
         return resultingPromise;

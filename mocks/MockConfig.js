@@ -37,7 +37,7 @@ if (useStaticMock) {
     MockRequests.configureDynamicResponses({
         [kitsuTitleSearchUrl]: {
             dynamicResponseModFn: chooseMockBasedOnQuery,
-            usePathnameForAllQueries: true
-        }
+            usePathnameForAllQueries: true,
+        },
     });
 }

@@ -57,7 +57,7 @@ module.exports = {
             ignoredNodes: [ 'TemplateLiteral' ]
         }],
         eqeqeq: [ 'warn', 'always', {
-            null: 'ignore' // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
+            null: 'ignore', // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
         }],
         // Enforce spacing between square/curly braces except for nested arrays/objects
         'object-curly-spacing': [ 'error', 'always', {
@@ -92,11 +92,11 @@ module.exports = {
 
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,
-            indentLogicalExpressions: true
+            indentLogicalExpressions: true,
         }],
         'react/jsx-closing-bracket-location': [ 'error', {
             selfClosing: 'tag-aligned',
-            nonEmpty: 'tag-aligned'
+            nonEmpty: 'tag-aligned',
         }],
         'react/prop-types': 'warn',
         'react/display-name': 'off', // Don't error on arrow-function components

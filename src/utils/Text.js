@@ -107,7 +107,7 @@ export async function hash(text, algorithm = hash.ALGORITHMS.Sha256) {
     const validAlgorithms = new Set(Object.values(hash.ALGORITHMS));
 
     if (!validAlgorithms.has(algorithm)) {
-        throw new TypeError(`Error: Hash algorithm "${algorithm}" not supported. Valid values are: [ ${[...validAlgorithms].join(', ')} ].`);
+        throw new TypeError(`Error: Hash algorithm "${algorithm}" not supported. Valid values are: [ ${[ ...validAlgorithms ].join(', ')} ].`);
     }
 
     const msgUint8 = new TextEncoder().encode(text);  // Encode as (utf-8) Uint8Array

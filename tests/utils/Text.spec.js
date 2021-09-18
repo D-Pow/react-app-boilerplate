@@ -11,7 +11,7 @@ describe('Text utils', () => {
                 `"String spanning multiple lines due to escaped quote\\"
                 "`,
                 `"Foo Bar"`,
-                `"Another Value"`
+                `"Another Value"`,
             ];
 
             const aggregateString = `Hello world ${testStrings[0]}

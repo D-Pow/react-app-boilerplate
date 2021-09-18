@@ -12,7 +12,7 @@ function SpinnerCircle(props) {
 }
 
 SpinnerCircle.propTypes = {
-    show: PropTypes.bool
+    show: PropTypes.bool,
 };
 
 export default SpinnerCircle;

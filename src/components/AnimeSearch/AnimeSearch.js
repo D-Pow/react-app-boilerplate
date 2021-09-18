@@ -37,8 +37,8 @@ function AnimeSearch(props) {
                     <div key={i}>{title}</div>
                 ))}
             </>
-        )
-    }
+        );
+    };
 
     return (
         <div>

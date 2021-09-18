@@ -13,7 +13,7 @@ export const TimeInMillis = {
     Hours,
     Days,
     Weeks,
-    Years
+    Years,
 };
 
 export function getDate(dateStr) {

@@ -37,7 +37,7 @@ export function getQueryParams({
 
     const urlSearchQuery = fromUrl.split('?')[1];
 
-    return [...new URLSearchParams(urlSearchQuery).entries()]
+    return [ ...new URLSearchParams(urlSearchQuery).entries() ]
         .reduce((queryParams, nextQueryParam) => {
             const [ key, value ] = nextQueryParam;
 
@@ -111,7 +111,7 @@ export function pushQueryParamOnHistory(key, value) {
     history.pushState(
         null,
         null,
-        newUrl
+        newUrl,
     );
 }
 
@@ -154,7 +154,7 @@ export function getUrlSegments(url = '') {
         port,
         pathname,
         queryString,
-        hash
+        hash,
     ] = urlPiecesRegex.exec(url);
     let origin = protocol + domain + (port ? `:${port}` : '');
     const queryParamHashString = queryString + hash;

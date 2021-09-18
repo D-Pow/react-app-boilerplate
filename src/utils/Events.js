@@ -142,7 +142,7 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
         }
     }
 
-    return elementIsInPath
+    return elementIsInPath;
 }
 
 /**

@@ -15,7 +15,7 @@ const rootDiv = document.getElementById('root');
 
 ReactDOM.render(
     renderedApp,
-    rootDiv
+    rootDiv,
 );
 
 registerServiceWorker();
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== 'production' && module.hot) {
         const NextApp = require('components/App').default;
         ReactDOM.render(
             <NextApp />,
-            rootDiv
-        )
-    })
+            rootDiv,
+        );
+    });
 }

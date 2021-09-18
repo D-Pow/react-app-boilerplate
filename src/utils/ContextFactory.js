@@ -108,7 +108,7 @@ export default function ContextFactory(defaultValue = null, displayName = '') {
                 // Preserve previous state and set new state key/val.
                 hookSetContextState(prevState => ({
                     ...prevState,
-                    ...args
+                    ...args,
                 }));
             }
         };

@@ -7,46 +7,46 @@ const STARTING_POSITION = 'STARTING_POSITION';
 const Frequencies = {
     WEEKLY: 'WEEKLY',
     MONTHLY: 'MONTHLY',
-    NEVER: 'NEVER'
+    NEVER: 'NEVER',
 };
 
 const FrequencySvgPropsMapping = {
     [STARTING_POSITION]: {
         path: {
-            d: 'M0 141C0 141 0 141 0 141'
+            d: 'M0 141C0 141 0 141 0 141',
         },
         circle: {
             cx: '0',
-            cy: '141'
-        }
+            cy: '141',
+        },
     },
     [Frequencies.WEEKLY]: {
         path: {
-            d: 'M0 141C0 141 315.711 123.5 480 5'
+            d: 'M0 141C0 141 315.711 123.5 480 5',
         },
         circle: {
             cx: '482',
-            cy: '4'
-        }
+            cy: '4',
+        },
     },
     [Frequencies.MONTHLY]: {
         path: {
-            d: 'M-1 141C-1 141 302.338 134.435 482.5 107'
+            d: 'M-1 141C-1 141 302.338 134.435 482.5 107',
         },
         circle: {
             cx: '482.5',
-            cy: '107'
-        }
+            cy: '107',
+        },
     },
     [Frequencies.NEVER]: {
         path: {
-            d: 'M-2 141C-2 141 299.326 139.919 478 136'
+            d: 'M-2 141C-2 141 299.326 139.919 478 136',
         },
         circle: {
             cx: '480',
-            cy: '135'
-        }
-    }
+            cy: '135',
+        },
+    },
 };
 
 class InvestmentGrowthSvg extends React.Component {
@@ -54,13 +54,13 @@ class InvestmentGrowthSvg extends React.Component {
 
     animatedSvgChildIds = {
         path: 'growth-plot',
-        circle: 'growth-plot-end'
+        circle: 'growth-plot-end',
     };
 
     get animationDefaultProps() {
         return {
             fill: 'freeze',
-            dur: this.previousFrequency.current === STARTING_POSITION ? '700ms' : '150ms'
+            dur: this.previousFrequency.current === STARTING_POSITION ? '700ms' : '150ms',
         };
     }
 
@@ -182,14 +182,14 @@ InvestmentGrowthSvg.propTypes = {
     animationProps: PropTypes.object,
     className: PropTypes.string,
     frequency: PropTypes.oneOf(Object.values(Frequencies)),
-    responsiveSize: PropTypes.bool
+    responsiveSize: PropTypes.bool,
 };
 
 InvestmentGrowthSvg.defaultProps = {
     animationProps: {},
     className: '',
     frequency: Frequencies.WEEKLY,
-    responsiveSize: true
+    responsiveSize: true,
 };
 
 export default InvestmentGrowthSvg;

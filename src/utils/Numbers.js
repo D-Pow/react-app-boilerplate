@@ -29,7 +29,7 @@ export function median(...nums) {
         nums = nums[0];
     }
 
-    const sortedNums = [...nums].sort((a, b) => a - b);
+    const sortedNums = [ ...nums ].sort((a, b) => a - b);
     const isOdd = sortedNums.length % 2 !== 0;
     const mid = Math.floor(sortedNums.length / 2);
 

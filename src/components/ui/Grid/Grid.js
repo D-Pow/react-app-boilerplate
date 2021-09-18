@@ -34,13 +34,13 @@ class Grid extends React.Component {
     render() {
         const { gridTemplateAreasText, gridAreaNamesUsed } = this.generateGridNames();
         const renderedRows = React.Children.map(this.props.children, (row, index) => {
-            return React.cloneElement(row, { gridTemplateAreas: gridAreaNamesUsed[index]})
+            return React.cloneElement(row, { gridTemplateAreas: gridAreaNamesUsed[index] });
         });
 
         const { aria: { style: ariaStyle, ...aria }} = this.props;
         const style = {
             ...ariaStyle,
-            gridTemplateAreas: gridTemplateAreasText
+            gridTemplateAreas: gridTemplateAreasText,
         };
 
         return (
@@ -60,12 +60,12 @@ Grid.propTypes = {
         }
     },
     className: PropTypes.string,
-    aria: PropTypes.object
+    aria: PropTypes.object,
 };
 
 Grid.defaultProps = {
     className: '',
-    aria: {}
+    aria: {},
 };
 
 export default Grid;

@@ -4,7 +4,7 @@ import {
     narutoResponse,
     bleachResponse,
     fullmetalResponse,
-    attackOnTitanResponse
+    attackOnTitanResponse,
 } from '/mocks/StaticResponses';
 
 export function getKitsuTitleSearchUrl(searchText) {
@@ -24,7 +24,7 @@ export const queryParamResponseMap = {
     [narutoSearchQuery]: narutoResponse,
     [bleachSearchQuery]: bleachResponse,
     [fullmetalSearchQuery]: fullmetalResponse,
-    [attackOnTitanSearchQuery]: attackOnTitanResponse
+    [attackOnTitanSearchQuery]: attackOnTitanResponse,
 };
 
 export const staticUrlResponseConfig = Object.keys(queryParamResponseMap).reduce((fullUrlConfig, searchQuery) => {

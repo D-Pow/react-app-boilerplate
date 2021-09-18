@@ -2,7 +2,7 @@ import MockRequests from 'mock-requests';
 import {
     getKitsuTitleSearchUrl,
     kitsuSearchQueryParamKey,
-    queryParamResponseMap
+    queryParamResponseMap,
 } from '/mocks/UrlResponseMappings';
 
 /**

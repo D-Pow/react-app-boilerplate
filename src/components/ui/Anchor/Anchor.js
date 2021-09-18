@@ -26,7 +26,7 @@ Anchor.Targets = {
     NEW_TAB: '_blank',
     SAME_TAB: '_self',
     PARENT: '_parent',
-    TOP: '_top'
+    TOP: '_top',
 };
 
 Anchor.propTypes = {
@@ -36,10 +36,10 @@ Anchor.propTypes = {
     underlineText: PropTypes.bool,
     rel: PropTypes.oneOfType([
         PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string)
+        PropTypes.arrayOf(PropTypes.string),
     ]),
     target: PropTypes.string,
-    aria: PropTypes.object
+    aria: PropTypes.object,
 };
 
 Anchor.defaultProps = {
@@ -49,7 +49,7 @@ Anchor.defaultProps = {
     underlineText: true,
     rel: [ 'noopener', 'noreferrer' ],
     target: Anchor.Targets.NEW_TAB,
-    aria: {}
+    aria: {},
 };
 
 export default Anchor;

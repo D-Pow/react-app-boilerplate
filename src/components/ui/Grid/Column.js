@@ -17,12 +17,12 @@ Column.propTypes = {
     className: PropTypes.string,
     colSpan: PropTypes.number,
     gridArea: PropTypes.string,
-    children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ])
+    children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ]),
 };
 
 Column.defaultProps = {
     colSpan: 1,
-    gridArea: Column.name
+    gridArea: Column.name,
 };
 
 export default Column;

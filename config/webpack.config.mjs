@@ -111,7 +111,7 @@ const webpackConfig = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            configFile: `${Paths.CONFIG.REL}/tsconfig.json`
+                            configFile: `${Paths.ROOT.ABS}/tsconfig.json`
                         }
                     }
                 ]

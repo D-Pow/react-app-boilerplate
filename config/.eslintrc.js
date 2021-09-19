@@ -3,7 +3,7 @@ const path = require('path');
 // ESLint requires either JSON or CommonJS files, it doesn't support ESM.
 // Cannot `require()` .mjs files, so we must duplicate the code here.
 // Path is relative to package.json, much like the `eslintConfig.extends` entry.
-const babelConfigPath = path.resolve('./config/babel.config.json');
+const babelConfigPath = path.resolve('./config/babel.config.js');
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {

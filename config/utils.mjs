@@ -279,8 +279,8 @@ function getOutputFileName(
 
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
-        ? fileNameFull.slice(fileNameFull.indexOf('.')) // babel.config.json  -->  .config.json
-        : path.extname(fileNameFull); // babel.config.json  -->  .json
+        ? fileNameFull.slice(fileNameFull.indexOf('.')) // babel.config.js  -->  .config.json
+        : path.extname(fileNameFull); // babel.config.js  -->  .json
     const fileNameWithoutExtension = fileNameFull.replace(fileExtension, '');
     const filePath = path.dirname(filenameWithRelativePath);
     const filePathInsideSrc = filePath.replace(new RegExp(`\\/?${Paths.SRC.REL}\\/`), '');

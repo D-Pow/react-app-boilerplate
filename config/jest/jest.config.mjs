@@ -45,7 +45,7 @@ const jestConfig = {
         [scriptFiles]: [
             'babel-jest',
             {
-                configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.json')
+                configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js')
             }
         ],
         [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestAssetTransformer.mjs')

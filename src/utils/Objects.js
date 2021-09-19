@@ -128,6 +128,28 @@ export function attemptParseObjLiteral(obj, { keepFunctions = false } = {}) {
 }
 
 /**
+ * Inverse of `Object.entries(obj)`: Converts an Nx2 matrix into an object.
+ * If any key is seen twice, then the resulting value of that key in the object will be an array
+ * of values.
+ *
+ * @param {*[][]} matrix - Matrix to convert to an object.
+ * @returns {Object} - Object representation of the matrix.
+ */
+export function matrixToObj(matrix) {
+    return matrix.reduce((obj, [ key, val ]) => {
+        if (!(key in obj)) {
+            obj[key] = val;
+        } else if (Array.isArray(obj[key])) {
+            obj[key].push(val);
+        } else {
+            obj[key] = [ obj[key], val ];
+        }
+
+        return obj;
+    }, {});
+}
+
+/**
  * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
  *
  * Particularly useful for converting CLI arg objects created by `yargs-parser`, `minimist`, etc.

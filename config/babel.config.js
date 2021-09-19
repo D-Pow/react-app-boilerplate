@@ -24,7 +24,11 @@ module.exports = {
         [
             '@babel/plugin-proposal-decorators',
             {
-                legacy: true
+                ...(useLegacyDecorators =>
+                    useLegacyDecorators
+                        ? { legacy: true }
+                        : { decoratorsBeforeExport: true } // Whether decorators should be placed before or after `export`
+                )(false)
             },
         ],
         [

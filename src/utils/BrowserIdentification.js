@@ -51,7 +51,7 @@ export function isMicrosoftBrowser(includeEdge = true) {
 
     const browserRegex = `(${userAgents.join('|')})`;
 
-    return Boolean(navigator.userAgent.toLowerCase().match(new RegExp(browserRegex)));
+    return Boolean(navigator.userAgent.toLowerCase().match(new RegExp(browserRegex, 'i')));
 }
 
 export function isChromeBrowser() {

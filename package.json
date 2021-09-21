@@ -15,18 +15,18 @@
   },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.mjs",
-    "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start",
-    "mock": "cross-env MOCK=true npm start",
-    "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock",
+    "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start --",
+    "mock": "cross-env MOCK=true npm start --",
+    "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock --",
     "test": "jest --config config/jest/jest.config.mjs tests",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
-    "lint:all": "npm run lint .",
+    "lint:all": "npm run lint . --",
     "create": "node scripts/createComponent.js",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
-    "prebuild": "npm run clean",
+    "prebuild": "npm run clean --",
     "clean": "npx shx rm -rf dist coverage",
     "deploy": "gh-pages -d dist",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build --"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.js"

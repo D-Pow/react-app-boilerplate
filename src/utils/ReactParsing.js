@@ -7,6 +7,18 @@
 export function getChildName(child) {
     // child.type.name for React.Component
     // child.type for HTML elements
+    // child.type.type.name for React.memo(MyComponent)
+    // child.render.name for React.forwardRef(MyComponent)
+    if (typeof child.type === typeof {}) {
+        while (!(child.type?.name)) {
+            if (child.render) {
+                return child.render.name;
+            }
+
+            child = child.type;
+        }
+    }
+
     return child.type.name || child.type;
 }
 

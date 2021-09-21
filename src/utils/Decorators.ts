@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-vars */
 /**
- * Descriptor passed to decorators.
- * Decorators can decorate a class itself or one of its properties.
- * Property can be a variable or function (including getters/setters).
+ * Descriptor passed to decorator functions.
+ * Decorators can decorate a class itself or one of its properties,
+ * including static/instance variables, functions, and getters/setters.
  *
- * Decorator will be called *before* the class is actually initialized, so class variables and
- * arrow functions (both static and instance)\ won't appear in the PropertyDescriptor's `value` field.
+ * Decorator will be called *before* the decorated field is actually initialized, so class variables and
+ * arrow functions (both static and instance) won't appear in the PropertyDescriptor's `value` field.
  * Instead, the `value` field will be replaced with an `initializer` function which is used to create
- * the value for the given property. More details [here]{@link https://github.com/tc39/proposal-decorators#2-calling-decorators}.
- *
- * This will change over time to include new features, such as distinctions between `method` and `getter/setter`,
+ * the value for the given property.
+ * This will likely change over time to include new features, such as distinctions between `method` and `getter/setter`,
  * `metadata`, etc.
+ *
+ * @see [TC39 proposal docs]{@link https://github.com/tc39/proposal-decorators#2-calling-decorators}
  */
 interface DecoratorDescriptor {
     kind: 'class' | 'method' | 'field';
@@ -38,6 +39,8 @@ type DecoratorFunctionNew = (decoratorDescriptor: DecoratorDescriptor) => any;
 /**
  * Legacy decorator function API.
  * Activate with `@babel/plugin-proposal-decorators` --> `legacy: true`.
+ *
+ * @see [TypeScript decorator docs]{@link https://www.typescriptlang.org/docs/handbook/decorators.html}
  */
 type DecoratorFunctionLegacy = (
     /**

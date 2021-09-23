@@ -201,15 +201,22 @@ export function getUrlSegments(url = '') {
  *
  * @param {string} url - URL to test.
  * @param {boolean} [onlyLocalHost=false] - If only localhost IP addresses should be checked.
+ * @param {boolean} [includeLocalhostDomain=true] - If `https?://localhost` should be included in `onlyLocalHost` check.
  * @returns {boolean} - If the URL is an IP address (and if it's an IP address for localhost if desired).
  */
-export function isIpAddress(url, onlyLocalHost = false) {
+export function isIpAddress(url, onlyLocalHost = false, includeLocalhostDomain = true) {
     if (onlyLocalHost) {
         const { domain } = getUrlSegments(url);
 
         // TODO IPv6
         // see: https://en.wikipedia.org/wiki/Reserved_IP_addresses
-        return !!domain.match(/^((127|19[28]|1?0)\.)|(172\.(1[6-9]|2|31))/);
+        return !!(
+            domain.match(/^((127|19[28]|1?0)\.)|(172\.(1[6-9]|2|31))/)
+            || (
+                includeLocalhostDomain &&
+                domain.match(/localhost/)
+            )
+        );
     }
 
     return !!url.match(/^([^/]*:\/\/)?(\d{1,3}\.){3}(\d{1,3}(?!\.))/);

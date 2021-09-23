@@ -47,7 +47,7 @@ export default ${componentName};
     );
 }
 
-function createClass(componentName, dirName = 'components', functionalComponent = false) {
+function createComponentInDirectory(componentName, dirName = 'components', functionalComponent = false) {
     const dir = `./src/${dirName}/${componentName}`;
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
     const componentText = getComponentText(componentName, functionalComponent);
@@ -80,7 +80,7 @@ function printUsage() {
     `;
 
     console.log(usage);
-    process.exit(0);
+    process.exit(1);
 }
 
 function error(err) {
@@ -107,7 +107,7 @@ function main() {
         printUsage();
     }
 
-    createClass(componentName, dirName, isFunctionalComponent);
+    createComponentInDirectory(componentName, dirName, isFunctionalComponent);
 }
 
 main();

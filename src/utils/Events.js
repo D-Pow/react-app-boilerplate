@@ -1,3 +1,5 @@
+const importImageAsyncCache = {};
+
 /**
  * Asynchronously imports the specified image from the 'assets/' folder.
  * Optionally returns the resolved image data encoded with Base64.
@@ -11,11 +13,17 @@
 export async function importImageAsync(image, base64 = false) {
     if (image != null && image !== '') {
         try {
+            const cachedImageSrc = importImageAsyncCache[image];
+
+            if (cachedImageSrc && (cachedImageSrc.base64 === base64)) {
+                return importImageAsyncCache[image].imageSrc;
+            }
+
             const module = await import(`@/assets/${image}`);
             const imageSrc = module.default;
 
             if (base64) {
-                return fetch(imageSrc).then(res => res.blob()).then(blob => new Promise((res, rej) => {
+                const imageSrcBase64 = await fetch(imageSrc).then(res => res.blob()).then(blob => new Promise((res, rej) => {
                     const reader = new FileReader();
                     reader.onload = () => {
                         res(reader.result);
@@ -25,6 +33,18 @@ export async function importImageAsync(image, base64 = false) {
                     };
                     reader.readAsDataURL(blob);
                 }));
+
+                importImageAsyncCache[image] = {
+                    imageSrc: imageSrcBase64,
+                    base64,
+                };
+
+                return imageSrcBase64;
+            } else {
+                importImageAsyncCache[image] = {
+                    imageSrc,
+                    base64,
+                };
             }
 
             return imageSrc;

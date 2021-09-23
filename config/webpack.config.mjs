@@ -402,7 +402,7 @@ const webpackConfig = {
                 // other possibly useful fields:
                 // contentBase: absoluteBuildOutputPath,
                 // inline: true,
-                // allowedHosts: [ '*' ],
+                // allowedHosts: [ '.example.com', 'localhost.other-service' ] || 'all',
 
                 /**
                  * If you want to log every attempt to connect to '/' and/or '/index.html'.

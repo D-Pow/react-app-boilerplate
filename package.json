@@ -18,7 +18,7 @@
     "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start --",
     "mock": "cross-env MOCK=true npm start --",
     "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock --",
-    "test": "jest --config config/jest/jest.config.mjs tests",
+    "test": "jest tests",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx",
     "lint:all": "npm run lint . --",
     "createComponent": "node scripts/createComponent.js",
@@ -27,6 +27,9 @@
     "clean": "npx shx rm -rf dist coverage",
     "deploy": "gh-pages -d dist",
     "predeploy": "npm run build --"
+  },
+  "jest": {
+    "preset": "./config/jest/jest.config.mjs"
   },
   "eslintConfig": {
     "extends": "./config/.eslintrc.js"

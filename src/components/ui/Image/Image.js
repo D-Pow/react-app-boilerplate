@@ -8,9 +8,9 @@ function Image(props) {
     const { setContextState } = useContext(AppContext.Context);
 
     async function loadImageSrc() {
-        const imageSrc = await importImageAsync(props.image);
+        const imageSrcResponse = await importImageAsync(props.image);
 
-        setImageSrc(imageSrc);
+        setImageSrc(imageSrcResponse);
     }
 
     useEffect(() => {

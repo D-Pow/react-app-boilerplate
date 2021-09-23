@@ -1,7 +1,5 @@
 const fs = require('fs');
-
-const COMPONENT_NAME_INDEX = 2;
-const DIR_NAME_INDEX = 3;
+const parseCliArgs = require('../config/parseCliArgs');
 
 function getClassComponentText(componentName) {
     return (
@@ -77,8 +75,10 @@ function createClass(componentName, dirName = 'components', functionalComponent 
 
 
 function printUsage() {
-    const usage = "Creates a component inside its own folder in the src/ directory along with an index.js file" +
-        "\nUsage: createComponent NAME [directory under src/] [func|make functional component]";
+    const usage = `Creates a component inside its own folder in the src/ directory along with an index.js file.
+    Usage: createComponent [-d|--dir = directoryUnderSrc] [-f|--func] ComponentName
+    `;
+
     console.log(usage);
     process.exit(0);
 }
@@ -88,24 +88,26 @@ function error(err) {
     process.exit(1);
 }
 
-function processArgs(args) {
-    const functionalComponentFlagIndex = args.indexOf('func');
-    const functionalComponentFlag = functionalComponentFlagIndex >= 0;
+function main() {
+    const args = parseCliArgs({
+        combineShortLongFlags: {
+            isFunctionalComponent: [ 'f', 'func' ],
+            dirName: [ 'd', 'dir' ],
+        },
+        numArgs: {
+            isFunctionalComponent: 0,
+            dirName: 1,
+        },
+    });
 
-    if (functionalComponentFlag) {
-        args.splice(functionalComponentFlagIndex, 1);
+    const { isFunctionalComponent, dirName } = args;
+    const componentName = args._?.[0];
+
+    if (!componentName) {
+        printUsage();
     }
 
-    switch (args.length) {
-        case 3:
-            createClass(args[COMPONENT_NAME_INDEX], 'components', functionalComponentFlag);
-            break;
-        case 4:
-            createClass(args[COMPONENT_NAME_INDEX], args[DIR_NAME_INDEX], functionalComponentFlag);
-            break;
-        default:
-            printUsage();
-    }
+    createClass(componentName, dirName, isFunctionalComponent);
 }
 
-processArgs(process.argv);
+main();

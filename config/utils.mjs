@@ -22,52 +22,7 @@ function importNonEsmFile(filePath) {
     return require(filePath);
 }
 
-/**
- * Attempt parsing value to a JavaScript variable.
- * i.e. Attempt parsing `'10'` to `10`.
- * Default to returning the original (string) value of the variable.
- *
- * @param {*} val - Variable to try to parse.
- * @returns {*} - Parsed variable or original string.
- */
-function attemptParseJson(val) {
-    try {
-        return JSON.parse(val);
-    } catch (e) {
-        return val;
-    }
-}
-
-/**
- * Parses CLI args and converts their values to the desired names.
- *
- * @param {Object} cliArgToVarNameMap - CLI string to desired variable name map.
- * @returns {Object} - Variable name to value map.
- */
-function processArgs(cliArgToVarNameMap) {
-    const { argv } = process;
-    const argKeys = Object.keys(cliArgToVarNameMap);
-    const argValues = Object.values(cliArgToVarNameMap);
-    const argsToSearchFor = new Set(argKeys);
-    const retVal = argValues.reduce((returnObj, argName) => {
-        returnObj[argName] = false;
-
-        return returnObj;
-    }, {});
-
-    argv.forEach(arg => {
-        let [ cliKey, cliVal ] = arg.split('=');
-
-        if (argsToSearchFor.has(cliKey)) {
-            const returnObjKey = cliArgToVarNameMap[cliKey];
-            cliVal = attemptParseJson(cliVal) || true;
-
-            retVal[returnObjKey] = cliVal;
-        }
-    });
-
-    return retVal;
-}
+const parseCliArgs = importNonEsmFile('./parseCliArgs.js');
 
 function getOsHostnameAndLanIP(protocolVersion = 4) {
     const allNetworkInterfaces = os.networkInterfaces();
@@ -301,10 +256,9 @@ function getOutputFileName(
 
 export {
     Paths,
-    processArgs,
+    parseCliArgs,
     FileTypeRegexes,
     getOutputFileName,
     LocalLanHostIpAddresses,
-    attemptParseJson,
     importNonEsmFile,
 };

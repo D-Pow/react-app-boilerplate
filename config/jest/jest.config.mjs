@@ -1,13 +1,18 @@
 import * as fs from 'fs';
 import { defaults } from 'jest-config';
-import { Paths, processArgs, FileTypeRegexes } from '../utils.mjs';
+import { Paths, FileTypeRegexes } from '../utils.mjs';
 
 /*
  * Note: Add the `--no-cache` CLI option during development of jest transformers
  */
 
-// const { collectCoverage } = processArgs({
-//     '--coverage': 'collectCoverage',
+// const { collectCoverage } = parseCliArgs({
+//     combineShortLongFlags: {
+//         collectCoverage: [ 'coverage' ],
+//     },
+//     numArgs: {
+//         collectCoverage: 0,
+//     },
 // });
 
 const allAppDirectories = fs.readdirSync(Paths.ROOT.ABS, { withFileTypes: true })

@@ -388,7 +388,7 @@ const webpackConfig = {
     },
     stats: { modules: false, children: false }, // clean up npm output
     devtool: sourceMap ? 'source-map' : false,
-    /** @type {import('@types/webpack-dev-server')} */
+    /** @type {import('@types/webpack-dev-server').Configuration} */
     devServer: {
         ...((exposeServerOnLan) => exposeServerOnLan
             // NOTE: You must allow webpack through your firewall for this to work.

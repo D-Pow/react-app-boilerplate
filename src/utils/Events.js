@@ -72,12 +72,12 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
             timeout = null;
 
             if (!isFirstCall) { // don't call func again if it was called on first run, only on subsequent runs
-                func.call(self, ...args);
+                return func.call(self, ...args);
             }
         }, delay);
 
         if (isFirstCall) {
-            func.call(self, ...args);
+            return func.call(self, ...args);
         }
     };
 }
@@ -107,11 +107,13 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
                 self = this;
             }
 
-            func.call(self, ...args);
+            const retVal = func.call(self, ...args);
 
             setTimeout(() => {
                 wasCalled = false;
             }, timeLimit);
+
+            return retVal;
         }
     };
 }

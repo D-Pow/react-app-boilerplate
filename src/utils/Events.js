@@ -46,15 +46,15 @@ export async function importImageAsync(image, base64 = false) {
  * @param {number} delay - Milliseconds to wait before calling `func`
  * @param {Object} options - Options for debounced function
  * @param {boolean} [options.callOnFirstFuncCall=false] - Allow `func` to be called on first debounced function call
- * @param {boolean} [options.bindThis=false] - Binds the value of `this` to its value when `debounce()` is called
+ * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value
  * @returns {function(...[*]=)}
  */
-export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis = false } = {}) {
+export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } = {}) {
     let timeout;
     let self;
 
     if (bindThis) {
-        self = this;
+        self = bindThis;
     }
 
     return (...args) => {
@@ -88,15 +88,15 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis = 
  * @param {function} func - Function to throttle.
  * @param {number} timeLimit - Milliseconds to wait before allowing `func` to be called again.
  * @param {Object} options
- * @param {boolean} [options.bindThis=false] - Binds the value of `this` to its value when `throttle()` is called.
+ * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value.
  * @returns {function} - Decorated, throttled function.
  */
-export function throttle(func, timeLimit, { bindThis = false } = {}) {
+export function throttle(func, timeLimit, { bindThis } = {}) {
     let wasCalled = false;
     let self;
 
     if (bindThis) {
-        self = this;
+        self = bindThis;
     }
 
     return (...args) => {

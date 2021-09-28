@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 // ESLint requires either JSON or CommonJS files, it doesn't support ESM.
 // Cannot `require()` .mjs files, so we must duplicate the code here.
@@ -30,6 +31,7 @@ module.exports = {
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',
+        'plugin:import/recommended',
     ],
     plugins: [
         '@babel',
@@ -100,6 +102,13 @@ module.exports = {
         //  Starting point: https://stackoverflow.com/questions/66349222/how-to-enforce-a-rule-on-importing-path-using-alias-by-eslint
 
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
+        'import/no-unresolved': [ 'error', {
+            // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
+            // which means the `/` import alias isn't being honored by this rule.
+            // Fix that by scanning through all files/directories in the project root and ignoring
+            // unresolved-module errors only for those files.
+            ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
+        }],
 
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,

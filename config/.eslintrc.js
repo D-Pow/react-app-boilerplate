@@ -36,11 +36,18 @@ module.exports = {
         '@typescript-eslint',
         'react',
         'react-hooks',
+        'import',
     ],
     // Settings for specific plugins
     settings: {
         react: { // `eslint-plugin-react` docs: https://github.com/yannickcr/eslint-plugin-react#configuration
             version: 'detect', // Automatically detect React version
+        },
+        'import/resolver': {
+            alias: [
+                [ '@', './src' ],
+                [ '/', './' ],
+            ],
         },
     },
     globals: {
@@ -90,6 +97,8 @@ module.exports = {
         //  I think we have to write our own plugin because none of the below work:
         //  eslint-plugin-import, eslint-import-resolver-alias, eslint-plugin-import-alias
         //  Starting point: https://stackoverflow.com/questions/66349222/how-to-enforce-a-rule-on-importing-path-using-alias-by-eslint
+
+        'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
 
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,

@@ -40,6 +40,7 @@ module.exports = {
     ],
     // Settings for specific plugins
     settings: {
+        extensions: [ '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs' ],
         react: { // `eslint-plugin-react` docs: https://github.com/yannickcr/eslint-plugin-react#configuration
             version: 'detect', // Automatically detect React version
         },

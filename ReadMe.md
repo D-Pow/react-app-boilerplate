@@ -23,13 +23,10 @@ than create-react-app in that:
 Usage Notes
 
 * If using WebStorm
-    - It doesn't properly interpret the `webpack.config.mjs` or `tsconfig.json` files because they're not in the root directory. So, to point to the correct files, update your settings via;
+    - It doesn't properly interpret the `webpack.config.mjs` file because it's not in the root directory. So, to point to the correct files, update your settings via;
         + **WebStorm Settings | Languages & Frameworks**
             * **| JavaScript | Webpack**:
               `config/webpack.config.mjs`
 
-            * **| TypeScript | Options**:
-              `-p config/tsconfig.json`
-
-    - Since `/` and `@/` import aliases are used instead of relative imports (e.g. `../../File.js`), WebStorm doesn't always correctly mark `src/` as the root for imports. <br/>
-    This can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.
+    - Since `@/` and `/` import aliases are used instead of relative imports (e.g. `../../File.js`), WebStorm doesn't always correctly mark `src/` as the root for imports. <br/>
+    If this occurs, it can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.

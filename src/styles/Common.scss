@@ -46,197 +46,197 @@ $container-max-widths: (
 );
 
 .text-center {
-  text-align: center;
+    text-align: center;
 }
 
 .nav-link {
-  color: $light;
-  transition: color 0.5s;
+    color: $light;
+    transition: color 0.5s;
 }
 
 .nav-link:hover {
-  color: $danger;
+    color: $danger;
 }
 
 .nav-link.active {
-  color: $info;
+    color: $info;
 }
 
 @for $pix from 0 through 100 {
-  .top-#{$pix} {
-    top: $pix + 0%;
-  }
+    .top-#{$pix} {
+        top: $pix + 0%;
+    }
 }
 
 .width-fit {
-  width: fit-content;
+    width: fit-content;
 }
 
 @for $int from 0 through 200 {
-  .w-#{$int} {
-    width: $int + 0%;
-  }
-  .w-#{$int}px {
-    width: $int + 0px;
-  }
+    .w-#{$int} {
+        width: $int + 0%;
+    }
+    .w-#{$int}px {
+        width: $int + 0px;
+    }
 
-  .h-#{$int} {
-    height: $int + 0%;
-  }
-  .h-#{$int}px {
-    height: $int + 0px;
-  }
+    .h-#{$int} {
+        height: $int + 0%;
+    }
+    .h-#{$int}px {
+        height: $int + 0px;
+    }
 }
 
 .overflow-hidden {
-  overflow: hidden;
+    overflow: hidden;
 }
 
 .full-screen {
-  height: 100vh !important;
-  width: 100vw !important;
+    height: 100vh !important;
+    width: 100vw !important;
 }
 
 .full-width-minus-scrollbar {
-  // 100vw includes Y-scrollbar area, 100% does not
-  width: calc(100vw - (100vw - 100%)) !important;
+    // 100vw includes Y-scrollbar area, 100% does not
+    width: calc(100vw - (100vw - 100%)) !important;
 }
 
 .full-screen-minus-scrollbar {
-  @extend .full-screen;
-  @extend .full-width-minus-scrollbar;
+    @extend .full-screen;
+    @extend .full-width-minus-scrollbar;
 }
 
 .m-auto {
-  margin: auto;
+    margin: auto;
 }
 
 .margin-clear {
-  margin: 0;
+    margin: 0;
 }
 
 $margin-units: (
-  '': 'px',
-  'p': '%',
-  'e': 'em'
+    '': 'px',
+    'p': '%',
+    'e': 'em'
 );
 @for $int from 0 through 100 {
-  @each $unit-name, $unit in $margin-units {
-    $cls-name: $int + $unit-name;
-    $margin-amount: $int + unquote($unit); // unquote() makes it literal CSS
+    @each $unit-name, $unit in $margin-units {
+        $cls-name: $int + $unit-name;
+        $margin-amount: $int + unquote($unit); // unquote() makes it literal CSS
 
-    .mt-#{$cls-name} {
-      margin-top: $margin-amount;
-    }
-    .mb-#{$cls-name} {
-      margin-bottom: $margin-amount;
-    }
-    .ml-#{$cls-name} {
-      margin-left: $margin-amount;
-    }
-    .mr-#{$cls-name} {
-      margin-right: $margin-amount;
-    }
+        .mt-#{$cls-name} {
+            margin-top: $margin-amount;
+        }
+        .mb-#{$cls-name} {
+            margin-bottom: $margin-amount;
+        }
+        .ml-#{$cls-name} {
+            margin-left: $margin-amount;
+        }
+        .mr-#{$cls-name} {
+            margin-right: $margin-amount;
+        }
 
-    /*
-     * Note: Using @extend creates fewer classes in the final CSS output.
-     * e.g.
-     *
-     * Without @extend, you get 6 total class declarations:
-     * .mt-name {}
-     * .mb-name {}
-     * .ml-name {}
-     * .mr-name {}
-     * .mx-name {}
-     * .my-name {}
-     *
-     * With @extend, you get 4 total class declarations,
-     * just with .m[yx] attached to .m[tblr]:
-     * .mt-name, .my-name {}
-     * .mb-name, .my-name {}
-     * .ml-name, .mx-name {}
-     * .mr-name, .mx-name {}
-     */
-    .mx-#{$cls-name} {
-      @extend .ml-#{$cls-name};
-      @extend .mr-#{$cls-name};
+        /*
+         * Note: Using @extend creates fewer classes in the final CSS output.
+         * e.g.
+         *
+         * Without @extend, you get 6 total class declarations:
+         * .mt-name {}
+         * .mb-name {}
+         * .ml-name {}
+         * .mr-name {}
+         * .mx-name {}
+         * .my-name {}
+         *
+         * With @extend, you get 4 total class declarations,
+         * just with .m[yx] attached to .m[tblr]:
+         * .mt-name, .my-name {}
+         * .mb-name, .my-name {}
+         * .ml-name, .mx-name {}
+         * .mr-name, .mx-name {}
+         */
+        .mx-#{$cls-name} {
+            @extend .ml-#{$cls-name};
+            @extend .mr-#{$cls-name};
+        }
+        .my-#{$cls-name} {
+            @extend .mt-#{$cls-name};
+            @extend .mb-#{$cls-name};
+        }
     }
-    .my-#{$cls-name} {
-      @extend .mt-#{$cls-name};
-      @extend .mb-#{$cls-name};
-    }
-  }
 }
 
 .absolute-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  margin: auto;
-  height: fit-content;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    margin: auto;
+    height: fit-content;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .flex-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-  margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    margin: auto;
 }
 
 .img-fluid {
-  max-width: 100%;
-  height: auto;
+    max-width: 100%;
+    height: auto;
 }
 
 .align-content-evenly {
-  align-content: space-evenly !important;
+    align-content: space-evenly !important;
 }
 
 .underline {
-  text-decoration: underline;
+    text-decoration: underline;
 
-  &-extra-space {
-    @extend .underline;
-    text-underline-position: under;
-  }
+    &-extra-space {
+        @extend .underline;
+        text-underline-position: under;
+    }
 }
 
 .segment-bar {
-  background: $primary;
-  height: 5px;
+    background: $primary;
+    height: 5px;
 }
 
 .border.border-medium {
-  border-width: 0.2rem !important;
+    border-width: 0.2rem !important;
 
-  @each $colorName, $color in $theme-colors {
-    @for $opacity from 0 through 9 {
-      $opacityVal: math.div($opacity, 10);
-      &.border-#{$colorName}-opacity-#{$opacity} {
-        border-color: rgba($color, $opacityVal) !important;
-      }
+    @each $colorName, $color in $theme-colors {
+        @for $opacity from 0 through 9 {
+            $opacityVal: math.div($opacity, 10);
+            &.border-#{$colorName}-opacity-#{$opacity} {
+                border-color: rgba($color, $opacityVal) !important;
+            }
+        }
     }
-  }
 }
 
 input.text-white::placeholder, textarea.text-white::placeholder {
-  color: white;
+    color: white;
 }
 
 .box-shadow-sm {
-  box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.15) !important;
-  border-radius: 0.25em !important;
-  z-index: 100;
+    box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.15) !important;
+    border-radius: 0.25em !important;
+    z-index: 100;
 }
 
 
 :export {
-  themeColors: json.json-stringify($theme-colors);
-  gridBreakpoints: json.json-stringify($grid-breakpoints);
+    themeColors: json.json-stringify($theme-colors);
+    gridBreakpoints: json.json-stringify($grid-breakpoints);
 }

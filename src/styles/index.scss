@@ -7,14 +7,14 @@ html, body, #root {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  overflow: auto;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    overflow: auto;
 }
 
 @for $i from 0 through 9 {
-  .border-size-#{$i}[class*="border"] {
-    border-width: #{$i}px !important;
-  }
+    .border-size-#{$i}[class*="border"] {
+        border-width: #{$i}px !important;
+    }
 }

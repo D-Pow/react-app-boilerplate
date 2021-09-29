@@ -35,6 +35,7 @@ const indexHtmlMetaTagData = {
 };
 
 const broadcastChannel = packageJson.name;
+const fileUrlsNotToCacheInPwa = [];
 
 const env = dotenv.config({
     path: Paths.getFileAbsPath(Paths.ROOT.ABS, '.env')
@@ -334,6 +335,15 @@ const webpackConfig = {
 
                 return `urlsToCache=[${fileUrlsToCache.join(',')}]`;
             },
+            isProduction
+        ),
+        new AlterFilePostBuildPlugin(
+            'ServiceWorker.js',
+            /urlsNotToCache ?= ?\[\]/g,
+            `urlsNotToCache=[${fileUrlsNotToCacheInPwa
+                .map(url => url instanceof RegExp ? url : `"./${url}"` )
+                .join(',')
+            }]`,
             isProduction
         ),
         new AlterFilePostBuildPlugin(

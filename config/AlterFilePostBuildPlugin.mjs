@@ -102,6 +102,7 @@ class AlterFilePostBuildPlugin {
 
                 if (originalFileAbsPath.includes(srcFilePath)) {
                     console.log(originalFileAbsPath);
+                    console.log(obj);
                 }
             });
         });

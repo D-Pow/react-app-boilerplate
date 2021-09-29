@@ -1,15 +1,19 @@
 const fs = require('fs');
 const parseCliArgs = require('../config/parseCliArgs');
 
-function getPropTypes(componentName, typescript) {
+function getPropTypes(indentForClassStaticVar, typescript) {
     if (typescript) {
         return '';
     }
 
-    return `
-\n${componentName}.propTypes = {
+    const spacesIndent = ' '.repeat(4);
+    const extraIndent = indentForClassStaticVar ? spacesIndent : '';
 
-};\n`;
+    return (
+`propTypes = {
+${extraIndent}    children: PropTypes.node,
+${extraIndent}};`
+    );
 }
 
 function getClassComponentText(componentName, typescript) {
@@ -18,7 +22,7 @@ function getClassComponentText(componentName, typescript) {
     ${
         typescript
             ? ''
-            : `static propTypes = {\n\n    };\n\n    `
+            : `static ${getPropTypes(true, typescript)}\n\n    `
     }static defaultProps = {
 
     };
@@ -45,21 +49,20 @@ function getFunctionalComponentText(componentName, typescript) {
 }`;
 
     if (!typescript) {
-        functionDefinitionStr += `\n\n${componentName}.propTypes = {
+        functionDefinitionStr +=
+`
 
-};\n\n${componentName}.defaultProps = {
-
-};`;
+${componentName}.${getPropTypes(false, typescript)}`;
     }
 
     return functionDefinitionStr;
 }
 
 function getComponentText(componentName, { functionalComponent = false, typescript = false } = {}) {
-    let propTypesStrHeader = `import PropTypes from 'prop-types';`;
+    let propTypesImport = `import PropTypes from 'prop-types';`;
 
     if (typescript) {
-        propTypesStrHeader =
+        propTypesImport =
 `\ninterface ${componentName}Props {
     className?: string;
     children?: React.ReactChildren;
@@ -68,7 +71,7 @@ function getComponentText(componentName, { functionalComponent = false, typescri
 
     return (
 `import React from 'react';
-${propTypesStrHeader}
+${propTypesImport}
 
 ${functionalComponent ? getFunctionalComponentText(componentName, typescript) : getClassComponentText(componentName, typescript)}
 

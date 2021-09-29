@@ -36,7 +36,7 @@ function getClassComponentText(componentName, typescript) {
 
 function getFunctionalComponentText(componentName, typescript) {
     let functionDefinitionStr =
-`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''} = {})${typescript ? ': React.ReactElement' : ''} {
+`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''} = {})${typescript ? ': React.ReactNode' : ''} {
     return (
         <>
             {props.children}

@@ -4,7 +4,7 @@ interface AboutProps {
     className?: string;
 }
 
-function About(props: AboutProps = {}): React.ReactElement {
+function About(props: AboutProps = {}): React.ReactNode {
     return (
         <>
             <div className={props.className}>About</div>

@@ -1,3 +1,5 @@
+import { fetchAsBase64 } from '@/utils/Network';
+
 /**
  * Asynchronously imports the specified image from the 'assets/' folder.
  * Optionally returns the resolved image data encoded with Base64.
@@ -15,16 +17,7 @@ export async function importImageAsync(image, base64 = false) {
             const imageSrc = module.default;
 
             if (base64) {
-                return fetch(imageSrc).then(res => res.blob()).then(blob => new Promise((res, rej) => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        res(reader.result);
-                    };
-                    reader.onerror = () => {
-                        rej(); // error handled below
-                    };
-                    reader.readAsDataURL(blob);
-                }));
+                return await fetchAsBase64(imageSrc);
             }
 
             return imageSrc;

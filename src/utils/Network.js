@@ -11,11 +11,14 @@ export async function fetchAsBase64(url, fetchOptions = {}) {
 
     // FileReader uses old API
     // Thus, we must use old Promise API
-    return await new Promise(res => {
+    return await new Promise((res, rej) => {
         const reader = new FileReader();
 
-        reader.onload = function() {
-            res(this.result);
+        reader.onload = () => {
+            res(reader.result);
+        };
+        reader.onerror = e => {
+            rej(e);
         };
 
         reader.readAsDataURL(blob);

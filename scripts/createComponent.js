@@ -87,7 +87,7 @@ function createComponentInDirectory(
 ) {
     const dir = `./src/${dirName}/${componentName}`;
     const extension = typescript ? 'tsx' : 'jsx';
-    const indexText = `import ${componentName} from './${componentName}.${extension}';\n\nexport default ${componentName};\n`;
+    const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
     const componentText = getComponentText(
         componentName,
         {

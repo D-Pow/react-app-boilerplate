@@ -132,7 +132,7 @@ const FileTypeRegexes = {
     get Code() {
         const codeFiles = [
             FileTypeRegexes.JsAndTs,
-            FileTypeRegexes.Styles
+            FileTypeRegexes.Styles,
         ];
         const codeFileRegexes = FileTypeRegexes.combineRegexes(...codeFiles);
 
@@ -148,7 +148,7 @@ const FileTypeRegexes = {
             FileTypeRegexes.Svg,
             FileTypeRegexes.Binaries,
             FileTypeRegexes.Fonts,
-            FileTypeRegexes.Text
+            FileTypeRegexes.Text,
         ];
         const assetFileRegexes = FileTypeRegexes.combineRegexes(...assetFiles);
 
@@ -211,8 +211,8 @@ function getOutputFileName(
         nestInFolder = Paths.BUILD_OUTPUT.REL,
         hashLength = 8,
         maintainFolderStructure = true,
-        treatFileNameDotsAsExtension = true
-    } = {}
+        treatFileNameDotsAsExtension = true,
+    } = {},
 ) {
     /*
      * `[path]` == relative path from src folder.
@@ -243,12 +243,12 @@ function getOutputFileName(
     const outputFileName = [
         fileNameWithoutExtension,
         hashLength ? `-[contenthash:${hashLength}]` : '',
-        fileExtension
+        fileExtension,
     ];
     const outputFilePath = [
         nestInFolder,
         maintainFolderStructure ? filePathInsideSrc : '',
-        outputFileName.join('')
+        outputFileName.join(''),
     ];
 
     return path.join(...outputFilePath);

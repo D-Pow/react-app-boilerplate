@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 // These still need `await import()` because they're types, not actual classes, so it won't work in .js
+// eslint-disable-next-line no-unused-vars
 const { WebpackPluginInstance, Compiler, NormalModule } = await import('webpack');
 
 /**
@@ -63,14 +64,14 @@ class AlterFilePostBuildPlugin {
                     const [ relativePath, rawSourceObject ] = entry;
                     return {
                         relative: relativePath,
-                        absolute: rawSourceObject.existsAt
+                        absolute: rawSourceObject.existsAt,
                     };
                 });
         }
 
         return Object.keys(compilation.assets).map(relativeFilePath => ({
             relative: relativeFilePath,
-            absolute: path.resolve(compiler.outputPath, relativeFilePath)
+            absolute: path.resolve(compiler.outputPath, relativeFilePath),
         }));
     }
 
@@ -81,7 +82,7 @@ class AlterFilePostBuildPlugin {
 
             fs.writeFileSync(fileAbsPath, newFileContents);
         } catch(e) {
-            console.error(`Error replacing text in ${fileAbsPath}. Error:`, e)
+            console.error(`Error replacing text in ${fileAbsPath}. Error:`, e);
         }
     }
 
@@ -100,7 +101,7 @@ class AlterFilePostBuildPlugin {
                 const originalFileAbsPath = normalModule.userRequest;
 
                 if (originalFileAbsPath.includes(srcFilePath)) {
-                    console.log(originalFileAbsPath)
+                    console.log(originalFileAbsPath);
                 }
             });
         });

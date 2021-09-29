@@ -34,7 +34,7 @@ global.renderWithWrappingParent = (
         renderMethod = 'mount',
         wrappingComponent = AppProviderWithRouter,
         ...enzymeOptions
-    } = {}
+    } = {},
 ) => {
     const enzymeRenderMethod = Enzyme[renderMethod];
 

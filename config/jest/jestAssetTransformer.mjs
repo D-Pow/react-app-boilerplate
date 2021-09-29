@@ -27,7 +27,7 @@ const jestAssetTransformer = {
         const srcFileName = JSON.stringify(path.basename(srcAbsPath));
         const {
             config: jestConfigs,
-            transformerConfig: transformerConfigs
+            transformerConfig: transformerConfigs,
         } = options;
 
         if (FileTypeRegexes.Text.test(srcAbsPath)) {
@@ -36,7 +36,7 @@ const jestAssetTransformer = {
              * so reflect that in jest tests by exporting the stringified file contents.
              */
             return {
-                code: `module.exports = ${srcText};`
+                code: `module.exports = ${srcText};`,
             };
         }
 
@@ -54,7 +54,7 @@ const jestAssetTransformer = {
 
                     module.exports = new String(${srcFileName});
                     module.exports.ReactComponent = React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props }));
-                `
+                `,
             };
         }
 
@@ -68,7 +68,7 @@ const jestAssetTransformer = {
             const allTranspiledCssCode = JestCssModulesTransformer.process(srcFileContents, srcAbsPath, jestConfigs);
 
             return {
-                code: allTranspiledCssCode
+                code: allTranspiledCssCode,
             };
         }
 
@@ -77,9 +77,9 @@ const jestAssetTransformer = {
          * so reflect that in jest tests by exporting only the name to form a "pretend" URL.
          */
         return {
-            code: `module.exports = ${srcFileName};`
+            code: `module.exports = ${srcFileName};`,
         };
-    }
+    },
 };
 
 export default jestAssetTransformer;

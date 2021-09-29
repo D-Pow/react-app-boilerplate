@@ -151,7 +151,7 @@ global.sessionStorage = new StorageMock();
 
 
 // See: https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-mockObjProperty(window, 'matchMedia', jest.fn(query => ({
+global.mockObjProperty(window, 'matchMedia', jest.fn(query => ({
     matches: false,
     media: query,
     onchange: null,

@@ -31,7 +31,7 @@ const jestConfig = {
     testEnvironment: 'jsdom',
     setupFiles: [
         Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestSetup.js'),
-        Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js') // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
+        Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js'), // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],
     // Alternative to setting NODE_PATH (which defaults to `/`).
     // `moduleNameMapper` allows more fine-grained control, which is better
@@ -44,16 +44,16 @@ const jestConfig = {
         '^/(.*)$': '<rootDir>/$1',
     },
     modulePathIgnorePatterns: [
-        Paths.BUILD_ROOT.ABS
+        Paths.BUILD_ROOT.ABS,
     ],
     transform: {
         [scriptFiles]: [
             'babel-jest',
             {
-                configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js')
-            }
+                configFile: Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js'),
+            },
         ],
-        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestAssetTransformer.mjs')
+        [assetFiles]: Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestAssetTransformer.mjs'),
     },
     // collectCoverage,
     coveragePathIgnorePatterns: nonSrcJestDirs,

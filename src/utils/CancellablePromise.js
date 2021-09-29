@@ -22,7 +22,11 @@ class CancellablePromise extends Promise {
     then(...args) {
         // .then() could have a single function for successes or multiple for success/failure cases
         const onSuccess = typeof args[0] === typeof this.then ? args[0] : () => {};
-        const onError = typeof args[1] === typeof this.then ? args[1] : e => { throw e; };
+        const onError = typeof args[1] === typeof this.then
+            ? args[1]
+            : e => {
+                throw e;
+            };
 
         const resultingPromise = super.then.call(
             this,
@@ -50,7 +54,11 @@ class CancellablePromise extends Promise {
     }
 
     catch(...args) {
-        const onError = typeof args[0] === typeof this.catch ? args[0] : e => { throw e; };
+        const onError = typeof args[0] === typeof this.catch
+            ? args[0]
+            : e => {
+                throw e;
+            };
 
         const resultingPromise = super.catch.call(
             this,

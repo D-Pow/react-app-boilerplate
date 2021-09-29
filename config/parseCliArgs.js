@@ -25,7 +25,7 @@ function parseCliArgs(
         combineShortLongFlags,
         numArgs,
         defaultValues,
-    } = {}
+    } = {},
 ) {
     // argv = [ 'path/to/node', 'myScript', ...args ]
     let argvStartIndex = removeNodeAndScriptFromArgs ? 2 : 0;
@@ -56,7 +56,7 @@ function parseCliArgs(
         {
             default: defaultValues,
             narg: numArgs,
-        }
+        },
     );
 
     if (combineShortLongFlags) {

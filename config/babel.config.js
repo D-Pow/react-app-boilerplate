@@ -28,7 +28,7 @@ module.exports = {
                     useLegacyDecorators
                         ? { legacy: true }
                         : { decoratorsBeforeExport: true } // Whether decorators should be placed before or after `export`
-                )(false)
+                )(false),
             },
         ],
         [

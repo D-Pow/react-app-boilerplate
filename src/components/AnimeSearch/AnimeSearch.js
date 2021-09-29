@@ -50,7 +50,7 @@ function AnimeSearch(props) {
                 value={searchText}
                 onChange={handleTyping}
             />
-            <button className={'mx-5'} onClick={handleSubmit}>
+            <button className={'mx-5px'} onClick={handleSubmit}>
                 Search
             </button>
 

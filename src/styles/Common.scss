@@ -116,8 +116,8 @@ $container-max-widths: (
 }
 
 $margin-units: (
-    '': 'px',
-    'p': '%',
+    '': '%',
+    'px': 'px',
     'e': 'em'
 );
 @for $int from 0 through 100 {

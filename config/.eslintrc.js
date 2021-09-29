@@ -122,6 +122,12 @@ module.exports = {
             selfClosing: 'tag-aligned',
             nonEmpty: 'tag-aligned',
         }],
+        'react/jsx-tag-spacing': [ 'error', {
+            beforeSelfClosing: 'always', // force a space before self-closing attributes and />, e.g. `<MyComp />`
+            beforeClosing: 'never', // never allow a space between closing > (that lacks a slash), e.g. `<MyComp ></MyComp >`
+            afterOpening: 'never', // never allow a space between opening < and component name, e.g. `< MyComp>`
+            closingSlash: 'never' // never allow a space between closing < and /, e.g. `< /MyComp>`
+        }],
         'react/prop-types': 'warn',
         'react/display-name': 'off', // Don't error on arrow-function components
         'react-hooks/rules-of-hooks': 'error',

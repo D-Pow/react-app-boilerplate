@@ -63,6 +63,7 @@ module.exports = {
         module: 'writable',
         __dirname: 'readonly',
         global: 'writable',
+        Buffer: 'readonly',
     },
     rules: {
         indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
@@ -92,11 +93,12 @@ module.exports = {
             after: true,
         }],
         semi: [ 'error', 'always' ], // Enforce semicolon usage
-        // Wait until https://github.com/eslint/eslint/issues/15078 is fixed, then uncomment below.
-        // 'no-unused-vars': [ 'error', {
-        //     // Prohibit unused vars unless they're functions
-        //     varsIgnorePattern: '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])',
-        // }],
+        'no-unused-vars': [ 'error', {
+            // Wait until https://github.com/eslint/eslint/issues/15078 is fixed, then uncomment below.
+            // Prohibit unused vars unless they're functions
+            // varsIgnorePattern: '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])',
+            varsIgnorePattern: 'React',
+        }],
 
         // TODO Find out how to force imports to use aliases (unless ./File import)
         //  I think we have to write our own plugin because none of the below work:

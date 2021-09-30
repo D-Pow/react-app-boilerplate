@@ -93,11 +93,19 @@ module.exports = {
             after: true,
         }],
         semi: [ 'error', 'always' ], // Enforce semicolon usage
-        'no-unused-vars': [ 'error', {
-            // Wait until https://github.com/eslint/eslint/issues/15078 is fixed, then uncomment below.
-            // Prohibit unused vars unless they're functions
-            // varsIgnorePattern: '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])',
+        'no-unused-vars': [ 'warn', {
+            /*
+             * TODO Find or write a plugin to support the below, then change `warn` to `error`:
+             *  - Error on unused vars unless they're functions (see: https://github.com/eslint/eslint/issues/15078).
+             *    Starter regex (doesn't capture all functions): '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])'
+             *  - Don't error on unused vars from array spreading (`ignoreRestSiblings` doesn't apply to arrays).
+             */
+            // Ignore function arguments whose names match this regex
             varsIgnorePattern: 'React',
+            // Ignore function arguments whose names match this regex
+            argsIgnorePattern: 'props',
+            // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
+            ignoreRestSiblings: true,
         }],
 
         // TODO Find out how to force imports to use aliases (unless ./File import)

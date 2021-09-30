@@ -48,6 +48,7 @@ function ResourceViewer({
     altLinkText,
     mimeType,
     includeNestedEmbedTag,
+    objectRef,
     ...props
 }) {
     if (!src || !altLinkText) {
@@ -64,6 +65,7 @@ function ResourceViewer({
         <object
             data={embeddedViewerSrc}
             type={mimeType}
+            ref={objectRef}
             {...props}
         >
             <Anchor href={backupHyperlinkSrc}>
@@ -84,6 +86,12 @@ ResourceViewer.propTypes = {
     altLinkText: PropTypes.string.isRequired,
     mimeType: PropTypes.string.isRequired,
     includeNestedEmbedTag: PropTypes.bool,
+    objectRef: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.shape({
+            current: PropTypes.instanceOf(PropTypes.element),
+        }),
+    ]),
 };
 
 ResourceViewer.defaultProps = {
@@ -93,4 +101,4 @@ ResourceViewer.defaultProps = {
     includeNestedEmbedTag: false,
 };
 
-export default ResourceViewer;
+export default React.memo(ResourceViewer);

@@ -431,7 +431,7 @@ const webpackConfig = {
         port: LocalLanHostIpAddresses.port,
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js
-        historyApiFallback: true, // For React Router
+        historyApiFallback: true, // Fall back to index.html upon 404
         https: useHttps, // use HTTPS instead of HTTP
         devMiddleware: {
             stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output

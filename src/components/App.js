@@ -55,7 +55,6 @@ const routes = [
 const blockInternetExplorer = true;
 
 function App() {
-    // eslint-disable-next-line no-unused-vars
     const { contextState, setContextState } = useContext(AppContext.Context);
 
     if (blockInternetExplorer && isMicrosoftBrowser(false)) {

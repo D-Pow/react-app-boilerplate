@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import webpack from 'webpack';
 import dotenv from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -31,14 +29,14 @@ const indexHtmlMetaTagData = {
     description: packageJson.description,
     keywords: packageJson.keywords.join(', '),
     'theme-color': manifestJson.theme_color,
-    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no'
+    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
 };
 
 const broadcastChannel = packageJson.name;
 const fileUrlsNotToCacheInPwa = [];
 
 const env = dotenv.config({
-    path: Paths.getFileAbsPath(Paths.ROOT.ABS, '.env')
+    path: Paths.getFileAbsPath(Paths.ROOT.ABS, '.env'),
 }).parsed;
 
 process.env = {
@@ -52,7 +50,7 @@ const publicEnv = {
     NODE_ENV: process.env.NODE_ENV,
     PUBLIC_URL: process.env.PUBLIC_URL,
     BROADCAST_CHANNEL: broadcastChannel,
-    MOCK: process.env.MOCK
+    MOCK: process.env.MOCK,
 };
 
 const {
@@ -97,8 +95,8 @@ const webpackConfig = {
                 include: new RegExp(Paths.SRC.REL),
                 use: {
                     loader: 'babel-loader',
-                    options: babelConfig
-                }
+                    options: babelConfig,
+                },
             },
             {
                 test: TypeScript,
@@ -107,15 +105,15 @@ const webpackConfig = {
                 use: [
                     {
                         loader: 'babel-loader',
-                        options: babelConfig
+                        options: babelConfig,
                     },
                     {
                         loader: 'ts-loader',
                         options: {
-                            configFile: `${Paths.ROOT.ABS}/tsconfig.json`
-                        }
-                    }
-                ]
+                            configFile: `${Paths.ROOT.ABS}/tsconfig.json`,
+                        },
+                    },
+                ],
             },
             {
                 test: Styles,
@@ -129,30 +127,30 @@ const webpackConfig = {
                             url: false,
                             modules: {
                                 // Don't default to CSS-Modules; parse as normal CSS
-                                compileType: 'icss'
+                                compileType: 'icss',
                             },
                             importLoaders: 2,
                             sourceMap,
-                        }
+                        },
                     },
                     {
                         loader: 'postcss-loader',
                         options: {
                             postcssOptions: {
                                 plugins: [
-                                    'postcss-preset-env'
-                                ]
+                                    'postcss-preset-env',
+                                ],
                             },
                             sourceMap,
-                        }
+                        },
                     },
                     {
                         loader: 'sass-loader',
                         options: {
                             sourceMap,
-                        }
-                    }
-                ]
+                        },
+                    },
+                ],
             },
             /**
              * Use [Asset Modules]{@link https://webpack.js.org/guides/asset-modules/}
@@ -167,16 +165,16 @@ const webpackConfig = {
                         options: {
                             // See: https://react-svgr.com/docs/options/
                             // outDir: `${Paths.BUILD_OUTPUT.REL}/assets`,
-                            ref: true
-                        }
+                            ref: true,
+                        },
                     },
                     {
                         loader: 'file-loader',
                         options: {
-                            name: absPath => getOutputFileName(absPath)
-                        }
-                    }
-                ]
+                            name: absPath => getOutputFileName(absPath),
+                        },
+                    },
+                ],
             },
             {
                 test: Binaries,
@@ -195,7 +193,7 @@ const webpackConfig = {
                         /** @type {import('webpack/lib/ChunkGraph.js').ChunkGraphChunk} */
                         chunkGraph,
                         /** @type {string} */
-                        contentHash
+                        contentHash,
                     }) => {
                         /*
                          * Maintain nested directory structure when generating output file names while
@@ -213,13 +211,13 @@ const webpackConfig = {
                             return getOutputFileName(filename, {
                                 hashLength: 0,
                                 maintainFolderStructure: false,
-                                nestInFolder: ''
+                                nestInFolder: '',
                             });
                         }
 
                         return getOutputFileName(filename);
-                    }
-                }
+                    },
+                },
             },
             {
                 test: Fonts,
@@ -231,20 +229,20 @@ const webpackConfig = {
                          * mixin can work with the direct file name.
                          */
                         return getOutputFileName(filename, { hashLength: 0 });
-                    }
-                }
+                    },
+                },
             },
             {
                 test: Text,
                 type: 'asset/source',
-            }
-        ]
+            },
+        ],
     },
     resolve: {
         extensions: [ '.ts', '.tsx', '.js', '.jsx', '*' ],
         modules: [
             // Paths.SRC.ABS, // allows treating src/* dirs/files as modules, i.e. `import X from 'dirUnderSrc/nested/File.ext';`. Unnecessary since src/* has been aliased to `/` and `@/`.
-            'node_modules'
+            'node_modules',
         ],
         alias: {
             '@': Paths.SRC.ABS,
@@ -254,7 +252,7 @@ const webpackConfig = {
     entry: {
         client: {
             import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
-            dependOn: 'common'
+            dependOn: 'common',
         },
         common: [
             /*
@@ -264,8 +262,8 @@ const webpackConfig = {
              *
              * Only polyfill `fetch()` since it's the only one used for now.
              */
-            'isomorphic-fetch'
-        ]
+            'isomorphic-fetch',
+        ],
     },
     output: {
         path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html
@@ -287,8 +285,8 @@ const webpackConfig = {
             destructuring: false, // var { a, b } = obj;
             dynamicImport: false, // import()
             forOf: false,
-            module: false // import X from 'X';
-        }
+            module: false, // import X from 'X';
+        },
     },
     plugins: [
         // makes env available to src
@@ -297,29 +295,29 @@ const webpackConfig = {
         new HtmlWebpackPlugin({
             title: indexHtmlTitle,
             template: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.html'),
-            meta: indexHtmlMetaTagData
+            meta: indexHtmlMetaTagData,
         }),
         new MockRequestsWebpackPlugin(
             Paths.MOCKS.REL,
             'MockConfig.js',
-            process.env.MOCK === 'true'
+            process.env.MOCK === 'true',
         ),
         // splits CSS out from the rest of the code
         new MiniCssExtractPlugin({
-            filename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].css`
+            filename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].css`,
         }),
         // manually copies files from src to dest
         new CopyWebpackPlugin({
             patterns: [
                 {
                     from: `${Paths.SRC.REL}/manifest.json`,
-                    to: '[name].[ext]'
+                    to: '[name].[ext]',
                 },
                 {
                     from: `${Paths.SRC.REL}/ServiceWorker.js`,
-                    to: '[name].[ext]'
-                }
-            ]
+                    to: '[name].[ext]',
+                },
+            ],
         }),
         new AlterFilePostBuildPlugin(
             'ServiceWorker.js',
@@ -335,7 +333,7 @@ const webpackConfig = {
 
                 return `urlsToCache=[${fileUrlsToCache.join(',')}]`;
             },
-            isProduction
+            isProduction,
         ),
         new AlterFilePostBuildPlugin(
             'ServiceWorker.js',
@@ -344,20 +342,20 @@ const webpackConfig = {
                 .map(url => url instanceof RegExp ? url : `"./${url}"` )
                 .join(',')
             }]`,
-            isProduction
+            isProduction,
         ),
         new AlterFilePostBuildPlugin(
             'ServiceWorker.js',
             'VERSION',
             packageJson.version,
-            isProduction
+            isProduction,
         ),
         new AlterFilePostBuildPlugin(
             'ServiceWorker.js',
             'BRD_CHANNEL',
             broadcastChannel,
-            isProduction
-        )
+            isProduction,
+        ),
     ],
     optimization: {
         moduleIds: 'deterministic', // Prevent arbitrary moduleId incrementing, i.e. if the content hasn't changed, don't change the file's hash due to moduleId++. See: https://webpack.js.org/guides/caching/#module-identifiers
@@ -379,22 +377,22 @@ const webpackConfig = {
                 vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendor',
-                    chunks: 'all'
+                    chunks: 'all',
                 },
                 styles: {
                     test: Styles,
                     name: 'styles',
                     chunks: 'all',
-                    enforce: true // collect all CSS into a single file since the separated CSS files contained only duplicate code
-                }
-            }
+                    enforce: true, // collect all CSS into a single file since the separated CSS files contained only duplicate code
+                },
+            },
         },
         runtimeChunk: {
             name: 'runtime',
         },
     },
     performance: {
-        hints: false // disable "entrypoint size limit" warning
+        hints: false, // disable "entrypoint size limit" warning
     },
     stats: { modules: false, children: false }, // clean up npm output
     devtool: sourceMap ? 'source-map' : false,
@@ -471,7 +469,7 @@ const webpackConfig = {
         //     secure: false, // allows using HTTPS without a valid certificate (which is the default case, unless you manually add a localhost cert yourself).
         //     changeOrigin: true // changes the origin of the request to be that of `target` (required for CORS).
         // }]
-    }
+    },
 };
 
 export default webpackConfig;

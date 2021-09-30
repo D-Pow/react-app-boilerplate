@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import * as path from 'path';
 import JestCssModulesTransformer from 'jest-css-modules-transform';
 import { FileTypeRegexes } from '../utils.mjs';

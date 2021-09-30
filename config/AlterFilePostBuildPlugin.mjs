@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 // These still need `await import()` because they're types, not actual classes, so it won't work in .js
-// eslint-disable-next-line no-unused-vars
 const { WebpackPluginInstance, Compiler, NormalModule } = await import('webpack');
 
 /**

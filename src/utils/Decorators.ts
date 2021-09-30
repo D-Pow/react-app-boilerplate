@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * Descriptor passed to decorator functions.
  * Decorators can decorate a class itself or one of its properties,

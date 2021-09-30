@@ -107,6 +107,7 @@ module.exports = {
             // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
             ignoreRestSiblings: true,
         }],
+        'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
 
         // TODO Find out how to force imports to use aliases (unless ./File import)
         //  I think we have to write our own plugin because none of the below work:

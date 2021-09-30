@@ -1,10 +1,9 @@
-const path = require('path');
 const fs = require('fs');
+const findFile = require('./findFile');
 
-// ESLint requires either JSON or CommonJS files, it doesn't support ESM.
-// Cannot `require()` .mjs files, so we must duplicate the code here.
-// Path is relative to package.json, much like the `eslintConfig.extends` entry.
-const babelConfigPath = path.resolve('./config/babel.config.js');
+// ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
+// Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
+const babelConfigPath = findFile('babel.config.js');
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
@@ -26,7 +25,6 @@ module.exports = {
     },
     ignorePatterns: [
         '**/node_modules/**',
-        '**/.eslintrc*', // Since we're resolving the path from package.json, JetBrains throws error that `root/config/config/.eslintrc doesn't exist (fixed by simply ignoring this file)
     ],
     extends: [
         'eslint:recommended',

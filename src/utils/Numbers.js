@@ -197,3 +197,68 @@ export function combination(nItems, kChoices, withReplacement = false) {
 
     return permutation(nItems, kChoices, false) / factorial(kChoices);
 }
+
+/**
+ * Gets all permutations of the entries of an array.
+ * Optionally can restrict permutation output by e.g. length, repetition.
+ *
+ * @example
+ * getAllPermutations([ 'a', 'b', 'c' ], { minLength: 2 })
+ * output: [
+ *     ['a','a'],
+ *     ['a','a','a'],
+ *     ['a','a','b'],
+ *     ...,
+ *     ['a','b','a'],
+ *     ...,
+ *     ['c','b'],
+ *     ['c','b','a'],
+ *     ['c','b','b'],
+ *     ...
+ * ]
+ *
+ * @param {Array<*>} items - Array of items for which to find all permutations.
+ * @param {Object} [options]
+ * @param {number} [options.minLength=1] - Min length a permutation must be.
+ * @param {number} [options.maxLength=items.length] - Max length a permutation can be.
+ * @param {boolean} [options.withReplacement=true] - If the same item can be repeated/used multiple times.
+ * @returns {Array<Array<*>>} - All possible permutations.
+ */
+export function getAllPermutations(
+    items,
+    {
+        minLength = 1,
+        maxLength = items.length,
+        withReplacement = true,
+    } = {},
+) {
+    if (!items?.length) {
+        return items;
+    }
+
+    function getPermutations(prevPerm = [], allPermutations = []) {
+        if (prevPerm.length === maxLength) {
+            return;
+        }
+
+        for (const item of items) {
+            if (!withReplacement && prevPerm.includes(item)) {
+                continue;
+            }
+
+            const newPermutation = [ ...prevPerm, item ];
+
+            if (newPermutation.length >= minLength) {
+                allPermutations.push(newPermutation);
+            }
+
+            getPermutations(newPermutation, allPermutations);
+        }
+    }
+
+    const allPermutations = [];
+
+    getPermutations([], allPermutations);
+
+    return allPermutations;
+}

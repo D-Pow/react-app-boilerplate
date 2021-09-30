@@ -1,3 +1,6 @@
+* `BrowserRouter` vs `HashRouter`
+    - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
+    - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)
 * ESM in browser.
     - Maybe mark all in `src/` as [externals](https://webpack.js.org/configuration/externals/)?
     - They'd probably still at least need Babel transpilation
@@ -15,3 +18,4 @@
     - Also, fix `.tsx?` files to autocomplete JS imports using aliases
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically
+    - Another option other than InterpolateHtmlPlugin: [serviceworker-webpack-plugin](https://github.com/oliviertassinari/serviceworker-webpack-plugin/blob/master/src/index.js)

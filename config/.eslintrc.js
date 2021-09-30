@@ -66,7 +66,7 @@ module.exports = {
     rules: {
         indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
             SwitchCase: 1, // Same for switch-case statements
-            ignoredNodes: [ 'TemplateLiteral' ]
+            ignoredNodes: [ 'TemplateLiteral' ],
         }],
         eqeqeq: [ 'warn', 'always', {
             null: 'ignore', // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
@@ -133,7 +133,7 @@ module.exports = {
             beforeSelfClosing: 'always', // force a space before self-closing attributes and />, e.g. `<MyComp />`
             beforeClosing: 'never', // never allow a space between closing > (that lacks a slash), e.g. `<MyComp ></MyComp >`
             afterOpening: 'never', // never allow a space between opening < and component name, e.g. `< MyComp>`
-            closingSlash: 'never' // never allow a space between closing < and /, e.g. `< /MyComp>`
+            closingSlash: 'never', // never allow a space between closing < and /, e.g. `< /MyComp>`
         }],
         'react/prop-types': 'warn',
         'react/display-name': 'off', // Don't error on arrow-function components

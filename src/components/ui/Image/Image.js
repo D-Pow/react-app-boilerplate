@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { importImageAsync } from '@/utils/Events';
+import { importAssetAsync } from '@/utils/Events';
 import AppContext, { AppContextFields } from '@/utils/AppContext';
 
 function Image(props) {
@@ -8,7 +8,7 @@ function Image(props) {
     const { setContextState } = useContext(AppContext.Context);
 
     async function loadImageSrc() {
-        const imageSrcResponse = await importImageAsync(props.image);
+        const imageSrcResponse = await importAssetAsync(props.image);
 
         setImageSrc(imageSrcResponse);
     }

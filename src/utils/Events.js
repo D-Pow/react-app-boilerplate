@@ -1,32 +1,34 @@
 import { fetchAsBase64 } from '@/utils/Network';
 
 /**
- * Asynchronously imports the specified image from the 'assets/' folder.
- * Optionally returns the resolved image data encoded with Base64.
- * Since this uses dynamic imports, images are cached, so multiple calls
+ * Asynchronously imports the specified binary asset from the 'assets/' folder.
+ * Could be images, PDFs, videos, etc.
+ *
+ * Optionally returns the resolved asset data encoded with Base64.
+ * Since this uses dynamic imports, results are cached, so multiple calls
  * for the same asset don't need to be memoized.
  *
- * @param {string} image - Image file name under 'assets/'
- * @param {boolean} [base64=false] - Return base64-encoded image data instead of image src path
- * @returns {Promise<string>} - Path of the image (base64=false) or Base64-encoded image data (base64=true)
+ * @param {string} assetRelPath - Relative path to the asset file under 'assets/'.
+ * @param {boolean} [base64=false] - Return Base64-encoded data instead of the `src` url.
+ * @returns {Promise<string>} - Path of the asset (base64=false) or Base64-encoded asset data (base64=true)
  */
-export async function importImageAsync(image, base64 = false) {
-    if (image != null && image !== '') {
+export async function importAssetAsync(assetRelPath, base64 = false) {
+    if (assetRelPath != null && assetRelPath !== '') {
         try {
-            const module = await import(`@/assets/${image}`);
-            const imageSrc = module.default;
+            const module = await import(`@/assets/${assetRelPath}`);
+            const assetSrc = module.default;
 
             if (base64) {
-                return await fetchAsBase64(imageSrc);
+                return await fetchAsBase64(assetSrc);
             }
 
-            return imageSrc;
+            return assetSrc;
         } catch(error) {
             // default return below handles error case
         }
     }
 
-    throw new Error(`${image} was not found`);
+    throw new Error(`${assetRelPath} was not found`);
 }
 
 /**

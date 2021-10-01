@@ -93,16 +93,10 @@ const Paths = (() => {
         },
     };
 
-    // `__dirname` doesn't exist in Node ESM
-    // Note: This only works when using `npm run <script>`.
-    // Otherwise, the CWD is the current shell's CWD.
-    // TODO convert to upward-recursive search for package.json, e.g.
-    //  thisFile = url.fileURLToPath(import.meta.url);
-    //  dir = path.dirname(thisFile);
-    //  while (!fs.existsSync(path.resolve(dir, 'package.json'))) {
-    //    dir = path.resolve(dir, '..');
-    //  }
-    pathMappings.ROOT.ABS = path.resolve(process.cwd());
+    // `__dirname` doesn't exist in Node ESM, so use `process.cwd()` instead.
+    // Or, use a CJS file as done here.
+    const findFile = importNonEsmFile('./findFile');
+    pathMappings.ROOT.ABS = path.dirname(findFile('package.json'));
 
     function setAbsPaths(pathConfig, prevRelPath) {
         if (prevRelPath) {

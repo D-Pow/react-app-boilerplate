@@ -80,7 +80,7 @@ const Paths = (() => {
             REL: 'dist',
             ABS: null,
         },
-        BUILD_OUTPUT: { // output path for app, used by index.html
+        BUILD_OUTPUT: { // output path for JS/CSS/binary files, used by index.html
             REL: 'static',
             ABS: null,
         },

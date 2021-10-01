@@ -23,6 +23,7 @@ function importNonEsmFile(filePath) {
 }
 
 const parseCliArgs = importNonEsmFile('./parseCliArgs.js');
+const findFile = importNonEsmFile('./findFile');
 
 function getOsHostnameAndLanIP(protocolVersion = 4) {
     const allNetworkInterfaces = os.networkInterfaces();
@@ -95,7 +96,6 @@ const Paths = (() => {
 
     // `__dirname` doesn't exist in Node ESM, so use `process.cwd()` instead.
     // Or, use a CJS file as done here.
-    const findFile = importNonEsmFile('./findFile');
     pathMappings.ROOT.ABS = path.dirname(findFile('package.json'));
 
     function setAbsPaths(pathConfig, prevRelPath) {
@@ -250,6 +250,7 @@ function getOutputFileName(
 
 export {
     Paths,
+    findFile,
     parseCliArgs,
     FileTypeRegexes,
     getOutputFileName,

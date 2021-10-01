@@ -1,6 +1,23 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Finds a file in the project directory.
+ *
+ * If `startDirectory` isn't specified, then the search start location
+ * is "root" - the directory where the first package.json file is found
+ * (similar to babel.config's `rootMode: upward` option).
+ *
+ * Likewise, if `ignoredFiles` isn't specified, it defaults to `.git/` as
+ * well as any files/directories listed in the `.gitignore` file in the
+ * "root" directory as described above.
+ *
+ * @param {string} filename - File name to search for (basename, without the path).
+ * @param {Object} [options]
+ * @param {string} [options.startDirectory=rootDir] - Starting search directory (dirname, without file name).
+ * @param {Set<string>} [options.ignoredFiles='.git'] - Files/directories to ignore when searching.
+ * @returns {(string|undefined)} - Absolute path of the file if found.
+ */
 function findFile(
     filename,
     {

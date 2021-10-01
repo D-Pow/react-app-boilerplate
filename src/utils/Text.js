@@ -175,3 +175,34 @@ export function extractQuotedStrings(str) {
 
     return str.match(quotedStringRegex);
 }
+
+/**
+ * Gets all the letters of the english alphabet.
+ *
+ * @param [options]
+ * @param {boolean} [options.lowercase=true] - If lowercase letters should be included.
+ * @param {boolean} [options.uppercase=true] - If uppercase letters should be included.
+ * @returns {string[]}
+ */
+export function getEnglishAlphabet({
+    lowercase = true,
+    uppercase = true,
+} = {}) {
+    const getUpperOrLowerCaseAlphabetFromA = startCharCode => Array.from({ length: 26 })
+        .map((nul, index) => index + startCharCode)
+        .map(charCode => String.fromCharCode(charCode));
+    const alphabetLowercase = getUpperOrLowerCaseAlphabetFromA('a'.charCodeAt(0));
+    const alphabetUppercase = getUpperOrLowerCaseAlphabetFromA('A'.charCodeAt(0));
+
+    if (lowercase && uppercase) {
+        return [ ...alphabetLowercase, ...alphabetUppercase ];
+    }
+
+    if (lowercase) {
+        return alphabetLowercase;
+    }
+
+    if (uppercase) {
+        return alphabetUppercase;
+    }
+}

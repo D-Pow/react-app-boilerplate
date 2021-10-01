@@ -427,11 +427,41 @@ const webpackConfig = {
                 //         next();
                 //     });
                 // }
+
+                /*
+                 * To use your own self-signed HTTPS dev-server certificate instead
+                 * of the one Webpack provides, `npm install -D mkcert` and then either
+                 * 1. `npx mkcert create-X` to install on your OS (required to make "Not secure"
+                 *    disappear from your browser).
+                 * 2. Generate it on-the-fly (no better than Webpack's b/c "Not secure" won't
+                 *    disappear).
+                 *
+                 * import mkcert from 'mkcert'
+                 * const certificateAuthority = await mkcert.createCA({
+                 *     validityDays: 1,
+                 *     organization: 'Localhost Org',
+                 *     state: 'New York',
+                 *     locality: 'New York City',
+                 *     countryCode: 'US',
+                 * });
+                 * const serverCertificate = await mkcert.createCert({
+                 *     validityDays: 1,
+                 *     domains: [ 'localhost', LocalLanHostIpAddresses.IPv4 ],
+                 *     caKey: certificateAuthority.key,
+                 *     caCert: certificateAuthority.cert,
+                 * });
+                 * https: {
+                 *     cacert: certificateAuthority.cert, // Don't add CA's private key, otherwise anyone could be that CA
+                 *     key: serverCertificate.key, // Do add server's key, but only since this is localhost
+                 *     cert: serverCertificate.cert, // Like the CA, the server has to provide a cert as well
+                 * }
+                 */
             } : {})(allowAccessFromOtherDevicesOnLan),
         port: LocalLanHostIpAddresses.port,
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js
         historyApiFallback: true, // Fall back to index.html upon 404
+        /** @type {import('https').ServerOptions} */
         https: useHttps, // use HTTPS instead of HTTP
         devMiddleware: {
             stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output

@@ -5,6 +5,9 @@ const findFile = require('./findFile');
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
 const babelConfigPath = findFile('babel.config.js');
 
+// Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
+const extensions = [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ];
+
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
     env: {
@@ -43,9 +46,13 @@ module.exports = {
         react: { // `eslint-plugin-react` docs: https://github.com/yannickcr/eslint-plugin-react#configuration
             version: 'detect', // Automatically detect React version
         },
+        'import/extensions': extensions,
         'import/resolver': {
+            node: {
+                extensions,
+            },
             alias: {
-                extensions: [ '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.json' ],
+                extensions,
                 map: [
                     [ '@', './src' ],
                     [ '/', './' ],
@@ -134,6 +141,10 @@ module.exports = {
             beforeClosing: 'never', // never allow a space between closing > (that lacks a slash), e.g. `<MyComp ></MyComp >`
             afterOpening: 'never', // never allow a space between opening < and component name, e.g. `< MyComp>`
             closingSlash: 'never', // never allow a space between closing < and /, e.g. `< /MyComp>`
+        }],
+        'react/jsx-filename-extension': [ 'error', {
+            // allow: 'as-needed', // Only allow .jsx for files with JSX in them
+            extensions: [ '.jsx', '.tsx' ], // Allow both .jsx and .tsx for file extensions (default is only .jsx)
         }],
         'react/prop-types': 'warn',
         'react/display-name': 'off', // Don't error on arrow-function components

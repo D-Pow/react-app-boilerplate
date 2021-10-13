@@ -251,7 +251,7 @@ const webpackConfig = {
     },
     entry: {
         client: {
-            import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.js'),
+            import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.jsx'),
             dependOn: 'common',
         },
         common: [

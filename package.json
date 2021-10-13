@@ -13,13 +13,16 @@
     "node": ">=14.5",
     "npm": ">=7"
   },
+  "config": {
+    "eslintExtensions": ".tsx,.ts,.jsx,.js,.mjs,.cjs"
+  },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.mjs",
     "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start --",
     "mock": "cross-env MOCK=true npm start --",
     "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock --",
     "test": "jest tests",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.mjs,.cjs",
+    "lint": "eslint --ext $npm_package_config_eslintExtensions",
     "lint:all": "npm run lint . --",
     "createComponent": "node scripts/createComponent.js",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",

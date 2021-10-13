@@ -8,6 +8,7 @@ const babelConfigPath = findFile('babel.config.js');
 // Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
 const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
     || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ]; // Included solely for IDE integration in case npm config can't be read
+const buildOutputDir = process?.env?.npm_package_config_buildOutputDir || 'dist';
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
@@ -29,6 +30,7 @@ module.exports = {
     },
     ignorePatterns: [
         '**/node_modules/**',
+        `**/${buildOutputDir}/**`,
     ],
     extends: [
         'eslint:recommended',

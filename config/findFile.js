@@ -56,10 +56,16 @@ function findFile(
     const ignoredFilesRegexString = [ ...ignoredFiles ]
         // Replace globs with regex
         .map(fileOrPathGlob => fileOrPathGlob
-            // Replace '**', '*', and trailing '/' (for directories) with '.*'
-            .replace(/((?<!\*)\*(?!\*))|(\*\*)|(\/$)/g, '.*'),
+            // Escape periods
+            .replace(/\./g, '\\.')
+            // Replace directory globs (`**`) with regex (`.*`)
+            // `**/` and `/` --> `.*/`
+            .replace(/^(\*\*)?\//, '.*/?')
+            // `/**` and `/` --> `/.*`
+            .replace(/\/(\*\*)?$/, '/?.*')
         )
-        .map(fileOrPathRegexString => `(${fileOrPathRegexString})`)
+        // Prepend an optional `.*/` to ignore all leading directories like git does normally
+        .map(fileOrPathRegexString => `(^(.*/)?${fileOrPathRegexString}$)`)
         .join('|');
     const ignoredFilesRegex = new RegExp(ignoredFilesRegexString, 'i');
 

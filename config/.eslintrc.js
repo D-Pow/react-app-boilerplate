@@ -139,12 +139,11 @@ module.exports = {
         }],
         'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
 
+
         // TODO Find out how to force imports to use aliases (unless ./File import)
         //  I think we have to write our own plugin because none of the below work:
         //  eslint-plugin-import, eslint-import-resolver-alias, eslint-plugin-import-alias
         //  Starting point: https://stackoverflow.com/questions/66349222/how-to-enforce-a-rule-on-importing-path-using-alias-by-eslint
-
-        'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
             // which means the `/` import alias isn't being honored by this rule.
@@ -152,6 +151,8 @@ module.exports = {
             // unresolved-module errors only for those files.
             ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
         }],
+        'import/no-cycle': [ 'error', { commonjs: true, amd: true }], // Prevent circular dependencies
+
 
         'react/jsx-indent': [ 'error', 4, {
             checkAttributes: true,

@@ -122,9 +122,19 @@ function createComponentInDirectory(
 
 
 function printUsage() {
-    const usage = `Creates a component inside its own folder in the src/ directory along with an index.js file.
-    Usage: createComponent [-d|--dir = directoryUnderSrc] [-f|--func] [-t|--typescript] ComponentName
-    `;
+    const usage = `Creates a new component inside its own folder under \`src/\` along with an \`index.[tj]sx\` file.
+
+    Usage:
+        npm script (requires two hyphens):
+            npm run createComponent -- [options] <ComponentName>
+        Direct script call:
+            ./createComponent.js [options] <ComponentName>
+
+    Options:
+        -d|--dir  <directory-name>  |   Directory under \`src/\` to place your component (default: \`components/\`).
+        -f|--func                   |   Make the component a functional component instead of a class component.
+        -t|--typescript             |   Use TypeScript instead of JavaScript to create the component.
+`;
 
     console.log(usage);
     process.exit(1);

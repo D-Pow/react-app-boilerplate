@@ -151,6 +151,7 @@ module.exports = {
             // unresolved-module errors only for those files.
             ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
         }],
+        // TODO https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }], // Prevent circular dependencies
 
 

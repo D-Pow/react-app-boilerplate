@@ -91,7 +91,8 @@ function createComponentInDirectory(
     } = {},
 ) {
     const dir = `./src/${dirName}/${componentName}`;
-    const extension = typescript ? 'tsx' : 'jsx';
+    const componentFileExtension = typescript ? 'tsx' : 'jsx';
+    const indexFileExtension = typescript ? 'ts' : 'js';
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
     const componentText = getComponentText(
         componentName,
@@ -105,11 +106,11 @@ function createComponentInDirectory(
         if (err) {
             error(err);
         } else {
-            fs.writeFile(`${dir}/index.${extension}`, indexText, err => {
+            fs.writeFile(`${dir}/index.${indexFileExtension}`, indexText, err => {
                 if (err) {
                     error(err);
                 } else {
-                    fs.writeFile(`${dir}/${componentName}.${extension}`, componentText, err => {
+                    fs.writeFile(`${dir}/${componentName}.${componentFileExtension}`, componentText, err => {
                         if (err) {
                             error(err);
                         } else {
@@ -124,7 +125,7 @@ function createComponentInDirectory(
 
 
 function printUsage() {
-    const usage = `Creates a new component inside its own folder under \`src/\` along with an \`index.[tj]sx\` file.
+    const usage = `Creates a new component inside its own folder under \`src/\` along with an \`index.[tj]s\` file.
 
     Usage:
         npm script (requires two hyphens):

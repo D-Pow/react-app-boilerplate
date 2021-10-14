@@ -7,7 +7,8 @@ const babelConfigPath = findFile('babel.config.js');
 
 // Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
 const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
-    || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ]; // Included solely for IDE integration in case npm config can't be read
+    // Added solely for IDE integration since env vars (like npm config fields) can't be parsed statically. See: https://youtrack.jetbrains.com/issue/WEB-43731
+    || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ];
 
 // Paths not to lint
 const gitIgnoredPaths = fs.readFileSync(findFile('.gitignore'))

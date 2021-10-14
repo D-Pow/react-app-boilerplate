@@ -102,25 +102,15 @@ function createComponentInDirectory(
         },
     );
 
-    fs.mkdir(`${dir}`, { recursive: true }, err => {
-        if (err) {
-            error(err);
-        } else {
-            fs.writeFile(`${dir}/index.${indexFileExtension}`, indexText, err => {
-                if (err) {
-                    error(err);
-                } else {
-                    fs.writeFile(`${dir}/${componentName}.${componentFileExtension}`, componentText, err => {
-                        if (err) {
-                            error(err);
-                        } else {
-                            console.log(`Created ${componentName} in src/${dirName}/`);
-                        }
-                    });
-                }
-            });
-        }
-    });
+    try {
+        fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(`${dir}/index.${indexFileExtension}`, indexText);
+        fs.writeFileSync(`${dir}/${componentName}.${componentFileExtension}`, componentText);
+
+        console.log(`Created ${componentName} in src/${dirName}/`);
+    } catch (e) {
+        error(e);
+    }
 }
 
 

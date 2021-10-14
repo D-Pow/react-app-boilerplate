@@ -62,7 +62,7 @@ function findFile(
             // `**/` and `/` --> `.*/`
             .replace(/^(\*\*)?\//, '.*/?')
             // `/**` and `/` --> `/.*`
-            .replace(/\/(\*\*)?$/, '/?.*')
+            .replace(/\/(\*\*)?$/, '/?.*'),
         )
         // Prepend an optional `.*/` to ignore all leading directories like git does normally
         .map(fileOrPathRegexString => `(^(.*/)?${fileOrPathRegexString}$)`)

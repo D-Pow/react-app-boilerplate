@@ -8,7 +8,28 @@ const babelConfigPath = findFile('babel.config.js');
 // Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
 const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
     || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ]; // Included solely for IDE integration in case npm config can't be read
-const buildOutputDir = process?.env?.npm_package_config_buildOutputDir || 'dist';
+
+// Paths not to lint
+const gitIgnoredPaths = fs.readFileSync(findFile('.gitignore'))
+    .toString()
+    .split('\n')
+    .filter(ignoredPath => ignoredPath)
+    .map(ignoredPath => ignoredPath.replace(/(?:^[^*])|(?:[^*]$)/g, (fullStrMatch, strIndex) => {
+        // All strings matching the regex don't have either leading `**/`, trailing `/**`, or both.
+
+        if (fullStrMatch === '/') {
+            // Directory without leading/trailing `**`
+            return strIndex === 0 ? '**/' : '/**';
+        }
+
+        if (strIndex === 0) {
+            // File or directory without leading `/`
+            return `**/${fullStrMatch}`;
+        }
+
+        // File
+        return fullStrMatch;
+    }));
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
@@ -30,7 +51,7 @@ module.exports = {
     },
     ignorePatterns: [
         '**/node_modules/**',
-        `**/${buildOutputDir}/**`,
+        ...gitIgnoredPaths,
     ],
     extends: [
         'eslint:recommended',

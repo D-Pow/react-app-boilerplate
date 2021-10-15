@@ -72,6 +72,7 @@ module.exports = {
             version: 'detect', // Automatically detect React version
         },
         'import/extensions': extensions,
+        'import/internal-regex': '^@?/', // Mark `@/...` and `/...` import strings as `internal` imports since they're our aliases
         'import/resolver': {
             node: {
                 extensions,

@@ -150,6 +150,40 @@ module.exports = {
         'import/no-duplicates': [ 'error', {
             considerQueryString: true, // Allow import queries of different values to coexist (e.g. `import 'file?a'` works with `import 'file?b'`)
         }],
+        // Sort imports by type with(out) newlines between them: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+        'import/order': [ 'error', {
+            groups: [
+                'builtin', // native
+                'external', // third-party installed libs
+                'internal', // source code (all types)
+                'sibling', // source code (relative path, same or lower dir)
+                'parent', // source code (relative path, higher dir) - Note: `import/no-relative-parent-imports` doesn't allow aliases so it can't be used
+                'index', // index file of current directory (`'.'`)
+                'object', // TypeScript "object" imports
+                'type', // type imports (TypeScript)
+                'unknown', // everything else
+            ],
+            pathGroups: [ // Ensure aliased imports come before other internal ones
+                {
+                    pattern: '@/**',
+                    group: 'external', // Ensure `@` comes before all other internal imports
+                    position: 'after',
+                    patternOptions: {
+                        dot: true, // Allow matching paths with preceding periods (e.g. `.git/` or `.gitignore`)
+                    },
+                },
+                {
+                    pattern: '/*',
+                    group: 'internal', // Technically allows `/` before `@`, but that's better than after `./file`
+                    position: 'before',
+                    patternOptions: {
+                        dot: true,
+                    },
+                },
+            ],
+            'newlines-between': 'always-and-inside-groups', // Force newlines between groups, allow them within groups
+            warnOnUnassignedImports: true, // Warn if `import 'a'` is used before `import X from 'b'` but don't error in case `a` causes global changes (e.g. a polyfill)
+        }],
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
             // which means the `/` import alias isn't being honored by this rule.
@@ -157,7 +191,6 @@ module.exports = {
             // unresolved-module errors only for those files.
             ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
         }],
-        // TODO https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }], // Prevent circular dependencies
 
 

@@ -185,6 +185,10 @@ module.exports = {
             'newlines-between': 'always-and-inside-groups', // Force newlines between groups, allow them within groups
             warnOnUnassignedImports: true, // Warn if `import 'a'` is used before `import X from 'b'` but don't error in case `a` causes global changes (e.g. a polyfill)
         }],
+        // Ensure there is at least one newline between imports and file logic
+        'import/newline-after-import': [ 'error', {
+            count: 1,
+        }],
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
             // which means the `/` import alias isn't being honored by this rule.

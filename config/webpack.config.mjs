@@ -15,6 +15,7 @@ import {
     LocalLanHostIpAddresses,
     importNonEsmFile,
 } from './utils.mjs';
+
 const babelConfig = importNonEsmFile(Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js'));
 const packageJson = importNonEsmFile(Paths.getFileAbsPath(Paths.ROOT.ABS, 'package.json'));
 const manifestJson = importNonEsmFile(Paths.getFileAbsPath(Paths.SRC.ABS, 'manifest.json'));

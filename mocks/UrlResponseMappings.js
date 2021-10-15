@@ -1,4 +1,5 @@
 import { kitsuTitleSearchUrl, getSearchUrl } from '@/services/Urls';
+
 import {
     kimiNoNaWaResponse,
     narutoResponse,

@@ -1,4 +1,5 @@
 import MockRequests from 'mock-requests';
+
 import {
     getKitsuTitleSearchUrl,
     kitsuSearchQueryParamKey,

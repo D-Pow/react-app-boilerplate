@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { fetchKitsuTitleSearch } from '@/services/KitsuAnimeSearchService';
 import { useKeyboardEvent } from '@/utils/Hooks';
 

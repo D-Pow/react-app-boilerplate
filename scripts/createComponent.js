@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+
 const parseCliArgs = require('../config/parseCliArgs');
 
 function getPropTypes(indentForClassStaticVar, typescript) {

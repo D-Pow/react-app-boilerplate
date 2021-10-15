@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+
 import SpinnerCircle from '@/components/ui/SpinnerCircle';
 import IncompatibleBrowserFallback from '@/components/IncompatibleBrowserFallback';
 import AppContext from '@/utils/AppContext';

@@ -1,5 +1,7 @@
 import MockRequests from 'mock-requests';
+
 import { kitsuTitleSearchUrl } from '@/services/Urls';
+
 import { staticUrlResponseConfig } from '/mocks/UrlResponseMappings';
 import { chooseMockBasedOnQuery } from '/mocks/DynamicResponses';
 

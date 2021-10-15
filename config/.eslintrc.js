@@ -1,4 +1,5 @@
 const fs = require('fs');
+
 const findFile = require('./findFile');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.

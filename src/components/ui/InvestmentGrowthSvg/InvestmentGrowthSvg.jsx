@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { objEquals } from '@/utils/Objects';
 
 const STARTING_POSITION = 'STARTING_POSITION';

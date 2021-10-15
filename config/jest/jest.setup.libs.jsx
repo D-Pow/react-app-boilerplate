@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+
 import AppContext from '@/utils/AppContext';
 
 Enzyme.configure({ adapter: new Adapter() });

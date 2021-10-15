@@ -1,5 +1,7 @@
 import * as fs from 'fs';
+
 import { defaults } from 'jest-config';
+
 import { Paths, FileTypeRegexes } from '../utils.mjs';
 
 /*

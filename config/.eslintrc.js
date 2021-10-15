@@ -189,6 +189,7 @@ module.exports = {
         'import/newline-after-import': [ 'error', {
             count: 1,
         }],
+        // Ensure all imports resolve/exist
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
             // which means the `/` import alias isn't being honored by this rule.
@@ -196,7 +197,8 @@ module.exports = {
             // unresolved-module errors only for those files.
             ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
         }],
-        'import/no-cycle': [ 'error', { commonjs: true, amd: true }], // Prevent circular dependencies
+        // Prevent circular dependencies
+        'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
 
 
         'react/jsx-indent': [ 'error', 4, {

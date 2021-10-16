@@ -1,6 +1,40 @@
 const YargsParser = require('yargs-parser');
 
 /**
+ * This function converts from user-specified option configuration objects to those used by Yargs.
+ *
+ * Yargs requires each flag to be specified manually even if the flag has multiple aliases (i.e. both
+ * short and long flag names).
+ * Given an `optionConfig` object passed by the user, this copies the value of the config from the
+ * specified variable name into each option flag (both long and short flags) for usage by Yargs.
+ *
+ * @example
+ * extractMultipleFlagsFromCombinedFlagsArrayForYargsUsage(
+ *     { myVar: [ 's', 'someFlag' ]},
+ *     { myVar: 7 }
+ * )  =>  { s: 7, someFlag: 7 }
+ *
+ * @param {Object<string, string[]>} varNameToShortLongFlagsMap - Mapping of returned variable name to its (short/long) flag aliases.
+ * @param {Object} optionConfig - Mapping of variable name to arbitrary value to convert to flag aliases.
+ * @returns {Object} - Mapping of flag aliases to their respective values in `optionConfig`.
+ */
+function extractMultipleFlagsFromCombinedFlagsArrayForYargsUsage(varNameToShortLongFlagsMap, optionConfig) {
+    if (!optionConfig) {
+        return optionConfig;
+    }
+
+    return Object.entries(varNameToShortLongFlagsMap).reduce((optionConfigWithIndividualFlags, [ combinedVarName, optionFlagAliases ]) => {
+        const optionValue = optionConfig[combinedVarName];
+
+        optionFlagAliases.forEach(flagAliasName => {
+            optionConfigWithIndividualFlags[flagAliasName] = optionValue;
+        });
+
+        return optionConfigWithIndividualFlags;
+    }, {});
+}
+
+/**
  * Parse arguments using yargs-parser (simpler and quicker to use than yargs).
  *
  * If calling a script from `npm run`, a double-hyphen is required,
@@ -39,15 +73,7 @@ function parseCliArgs(
     }
 
     if (combineShortLongFlags) {
-        numArgs = Object.entries(combineShortLongFlags).reduce((newNumArgs, [ varName, optionFlagAliases ]) => {
-            const numArgsForFlag = numArgs[varName];
-
-            optionFlagAliases.forEach(flagAliasName => {
-                newNumArgs[flagAliasName] = numArgsForFlag;
-            });
-
-            return newNumArgs;
-        }, {});
+        numArgs = extractMultipleFlagsFromCombinedFlagsArrayForYargsUsage(combineShortLongFlags, numArgs);
     }
 
     const customArgv = argv.slice(argvStartIndex);

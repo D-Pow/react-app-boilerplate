@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const findFile = require('./findFile');
+const findFile = require('./config/findFile');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.

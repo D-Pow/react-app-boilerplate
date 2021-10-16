@@ -35,9 +35,6 @@
   "jest": {
     "preset": "./config/jest/jest.config.mjs"
   },
-  "eslintConfig": {
-    "extends": "./config/.eslintrc.js"
-  },
   "keywords": [
     "boilerplate",
     "web development",

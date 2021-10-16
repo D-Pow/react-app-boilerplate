@@ -1,10 +1,13 @@
 const fs = require('fs');
+const path = require('path');
 
 const findFile = require('./config/findFile');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
 const babelConfigPath = findFile('babel.config.js');
+
+const rootDir = path.dirname(findFile('package.json'));
 
 // Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
 const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
@@ -66,6 +69,7 @@ module.exports = {
         'react',
         'react-hooks',
         'import',
+        'import-alias',
     ],
     // Settings for specific plugins
     settings: {
@@ -142,11 +146,21 @@ module.exports = {
         'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
 
 
-        // TODO Find out how to force imports to use aliases (unless ./File import)
-        //  I think we have to write our own plugin because none of the below work:
-        //  eslint-plugin-import, eslint-import-resolver-alias, eslint-plugin-import-alias
-        //  Starting point: https://stackoverflow.com/questions/66349222/how-to-enforce-a-rule-on-importing-path-using-alias-by-eslint
-
+        // Ensure aliased imports are always used instead of relative paths for imports in the `src/` directory.
+        'import-alias/import-alias': [ 'error', {
+            relativeDepth: 0, // Only allow imports from same directory (e.g. `import './SubComponent'` as used in `index.js` or parent components)
+            rootDir: path.relative(rootDir, '.'), // Ensure root directory is correct regardless of .eslintrc file location. Requires relative path so `eslint --fix` doesn't inject absolute path in imports.
+            aliases: [
+                {
+                    alias: '@',
+                    matcher: '^src',
+                },
+                {
+                    alias: '/',
+                    matcher: '^',
+                },
+            ],
+        }],
         // Prevent different import lines from importing from the same file (e.g. `import { x } from 'file'; import { y } from 'file'`)
         'import/no-duplicates': [ 'error', {
             considerQueryString: true, // Allow import queries of different values to coexist (e.g. `import 'file?a'` works with `import 'file?b'`)
@@ -225,9 +239,17 @@ module.exports = {
         'react-hooks/exhaustive-deps': 'warn',
     },
     overrides: [
+        // Use specified parser for TypeScript files
         {
             files: [ '*.ts?(x)' ],
             parser: '@typescript-eslint/parser',
+        },
+        // Allow `config/` files to use relative imports (e.g. `import X from '../utils.mjs'`)
+        {
+            files: [ `./config/**` ],
+            rules: {
+                'import-alias/import-alias': 'off',
+            },
         },
     ],
 };

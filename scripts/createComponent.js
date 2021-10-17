@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const parseCliArgs = require('../config/parseCliArgs');
 
-function getPropTypes(indentForClassStaticVar, typescript) {
+function getPropTypesText(indentForClassStaticVar, typescript) {
     if (typescript) {
         return '';
     }
@@ -25,7 +25,7 @@ function getClassComponentText(componentName, typescript) {
     ${
         typescript
             ? ''
-            : `static ${getPropTypes(true, typescript)}\n\n    `
+            : `static ${getPropTypesText(true, typescript)}\n\n    `
     }static defaultProps = {
 
     };
@@ -55,7 +55,7 @@ function getFunctionalComponentText(componentName, typescript) {
         functionDefinitionStr +=
 `
 
-${componentName}.${getPropTypes(false, typescript)}`;
+${componentName}.${getPropTypesText(false, typescript)}`;
     }
 
     return functionDefinitionStr;

@@ -88,8 +88,8 @@ function createComponentInDirectory(
     componentName,
     {
         dirName = '.',
-        functionalComponent = false,
-        typescript = false,
+        functionalComponent,
+        typescript,
     } = {},
 ) {
     const dir = `./src/components/${dirName}/${componentName}`;

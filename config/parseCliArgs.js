@@ -48,6 +48,7 @@ function parseCliArgs(
         {
             configuration: {
                 'greedy-arrays': false, // Prevent flags from capturing more values than beyond their `numArgs` specifies
+                'populate--': true, // Set any args after `--` to its own key (`script -a val b c -- d e` => `{ a: 'val', _: [ 'b', 'c' ], '--': [ 'd', 'e' ] }` instead of `_: [ 'b', 'c', 'd', 'e' ]`
                 // 'strip-aliased': true, // Remove flag aliases (`varNameToFlagAliases` value) if variable name (`varNameToFlagAliases` key) is specified
             },
             alias: varNameToFlagAliases,

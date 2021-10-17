@@ -48,6 +48,10 @@ function parseCliArgs(
     const customArgs = YargsParser(
         customArgv,
         {
+            configuration: {
+                'greedy-arrays': false, // Prevent flags from capturing more values than beyond their `numArgs` specifies
+                // 'strip-aliased': true, // Remove flag aliases (`varNameToFlagAliases` value) if variable name (`varNameToFlagAliases` key) is specified
+            },
             alias: varNameToFlagAliases,
             default: defaultValues,
             narg: numArgs,

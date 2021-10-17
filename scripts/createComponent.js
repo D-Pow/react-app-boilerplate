@@ -144,7 +144,7 @@ function main() {
         varNameToFlagAliases: {
             functionalComponent: [ 'f', 'func' ],
             dirName: [ 'd', 'dir' ],
-            typescript: [ 't', 'typescript' ],
+            typescript: [ 't' ],
         },
         numArgs: {
             functionalComponent: 0,

@@ -98,6 +98,7 @@ module.exports = {
         process: 'writable',
         module: 'writable',
         __dirname: 'readonly',
+        __filename: 'readonly',
         global: 'writable',
         Buffer: 'readonly',
     },

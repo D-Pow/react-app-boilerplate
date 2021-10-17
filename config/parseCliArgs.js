@@ -8,9 +8,7 @@ const YargsParser = require('yargs-parser');
  *
  * Both hyphenated (`--my-flag`) and camelCase (`--myFlag`) forms are accepted.
  *
- * Technically, single (`-my-flag`) and double (`--m`) hyphens are allowed for all flags, but
- * it's standard to use single hyphens for single letters and vice versa for consistency
- * with other languages/libraries.
+ * Single-letter flags can be combined into a single hyphen (`-a -b -c` === `-abc`).
  *
  * @param {Object} options
  * @param {string[]} [options.argv=process.argv] - Arg array to parse.

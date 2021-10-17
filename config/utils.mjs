@@ -77,7 +77,7 @@ const Paths = (() => {
             ABS: null,
         },
         BUILD_ROOT: { // output path for webpack build on machine, holds entire app but isn't used by it
-            REL: process.env.npm_package_config_buildOutputDir,
+            REL: process?.env?.npm_package_config_buildOutputDir || 'dist',
             ABS: null,
         },
         BUILD_OUTPUT: { // output path for JS/CSS/binary files, used by index.html

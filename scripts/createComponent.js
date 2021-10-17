@@ -139,8 +139,20 @@ function error(err) {
     process.exit(1);
 }
 
-function main() {
+/**
+ * Creates a new React component under `src/components/`.
+ *
+ * Optionally allows:
+ * - Specifying a sub-directory.
+ * - Making it a functional component (default is a class component).
+ * - Using TypeScript (default is JavaScript).
+ *
+ * @param {string[]} [argv] - Array of option flags with the component name arg as the final array entry.
+ */
+function createComponent(argv) {
     const args = parseCliArgs({
+        argv,
+        removeNodeAndScriptFromArgs: !argv,
         varNameToFlagAliases: {
             functionalComponent: [ 'f', 'func' ],
             dirName: [ 'd', 'dir' ],
@@ -170,4 +182,10 @@ function main() {
     );
 }
 
-main();
+const isMain = !!process.argv?.[1].match(new RegExp(`${__filename}$`));
+
+if (isMain) {
+    createComponent();
+}
+
+module.exports = createComponent;

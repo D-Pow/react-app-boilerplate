@@ -141,7 +141,7 @@ function error(err) {
 
 function main() {
     const args = parseCliArgs({
-        combineShortLongFlags: {
+        varNameToFlagAliases: {
             functionalComponent: [ 'f', 'func' ],
             dirName: [ 'd', 'dir' ],
             typescript: [ 't', 'typescript' ],

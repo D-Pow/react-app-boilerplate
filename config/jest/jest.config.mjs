@@ -9,7 +9,7 @@ import { Paths, FileTypeRegexes } from '../utils.mjs';
  */
 
 // const { collectCoverage } = parseCliArgs({
-//     combineShortLongFlags: {
+//     varNameToFlagAliases: {
 //         collectCoverage: [ 'coverage' ],
 //     },
 //     numArgs: {

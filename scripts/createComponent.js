@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
 
 const parseCliArgs = require('../config/parseCliArgs');
 
@@ -86,12 +87,12 @@ export default ${componentName};
 function createComponentInDirectory(
     componentName,
     {
-        dirName = 'components',
+        dirName = '.',
         functionalComponent = false,
         typescript = false,
     } = {},
 ) {
-    const dir = `./src/${dirName}/${componentName}`;
+    const dir = `./src/components/${dirName}/${componentName}`;
     const componentFileExtension = typescript ? 'tsx' : 'jsx';
     const indexFileExtension = typescript ? 'ts' : 'js';
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
@@ -108,7 +109,7 @@ function createComponentInDirectory(
         fs.writeFileSync(`${dir}/index.${indexFileExtension}`, indexText);
         fs.writeFileSync(`${dir}/${componentName}.${componentFileExtension}`, componentText);
 
-        console.log(`Created ${componentName} in src/${dirName}/`);
+        console.log(`Created new "${componentName}" component in ${path.relative('.', dir)}/`);
     } catch (e) {
         error(e);
     }
@@ -116,7 +117,7 @@ function createComponentInDirectory(
 
 
 function printUsage() {
-    const usage = `Creates a new component inside its own folder under \`src/\` along with an \`index.[tj]s\` file.
+    const usage = `Creates a new component inside its own folder under \`src/components/\` along with an \`index.[tj]s\` file.
 
     Usage:
         npm script (requires two hyphens):
@@ -125,9 +126,9 @@ function printUsage() {
             ./createComponent.js [options] <ComponentName>
 
     Options:
-        -d|--dir  <directory-name>  |   Directory under \`src/\` to place your component (default: \`components/\`).
-        -f|--func                   |   Make the component a functional component instead of a class component.
-        -t|--typescript             |   Use TypeScript instead of JavaScript to create the component.
+        -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
+        -f|--func                   |   Make the component a functional component (default: class component).
+        -t|--typescript             |   Use TypeScript to create the component (default: JavaScript).
 `;
 
     console.log(usage);

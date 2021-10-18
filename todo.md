@@ -15,7 +15,6 @@
     - Starter: https://developpaper.com/browser-module-main-field-priority-you-dont-know-about-in-package-json/
 * Abstract import aliases to separate file for use in webpack, typescript, jest, eslint, jsconfig, etc.
     - Starting place - Read aliases only from tsconfig: https://www.npmjs.com/package/tsconfig-paths-webpack-plugin
-    - Also, fix `.tsx?` files to autocomplete JS imports using aliases
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically
     - Another option other than InterpolateHtmlPlugin: [serviceworker-webpack-plugin](https://github.com/oliviertassinari/serviceworker-webpack-plugin/blob/master/src/index.js)

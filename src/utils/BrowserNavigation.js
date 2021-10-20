@@ -197,10 +197,22 @@ export function getUrlSegments(url = '') {
         key = decodeURIComponent(key);
         const val = decodeURIComponent(vals.join('='));
 
-        queryParamObj[key] = val;
+        if (key in queryParamObj) {
+            if (Array.isArray(queryParamObj[key])) {
+                queryParamObj[key].push(val);
+            } else {
+                queryParamObj[key] = [ queryParamObj[key], val ];
+            }
+        } else {
+            queryParamObj[key] = val;
+        }
 
         return queryParamObj;
     }, {});
+
+    if (hash) {
+        queryParamMap['#'] = hash;
+    }
 
     return {
         fullUrl,

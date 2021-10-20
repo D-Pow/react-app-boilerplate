@@ -5,7 +5,7 @@
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
- * @param {(Object|string)} input - URL or object for which to get/set query params.
+ * @param {(Object|string)} input - URL or object for which to get/set query params and/or hash entries.
  * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
  * @param {Object} [input.fromObj] - Object to convert to query parameter string.
  * @returns {Object} - All query param key-value pairs.
@@ -20,10 +20,19 @@ export function getQueryParams({
     }
 
     if (fromObj) {
+        const hash = fromObj['#'] || '';
+
+        delete fromObj['#'];
+
         const queryParamEntries = Object.entries(fromObj);
+
+        if (queryParamEntries.length === 0) {
+            return '';
+        }
+
         const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
 
-        return queryParamEntries.length > 0
+        const queryString = queryParamEntries.length > 0
             ? `?${
                 queryParamEntries
                     .map(([ queryKey, queryValue ]) => {
@@ -38,9 +47,16 @@ export function getQueryParams({
                     .join('&')
             }`
             : '';
+
+        return queryString + (hash ? `#${hash}` : '');
     }
 
-    const urlSearchQuery = fromUrl.split('?')[1];
+    const [ urlSearchQuery, hash ] = fromUrl.split('?')[1]?.split('#') ?? [ '', '' ];
+    const queryParamsObj = {};
+
+    if (hash) {
+        queryParamsObj['#'] = hash;
+    }
 
     return [ ...new URLSearchParams(urlSearchQuery).entries() ]
         .reduce((queryParams, nextQueryParam) => {
@@ -57,7 +73,7 @@ export function getQueryParams({
             }
 
             return queryParams;
-        }, {});
+        }, queryParamsObj);
 }
 
 /**

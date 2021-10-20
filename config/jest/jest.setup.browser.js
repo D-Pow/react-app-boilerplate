@@ -16,6 +16,7 @@ global.Request = jest.fn((url, options) => ({
 }));
 
 
+// TODO Maybe use a Proxy to make object spreads behave the same as native storages.
 class StorageMock {
     storage = {};
 

@@ -81,6 +81,8 @@ function mockObjProperty(
 global.mockObjProperty = mockObjProperty;
 
 
+// TODO Use a Proxy instead to preserve original stack trace location
+//  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/Proxy
 /**
  * Ignore certain console messages from polluting jest output.
  *

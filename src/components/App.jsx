@@ -52,7 +52,10 @@ const routes = [
     },
 ];
 
-// TODO find a good polyfill for positive/negative look-ahead/-behind regex (not supported on IE)
+// TODO find a good polyfill for:
+//  - Positive/negative look-ahead/-behind regex (not supported on IE)
+//  - Proxy
+//  - Reflect (?)
 const blockInternetExplorer = true;
 
 function App() {

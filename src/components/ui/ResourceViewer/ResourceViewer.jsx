@@ -56,7 +56,7 @@ function ResourceViewer({
         return null;
     }
 
-    const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, true);
+    const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, { onlyLocalhost: true });
     const backupHyperlinkSrc = mimeType === PDF_MIME_TYPE
         ? GOOGLE_PDF_VIEWER_URL + encodeURIComponent(src)
         : src;

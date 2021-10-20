@@ -200,12 +200,13 @@ export function getUrlSegments(url = '') {
  * Optionally, determines whether or not the IP address in the URL is associated with `localhost`.
  *
  * @param {string} url - URL to test.
- * @param {boolean} [onlyLocalHost=false] - If only localhost IP addresses should be checked.
- * @param {boolean} [includeLocalhostDomain=true] - If `https?://localhost` should be included in `onlyLocalHost` check.
+ * @param {Object} [options]
+ * @param {boolean} [options.onlyLocalhost=false] - If only localhost IP addresses should be checked.
+ * @param {boolean} [options.includeLocalhostDomain=true] - If `https?://localhost` should be included in `onlyLocalhost` check.
  * @returns {boolean} - If the URL is an IP address (and if it's an IP address for localhost if desired).
  */
-export function isIpAddress(url, onlyLocalHost = false, includeLocalhostDomain = true) {
-    if (onlyLocalHost) {
+export function isIpAddress(url, { onlyLocalhost = false, includeLocalhostDomain = true } = {}) {
+    if (onlyLocalhost) {
         const { domain } = getUrlSegments(url);
 
         // TODO IPv6

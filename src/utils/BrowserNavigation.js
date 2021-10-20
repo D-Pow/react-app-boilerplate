@@ -5,18 +5,20 @@
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
- * @param {(Object|string)} input - URL or object for which to get/set query params and/or hash entries.
- * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
- * @param {Object} [input.fromObj] - Object to convert to query parameter string.
- * @returns {Object} - All query param key-value pairs.
+ * @param {(string|Object)} [input=window.location.search] - URL search string to convert to an object, or object to convert to
+ *                                                           a search string; defaults to current page's URL search string.
+ * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search string (if input is an object).
  */
-export function getQueryParams({
-    fromUrl = window.location.search,
-    fromObj,
-} = {}) {
-    if (arguments?.length === 1 && typeof arguments[0] === typeof '') {
-        // If the user passes a string instead, set it to the correct variable
-        fromUrl = arguments[0];
+export function getQueryParams(input = window.location.search) {
+    let fromUrl;
+    let fromObj;
+
+    if (typeof input === typeof '') {
+        fromUrl = input;
+    } else if (typeof input === typeof {}) {
+        fromObj = input;
+    } else {
+        throw new TypeError(`Type ${typeof input} is not supported. Please use a string or object.`);
     }
 
     if (fromObj) {
@@ -128,7 +130,7 @@ export function pushQueryParamOnHistory(key, value) {
         }
     }
 
-    const queryParamsString = getQueryParams({ fromObj: queryParams });
+    const queryParamsString = getQueryParams(queryParams);
     const newUrl = origin + pathname + queryParamsString + hash;
 
     history.pushState(

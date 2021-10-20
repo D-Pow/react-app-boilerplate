@@ -20,6 +20,8 @@ export function getQueryParams({
     }
 
     if (fromObj) {
+        fromObj = { ...fromObj };
+
         const hash = fromObj['#'] || '';
 
         delete fromObj['#'];

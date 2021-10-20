@@ -154,34 +154,67 @@ export function pushQueryParamOnHistory(key, value) {
  * }} - URL segments.
  */
 export function getUrlSegments(url = '') {
-    /*
-     * All regex strings use `*` to mark them as optional when capturing
-     * so they're always the same location in the resulting array.
-     *
-     * URL segment markers must each ignore all special characters used by
-     * those after it to avoid capturing the next segment's content.
-     */
-    const protocolRegex = '([^:/?#]*://)?'; // include `://` for `origin` creation below
-    const domainRegex = '([^:/?#]*)'; // capture everything after the protocol but before the port, pathname, query-params, or hash
-    const portRegex = '(?::)?(\\d*)'; // colon followed by digits; non-capture must be outside capture group so it isn't included in output
-    const pathnameRegex = '([^?#]*)'; // everything after the origin (starts with `/`) but before query-params or hash
-    const queryParamRegex = '([^#]*)'; // everything before the hash (starts with `?`)
-    const hashRegex = '(.*)'; // anything leftover after the above capture groups have done their job (starts with `#`)
-    const urlPiecesRegex = new RegExp(`^${protocolRegex}${domainRegex}${portRegex}${pathnameRegex}${queryParamRegex}${hashRegex}$`);
-    let [
-        fullUrl,
-        protocol,
-        domain,
-        port,
-        pathname,
-        queryString,
-        hash,
-    ] = urlPiecesRegex.exec(url);
-    let origin = protocol + domain + (port ? `:${port}` : '');
-    const queryParamHashString = queryString + hash;
+    let fullUrl = url;
+    let protocol = '';
+    let domain = '';
+    let port = '';
+    let origin = '';
+    let pathname = '';
+    let queryString = '';
+    let queryParamHashString = '';
+    let hash = '';
 
+    try {
+        // Variables are already declared above. Setting the spread in parentheses like
+        // this sets them just like `const { a, b } = obj` would without requiring `const`
+        ({
+            href: fullUrl, // full URL, normalized to resolve `/path/../path/` => `/path/` and adds a '/' at the end of the pathname
+            origin, // protocol + '//' + hostname + ':' + port
+            protocol, // protocol + ':'
+            // host, // hostname + ':' + port
+            hostname: domain, // i.e. domain
+            port, // port (without ':')
+            pathname, // includes '/' even if not specified, unless query params/hash present
+            search: queryString, // empty string or '?...' excluding the hash portion at the end
+            // searchParams, // new URLSearchParams(`search`)
+            hash, // empty string or '#...'
+            // username, // empty string or <something>
+            // password, // empty string or <something>
+        } = new URL(url));
+    } catch (e) {
+        /*
+         * Either `URL` isn't defined or some other error, so try to parse it manually.
+         *
+         * All regex strings use `*` to mark them as optional when capturing so that
+         * they're always the same location in the resulting array, regardless of whether
+         * or not they exist.
+         *
+         * URL segment markers must each ignore all special characters used by
+         * those after it to avoid capturing the next segment's content.
+         */
+        const protocolRegex = '([^:/?#]*://)?'; // include `://` for `origin` creation below
+        const domainRegex = '([^:/?#]*)'; // capture everything after the protocol but before the port, pathname, query-params, or hash
+        const portRegex = '(?::)?(\\d*)'; // colon followed by digits; non-capture must be outside capture group so it isn't included in output
+        const pathnameRegex = '([^?#]*)'; // everything after the origin (starts with `/`) but before query-params or hash
+        const queryParamRegex = '([^#]*)'; // everything before the hash (starts with `?`)
+        const hashRegex = '(.*)'; // anything leftover after the above capture groups have done their job (starts with `#`)
+        const urlPiecesRegex = new RegExp(`^${protocolRegex}${domainRegex}${portRegex}${pathnameRegex}${queryParamRegex}${hashRegex}$`);
+
+        [
+            fullUrl,
+            protocol,
+            domain,
+            port,
+            pathname,
+            queryString,
+            hash,
+        ] = urlPiecesRegex.exec(url);
+        origin = protocol + domain + (port ? `:${port}` : '');
+    }
+
+    queryParamHashString = queryString + hash;
     // protocol can be `undefined` due to having to nest the entire thing in `()?`
-    protocol = (protocol || '').replace('://', '');
+    protocol = (protocol || '').replace(/:\/?\/?/, '');
 
     // normalize strings: remove trailing slashes and leading ? or #
     fullUrl = fullUrl.replace(/\/+(?=\?|#|$)/, ''); // fullUrl could have `/` followed by query params, hash, or end of string

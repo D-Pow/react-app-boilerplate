@@ -5,7 +5,7 @@
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
- * @param {Object} input
+ * @param {(Object|string)} input - URL or object for which to get/set query params.
  * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
  * @param {Object} [input.fromObj] - Object to convert to query parameter string.
  * @returns {Object} - All query param key-value pairs.
@@ -14,6 +14,11 @@ export function getQueryParams({
     fromUrl = window.location.search,
     fromObj,
 } = {}) {
+    if (arguments?.length === 1 && typeof arguments[0] === typeof '') {
+        // If the user passes a string instead, set it to the correct variable
+        fromUrl = arguments[0];
+    }
+
     if (fromObj) {
         const queryParamEntries = Object.entries(fromObj);
         const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;

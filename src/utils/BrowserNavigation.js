@@ -18,7 +18,7 @@ export function getQueryParams(input = window.location.search) {
     } else if (typeof input === typeof {}) {
         fromObj = input;
     } else {
-        throw new TypeError(`Type ${typeof input} is not supported. Please use a string or object.`);
+        throw new TypeError(`Type "${typeof input}" is not supported. Please use a string or object.`);
     }
 
     if (fromObj) {

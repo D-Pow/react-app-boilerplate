@@ -184,9 +184,9 @@ export function getUrlSegments(url = '') {
     protocol = (protocol || '').replace('://', '');
 
     // normalize strings: remove trailing slashes and leading ? or #
-    fullUrl = fullUrl.replace(/\/$/, '');
-    origin = origin.replace(/\/$/, '');
-    pathname = pathname.replace(/\/$/, '');
+    fullUrl = fullUrl.replace(/\/+(?=\?|#|$)/, ''); // fullUrl could have `/` followed by query params, hash, or end of string
+    origin = origin.replace(/\/+$/, '');
+    pathname = pathname.replace(/\/+$/, '');
     queryString = queryString.substring(1);
     hash = hash.substring(1);
 

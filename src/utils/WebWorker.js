@@ -1,7 +1,9 @@
+import { MimeTypes } from '@/utils/Constants';
+
 class WebWorker {
     static createWorkerFromFunctionString(funcString) {
         // `type` option isn't absolutely necessary but added to ensure portability/usability
-        const webWorkerBlob = new Blob([ `(${funcString})()` ], { type: 'application/javascript' });
+        const webWorkerBlob = new Blob([ `(${funcString})()` ], { type: MimeTypes.JS });
         const webWorkerBlobUrl = URL.createObjectURL(webWorkerBlob);
 
         return new Worker(webWorkerBlobUrl);

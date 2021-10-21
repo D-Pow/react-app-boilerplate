@@ -1,4 +1,5 @@
 import { fetchAsBase64 } from '@/utils/Network';
+import { MimeTypes } from '@/utils/Constants';
 
 /**
  * Asynchronously imports the specified binary asset from the 'assets/' folder.
@@ -198,7 +199,7 @@ export function setDocumentScrolling(allowScrolling = true) {
     document.body.style.overflow = allowScrolling ? 'auto' : 'hidden';
 }
 
-export function downloadDataAsFile(data, fileName, mimeType = 'text/plain;charset=utf-8') {
+export function downloadDataAsFile(data, fileName, mimeType = MimeTypes.TEXT) {
     const dataBlob = new Blob([ data ], { type: mimeType });
 
     // IE & Edge

@@ -1,3 +1,5 @@
+import { MimeTypes } from '@/utils/Constants';
+
 /**
  * Encodes a string with Base64.
  *
@@ -89,7 +91,7 @@ export function getXmlDocFromDataUrl(dataUrl) {
     const xmlText = getTextFromBase64DataUrl(dataUrl, true);
     const xmlParser = new DOMParser();
 
-    return xmlParser.parseFromString(xmlText, mimeType || 'text/xml');
+    return xmlParser.parseFromString(xmlText, mimeType || MimeTypes.XML);
 }
 
 

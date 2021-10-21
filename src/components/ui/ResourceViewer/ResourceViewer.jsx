@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Anchor from '@/components/ui/Anchor';
 import { isIpAddress } from '@/utils/BrowserNavigation';
+import { MimeTypes } from '@/utils/Constants';
 
 /**
  * Embedding .pdf (and similar .doc, .docx, etc.) files is slightly more complicated
@@ -41,13 +42,12 @@ import { isIpAddress } from '@/utils/BrowserNavigation';
  * [DocoNut]{@link https://doconut.com/Welcome/}
  */
 
-const PDF_MIME_TYPE = 'application/pdf';
 const GOOGLE_PDF_VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=';
 
 function ResourceViewer({
     src = '',
     altLinkText = '',
-    mimeType = PDF_MIME_TYPE,
+    mimeType = MimeTypes.PDF,
     includeNestedEmbedTag = false,
     objectRef,
     ...props
@@ -57,7 +57,7 @@ function ResourceViewer({
     }
 
     const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, { onlyLocalhost: true });
-    const backupHyperlinkSrc = mimeType === PDF_MIME_TYPE
+    const backupHyperlinkSrc = mimeType === MimeTypes.PDF
         ? GOOGLE_PDF_VIEWER_URL + encodeURIComponent(src)
         : src;
     const embeddedViewerSrc = isHttpUrl ? backupHyperlinkSrc : src;

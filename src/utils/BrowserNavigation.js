@@ -9,7 +9,7 @@
  *                                                         a search string; defaults to current page's URL search string.
  * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search string (if input is an object).
  */
-export function getQueryParams(input = self.location.search) {
+export function getQueryParams(input = self.location.search + self.location.hash) {
     let fromUrl;
     let fromObj;
 

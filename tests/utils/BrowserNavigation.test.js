@@ -86,6 +86,24 @@ describe('BrowserNavigation', () => {
                 expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
             });
         });
+
+        it('should default to parsing `location.(search|hash)` with no args', () => {
+            const locationObj = Urls.multivalueEncodedQueryParamsHash;
+            const href = locationObj.fullUrl;
+            const search = locationObj.queryParamHashString.replace(/#.*/, '');
+            const hash = `#${locationObj.hash}`;
+
+            global.mockObjProperty(window, 'location', {
+                writable: true,
+                value: {
+                    href,
+                    search,
+                    hash,
+                },
+            });
+
+            expect(getQueryParams()).toEqual(locationObj.queryParamMap);
+        });
     });
 
     describe('getUrlSegments', () => {

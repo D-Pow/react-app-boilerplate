@@ -5,11 +5,11 @@
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
- * @param {(string|Object)} [input=window.location.search] - URL search string to convert to an object, or object to convert to
- *                                                           a search string; defaults to current page's URL search string.
+ * @param {(string|Object)} [input=self.location.search] - URL search string to convert to an object, or object to convert to
+ *                                                         a search string; defaults to current page's URL search string.
  * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search string (if input is an object).
  */
-export function getQueryParams(input = window.location.search) {
+export function getQueryParams(input = self.location.search) {
     let fromUrl;
     let fromObj;
 
@@ -117,7 +117,7 @@ export function getCookie({ cookie = document.cookie, decodeBase64 = true } = {}
  * @param {string} value - Query param value to be assigned to the key (if key is a string).
  */
 export function pushQueryParamOnHistory(key, value) {
-    const { origin, pathname, hash } = window.location;
+    const { origin, pathname, hash } = self.location;
     let queryParams = getQueryParams();
 
     if (typeof key === typeof {}) {

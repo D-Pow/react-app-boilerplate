@@ -18,10 +18,10 @@ import { getGridBreakpoints } from '@/utils/Scss';
  */
 export function isMobileBrowser({ includeTablets = false, onlyXsScreenSizes = false } = {}) {
     const regex = includeTablets ? MOBILE_OR_TABLET_REGEX : MOBILE_BROWSER_REGEX;
-    const isMobileBrowser = regex.test(navigator.userAgent || navigator.vendor || window.opera);
+    const isMobileBrowser = regex.test(navigator.userAgent || navigator.vendor || self.opera);
 
     if (onlyXsScreenSizes) {
-        const screenIsSmallerThanSmBreakpoint = window.innerWidth < getGridBreakpoints().sm;
+        const screenIsSmallerThanSmBreakpoint = self.innerWidth < getGridBreakpoints().sm;
 
         return isMobileBrowser && screenIsSmallerThanSmBreakpoint;
     }
@@ -30,7 +30,7 @@ export function isMobileBrowser({ includeTablets = false, onlyXsScreenSizes = fa
 }
 
 export function isSafariBrowser() {
-    return window.safari != null || navigator.vendor.toLocaleLowerCase().includes('apple');
+    return self.safari != null || navigator.vendor.toLocaleLowerCase().includes('apple');
 }
 
 /**
@@ -55,7 +55,7 @@ export function isMicrosoftBrowser(includeEdge = true) {
 }
 
 export function isChromeBrowser() {
-    return Boolean(window.chrome);
+    return Boolean(self.chrome);
 }
 
 export function isFirefoxBrowser() {

@@ -110,7 +110,7 @@ export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
  * @returns {[ JsonPrimitive, HookSetStateFunction ]} - Parsed state value and setState function.
  */
 export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
-    const storage = window[`${type}Storage`];
+    const storage = self[`${type}Storage`];
     const functionType = typeof (() => {});
 
     const [ storedState, setStoredState ] = useState(() => {
@@ -178,7 +178,7 @@ export function useQueryParams() {
         if (!objEquals(queryParamsObj, updatedQueryParams)) {
             setQueryParam(updatedQueryParams);
         }
-    }, [ window.location.search ]);
+    }, [ self.location.search ]);
 
     return [ queryParamsObj, setQueryParam ];
 }
@@ -226,10 +226,10 @@ export function useWindowEvent(
     }
 
     useEffect(() => {
-        window.addEventListener(eventType, eventListener);
+        self.addEventListener(eventType, eventListener);
 
         return () => {
-            window.removeEventListener(eventType, eventListener);
+            self.removeEventListener(eventType, eventListener);
         };
     }, [ eventType, ...useEffectInputs ]);
 
@@ -280,15 +280,15 @@ export function useRootClose(acceptableElement, closeElement) {
 export function useWindowResize() {
     const initialState = {
         wasResized: false,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: self.innerWidth,
+        height: self.innerHeight,
     };
 
     function handleResize(prevState, setState) {
         setState({
             wasResized: true,
-            width: window.innerWidth,
-            height: window.innerHeight,
+            width: self.innerWidth,
+            height: self.innerHeight,
         });
     }
 
@@ -330,7 +330,7 @@ export function useHover(overrideBoundingClientRect) {
         const { pageX, pageY } = newEvent;
 
         if (ref.current) {
-            const { pageXOffset, pageYOffset } = window;
+            const { pageXOffset, pageYOffset } = self;
             let { top, bottom, left, right } = overrideBoundingClientRect || ref.current.getBoundingClientRect();
 
             top = top + pageYOffset;

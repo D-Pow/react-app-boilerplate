@@ -117,7 +117,7 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
  * Gets the path from the clicked element to the root.
  *
  * @param {Object} event - Click Event
- * @returns {[HTMLElement]} - Path from clicked element to the root, including `document` and `window`
+ * @returns {[HTMLElement]} - Path from clicked element to the root, including `document` and `window`/`self`
  */
 export function getClickPath(event) {
     if (!event || (Array.isArray(event) && event.length === 0)) {
@@ -137,7 +137,7 @@ export function getClickPath(event) {
         element = element.parentElement;
     }
 
-    clickPath.push(document, window);
+    clickPath.push(document, self);
 
     return clickPath;
 }
@@ -181,7 +181,7 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
  */
 export function scrollWindowToTop() {
     // scrollTo() is supported on all browsers
-    window.scrollTo(0, 0);
+    self.scrollTo(0, 0);
 }
 
 /**
@@ -202,7 +202,7 @@ export function downloadDataAsFile(data, fileName, mimeType = 'text/plain;charse
     const dataBlob = new Blob([ data ], { type: mimeType });
 
     // IE & Edge
-    if (window.navigator && navigator.msSaveOrOpenBlob) {
+    if (self.navigator && navigator.msSaveOrOpenBlob) {
         // Download prompt allows for saving or opening the file
         // navigator.msSaveBlob(dataBlob, fileName) only downloads it
         navigator.msSaveOrOpenBlob(dataBlob, fileName);

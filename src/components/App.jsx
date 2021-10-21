@@ -26,28 +26,26 @@ const About = React.lazy(() => aboutImportPromise);
 const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ '@/components/AnimeSearch');
 const AnimeSearch = React.lazy(() => animeSearchImportPromise);
 
+/** @type {import('react-router-dom').RouteProps[]} */
 const routes = [
     {
         path: '/',
         render: () => <Redirect to="/home" />,
-        name: 'Home',
         exact: true,
     },
     {
         path: '/home',
         component: Home,
-        name: 'Home',
         exact: true,
     },
     {
         path: '/about',
         component: About,
-        name: 'About',
+        exact: true,
     },
     {
         path: '/animeSearch',
         component: AnimeSearch,
-        name: 'AnimeSearch',
         exact: true,
     },
 ];

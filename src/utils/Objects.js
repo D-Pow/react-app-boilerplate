@@ -603,9 +603,10 @@ export function deepCopy(obj) {
         }
     }
 
-    if (typeof Buffer !== 'undefined' && Buffer.isBuffer(obj)) {
+    // `Buffer` is only valid in NodeJS environment, but keep it here for cross-compatibility.
+    if (typeof Buffer !== 'undefined' && Buffer.isBuffer(obj)) {  // eslint-disable-line no-undef
         try {
-            return Buffer.from(obj);
+            return Buffer.from(obj);  // eslint-disable-line no-undef
         } catch (e) {
             // Node.js < 5.10
             const copy = new obj.constructor(obj.length);

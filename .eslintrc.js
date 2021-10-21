@@ -40,8 +40,7 @@ const gitIgnoredPaths = fs.readFileSync(findFile('.gitignore'))
 module.exports = {
     env: {
         browser: true,
-        es6: true,
-        jest: true,
+        es2021: true,
     },
     parser: '@babel/eslint-parser',
     parserOptions: {
@@ -92,15 +91,8 @@ module.exports = {
         },
     },
     globals: {
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
-        require: 'readonly',
-        process: 'writable',
-        module: 'writable',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        global: 'writable',
-        Buffer: 'readonly',
+        process: 'writable', // `webpack.DefinePlugin` injects `process.env` object into `src/` files.
+        module: 'writable', // TODO Only used for src/index.jsx hot reloading, but that block might not be needed anymore
     },
     rules: {
         indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
@@ -245,11 +237,25 @@ module.exports = {
             files: [ '*.ts?(x)' ],
             parser: '@typescript-eslint/parser',
         },
-        // Allow `config/` files to use relative imports (e.g. `import X from '../utils.mjs'`)
+        // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).
+        // Add the NodeJS environment for autocompletion/allowing its defined variables.
         {
-            files: [ `./config/**` ],
+            files: [ './*', './config/**', './scripts/**' ],
+            env: {
+                node: true,
+            },
             rules: {
                 'import-alias/import-alias': 'off',
+            },
+        },
+        // Add jest environment for tests
+        {
+            files: [ './tests/**', './config/jest/**' ],
+            env: {
+                jest: true,
+            },
+            globals: {
+                global: 'writable',
             },
         },
     ],

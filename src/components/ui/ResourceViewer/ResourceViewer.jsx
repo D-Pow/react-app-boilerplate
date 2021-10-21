@@ -45,13 +45,13 @@ const PDF_MIME_TYPE = 'application/pdf';
 const GOOGLE_PDF_VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=';
 
 function ResourceViewer({
-    src,
-    altLinkText,
-    mimeType,
-    includeNestedEmbedTag,
+    src = '',
+    altLinkText = '',
+    mimeType = PDF_MIME_TYPE,
+    includeNestedEmbedTag = false,
     objectRef,
     ...props
-}) {
+} = {}) {
     if (!src || !altLinkText) {
         return null;
     }
@@ -85,7 +85,7 @@ function ResourceViewer({
 ResourceViewer.propTypes = {
     src: PropTypes.string.isRequired,
     altLinkText: PropTypes.string.isRequired,
-    mimeType: PropTypes.string.isRequired,
+    mimeType: PropTypes.string,
     includeNestedEmbedTag: PropTypes.bool,
     objectRef: PropTypes.oneOfType([
         PropTypes.func,
@@ -93,13 +93,6 @@ ResourceViewer.propTypes = {
             current: PropTypes.instanceOf(PropTypes.element),
         }),
     ]),
-};
-
-ResourceViewer.defaultProps = {
-    src: '',
-    altLinkText: '',
-    mimeType: PDF_MIME_TYPE,
-    includeNestedEmbedTag: false,
 };
 
 export default React.memo(ResourceViewer);

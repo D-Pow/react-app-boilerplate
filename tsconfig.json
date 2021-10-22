@@ -16,7 +16,8 @@
         "target": "ESNext", // target environment to transpile down to; since we're using webpack/babel, do not transpile resulting JS b/c babel does a better job
         "lib": [
             "ESNext", // modern JS features
-            "DOM" // fetch/XMLHttpRequest
+            "DOM", // DOM features like HTMLElement, NodeList, fetch, XMLHttpRequest, etc.
+            "DOM.Iterable" // Additional entries for `[Symbol.iterator]()`, `entries()`, etc. for DOM classes/types
         ],
         "module": "ESNext", // how resulting tsc output module(s) will be imported by those who install our library; UMD for both node & browsers
         "moduleResolution": "node", // use `import` instead of `require`

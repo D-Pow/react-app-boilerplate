@@ -29,6 +29,7 @@
         "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
         "experimentalDecorators": true, // allows use of `@decorator` syntax
         "resolveJsonModule": true, // allow importing json files
+        "forceConsistentCasingInFileNames": true, // Ensure file names and references maintain the same casing scheme (e.g. `import './myFile'` fails if file name is `MyFile.ts`)
         "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
 //        "noEmit": true, // don't emit outputs
 //        "rootDir": "..", // project dir/parent dir of source code;

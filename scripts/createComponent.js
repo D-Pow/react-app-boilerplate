@@ -90,9 +90,10 @@ function createComponentInDirectory(
         dirName = '.',
         functionalComponent,
         typescript,
+        soloComponent,
     } = {},
 ) {
-    const dir = `./src/components/${dirName}/${componentName}`;
+    const dir = `./src/components/${dirName}/${soloComponent ? '.' : componentName}`;
     const componentFileExtension = typescript ? 'tsx' : 'jsx';
     const indexFileExtension = typescript ? 'ts' : 'js';
     const indexText = `import ${componentName} from './${componentName}';\n\nexport default ${componentName};\n`;
@@ -106,8 +107,11 @@ function createComponentInDirectory(
 
     try {
         fs.mkdirSync(dir, { recursive: true });
-        fs.writeFileSync(`${dir}/index.${indexFileExtension}`, indexText);
         fs.writeFileSync(`${dir}/${componentName}.${componentFileExtension}`, componentText);
+
+        if (!soloComponent) {
+            fs.writeFileSync(`${dir}/index.${indexFileExtension}`, indexText);
+        }
 
         console.log(`Created new "${componentName}" component in ${path.relative('.', dir)}/`);
     } catch (e) {
@@ -129,6 +133,7 @@ function printUsage() {
         -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
         -f|--func                   |   Make the component a functional component (default: class component).
         -t|--typescript             |   Use TypeScript to create the component (default: JavaScript).
+        -s|--solo                   |   Create the component file only without nest it in its own directory.
 `;
 
     console.log(usage);
@@ -158,15 +163,22 @@ function createComponent(argv) {
             functionalComponent: [ 'f', 'func' ],
             dirName: [ 'd', 'dir' ],
             typescript: [ 't' ],
+            soloComponent: [ 's', 'solo' ],
         },
         numArgs: {
             functionalComponent: 0,
             dirName: 1,
             typescript: 0,
+            soloComponent: 0,
         },
     });
 
-    const { functionalComponent, dirName, typescript } = args;
+    const {
+        functionalComponent,
+        dirName,
+        typescript,
+        soloComponent,
+    } = args;
     const componentName = args._?.[0];
 
     if (!componentName) {
@@ -179,6 +191,7 @@ function createComponent(argv) {
             dirName,
             functionalComponent,
             typescript,
+            soloComponent,
         },
     );
 }

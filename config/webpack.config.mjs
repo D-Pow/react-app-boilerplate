@@ -171,6 +171,8 @@ const webpackConfig = {
                         },
                     },
                     {
+                        // Until `svgr` gets its shit together and fixes https://github.com/gregberge/svgr/issues/551
+                        // we're forced to use file-loader even though it's deprecated
                         loader: 'file-loader',
                         options: {
                             name: absPath => getOutputFileName(absPath),

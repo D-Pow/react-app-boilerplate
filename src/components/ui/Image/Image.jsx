@@ -4,12 +4,19 @@ import PropTypes from 'prop-types';
 import { importAssetAsync } from '@/utils/Events';
 import AppContext, { AppContextFields } from '@/utils/AppContext';
 
-function Image(props) {
+function Image({
+    className = '',
+    src = '',
+    fluidImage = true,
+    updateAppContext = true,
+    onLoad = () => {},
+    aria = {},
+} = {}) {
     const [ imageSrc, setImageSrc ] = useState('');
     const { setContextState } = useContext(AppContext.Context);
 
     async function loadImageSrc() {
-        const imageSrcResponse = await importAssetAsync(props.src);
+        const imageSrcResponse = await importAssetAsync(src);
 
         setImageSrc(imageSrcResponse);
     }
@@ -17,10 +24,10 @@ function Image(props) {
     useEffect(() => {
         incrementAppContextField();
         loadImageSrc();
-    }, [ props.src ]);
+    }, [ src ]);
 
     function incrementAppContextField(finishedLoading = false) {
-        if (props.updateAppContext) {
+        if (updateAppContext) {
             const contextField = finishedLoading ? AppContextFields.LOADED : AppContextFields.REQUESTED;
 
             setContextState(prevState => ({
@@ -32,16 +39,16 @@ function Image(props) {
 
     function handleLoad(e) {
         incrementAppContextField(true);
-        props.onLoad(e);
+        onLoad(e);
     }
 
     return (
         <img
-            className={`${props.fluidImage ? 'img-fluid' : ''} ${props.className}`}
+            className={`${fluidImage ? 'img-fluid' : ''} ${className}`}
             src={imageSrc}
-            alt={props.src}
+            alt={src}
             onLoad={handleLoad}
-            {...props.aria}
+            {...aria}
         />
     );
 }
@@ -53,15 +60,6 @@ Image.propTypes = {
     updateAppContext: PropTypes.bool,
     onLoad: PropTypes.func,
     aria: PropTypes.object,
-};
-
-Image.defaultProps = {
-    className: '',
-    src: '',
-    fluidImage: true,
-    updateAppContext: true,
-    onLoad: () => {},
-    aria: {},
 };
 
 export default Image;

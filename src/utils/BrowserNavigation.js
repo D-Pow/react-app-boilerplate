@@ -292,3 +292,24 @@ export function isIpAddress(url, { onlyLocalhost = false, includeLocalhostDomain
 
     return !!url.match(/^([^/]*:\/\/)?(\d{1,3}\.){3}(\d{1,3}(?!\.))/);
 }
+
+/**
+ * Determines if the passed URL string is a valid URL.
+ *
+ * @param {string} url - URL to test.
+ * @param {Object} options
+ * @param {boolean} [options.allowOnlyPathname=true] - If a relative pathname-based URL will be considered as valid.
+ * @returns {boolean} - If the URL is valid.
+ */
+export function isUrl(url, { allowOnlyPathname = true } = {}) {
+    try {
+        new URL(url);
+        return true;
+    } catch (notValidUrl) {
+        if (allowOnlyPathname) {
+            return !!url.match(/^\.*\/.+/);
+        }
+    }
+
+    return false;
+}

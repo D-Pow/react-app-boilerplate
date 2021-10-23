@@ -24,6 +24,8 @@
         "strict": true, // error if there's a type mismatch or dangerous code (e.g. assuming `this` in `function` instead of in `() => {}`).
         "jsx": "react", // how to handle JSX tags: "react" => `createElement()`,  "react-jsx" => `_jsx()`, "preserve" => `<MyComp />`
         "allowJs": true, // allows .js(x) files instead of only .ts(x)
+//        "checkJs": true, // allows TS to check code imported from JS files for type accuracy, both from `lib` and JSDoc (e.g. `location.href = 5` and `/** @type {number} */ const x = 'hi'` throw errors)
+                         // Not used currently b/c many things throw superfluous errors, including undefined `useState()` values, dynamic component imports don't match expected types, etc.
         "skipLibCheck": true, // skip checking typings.d.ts files for JS imports (useful in case the same type is defined in different node_modules libs)
 //        "declaration": true, // generates typings.d.ts files
         "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`

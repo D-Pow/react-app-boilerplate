@@ -9,7 +9,7 @@ function Image(props) {
     const { setContextState } = useContext(AppContext.Context);
 
     async function loadImageSrc() {
-        const imageSrcResponse = await importAssetAsync(props.image);
+        const imageSrcResponse = await importAssetAsync(props.src);
 
         setImageSrc(imageSrcResponse);
     }
@@ -17,7 +17,7 @@ function Image(props) {
     useEffect(() => {
         incrementAppContextField();
         loadImageSrc();
-    }, [ props.image ]);
+    }, [ props.src ]);
 
     function incrementAppContextField(finishedLoading = false) {
         if (props.updateAppContext) {
@@ -39,7 +39,7 @@ function Image(props) {
         <img
             className={`${props.fluidImage ? 'img-fluid' : ''} ${props.className}`}
             src={imageSrc}
-            alt={props.image}
+            alt={props.src}
             onLoad={handleLoad}
             {...props.aria}
         />
@@ -48,7 +48,7 @@ function Image(props) {
 
 Image.propTypes = {
     className: PropTypes.string,
-    image: PropTypes.string,
+    src: PropTypes.string,
     fluidImage: PropTypes.bool,
     updateAppContext: PropTypes.bool,
     onLoad: PropTypes.func,
@@ -57,7 +57,7 @@ Image.propTypes = {
 
 Image.defaultProps = {
     className: '',
-    image: '',
+    src: '',
     fluidImage: true,
     updateAppContext: true,
     onLoad: () => {},

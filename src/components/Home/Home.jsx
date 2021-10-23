@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect } from "react-router";
+import { Redirect } from 'react-router';
 
 function Home() {
     const [ redirect, setRedirect ] = useState();

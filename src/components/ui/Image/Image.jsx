@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { importAssetAsync } from '@/utils/Events';
 import AppContext, { AppContextFields } from '@/utils/AppContext';
+import { isUrl } from '@/utils/BrowserNavigation';
 
 function Image({
     className = '',
@@ -16,9 +17,13 @@ function Image({
     const { setContextState } = useContext(AppContext.Context);
 
     async function loadImageSrc() {
-        const imageSrcResponse = await importAssetAsync(src);
+        let imgSrc = src;
 
-        setImageSrc(imageSrcResponse);
+        if (!isUrl(src, { allowOnlyPathname: true })) {
+            imgSrc = await importAssetAsync(src);
+        }
+
+        setImageSrc(imgSrc);
     }
 
     useEffect(() => {

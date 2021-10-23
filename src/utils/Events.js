@@ -15,6 +15,7 @@ import { MimeTypes } from '@/utils/Constants';
  */
 export async function importAssetAsync(assetRelPath, base64 = false) {
     if (assetRelPath != null && assetRelPath !== '') {
+        // const pathIsFromAssetsDirRegex = new RegExp(`^${location.origin}/.*/?${process.env.PUBLIC_URL}/assets/`, 'i');
         try {
             const module = await import(`@/assets/${assetRelPath}`);
             const assetSrc = module.default;

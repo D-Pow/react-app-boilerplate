@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect, useRef } from 'react';
+import { useState, useReducer, useEffect, useRef } from 'react';
 
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/utils/Events';
 import { getQueryParams, pushQueryParamOnHistory } from '@/utils/BrowserNavigation';

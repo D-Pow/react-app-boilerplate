@@ -1,5 +1,3 @@
-import React from 'react';
-
 function IncompatibleBrowserFallback(props) {
     return (
         <div className={'text-center absolute-center top-20 w-100'}>

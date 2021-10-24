@@ -121,6 +121,11 @@ module.exports = {
             before: false,
             after: true,
         }],
+        quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
+            avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
+            allowTemplateLiterals: true, // Allow back-tick quotes all the time regardless of escaping or not, e.g. x = `hello world`
+        }],
+        'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
         semi: [ 'error', 'always' ], // Enforce semicolon usage
         'no-unused-vars': [ 'warn', {
             /*

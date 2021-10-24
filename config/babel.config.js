@@ -16,7 +16,12 @@ module.exports = {
                 },
             },
         ],
-        '@babel/preset-react',
+        [
+            '@babel/preset-react',
+            {
+                runtime: 'automatic', // Allows automatic configuration of options, e.g. `importSource: 'react'` which sets where React imports come from
+            },
+        ],
         [
             '@babel/preset-typescript',
             {

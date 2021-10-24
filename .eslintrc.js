@@ -130,7 +130,7 @@ module.exports = {
              *  - Don't error on unused vars from array spreading (`ignoreRestSiblings` doesn't apply to arrays).
              */
             // Ignore function arguments whose names match this regex
-            varsIgnorePattern: 'React',
+            // varsIgnorePattern: 'React',
             // Ignore function arguments whose names match this regex
             argsIgnorePattern: 'props',
             // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
@@ -230,6 +230,8 @@ module.exports = {
         'react/display-name': 'off', // Don't error on arrow-function components
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
+        'react/jsx-uses-react': 'off', // Disable preventing `React` from being marked as unused in files with JSX (React v17 no longer requires React to be imported)
+        'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },
     overrides: [
         // Use specified parser for TypeScript files

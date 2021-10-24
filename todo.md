@@ -1,5 +1,3 @@
-* [Upgrade to React 17](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html).
-    - [Update tsconfig accordingly](https://www.typescriptlang.org/tsconfig#jsxImportSource).
 * `BrowserRouter` vs `HashRouter`
     - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
     - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)

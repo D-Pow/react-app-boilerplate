@@ -25,8 +25,10 @@ const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ '@
 const AnimeSearch = React.lazy(() => animeSearchImportPromise);
 
 
-/** @type {import('react-router-dom').RouteProps[]} */
-export const routes = [
+/** @typedef {import('react-router-dom').RouteProps[]} Routes */
+
+/** @type {Routes} */
+export const appRoutes = [
     {
         path: '/',
         render: () => <Redirect to="/home" />,
@@ -50,11 +52,21 @@ export const routes = [
 ];
 
 
+/**
+ * Router for automatically rendering `<Route>` entries in a react-router nested in `<React.Suspense>`.
+ *
+ * @param {Object} [props]
+ * @param {Object} [props.suspenseProps={fallback: Spinner}] - Fallback used in `<React.Suspense>`.
+ * @param {Object} [props.wrapperProps] - Props to pass to the `<div>` inside `<React.Suspense>` that wraps the router.
+ * @param {Routes} [props.routes=appRoutes] - Props used to create `<Route>` entries; useful for specifying nested routes from within a child component (e.g. User component specifying REST URLs).
+ * @returns {JSX.Element} - React.Suspense > div > Router > Route[].
+ */
 function Router({
     suspenseProps = {
         fallback: (<SpinnerCircle show={true} />),
     },
     wrapperProps = {},
+    routes = appRoutes,
 } = {}) {
     return (
         <React.Suspense {...suspenseProps}>
@@ -74,6 +86,7 @@ function Router({
 Router.propTypes = {
     suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
     wrapperProps: PropTypes.object,
+    routes: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default Router;

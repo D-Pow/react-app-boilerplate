@@ -1,0 +1,79 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { BrowserRouter as ReactRouter, Route, Redirect } from 'react-router-dom';
+
+import SpinnerCircle from '@/components/ui/SpinnerCircle';
+
+/*
+ * Lazy-load components so the page spinner is prioritized, loaded quickly, and unblocked from animating.
+ * This speeds up the initial page load for the user.
+ *
+ * Split import() and lazy() calls from each other so that component-loading is initiated immediately
+ * instead of waiting to load until they are in view. This has the net effect of allowing the Spinner
+ * to load first, but then loading the rest of the components as soon as the Spinner is rendered.
+ * If the promise were nested inside the lazy() call instead, then the component's .js file wouldn't be
+ * requested until after the user traversed to its `path`.
+ */
+
+const homeImportPromise = import(/* webpackChunkName: 'Home' */ '@/components/Home');
+const Home = React.lazy(() => homeImportPromise);
+
+const aboutImportPromise = import(/* webpackChunkName: 'About' */ '@/components/About');
+const About = React.lazy(() => aboutImportPromise);
+
+const animeSearchImportPromise = import(/* webpackChunkName: 'AnimeSearch' */ '@/components/AnimeSearch');
+const AnimeSearch = React.lazy(() => animeSearchImportPromise);
+
+
+/** @type {import('react-router-dom').RouteProps[]} */
+export const routes = [
+    {
+        path: '/',
+        render: () => <Redirect to="/home" />,
+        exact: true,
+    },
+    {
+        path: '/home',
+        component: Home,
+        exact: true,
+    },
+    {
+        path: '/about',
+        component: About,
+        exact: true,
+    },
+    {
+        path: '/animeSearch',
+        component: AnimeSearch,
+        exact: true,
+    },
+];
+
+
+function Router({
+    suspenseProps = {
+        fallback: (<SpinnerCircle show={true} />),
+    },
+    wrapperProps = {},
+} = {}) {
+    return (
+        <React.Suspense {...suspenseProps}>
+            <div {...wrapperProps}>
+                <ReactRouter>
+                    <>
+                        {routes.map(routeProps => (
+                            <Route key={routeProps.path} {...routeProps} />
+                        ))}
+                    </>
+                </ReactRouter>
+            </div>
+        </React.Suspense>
+    );
+}
+
+Router.propTypes = {
+    suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
+    wrapperProps: PropTypes.object,
+};
+
+export default Router;

@@ -55,10 +55,10 @@ export const appRoutes = [
 /**
  * Router for automatically rendering `<Route>` entries in a react-router nested in `<React.Suspense>`.
  *
- * @param {Object} [props]
+ * @param {Object} props
+ * @param {Routes} props.routes - Props used to create `<Route>` entries; Allows child components to specify nested routes themselves (e.g. REST URLs).
  * @param {Object} [props.suspenseProps={fallback: Spinner}] - Fallback used in `<React.Suspense>`.
  * @param {Object} [props.wrapperProps] - Props to pass to the `<div>` inside `<React.Suspense>` that wraps the router.
- * @param {Routes} [props.routes=appRoutes] - Props used to create `<Route>` entries; useful for specifying nested routes from within a child component (e.g. User component specifying REST URLs).
  * @returns {JSX.Element} - React.Suspense > div > Router > Route[].
  */
 function Router({
@@ -66,7 +66,7 @@ function Router({
         fallback: (<SpinnerCircle show={true} />),
     },
     wrapperProps = {},
-    routes = appRoutes,
+    routes,
 } = {}) {
     return (
         <React.Suspense {...suspenseProps}>
@@ -84,9 +84,9 @@ function Router({
 }
 
 Router.propTypes = {
+    routes: PropTypes.arrayOf(PropTypes.object).isRequired,
     suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
     wrapperProps: PropTypes.object,
-    routes: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default Router;

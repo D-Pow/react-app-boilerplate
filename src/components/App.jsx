@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import Router from '@/components/Router';
+import Router, { appRoutes } from '@/components/Router';
 import IncompatibleBrowserFallback from '@/components/IncompatibleBrowserFallback';
 import AppContext from '@/utils/AppContext';
 import { isMicrosoftBrowser } from '@/utils/BrowserIdentification';
@@ -20,6 +20,7 @@ function App() {
 
     return (
         <Router
+            routes={appRoutes}
             wrapperProps={{
                 className: 'app text-center',
             }}

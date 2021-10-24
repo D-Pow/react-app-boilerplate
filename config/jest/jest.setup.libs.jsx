@@ -1,10 +1,7 @@
 import { BrowserRouter as Router } from 'react-router-dom';
-import Enzyme from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { render } from '@testing-library/react';
 
 import AppContext from '@/utils/AppContext';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 function AppProviderWithRouter({ children }) {
     return (
@@ -23,23 +20,19 @@ function AppProviderWithRouter({ children }) {
  * Useful for testing components using context from a provider, ReactRouter, etc.
  *
  * @param {import('react').ReactElement} component - Component to wrap with a parent.
- * @param {(import('enzyme').MountRendererProps|import('enzyme').ShallowRendererProps)} options
- * @param {('mount'|'shallow')} [options.renderMethod=mount] - Enzyme's `mount` or `shallow` method name.
- * @param {import('react').ReactElement} [options.wrappingComponent=AppProviderWithRouter] - Component with which to wrap `component`.
- * @returns {ReactWrapper<["props"], ["state"]>} - Rendered component with the provider as its parent.
+ * @param {import('@testing-library/react').RenderOptions} options
+ * @param {import('react').ReactElement} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
+ * @returns {import('@testing-library/react').RenderResult} - Rendered component with the provider as its parent.
  */
 global.renderWithWrappingParent = (
     component,
     {
-        renderMethod = 'mount',
-        wrappingComponent = AppProviderWithRouter,
-        ...enzymeOptions
+        wrapper = AppProviderWithRouter,
+        ...renderOptions
     } = {},
 ) => {
-    const enzymeRenderMethod = Enzyme[renderMethod];
-
-    return enzymeRenderMethod(component, {
-        ...enzymeOptions,
-        wrappingComponent,
+    return render(component, {
+        ...renderOptions,
+        wrapper,
     });
 };

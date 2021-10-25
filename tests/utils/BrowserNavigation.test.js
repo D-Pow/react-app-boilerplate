@@ -94,7 +94,6 @@ describe('BrowserNavigation', () => {
             const hash = `#${locationObj.hash}`;
 
             global.mockObjProperty(window, 'location', {
-                writable: true,
                 value: {
                     href,
                     search,

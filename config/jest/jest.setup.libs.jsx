@@ -20,7 +20,7 @@ function AppProviderWithRouter({ children }) {
  * Useful for testing components using context from a provider, ReactRouter, etc.
  *
  * @param {import('react').ReactElement} component - Component to wrap with a parent.
- * @param {import('@testing-library/react').RenderOptions} options
+ * @param {import('@testing-library/react').RenderOptions} [options]
  * @param {import('react').ReactElement} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
  * @returns {import('@testing-library/react').RenderResult} - Rendered component with the provider as its parent.
  */

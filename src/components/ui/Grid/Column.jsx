@@ -17,7 +17,7 @@ Column.propTypes = {
     className: PropTypes.string,
     colSpan: PropTypes.number,
     gridArea: PropTypes.string,
-    children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ]),
+    children: PropTypes.node,
 };
 
 Column.defaultProps = {

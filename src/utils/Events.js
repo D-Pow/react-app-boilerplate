@@ -41,7 +41,7 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
  *
  * @param {function} func - Function to debounce
  * @param {number} delay - Milliseconds to wait before calling `func`
- * @param {Object} options - Options for debounced function
+ * @param {Object} [options] - Options for debounced function
  * @param {boolean} [options.callOnFirstFuncCall=false] - Allow `func` to be called on first debounced function call
  * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value
  * @returns {function(...[*]=)}
@@ -84,7 +84,7 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
  *
  * @param {function} func - Function to throttle.
  * @param {number} timeLimit - Milliseconds to wait before allowing `func` to be called again.
- * @param {Object} options
+ * @param {Object} [options]
  * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value.
  * @returns {function} - Decorated, throttled function.
  */

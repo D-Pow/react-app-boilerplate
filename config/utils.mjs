@@ -190,7 +190,7 @@ const FileTypeRegexes = {
  * Automatically removes `src/` from output file path.
  *
  * @param {string} filenameWithRelativePath - Relative path of original file from the app root (e.g. `src/components/App.js`).
- * @param {{}} options
+ * @param {Object} [options]
  * @param {string} [options.nestInFolder=Paths.BUILD_OUTPUT.REL] - Folder inside which to nest the output file (including path).
  * @param {number} [options.hashLength=8] - Length of hash string to add to name; 0 if hash is undesired.
  * @param {boolean} [options.maintainFolderStructure=true] - If the directory structure inside `src/` should be maintained.

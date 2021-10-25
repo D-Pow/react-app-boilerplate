@@ -34,7 +34,7 @@ export function validateObjNestedFields(obj, ...nestedFields) {
  * Returns the original variable if it's not valid JSON.
  *
  * @param {(string|*)} variable - String to parse or object to stringify.
- * @param {Object} options - Parsing options.
+ * @param {Object} [options] - Parsing options.
  * @param {boolean} [options.keepFunctions=false] - Attempt maintaining function definitions when parsing `obj`.
  * @param {number} [spaces=4] - Number of spaces to indent stringified object entries.
  * @returns {*} - Vanilla JavaScript string or parsed object.
@@ -116,7 +116,7 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
  * Attempts to parse an object into a vanilla JavaScript object literal.
  *
  * @param {*} obj - Any type of object
- * @param {Object} options - Parsing options.
+ * @param {Object} [options] - Parsing options.
  * @param {boolean} [options.keepFunctions=false] - Attempt maintaining function definitions when parsing `obj`.
  * @returns {*} - Vanilla JavaScript object literal or original object on failure
  */
@@ -226,7 +226,7 @@ export function areVarsInstancesOf(a, b, ...classes) {
  *
  * @param {Object[]} objList - List of objects to sort.
  * @param {string[]} byFields - Fields by which to sort, in order of decreasing priority.
- * @param {Object} options - Sorting options
+ * @param {Object} [options] - Sorting options
  * @param {boolean} [options.reverse=false] - Sort in reverse order.
  * @param {boolean} [options.inPlace=true] - Sort in-place.
  * @param {boolean} [options.stringIgnoreCase=false] - Ignore upper/lower casing in strings.
@@ -445,7 +445,7 @@ export function objEquals(obj1, obj2) {
  * Determines if a given variable is an object.
  *
  * @param {*} variable - Variable to check if it's an object
- * @param {{}} options - What to include in is-object check
+ * @param {Object} [options] - What to include in is-object check
  * @param {boolean} [options.includeClasses=true] - If native/custom JavaScript class instances should return true.
  * @param {boolean} [options.includeArrays=false] - If arrays should return true.
  *                                                  If this is true, classes will be included.

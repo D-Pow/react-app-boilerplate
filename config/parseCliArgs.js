@@ -10,7 +10,7 @@ const YargsParser = require('yargs-parser');
  *
  * Single-letter flags can be combined into a single hyphen (`-a -b -c` === `-abc`).
  *
- * @param {Object} options
+ * @param {Object} [options]
  * @param {string[]} [options.argv=process.argv] - Arg array to parse.
  * @param {boolean} [options.removeNodeAndScriptFromArgs=true] - Remove preceding `node myScript` from args; Set to `false` if not using `process.argv`.
  * @param {boolean} [options.sliceAfterFirstDoubleHyphen=false] - Begin arg parsing only after `--`; Use only if script will be called by another script, thus requiring `npm run script1 -- -- args-for-nested-script2`.

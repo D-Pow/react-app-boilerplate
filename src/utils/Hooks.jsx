@@ -104,7 +104,7 @@ export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
  * key.
  *
  * @param {String} key - Key used in storage.
- * @param {Object} options - Options for storage handling.
+ * @param {Object} [options] - Options for storage handling.
  * @param {(String|Number|Object|Array|boolean|null)} [options.initialValue=null] - Initial value to use if storage lacks the passed key.
  * @param {String} [options.type="local"] - Type of window storage to use ('local' or 'session').
  * @returns {[ JsonPrimitive, HookSetStateFunction ]} - Parsed state value and setState function.

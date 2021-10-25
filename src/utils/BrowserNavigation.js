@@ -297,7 +297,7 @@ export function isIpAddress(url, { onlyLocalhost = false, includeLocalhostDomain
  * Determines if the passed URL string is a valid URL.
  *
  * @param {string} url - URL to test.
- * @param {Object} options
+ * @param {Object} [options]
  * @param {boolean} [options.allowOnlyPathname=true] - If a relative pathname-based URL will be considered as valid.
  * @returns {boolean} - If the URL is valid.
  */

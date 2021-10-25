@@ -1,3 +1,4 @@
+* [Webpack tree shaking](https://webpack.js.org/guides/tree-shaking/)
 * `BrowserRouter` vs `HashRouter`
     - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
     - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)

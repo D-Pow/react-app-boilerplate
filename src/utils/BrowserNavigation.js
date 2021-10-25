@@ -10,6 +10,7 @@
  * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search+hash string (if input is an object).
  */
 export function getQueryParams(input = self.location.search + self.location.hash) {
+    // TODO Allow setting the separator for Object --> String conversion (e.g. comma instead of multiple `key=val` entries)
     let fromUrl;
     let fromObj;
 

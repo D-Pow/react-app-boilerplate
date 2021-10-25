@@ -142,6 +142,8 @@ module.exports = {
             ignoreRestSiblings: true,
         }],
         'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
+        'no-control-regex': 'off', // Allow regexes with unicode strings and other control sequences (e.g. colors for console output: `\x1B[36mHELLO\x1B[39mWORLD`
+        'prefer-regex-literals': 'error', // Force using `/regex/` instead of `new RegExp()` when possible
 
 
         // Ensure aliased imports are always used instead of relative paths for imports in the `src/` directory.

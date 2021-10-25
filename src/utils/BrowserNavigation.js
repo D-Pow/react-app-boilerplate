@@ -28,14 +28,9 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
         delete fromObj['#'];
 
-        const queryParamEntries = Object.entries(fromObj);
-
-        if (queryParamEntries.length === 0) {
-            return '';
-        }
-
         const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
 
+        const queryParamEntries = Object.entries(fromObj);
         const queryString = queryParamEntries.length > 0
             ? `?${
                 queryParamEntries
@@ -55,7 +50,13 @@ export function getQueryParams(input = self.location.search + self.location.hash
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    const [ urlSearchQuery, hash ] = fromUrl.split('?')[1]?.split('#') ?? [ '', '' ];
+    const [ urlWithoutQueriesOrhash, urlWithBoth ] = fromUrl.split('?');
+    let [ urlSearchQuery, hash ] = (urlWithBoth || urlWithoutQueriesOrhash)?.split('#') ?? [ '', '' ];
+
+    if (!urlWithBoth) {
+        urlSearchQuery = '';
+    }
+
     const queryParamsObj = {};
 
     if (hash) {

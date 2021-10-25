@@ -75,6 +75,19 @@ describe('BrowserNavigation', () => {
             queryParamMap: { a: 'A', b: [ 'Cc=Dd', 'hello world' ], f: 'g=h', h: '!@ $%^*()_=asdf', '#': 'myHash' },
             hash: 'myHash',
         },
+        noneButHash: {
+            get fullUrl() {
+                return getFullUrlFromSegments(this);
+            },
+            protocol: 'https',
+            domain: 'localhost.com',
+            port: '',
+            origin: 'https://localhost.com',
+            pathname: '',
+            queryParamHashString: '#myHash',
+            queryParamMap: { '#': 'myHash' },
+            hash: 'myHash',
+        },
     };
 
     describe('getQueryParams', () => {

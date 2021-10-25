@@ -1,4 +1,4 @@
-import { render, waitFor, prettyDOM } from '@testing-library/react';
+import { render, act, waitFor, prettyDOM } from '@testing-library/react';
 
 import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
@@ -92,7 +92,7 @@ global.renderWithWrappingParent = (
  * @see [Apollo docs on React testing]{@link https://www.apollographql.com/docs/react/development-testing/testing/#testing-the-success-state}
  */
 global.waitForUpdate = async () => {
-    await new Promise(res => setTimeout(res, 0));
+    await act(async () => await new Promise(res => setTimeout(res, 0)));
 };
 
 

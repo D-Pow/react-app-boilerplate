@@ -27,8 +27,10 @@ function Image({
     }
 
     useEffect(() => {
-        incrementAppContextField();
-        loadImageSrc();
+        if (src) {
+            incrementAppContextField();
+            loadImageSrc();
+        }
     }, [ src ]);
 
     function incrementAppContextField(finishedLoading = false) {

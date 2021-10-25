@@ -23,7 +23,7 @@ const allAppDirectories = fs.readdirSync(Paths.ROOT.ABS, { withFileTypes: true }
 const allAppDirsFormattedForJest = allAppDirectories.map(dir => `<rootDir>/${dir}`);
 const nonSrcJestDirs = allAppDirsFormattedForJest.filter(directory => !directory.includes(Paths.SRC.REL));
 
-const scriptFiles = FileTypeRegexes.regexToString(FileTypeRegexes.JsAndTs);
+const scriptFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(FileTypeRegexes.JsAndTs, FileTypeRegexes.MjsAndCjs));
 const assetFiles = FileTypeRegexes.regexToString(FileTypeRegexes.combineRegexes(FileTypeRegexes.Assets, FileTypeRegexes.Styles));
 
 /** @type {import('@jest/types').Config.InitialOptions} */

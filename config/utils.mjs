@@ -135,6 +135,7 @@ const FileTypeRegexes = {
     JavaScript: /\.jsx?$/,
     TypeScript: /\.tsx?$/,
     JsAndTs: /\.[tj]sx?$/,
+    MjsAndCjs: /\.[mc]js$/,
     Styles: /\.s?css$/,
 
     get Assets() {

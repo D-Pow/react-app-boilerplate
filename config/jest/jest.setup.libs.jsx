@@ -1,13 +1,27 @@
-import { BrowserRouter as Router } from 'react-router-dom';
 import { render } from '@testing-library/react';
 
+import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
+
+
+const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
+    routeProps = { ...routeProps };
+
+    if (routeProps.render?.toString().match(/\bRedirect[\s\S]*to[:=]\s*['"][^'"]+/)) {
+        routeProps.render = () => <div />;
+    }
+
+    return routeProps;
+});
 
 function AppProviderWithRouter({ children }) {
     return (
         <>
             <AppContext.Provider>
-                <Router>
+                <Router
+                    routes={appRoutesWithoutRedirect}
+                    wrapperProps={{ className: 'app text-center' }}
+                >
                     {children}
                 </Router>
             </AppContext.Provider>

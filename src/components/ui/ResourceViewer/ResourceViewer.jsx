@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Anchor from '@/components/ui/Anchor';
 import { isIpAddress } from '@/utils/BrowserNavigation';
-import { MimeTypes } from '@/utils/Constants';
+import { MimeTypes, LINKS } from '@/utils/Constants';
 
 /**
  * Embedding .pdf (and similar .doc, .docx, etc.) files is slightly more complicated
@@ -42,7 +42,7 @@ import { MimeTypes } from '@/utils/Constants';
  * [DocoNut]{@link https://doconut.com/Welcome/}
  */
 
-const GOOGLE_PDF_VIEWER_URL = 'https://docs.google.com/viewer?embedded=true&url=';
+const googleViewerMimeTypes = new Set([ MimeTypes.PDF ]);
 
 function ResourceViewer({
     src = '',
@@ -57,10 +57,10 @@ function ResourceViewer({
     }
 
     const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, { onlyLocalhost: true });
-    const backupHyperlinkSrc = mimeType === MimeTypes.PDF
-        ? GOOGLE_PDF_VIEWER_URL + encodeURIComponent(src)
+    const externalViewerSrc = googleViewerMimeTypes.has(mimeType)
+        ? LINKS.EmbeddedFileViewerGoogle + encodeURIComponent(src)
         : src;
-    const embeddedViewerSrc = isHttpUrl ? backupHyperlinkSrc : src;
+    const embeddedViewerSrc = isHttpUrl ? externalViewerSrc : src;
 
     return (
         <object
@@ -69,7 +69,7 @@ function ResourceViewer({
             ref={objectRef}
             {...props}
         >
-            <Anchor href={backupHyperlinkSrc}>
+            <Anchor href={externalViewerSrc}>
                 {altLinkText}
             </Anchor>
             {includeNestedEmbedTag && (

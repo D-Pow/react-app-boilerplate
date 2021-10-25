@@ -80,6 +80,7 @@ export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-z
 
 export const LINKS = {
     GitHub: 'https://github.com/',
+    EmbeddedFileViewerGoogle: 'https://docs.google.com/viewer?embedded=true&url=',
 };
 
 export const UPDATE_BROADCAST = 'UPDATE';

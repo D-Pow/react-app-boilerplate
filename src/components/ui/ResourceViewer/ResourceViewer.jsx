@@ -43,6 +43,7 @@ import { MimeTypes, LINKS } from '@/utils/Constants';
  */
 
 const googleViewerMimeTypes = new Set([ MimeTypes.PDF ]);
+const microsoftViewerMimeTypes = new Set([ MimeTypes.DOC, MimeTypes.DOCX, MimeTypes.ODT, MimeTypes.XLS, MimeTypes.XLSX, MimeTypes.PPT, MimeTypes.PPTX ]);
 
 function ResourceViewer({
     src = '',
@@ -59,7 +60,10 @@ function ResourceViewer({
     const isHttpUrl = src.indexOf('http') === 0 && !isIpAddress(src, { onlyLocalhost: true });
     const externalViewerSrc = googleViewerMimeTypes.has(mimeType)
         ? LINKS.EmbeddedFileViewerGoogle + encodeURIComponent(src)
-        : src;
+        : microsoftViewerMimeTypes.has(mimeType)
+            ? LINKS.EmbeddedFileViewerMicrosoft + encodeURIComponent(src)
+            : src
+    ;
     const embeddedViewerSrc = isHttpUrl ? externalViewerSrc : src;
 
     return (

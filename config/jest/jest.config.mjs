@@ -31,7 +31,7 @@ const jestConfig = {
     ...defaults,
     rootDir: Paths.ROOT.ABS,
     testEnvironment: 'jsdom',
-    setupFiles: [
+    setupFilesAfterEnv: [
         Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestSetup.js'),
         Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js'), // Mock network requests using default MockRequests configuration in mocks/MockConfig.js
     ],

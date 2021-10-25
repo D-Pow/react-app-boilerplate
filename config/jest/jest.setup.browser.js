@@ -150,6 +150,11 @@ class StorageMock {
 global.localStorage = new StorageMock();
 global.sessionStorage = new StorageMock();
 
+beforeEach(() => {
+    global.localStorage.clear();
+    global.sessionStorage.clear();
+});
+
 
 // See: https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
 global.mockObjProperty(window, 'matchMedia', jest.fn(query => ({

@@ -262,9 +262,7 @@ module.exports = {
             files: [ './tests/**', './config/jest/**' ],
             env: {
                 jest: true,
-            },
-            globals: {
-                global: 'writable',
+                node: true,
             },
         },
     ],

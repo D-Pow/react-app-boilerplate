@@ -1,3 +1,5 @@
+import { mockObjProperty } from '/config/jest/jest.setup.testUtils';
+
 global.XMLHttpRequest = jest.fn(() => {
     return {
         open: () => {},
@@ -17,7 +19,7 @@ global.Request = jest.fn((url, options) => ({
 
 
 // TODO Maybe use a Proxy to make object spreads behave the same as native storages.
-class StorageMock {
+export class StorageMock {
     storage = {};
 
     setItem(key, val) {
@@ -157,7 +159,7 @@ beforeEach(() => {
 
 
 // See: https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
-global.mockObjProperty(window, 'matchMedia', jest.fn(query => ({
+mockObjProperty(window, 'matchMedia', jest.fn(query => ({
     matches: false,
     media: query,
     onchange: null,

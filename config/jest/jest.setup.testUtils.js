@@ -25,7 +25,7 @@
  * @param {(PropertyDescriptor|*)} mockDescriptor - Either the mocked value or the configuration for `Object.defineProperty()`.
  * @returns {function} - Function to restore the mocked property back to its original value.
  */
-function mockObjProperty(
+export function mockObjProperty(
     obj = window,
     property = '',
     mockDescriptor,
@@ -78,7 +78,6 @@ function mockObjProperty(
 
     return () => Object.defineProperty(obj, property, originalDescriptor);
 }
-global.mockObjProperty = mockObjProperty;
 
 
 // TODO Use a Proxy instead to preserve original stack trace location

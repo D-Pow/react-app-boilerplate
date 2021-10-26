@@ -3,20 +3,22 @@ import { fireEvent } from '@testing-library/react';
 import Home from '@/components/Home';
 import About from '@/components/About';
 
+import { renderWithWrappingParent, waitForRedirect, getDomFromRender } from '/tests';
+
 describe('Home', () => {
     it('should render the word "Home"', () => {
-        const homeComponent = global.renderWithWrappingParent(<Home />);
+        const homeComponent = renderWithWrappingParent(<Home />);
         const homeTextComponent = homeComponent.getByText('Home');
 
         expect(homeTextComponent).toBeDefined();
     });
 
     it('should redirect upon clicking a redirect button', async () => {
-        const rootWithHomeComponent = global.renderWithWrappingParent(<Home />);
+        const rootWithHomeComponent = renderWithWrappingParent(<Home />);
         const aboutButton = rootWithHomeComponent.getByText(/Go to About/i);
         const originalUrl = location.href;
 
-        const newUrl = await global.waitForRedirect(() => {
+        const newUrl = await waitForRedirect(() => {
             /*
              * `fireEvent` is already wrapped in `act()` internally, so no need to wrap it here.
              *
@@ -33,7 +35,7 @@ describe('Home', () => {
             );
         });
 
-        const { element, html } = global.getDomFromRender(rootWithHomeComponent, { fromParent: true });
+        const { element, html } = getDomFromRender(rootWithHomeComponent, { fromParent: true });
 
         expect(html.includes('Home')).toBe(false);
         expect(element.querySelector(`div.${About.defaultProps.className}`)).toBeDefined();

@@ -5,6 +5,8 @@ import {
     isIpAddress,
 } from '@/utils/BrowserNavigation';
 
+import { mockObjProperty } from '/tests';
+
 describe('BrowserNavigation', () => {
     function getFullUrlFromSegments(segmentedUrlObj) {
         return (
@@ -108,7 +110,7 @@ describe('BrowserNavigation', () => {
             const search = locationObj.queryParamHashString.replace(/#.*/, '');
             const hash = `#${locationObj.hash}`;
 
-            global.mockObjProperty(window, 'location', {
+            mockObjProperty(window, 'location', {
                 value: {
                     href,
                     search,

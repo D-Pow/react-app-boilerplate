@@ -14,7 +14,7 @@ const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
     return routeProps;
 });
 
-function AppProviderWithRouter({ children }) {
+export function AppProviderWithRouter({ children }) {
     return (
         <>
             <AppContext.Provider>
@@ -42,7 +42,7 @@ function AppProviderWithRouter({ children }) {
  * @param {string} str - String from which to remove colors.
  * @returns {string} - String with all unicode colors removed.
  */
-function stripColorsFromString(str) {
+export function stripColorsFromString(str) {
     return str?.replace?.(/\u001b[^m]*?m/gu, '');
 }
 
@@ -67,18 +67,18 @@ function stripColorsFromString(str) {
  * @param {ReactElement} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
  * @returns {RenderedComponent} - Rendered component with the provider as its parent.
  */
-global.renderWithWrappingParent = (
+export function renderWithWrappingParent(
     component,
     {
         wrapper = AppProviderWithRouter,
         ...renderOptions
     } = {},
-) => {
+) {
     return render(component, {
         ...renderOptions,
         wrapper,
     });
-};
+}
 
 
 /**
@@ -91,9 +91,9 @@ global.renderWithWrappingParent = (
  * @returns {Promise<void>}
  * @see [Apollo docs on React testing]{@link https://www.apollographql.com/docs/react/development-testing/testing/#testing-the-success-state}
  */
-global.waitForUpdate = async () => {
+export async function waitForUpdate() {
     await act(async () => await new Promise(res => setTimeout(res, 0)));
-};
+}
 
 
 /**
@@ -102,7 +102,7 @@ global.waitForUpdate = async () => {
  * @param {(function|Promise<*>)} fireEventThatRedirects - Function containing `fireEvent` call that will trigger the redirect.
  * @returns {Promise<string>} - The URL after redirection.
  */
-global.waitForRedirect = async (fireEventThatRedirects) => {
+export async function waitForRedirect(fireEventThatRedirects) {
     const currentUrl = location.href;
 
     await fireEventThatRedirects();
@@ -125,7 +125,7 @@ global.waitForRedirect = async (fireEventThatRedirects) => {
     });
 
     return location.href;
-};
+}
 
 
 /**
@@ -136,7 +136,7 @@ global.waitForRedirect = async (fireEventThatRedirects) => {
  * @param {boolean} [options.fromParent=false] - If the HTML element/DOM string should be from the parent of the component instead of the component itself.
  * @returns {{element: (Element|Document), html: string}}
  */
-global.getDomFromRender = (component, { fromParent = false } = {}) => {
+export function getDomFromRender(component, { fromParent = false } = {}) {
     const element = (
         fromParent
             ? (component?.baseElement ?? component?.container)
@@ -151,7 +151,7 @@ global.getDomFromRender = (component, { fromParent = false } = {}) => {
         html,
         element: domNode,
     };
-};
+}
 
 
 /**
@@ -160,7 +160,7 @@ global.getDomFromRender = (component, { fromParent = false } = {}) => {
  * @param {import('@testing-library/react').RenderResult} component
  * @returns {{ fiberNode: import('react-reconciler').Fiber, fiberNodeProps: Object}} - React's internal `FiberNode` created by the `render()` function and the components props.
  */
-global.getReactFiberNodeFromRender = (component) => {
+export function getReactFiberNodeFromRender(component) {
     const exposedComponentKeys = Object.keys(component);
     const reactFiberNodeKey = exposedComponentKeys.find(key => key.match(/^__reactFiber/));
     const reactPropsKey = exposedComponentKeys.find(key => key.match(/^__reactProps/));
@@ -169,4 +169,4 @@ global.getReactFiberNodeFromRender = (component) => {
         fiberNode: component[reactFiberNodeKey],
         fiberNodeProps: component[reactPropsKey],
     };
-};
+}

@@ -99,27 +99,26 @@ module.exports = {
             SwitchCase: 1, // Same for switch-case statements
             ignoredNodes: [ 'TemplateLiteral' ],
         }],
-        eqeqeq: [ 'warn', 'always', {
-            null: 'ignore', // Encourage using ===/!== except for `x != null` (`!= null` --> `!== null && !== undefined`)
+        eqeqeq: [ 'warn', 'always', { // Enforce using triple equals, ===/!===
+            null: 'ignore', // Exception for `x != null` since `!= null` means `!== null && !== undefined`
         }],
-        // Enforce spacing between square/curly braces except for nested arrays/objects
-        'object-curly-spacing': [ 'error', 'always', {
-            arraysInObjects: false,
-            objectsInObjects: false,
+        'object-curly-spacing': [ 'error', 'always', { // Enforce spacing between curly braces except for nested objects
+            arraysInObjects: false, // e.g. `x = { a: [ 3 ]}`
+            objectsInObjects: false, // e.g. `x = { a: { b: 3 }}`
         }],
-        'array-bracket-spacing': [ 'error', 'always', {
-            arraysInArrays: false,
-            objectsInArrays: false,
+        'array-bracket-spacing': [ 'error', 'always', { // Enforce spacing between curly braces except for nested objects
+            arraysInArrays: false, // e.g. `x = [ 2, [ 3 ]]`
+            objectsInArrays: false, // e.g. `x = [ 2, { a: 3 }]`
         }],
-        'key-spacing': [ 'error', { // Add spaces after object keys' colons, `{ key: val }` instead of `{ key:val }`
-            beforeColon: false,
-            afterColon: true,
+        'key-spacing': [ 'error', { // Add spaces after object keys' colons
+            beforeColon: false, // prevent `{ key : val }` and `{ key :val }`
+            afterColon: true, // e.g. `{ key: val }` instead of `{ key:val }`
         }],
         'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
         'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
         'comma-spacing': [ 'error', { // Enforce spaces only after commas
-            before: false,
-            after: true,
+            before: false, // prevent `[ 2 , 3 ]` and `[ 2 ,3 ]`
+            after: true, // e.g. `[ 2, 3 ]` instead of `[ 2,3 ]`
         }],
         quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
             avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
@@ -220,13 +219,13 @@ module.exports = {
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
 
 
-        'react/jsx-indent': [ 'error', 4, {
-            checkAttributes: true,
-            indentLogicalExpressions: true,
+        'react/jsx-indent': [ 'error', 4, { // Enforce 4 extra spaces of indentation for nested children
+            checkAttributes: true, // Indent for nested props, e.g. `<App someProp={\n[INDENT] () => 5 \n[DE-INDENT]} />`
+            indentLogicalExpressions: true, // Indent components inside short-circuiting, e.g. `<App>\n {condition && (\n[INDENT] <Child/> \n[DE-INDENT] )} \n </App>`
         }],
-        'react/jsx-closing-bracket-location': [ 'error', {
-            selfClosing: 'tag-aligned',
-            nonEmpty: 'tag-aligned',
+        'react/jsx-closing-bracket-location': [ 'error', { // Enforce closing tag to be inline with opening tag if on a separate line
+            selfClosing: 'tag-aligned', // Without children, uses `/>`
+            nonEmpty: 'tag-aligned', // With children, uses `>`
         }],
         'react/jsx-tag-spacing': [ 'error', {
             beforeSelfClosing: 'always', // force a space before self-closing attributes and />, e.g. `<MyComp />`
@@ -238,10 +237,10 @@ module.exports = {
             // allow: 'as-needed', // Only allow .jsx for files with JSX in them
             extensions: [ '.jsx', '.tsx' ], // Allow both .jsx and .tsx for file extensions (default is only .jsx)
         }],
-        'react/prop-types': 'warn',
+        'react/prop-types': 'warn', // Suggest using PropTypes for prop typedefs
         'react/display-name': 'off', // Don't error on arrow-function components
-        'react-hooks/rules-of-hooks': 'error',
-        'react-hooks/exhaustive-deps': 'warn',
+        'react-hooks/rules-of-hooks': 'error', // Enforce proper usage of hooks
+        'react-hooks/exhaustive-deps': 'warn', // Suggest adding all fields within hook dependencies, e.g. `useEffect(func, [ dep1 ])` errors if `dep2` left out
         'react/jsx-uses-react': 'off', // Disable preventing `React` from being marked as unused in files with JSX (React v17 no longer requires React to be imported)
         'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },

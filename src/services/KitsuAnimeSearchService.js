@@ -6,8 +6,8 @@ export async function fetchKitsuTitleSearch(searchText) {
 
         return await response.json();
     } catch (e) {
-        console.log('Error in fetching Kitsu results: ' + e);
+        console.error('Error in fetching Kitsu results: ' + e);
 
-        throw {};
+        throw e;
     }
 }

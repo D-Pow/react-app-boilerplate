@@ -2,12 +2,13 @@ import { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { importAssetAsync } from '@/utils/Events';
+import { extractFinalPathnameSegmentFromUrl, isUrl } from '@/utils/BrowserNavigation';
 import AppContext, { AppContextFields } from '@/utils/AppContext';
-import { isUrl } from '@/utils/BrowserNavigation';
 
 function Image({
     className = '',
     src = '',
+    alt,
     fluidImage = true,
     updateAppContext = true,
     onLoad = () => {},
@@ -53,7 +54,7 @@ function Image({
         <img
             className={`${fluidImage ? 'img-fluid' : ''} ${className}`}
             src={imageSrc}
-            alt={src}
+            alt={alt || extractFinalPathnameSegmentFromUrl(src)}
             onLoad={handleLoad}
             {...aria}
         />
@@ -63,6 +64,7 @@ function Image({
 Image.propTypes = {
     className: PropTypes.string,
     src: PropTypes.string,
+    alt: PropTypes.string,
     fluidImage: PropTypes.bool,
     updateAppContext: PropTypes.bool,
     onLoad: PropTypes.func,

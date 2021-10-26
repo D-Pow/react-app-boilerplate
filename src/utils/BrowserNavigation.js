@@ -312,3 +312,18 @@ export function isUrl(url, { allowOnlyPathname = true } = {}) {
 
     return false;
 }
+
+/**
+ * Extracts the final pathname segment from a URL, indicated by everything between
+ * the last slash and query params/hash entry.
+ *
+ * Useful for getting file names, last REST argument, or API endpoint name.
+ *
+ * Will return an empty string if the URL ends with a slash
+ *
+ * @param {string} url - URL string from which to extract the final pathname segment.
+ * @returns {string} - The final pathname segment or empty string.
+ */
+export function extractFinalPathnameSegmentFromUrl(url = '') {
+    return url.replace(/.*\/([^/?#]*)(?:$|\?|#).*/, '$1');
+}

@@ -126,6 +126,11 @@ module.exports = {
             allowTemplateLiterals: true, // Allow back-tick quotes all the time regardless of escaping or not, e.g. x = `hello world`
         }],
         'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
+        camelcase: [ 'error', { // Enforce camelCase for all variables unless they're in ALL_CAPS
+            properties: 'never', // Allow snake_case in object keys (e.g. for endpoint payload objects)
+            // ignoreDestructuring: true, // Allows destructured object keys to be used without being renamed to camelCase (e.g. `const { a_b } = obj; doSomething(a_b);`)
+            ignoreGlobals: true, // Allow using global variables written in snake_case
+        }],
         semi: [ 'error', 'always' ], // Enforce semicolon usage
         'no-unused-vars': [ 'warn', {
             /*

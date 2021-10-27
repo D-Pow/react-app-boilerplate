@@ -133,5 +133,7 @@ function getGitignorePathsWithExtraGlobStars() {
         }));
 }
 
-module.exports = findFile;
-module.exports.getGitignorePathsWithExtraGlobStars = getGitignorePathsWithExtraGlobStars;
+module.exports = {
+    findFile,
+    getGitignorePathsWithExtraGlobStars,
+};

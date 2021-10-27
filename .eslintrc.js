@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const findFile = require('./config/findFile');
+const { findFile, getGitignorePathsWithExtraGlobStars } = require('./config/findFile');
+const parseCliArgs = require('./config/parseCliArgs');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
@@ -14,6 +15,9 @@ const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
     // Added solely for IDE integration since env vars (like npm config fields) can't be parsed statically. See: https://youtrack.jetbrains.com/issue/WEB-43731
     || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ];
 
+const gitIgnorePaths = parseCliArgs().ignorePath === '.gitignore'
+    ? [] // `--ignore-path .gitignore` already specified
+    : getGitignorePathsWithExtraGlobStars(); // `--ignore-path someOtherFile` specified, so append .gitignore contents to ignored patterns
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
@@ -34,7 +38,7 @@ module.exports = {
     },
     ignorePatterns: [
         '**/node_modules/**',
-        // require('./config/findFile').getGitignorePathsWithExtraGlobStars(), // If using .eslintignore, then uncomment this line
+        ...gitIgnorePaths,
     ],
     extends: [
         'eslint:recommended',

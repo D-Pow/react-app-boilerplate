@@ -23,7 +23,7 @@ function importNonEsmFile(filePath) {
 }
 
 const parseCliArgs = importNonEsmFile('./parseCliArgs.js');
-const findFile = importNonEsmFile('./findFile');
+const { findFile, getGitignorePathsWithExtraGlobStars } = importNonEsmFile('./findFile');
 
 function getOsHostnameAndLanIP(protocolVersion = 4) {
     const allNetworkInterfaces = os.networkInterfaces();
@@ -257,4 +257,5 @@ export {
     getOutputFileName,
     LocalLanHostIpAddresses,
     importNonEsmFile,
+    getGitignorePathsWithExtraGlobStars,
 };

@@ -102,4 +102,36 @@ function findFile(
     }
 }
 
+/**
+ * Prepends/appends `**` to leading/trailing `/` so the directories (and files if leading slash)
+ * are ignored at every level.
+ *
+ * This isn't necessary for git, but might be for other glob-star interpreters.
+ *
+ * @returns {string[]} - Glob entries from `.gitignore` with additional double glob-stars (`**`) for files/directories.
+ */
+function getGitignorePathsWithExtraGlobStars() {
+    return fs.readFileSync(findFile('.gitignore'))
+        .toString()
+        .split('\n')
+        .filter(ignoredPath => ignoredPath)
+        .map(ignoredPath => ignoredPath.replace(/(?:^[^*])|(?:[^*]$)/g, (fullStrMatch, strIndex) => {
+            // All strings matching the regex don't have either leading `**/`, trailing `/**`, or both.
+
+            if (fullStrMatch === '/') {
+                // Directory without leading/trailing `**`
+                return strIndex === 0 ? '**/' : '/**';
+            }
+
+            if (strIndex === 0) {
+                // File or directory without leading `/`
+                return `**/${fullStrMatch}`;
+            }
+
+            // File
+            return fullStrMatch;
+        }));
+}
+
 module.exports = findFile;
+module.exports.getGitignorePathsWithExtraGlobStars = getGitignorePathsWithExtraGlobStars;

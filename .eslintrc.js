@@ -14,27 +14,6 @@ const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
     // Added solely for IDE integration since env vars (like npm config fields) can't be parsed statically. See: https://youtrack.jetbrains.com/issue/WEB-43731
     || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ];
 
-// Paths not to lint
-const gitIgnoredPaths = fs.readFileSync(findFile('.gitignore'))
-    .toString()
-    .split('\n')
-    .filter(ignoredPath => ignoredPath)
-    .map(ignoredPath => ignoredPath.replace(/(?:^[^*])|(?:[^*]$)/g, (fullStrMatch, strIndex) => {
-        // All strings matching the regex don't have either leading `**/`, trailing `/**`, or both.
-
-        if (fullStrMatch === '/') {
-            // Directory without leading/trailing `**`
-            return strIndex === 0 ? '**/' : '/**';
-        }
-
-        if (strIndex === 0) {
-            // File or directory without leading `/`
-            return `**/${fullStrMatch}`;
-        }
-
-        // File
-        return fullStrMatch;
-    }));
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
@@ -55,7 +34,7 @@ module.exports = {
     },
     ignorePatterns: [
         '**/node_modules/**',
-        ...gitIgnoredPaths,
+        // require('./config/findFile').getGitignorePathsWithExtraGlobStars(), // If using .eslintignore, then uncomment this line
     ],
     extends: [
         'eslint:recommended',

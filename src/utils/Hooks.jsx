@@ -236,6 +236,17 @@ export function useWindowEvent(
     return [ eventState, setEventState ];
 }
 
+/**
+ * Gets the `key` string value from a keyboard event.
+ *
+ * Defaults to the `keydown` event since it works for keys that don't produce output (e.g. `Enter`, `Escape`, etc.)
+ * and because `keypress` has been [deprecated]{@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keypress_event}.
+ *
+ * @param {string} type - Type of key event (e.g. `down`, `up`, or `press`).
+ * @returns {[ string, function ]} - The string representing the key interacted with and its respective `setKeyState()` function.
+ * @see [`keydown` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keydown_event}
+ * @see [`KeyboardEvent.key` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key}
+ */
 export function useKeyboardEvent(type = 'down') {
     return useWindowEvent(`key${type}`, { nestedEventField: 'key' });
 }

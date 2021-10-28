@@ -1,9 +1,30 @@
+/**
+ * A collection of utility functions/variables for tests that aren't natively
+ * included by `@testing-library/react`.
+ *
+ * Note: `getX()` query functions don't require `await` whereas `findX()` functions do.
+ *
+ * @see [API overview]{@link https://testing-library.com/docs/react-testing-library/api}
+ * @see [Firing events]{@link https://testing-library.com/docs/dom-testing-library/api-events}
+ * @see [General testing cheatsheet]{@link https://testing-library.com/docs/react-testing-library/cheatsheet}
+ * @see [Custom queries]{@link https://testing-library.com/docs/dom-testing-library/api-custom-queries}
+ * @see [Enzyme-to-RTL conversion examples]{@link https://testing-library.com/docs/react-testing-library/migrate-from-enzyme}
+ * @see [React - native test utils]{@link https://reactjs.org/docs/test-utils.html}
+ * @see [React - native testing examples]{@link https://reactjs.org/docs/testing-recipes.html}
+ * @see [Blog post with IRL test example]{@link https://kentcdodds.com/blog/introducing-the-react-testing-library}
+ *
+ * @file
+ */
+
 import { render, act, waitFor, prettyDOM } from '@testing-library/react';
 
 import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
 
 
+// Prevent automatic redirection since tests will want to render their individual components without
+// also rendering components from redirects.
+// e.g. Prevent `/` from redirecting to `/home` so testing `<Home/>` doesn't render two Home components.
 const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
     routeProps = { ...routeProps };
 
@@ -35,7 +56,7 @@ export function AppProviderWithRouter({ children }) {
  * Removes unicode color text from the specified string.
  *
  * Colors are often added for console output, but they impede the ability to parse the strings
- * as well as readability when logging in a testing environment.
+ * as JSON/HTML/etc. within JS code as well as readability when logging in a testing environment.
  *
  * TODO Move this to a util file.
  *
@@ -51,11 +72,6 @@ export function stripColorsFromString(str) {
 /** @typedef {import('react').ReactElement} ReactElement */
 /** @typedef {import('@testing-library/react').RenderResult} RenderedComponent */
 /** @typedef {import('@testing-library/react').RenderOptions} RenderOptions */
-
-/*
- * Note: `getX()` query functions don't require `await` whereas `findX()` functions do.
- * See: https://testing-library.com/docs/react-testing-library/cheatsheet/
- */
 
 
 /**
@@ -174,6 +190,10 @@ export async function waitForElementVisible(
 /**
  * Waits for the page to redirect before continuing onward.
  *
+ * The `fireEvent` function must be passed here and not called outside this function
+ * so that this function can track the original/new URLs in order to ensure redirection
+ * occurred.
+ *
  * @param {(function|Promise<*>)} fireEventThatRedirects - Function containing `fireEvent` call that will trigger the redirect.
  * @returns {Promise<string>} - The URL after redirection.
  */
@@ -210,8 +230,8 @@ export async function waitForRedirect(fireEventThatRedirects) {
  *
  * @param {RenderedComponent} component - Component from which to get the underlying HTML element.
  * @param {Object} [options]
- * @param {boolean} [options.fromParent=false] - If the HTML element/DOM string should be from the parent of the component instead of the component itself.
- * @returns {{element: (Element|Document), html: string}}
+ * @param {boolean} [options.fromParent=false] - If the HTML element/DOM string should be from the parent container of the component instead of the component itself.
+ * @returns {{element: (Element|Document), html: string}} - The DOM element and its associated HTML string.
  */
 export function getDomFromRender(component, { fromParent = false } = {}) {
     const element = (
@@ -234,7 +254,7 @@ export function getDomFromRender(component, { fromParent = false } = {}) {
 /**
  * Gets the React FiberNode from a rendered component.
  *
- * @param {import('@testing-library/react').RenderResult} component
+ * @param {RenderedComponent} component - Component for which to extract the underlying FiberNode.
  * @returns {{ fiberNode: import('react-reconciler').Fiber, fiberNodeProps: Object}} - React's internal `FiberNode` created by the `render()` function and the components props.
  */
 export function getReactFiberNodeFromRender(component) {

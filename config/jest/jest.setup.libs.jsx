@@ -97,6 +97,79 @@ export async function waitForUpdate() {
 
 
 /**
+ * Wrapper around `(component|container).(get|find|query)ByX` that allows extracting your get-element call to
+ * a separate, custom `funcToGetElement()` that can be passed to `expect()` without throwing errors.
+ *
+ * As it stands now, `expect(component.getByText('hello')).not.toBeDefined()` works, but extracting the query to a separate
+ * function and then calling `expect(funcToGetElement()).not.toBeDefined()` will throw errors saying that "Element cannot
+ * be found" which defeats the whole purpose of the `.not.toBeDefined()` code.
+ *
+ * This fixes that bug by allowing you to extract your get-element logic to a separate function without throwing errors.
+ *
+ * Returns either:
+ *  - An async function you can call to trigger the get-element check (default mode).
+ *  - A Promise containing that async function's result (`callNow = true`).
+ *
+ * @example
+ * const component = render(<MyComp />);
+ * const funcToGetElement = () => component.getByText('hello');
+ * expect(funcToGetElement()).not.toBeDefined();
+ * fireEvent.click(someButton);
+ * expect(funcToGetElement()).toBeDefined();
+ *
+ * @param {function} funcToGetElement - The callback get-element function, e.g. `() => render(<Comp/>).getByText('Hello')`.
+ * @param {Object} [options]
+ * @param {boolean} [options.callNow=false] - If the return value should be the function (false, default) or if it should be called immediately and return the resulting Promise(true).
+ * @returns {((function(): Promise<*>)|Promise<*>)} - An async function to fire the get-element check, or its resulting Promise.
+ */
+export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
+    const getElementMaybeAsync = async () => {
+        try {
+            return await funcToGetElement();
+        } catch (reactTestingLibraryNotFoundError) {
+            return undefined;
+        }
+    };
+
+    if (callNow) {
+        return getElementMaybeAsync();
+    }
+
+    return getElementMaybeAsync;
+}
+
+
+/**
+ * Waits for >= 1 elements as specified by the `querySelectorString` to be visible before proceeding with the test.
+ *
+ * Essentially the opposite of `waitForElementToBeRemoved()`.
+ *
+ * @param {RenderedComponent} component - Parent component/container from which to query for child elements.
+ * @param {string} querySelectorString - Query selector for >= 1 element.
+ * @param {Object} [options]
+ * @param {boolean} [options.all=true] - If `querySelectorAll()` should be called instead of `querySelector()`.
+ * @returns {Promise<(NodeList|null)>} - A Promise that resolves after the element(s) are visible, returning the element(s).
+ */
+export async function waitForElementVisible(
+    component,
+    querySelectorString,
+    {
+        all = true,
+    } = {},
+) {
+    const container = component.container || component;
+    const querySelectorMethod = all ? 'querySelectorAll' : 'querySelector';
+    const queryForElements = () => container[querySelectorMethod](querySelectorString);
+
+    await waitFor(async () => {
+        expect(queryForElements()).toBeDefined();
+    });
+
+    return queryForElements();
+}
+
+
+/**
  * Waits for the page to redirect before continuing onward.
  *
  * @param {(function|Promise<*>)} fireEventThatRedirects - Function containing `fireEvent` call that will trigger the redirect.

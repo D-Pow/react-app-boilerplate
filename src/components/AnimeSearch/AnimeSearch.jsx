@@ -34,7 +34,7 @@ function AnimeSearch(props) {
                 <h5>Results</h5>
 
                 {searchResults.map((title, i) => (
-                    <div key={i}>{title}</div>
+                    <div className={'search-result'} key={i}>{title}</div>
                 ))}
             </>
         );

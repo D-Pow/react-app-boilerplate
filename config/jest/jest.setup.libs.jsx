@@ -141,8 +141,10 @@ export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
 
 /**
  * Waits for >= 1 elements as specified by the `querySelectorString` to be visible before proceeding with the test.
- *
  * Essentially the opposite of `waitForElementToBeRemoved()`.
+ *
+ * Solves the issue that react-testing-library only allows searching by visible attributes and/or accessibility
+ * attributes that screen readers parse. See more details in the [query priorities docs]{@link https://testing-library.com/docs/queries/about/#priority}.
  *
  * @param {RenderedComponent} component - Parent component/container from which to query for child elements.
  * @param {string} querySelectorString - Query selector for >= 1 element.
@@ -193,6 +195,8 @@ export async function waitForRedirect(fireEventThatRedirects) {
          *     throw 'some error';
          * }
          * return;
+         *
+         * @see [`waitFor()` docs]{@link https://testing-library.com/docs/dom-testing-library/api-async/#waitfor}
          */
         expect(location.href).not.toEqual(currentUrl);
     });

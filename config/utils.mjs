@@ -123,21 +123,35 @@ const Paths = (() => {
 
 
 const FileTypeRegexes = {
-    get Code() {
-        const codeFiles = [
-            FileTypeRegexes.JsAndTs,
-            FileTypeRegexes.Styles,
-        ];
-        const codeFileRegexes = FileTypeRegexes.combineRegexes(...codeFiles);
-
-        return codeFileRegexes;
-    },
     JavaScript: /\.jsx?$/,
     TypeScript: /\.tsx?$/,
     JsAndTs: /\.[tj]sx?$/,
     MjsAndCjs: /\.[mc]js$/,
     Styles: /\.s?css$/,
+    get SourceCode() {
+        const codeFiles = [
+            FileTypeRegexes.JsAndTs,
+            FileTypeRegexes.MjsAndCjs,
+        ];
+        const codeFileRegexes = FileTypeRegexes.combineRegexes(...codeFiles);
 
+        return codeFileRegexes;
+    },
+    get SourceCodeWithStyles() {
+        const codeFiles = [
+            FileTypeRegexes.JsAndTs,
+            FileTypeRegexes.Styles,
+            FileTypeRegexes.MjsAndCjs,
+        ];
+        const codeFileRegexes = FileTypeRegexes.combineRegexes(...codeFiles);
+
+        return codeFileRegexes;
+    },
+
+    Svg: /\.svg$/,
+    Binaries: /\.(png|gif|jpe?g|ico|pdf)$/,
+    Text: /\.(txt|md|log|tex)$/,
+    Fonts: /\.(ttf|woff2?|eot)$/,
     get Assets() {
         const assetFiles = [
             FileTypeRegexes.Svg,
@@ -149,10 +163,6 @@ const FileTypeRegexes = {
 
         return assetFileRegexes;
     },
-    Svg: /\.svg$/,
-    Binaries: /\.(png|gif|jpe?g|ico|pdf)$/,
-    Text: /\.(txt|md|log|tex)$/,
-    Fonts: /\.(ttf|woff2?|eot)$/,
 
     /**
      * Converts a RegExp to an accurate regex string representation.

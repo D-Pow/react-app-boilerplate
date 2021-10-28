@@ -1,18 +1,18 @@
 import { mockObjProperty } from '/config/jest/jest.setup.testUtils';
 
-global.XMLHttpRequest = jest.fn(() => {
+global.XMLHttpRequest = global.XMLHttpRequest || jest.fn(() => {
     return {
         open: () => {},
         send: () => {},
     };
 });
 
-global.fetch = jest.fn(() => Promise.resolve({
+global.fetch = global.fetch || jest.fn(() => Promise.resolve({
     json: () => ({ realFetchResponse: 'realFetchResponse' }),
     text: () => 'realFetchResponse',
 }));
-global.Headers = jest.fn();
-global.Request = jest.fn((url, options) => ({
+global.Headers = global.Headers || jest.fn();
+global.Request = global.Request || jest.fn((url, options) => ({
     url,
     text: () => Promise.resolve(options ? options.body : ''),
 }));
@@ -149,8 +149,8 @@ export class StorageMock {
     }
 }
 
-global.localStorage = new StorageMock();
-global.sessionStorage = new StorageMock();
+global.localStorage = global.localStorage || new StorageMock();
+global.sessionStorage = global.sessionStorage || new StorageMock();
 
 beforeEach(() => {
     global.localStorage.clear();

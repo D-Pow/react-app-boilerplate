@@ -7,7 +7,7 @@ import {
 
 import { mockObjProperty } from '/tests';
 
-describe('BrowserNavigation', () => {
+describe('BrowserNavigation utils', () => {
     function getFullUrlFromSegments(segmentedUrlObj) {
         return (
             segmentedUrlObj.origin

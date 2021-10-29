@@ -6,7 +6,7 @@ import { getElementMaybe, renderWithWrappingParent, waitForElementVisible } from
 
 import { narutoResponse } from '/mocks/StaticResponses';
 
-describe('AnimeSearch', () => {
+describe('<AnimeSearch/>', () => {
     /**
      * Tests that the `<AnimeSearch/>` component renders blank at first and then sends a network request to populate
      * the search-results section.

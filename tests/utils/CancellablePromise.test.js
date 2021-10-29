@@ -53,7 +53,7 @@ function generateCancellablePromise({
         .finally(res => console.log('FINALLY!', res));
 }
 
-describe('CancellablePromise', () => {
+describe('CancellablePromise utils', () => {
     it('should work as normal if no cancel() called', async () => {
         // TODO
     });

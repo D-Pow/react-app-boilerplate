@@ -5,7 +5,7 @@ import About from '@/components/About';
 
 import { renderWithWrappingParent, waitForRedirect, getDomFromRender } from '/tests';
 
-describe('Home', () => {
+describe('<Home/>', () => {
     it('should render the word "Home"', () => {
         const homeComponent = renderWithWrappingParent(<Home />);
         const homeTextComponent = homeComponent.getByText('Home');

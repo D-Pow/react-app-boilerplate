@@ -61,3 +61,12 @@ export function isChromeBrowser() {
 export function isFirefoxBrowser() {
     return navigator.userAgent.toLowerCase().includes('firefox');
 }
+
+/**
+ * Determines if a PWA is running from "installed" mode instead of from the browser.
+ *
+ * @returns {boolean} - If the website is running from PWA "installed" mode.
+ */
+export function isInStandaloneMode() {
+    return !!self?.matchMedia('(display-mode: standalone)')?.matches;
+}

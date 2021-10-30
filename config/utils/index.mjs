@@ -1,7 +1,5 @@
-import * as os from 'os';
 import { createRequire } from 'module';
 
-const devServerPort = 3000;
 
 /**
  * There are a couple ways to import CJS files:
@@ -25,53 +23,25 @@ function importNonEsmFile(filePath) {
 const parseCliArgs = importNonEsmFile('./parseCliArgs');
 const {
     Paths,
+    findFile,
     FileTypeRegexes,
     getOutputFileName,
-    findFile,
     getGitignorePathsWithExtraGlobStars,
 } = importNonEsmFile('./Files');
-
-
-function getOsHostnameAndLanIP(protocolVersion = 4) {
-    const allNetworkInterfaces = os.networkInterfaces();
-    const localLanIp = Object.entries(allNetworkInterfaces)
-        .reduce((localLan, [ networkInterface, addresses ]) => {
-            const ipv4Addresses = addresses.filter(({ family, address, internal }) => (
-                family === `IPv${protocolVersion}`
-                && address.indexOf('127') !== 0
-                && !address.includes('/')
-                && !internal
-            ));
-
-            // return ipv4Addresses?.[0]?.address || localLanIp;
-            return localLan || (
-                ipv4Addresses.length
-                    ? ipv4Addresses[0].address
-                    : ''
-            );
-        }, '');
-
-    return localLanIp;
-}
-
-const LocalLanHostIpAddresses = {
-    hostname: os.hostname(),
-    port: devServerPort,
-    IPv4: getOsHostnameAndLanIP(),
-    IPv6: getOsHostnameAndLanIP(6),
-    getPublicPath: (exposeOnLan, protocol = 'http://') => exposeOnLan
-        ? `${protocol || ''}${LocalLanHostIpAddresses.IPv4}:${LocalLanHostIpAddresses.port}`
-        : '',
-};
+const {
+    getOsHostnameAndLanIP,
+    LocalLanHostIpAddresses,
+} = importNonEsmFile('./Network');
 
 
 export {
+    importNonEsmFile,
+    parseCliArgs,
     Paths,
     findFile,
-    parseCliArgs,
     FileTypeRegexes,
     getOutputFileName,
-    LocalLanHostIpAddresses,
-    importNonEsmFile,
     getGitignorePathsWithExtraGlobStars,
+    getOsHostnameAndLanIP,
+    LocalLanHostIpAddresses,
 };

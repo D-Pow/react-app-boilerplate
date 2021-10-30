@@ -35,17 +35,17 @@
         "resolveJsonModule": true, // allow importing json files
         "forceConsistentCasingInFileNames": true, // Ensure file names and references maintain the same casing scheme (e.g. `import './myFile'` fails if file name is `MyFile.ts`)
         "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
+//        "outDir": "../tsDist", // output dir of running `npx tsc`; don't use if using webpack/ts-loader
 //        "noEmit": true, // don't emit outputs
+//        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
 //        "rootDir": "..", // project dir/parent dir of source code;
                            // doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
                            // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
         "baseUrl": ".", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
         "paths": {
             "@/*": [ "src/*" ],
-            "/*": [ "*" ],
-        },
-//        "outDir": "../tsDist", // output dir of running `npx tsc`; don't use if using webpack/ts-loader
-//        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
+            "/*": [ "*" ]
+        }
     },
     "include": [
         "./src"

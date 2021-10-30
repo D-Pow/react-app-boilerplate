@@ -27,6 +27,8 @@ const {
     FileTypeRegexes,
     getOutputFileName,
     getGitignorePathsWithExtraGlobStars,
+    stripJsComments,
+    tsconfig,
 } = importNonEsmFile('./Files');
 const {
     getOsHostnameAndLanIP,
@@ -42,6 +44,8 @@ export {
     FileTypeRegexes,
     getOutputFileName,
     getGitignorePathsWithExtraGlobStars,
+    stripJsComments,
+    tsconfig,
     getOsHostnameAndLanIP,
     LocalLanHostIpAddresses,
 };

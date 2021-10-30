@@ -336,10 +336,21 @@ function getGitignorePathsWithExtraGlobStars() {
         }));
 }
 
+
+function stripJsComments(jsStr) {
+    return jsStr.replace(/(?<!\S)\/\/[^\n]*\n/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+}
+
+
+const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(findFile('tsconfig.json')).toString()));
+
+
 module.exports = {
     Paths,
     FileTypeRegexes,
     getOutputFileName,
     findFile,
     getGitignorePathsWithExtraGlobStars,
+    stripJsComments,
+    tsconfig,
 };

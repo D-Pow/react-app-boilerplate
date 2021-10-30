@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const parseCliArgs = require('../config/parseCliArgs');
+const parseCliArgs = require('../config/utils/parseCliArgs');
 
 function getPropTypesText(indentForClassStaticVar, typescript) {
     if (typescript) {

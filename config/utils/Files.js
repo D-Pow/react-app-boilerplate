@@ -59,7 +59,8 @@ const Paths = (() => {
 
     Object.values(pathMappings).forEach(pathConfig => setAbsPaths(pathConfig));
 
-    pathMappings.getFileAbsPath = (dirAbsPath, filename) => path.resolve(dirAbsPath, filename);
+    pathMappings.getFileAbsPath = (...pathSegments) => path.resolve(...pathSegments);
+    pathMappings.getFileRelPath = (...pathSegments) => path.relative(...pathSegments);
 
     return pathMappings;
 })();

@@ -21,6 +21,7 @@ const gitIgnorePaths = parseCliArgs().ignorePath === '.gitignore'
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
+    root: true,
     env: {
         browser: true,
         es2021: true,

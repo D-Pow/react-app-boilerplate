@@ -1,8 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const { findFile, getGitignorePathsWithExtraGlobStars } = require('./config/utils/Files');
-const parseCliArgs = require('./config/utils/parseCliArgs');
+const {
+    findFile,
+    getGitignorePathsWithExtraGlobStars,
+    parseCliArgs,
+} = require('./config/utils');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.

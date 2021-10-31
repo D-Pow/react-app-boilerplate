@@ -174,7 +174,7 @@ module.exports = {
             pathGroups: Object.entries(ImportAliases.toCustomObject({
                 // Allow import order rule to understand all paths/files after each alias, e.g. '@' => '@/**'
                 // Ensure aliases ending with a slash don't create double slashes, e.g. '/' => '/**' instead of '//**'
-                aliasModifier: alias => `${alias.replace(/\/$/, '')}/**`,
+                aliasModifier: alias => `${ImportAliases.stripTrailingSlash(alias)}/**`,
             })).map(([ alias, pathMatch ]) => {
                 const pathGroup = {
                     pattern: alias,
@@ -206,7 +206,7 @@ module.exports = {
             // which means the `/` import alias isn't being honored by this rule.
             // Fix that by scanning through all files/directories in the project root and ignoring
             // unresolved-module errors only for those files.
-            ignore: Object.entries(ImportAliases).flatMap(([ alias ]) => `^${alias.replace(/\/$/, '')}/.*`),
+            ignore: Object.entries(ImportAliases).flatMap(([ alias ]) => `^${ImportAliases.stripTrailingSlash(alias)}/.*`),
         }],
         // Prevent circular dependencies
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],

@@ -368,22 +368,30 @@ const ImportAliases = Object.entries(tsconfig.compilerOptions.paths)
     }, {});
 // Add utils for ImportAliases, but prevent them from being included in `Object.(keys|values|entries)` as well as object spreads
 // so that the ImportAliases object can be used directly instead of having to filter out the utils
-Object.defineProperty(ImportAliases, 'toCustomObject', {
-    configurable: false,
-    enumerable: false,
-    writable: false,
-    value: ({
-        aliasModifier = alias => alias,
-        pathMatchModifier = pathMatch => pathMatch,
-    } = {}) => {
-        return Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
-            const modifiedAlias = aliasModifier(alias);
-            const modifiedPathMatch = pathMatchModifier(pathMatch);
+Object.defineProperties(ImportAliases, {
+    toCustomObject: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: ({
+            aliasModifier = alias => alias,
+            pathMatchModifier = pathMatch => pathMatch,
+        } = {}) => {
+            return Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
+                const modifiedAlias = aliasModifier(alias);
+                const modifiedPathMatch = pathMatchModifier(pathMatch);
 
-            modifiedAliases[modifiedAlias] = modifiedPathMatch;
+                modifiedAliases[modifiedAlias] = modifiedPathMatch;
 
-            return modifiedAliases;
-        }, {});
+                return modifiedAliases;
+            }, {});
+        },
+    },
+    stripTrailingSlash: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: alias => alias.replace(/\/$/, ''),
     },
 });
 

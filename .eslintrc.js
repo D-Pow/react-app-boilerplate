@@ -64,7 +64,8 @@ module.exports = {
             version: 'detect', // Automatically detect React version
         },
         'import/extensions': extensions,
-        'import/internal-regex': `^(${Object.keys(ImportAliases).join('|')})`, // Mark import aliases' keys as `internal` imports since they're our aliases
+        // Mark import aliases' keys as part of the internal-imports group for `import/order` since they're our code
+        'import/internal-regex': `^(${Object.keys(ImportAliases).map(alias => `${ImportAliases.stripTrailingSlash(alias)}/`).filter(Boolean).join('|')})`,
         'import/resolver': {
             node: {
                 extensions,

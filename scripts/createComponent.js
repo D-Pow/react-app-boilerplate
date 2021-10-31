@@ -69,7 +69,7 @@ function getComponentText(componentName, { functionalComponent = false, typescri
         propTypesImport =
 `\ninterface ${componentName}Props {
     className?: string;
-    children?: React.ReactChildren;
+    children?: React.ReactChildren | string;
 }`;
     }
 

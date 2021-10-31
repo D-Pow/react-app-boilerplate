@@ -406,13 +406,18 @@ const webpackConfig = {
     /** @type {import('@types/webpack-dev-server').Configuration} */
     devServer: {
         ...((exposeServerOnLan) => exposeServerOnLan
-            // NOTE: You must allow webpack through your firewall for this to work.
+            // NOTE: You must allow incoming traffic and/or webpack through your firewall for this to work.
             ? {
-                // changes the domain from `localhost` to a specific name.
-                // e.g.
-                // * LAN IP to access dev server from other devices
-                // * `localhost.example.com` to access CORS APIs for your website
-                host: 'local-ipv4',
+                /**
+                 * Technically, this isn't required anymore since Webpack v5 allows LAN IPs even without setting the host,
+                 * so leaving it blank means `open` goes to `localhost` but the LAN IP is still accessible.
+                 *
+                 * Changes the domain from `localhost` to a specific name.
+                 * e.g.
+                 * - LAN IP to access dev server from other devices
+                 * - `localhost.example.com` to access CORS APIs for your website
+                 */
+                // host: 'local-ipv4',
 
                 // other possibly useful fields:
                 // contentBase: absoluteBuildOutputPath,

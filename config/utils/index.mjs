@@ -29,6 +29,7 @@ export const {
     getGitignorePathsWithExtraGlobStars,
     stripJsComments,
     tsconfig,
+    ImportAliases,
 } = await import('./Files.js');
 export const {
     getOsHostnameAndLanIP,

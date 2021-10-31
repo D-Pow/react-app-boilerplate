@@ -2,7 +2,7 @@ import * as fs from 'fs';
 
 import { defaults } from 'jest-config';
 
-import { Paths, FileTypeRegexes } from '../utils/index.mjs';
+import { Paths, FileTypeRegexes, ImportAliases } from '../utils/index.mjs';
 
 /*
  * Note: Add the `--no-cache` CLI option during development of jest transformers
@@ -41,10 +41,11 @@ const jestConfig = {
     // modulePaths: [
     //     Paths.SRC.ABS
     // ],
-    moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/src/$1',
-        '^/(.*)$': '<rootDir>/$1',
-    },
+    moduleNameMapper: ImportAliases.toCustomObject({
+        // e.g. { '@': 'src' } => { '^@/(.*)$': '<rootDir>/src/$1' }
+        aliasModifier: alias => `^${alias.replace(/\/$/, '')}/(.*)$`,
+        pathMatchModifier: pathMatch => `<rootDir>/${pathMatch}/$1`,
+    }),
     modulePathIgnorePatterns: [
         Paths.BUILD_ROOT.ABS,
     ],

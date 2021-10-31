@@ -345,6 +345,48 @@ function stripJsComments(jsStr) {
 
 const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(findFile('tsconfig.json')).toString()));
 
+const ImportAliases = Object.entries(tsconfig.compilerOptions.paths)
+    .reduce((aliasesWithoutGlobs, [ aliasGlob, pathMatchesGlobArray ]) => {
+        const { regexToString, combineRegexes } = FileTypeRegexes;
+        const removeTrailingSlashAsterisk = globStr => globStr.replace(/\/\*$/, '').replace(/^$/, '/'); // add `/` back in if that was all that was in the alias
+        const convertSingleAsteriskToDot = globStr => globStr.replace(/^\*$/, '.');
+        const removeBackslashesEscapingSlashesInPaths = regexStr => regexStr.replace(/\\+/g, '');
+
+        const aliasWithoutGlob = removeTrailingSlashAsterisk(aliasGlob);
+        const pathMatchesWithoutGlobs = pathMatchesGlobArray.map(pathGlob => convertSingleAsteriskToDot(removeTrailingSlashAsterisk(pathGlob)));
+
+        if (pathMatchesWithoutGlobs.length > 1) {
+            const pathMatchesAsRegex = pathMatchesWithoutGlobs.map(pathStr => new RegExp(pathStr));
+            const pathMatchesAsRegexString = removeBackslashesEscapingSlashesInPaths(regexToString(combineRegexes(...pathMatchesAsRegex)));
+
+            aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesAsRegexString;
+        } else {
+            aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesWithoutGlobs[0];
+        }
+
+        return aliasesWithoutGlobs;
+    }, {});
+// Add utils for ImportAliases, but prevent them from being included in `Object.(keys|values|entries)` as well as object spreads
+// so that the ImportAliases object can be used directly instead of having to filter out the utils
+Object.defineProperty(ImportAliases, 'toCustomObject', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: ({
+        aliasModifier = alias => alias,
+        pathMatchModifier = pathMatch => pathMatch,
+    } = {}) => {
+        return Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
+            const modifiedAlias = aliasModifier(alias);
+            const modifiedPathMatch = pathMatchModifier(pathMatch);
+
+            modifiedAliases[modifiedAlias] = modifiedPathMatch;
+
+            return modifiedAliases;
+        }, {});
+    },
+});
+
 
 module.exports = {
     Paths,
@@ -354,4 +396,5 @@ module.exports = {
     getGitignorePathsWithExtraGlobStars,
     stripJsComments,
     tsconfig,
+    ImportAliases,
 };

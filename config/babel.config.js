@@ -1,3 +1,7 @@
+const path = require('path');
+
+const { ImportAliases } = require('./utils');
+
 /** @type {import('@babel/core/src/config/files').ConfigFile} */
 module.exports = {
     presets: [
@@ -46,10 +50,11 @@ module.exports = {
             'babel-plugin-module-resolver',
             {
                 cwd: [ 'packagejson' ],
-                alias: {
-                    '@': './src/',
-                    '/': './',
-                },
+                alias: ImportAliases.toCustomObject({
+                    // Resolve any alias path matches to be relative from the root dir, then remove any double-slashes
+                    // e.g. { '@': 'src', '/': '.' } => { '@': './src/', '/': './' }
+                    pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}/`.replace(/\/\//g, '/'),
+                }),
             },
         ],
     ],

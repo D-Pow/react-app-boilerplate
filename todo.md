@@ -19,8 +19,6 @@
         + Might help with browser ESM.
 * Allow `type: module` in package.json without webpack crashing on src/ imports without extensions.
     - Starter: https://developpaper.com/browser-module-main-field-priority-you-dont-know-about-in-package-json/
-* Abstract import aliases to separate file for use in webpack, typescript, jest, eslint, jsconfig, etc.
-    - Starting place - Read aliases only from tsconfig: https://www.npmjs.com/package/tsconfig-paths-webpack-plugin
 * Improve output website SEO/usability on different sites.
     - Duplicate/add useful `<meta>` tags in `HtmlWebpackPlugin` for [OpenGraph](https://www.freecodecamp.org/news/what-is-open-graph-and-how-can-i-use-it-for-my-website/) (how preview images/text appear when embedded in social media, Slack, etc.).
     - Site-map for which pages/routes exist on a website (helps for SEO).

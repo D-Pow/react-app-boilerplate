@@ -5,6 +5,7 @@ const {
     findFile,
     getGitignorePathsWithExtraGlobStars,
     parseCliArgs,
+    ImportAliases,
 } = require('./config/utils');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
@@ -63,7 +64,7 @@ module.exports = {
             version: 'detect', // Automatically detect React version
         },
         'import/extensions': extensions,
-        'import/internal-regex': '^@?/', // Mark `@/...` and `/...` import strings as `internal` imports since they're our aliases
+        'import/internal-regex': `^(${Object.keys(ImportAliases).join('|')})`, // Mark import aliases' keys as `internal` imports since they're our aliases
         'import/resolver': {
             node: {
                 extensions,
@@ -71,8 +72,11 @@ module.exports = {
             alias: {
                 extensions,
                 map: [
-                    [ '@', './src' ],
-                    [ '/', './' ],
+                    Object.entries(ImportAliases.toCustomObject({
+                        // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots.
+                        // e.g. { '@': 'src', '/': '.' } => [ [ '@', './src' ], [ '/', './' ] ]
+                        pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}`,
+                    })),
                 ],
             },
         },
@@ -141,16 +145,14 @@ module.exports = {
         'import-alias/import-alias': [ 'error', {
             relativeDepth: 0, // Only allow imports from same directory (e.g. `import './SubComponent'` as used in `index.js` or parent components)
             rootDir: path.relative(rootDir, '.'), // Ensure root directory is correct regardless of .eslintrc file location. Requires relative path so `eslint --fix` doesn't inject absolute path in imports.
-            aliases: [
-                {
-                    alias: '@',
-                    matcher: '^src',
-                },
-                {
-                    alias: '/',
-                    matcher: '^',
-                },
-            ],
+            aliases: Object.entries(ImportAliases.toCustomObject({
+                // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots, and
+                // adding '^' to show that import strings must match the pattern only at the beginning
+                pathMatchModifier: pathMatch => `^${path.relative('.', pathMatch)}`,
+            })).map(([ alias, pathMatch ]) => ({
+                alias,
+                matcher: pathMatch,
+            })),
         }],
         // Prevent different import lines from importing from the same file (e.g. `import { x } from 'file'; import { y } from 'file'`)
         'import/no-duplicates': [ 'error', {
@@ -169,24 +171,28 @@ module.exports = {
                 'type', // type imports (TypeScript)
                 'unknown', // everything else
             ],
-            pathGroups: [ // Ensure aliased imports come before other internal ones
-                {
-                    pattern: '@/**',
-                    group: 'external', // Ensure `@` comes before all other internal imports
-                    position: 'after',
+            pathGroups: Object.entries(ImportAliases.toCustomObject({
+                // Allow import order rule to understand all paths/files after each alias, e.g. '@' => '@/**'
+                // Ensure aliases ending with a slash don't create double slashes, e.g. '/' => '/**' instead of '//**'
+                aliasModifier: alias => `${alias.replace(/\/$/, '')}/**`,
+            })).map(([ alias, pathMatch ]) => {
+                const pathGroup = {
+                    pattern: alias,
+                    group: 'internal', // Make the rule understand that aliased imports are still internal imports
+                    position: 'before', // Ensure aliased imports come before all other internal imports, e.g. `import ChildComponent from './ChildComponent'`
                     patternOptions: {
                         dot: true, // Allow matching paths with preceding periods (e.g. `.git/` or `.gitignore`)
                     },
-                },
-                {
-                    pattern: '/*',
-                    group: 'internal', // Technically allows `/` before `@`, but that's better than after `./file`
-                    position: 'before',
-                    patternOptions: {
-                        dot: true,
-                    },
-                },
-            ],
+                };
+
+                if (pathMatch === 'src') {
+                    // Make any root-level alias for the `src` directory more important than all other internal imports and comes before them
+                    pathGroup.group = 'external'; // Ensures it comes before all internal imports, including other aliases
+                    pathGroup.position = 'after'; // Ensures it comes after all external imports
+                }
+
+                return pathGroup;
+            }),
             'newlines-between': 'always-and-inside-groups', // Force newlines between groups, allow them within groups
             warnOnUnassignedImports: true, // Warn if `import 'a'` is used before `import X from 'b'` but don't error in case `a` causes global changes (e.g. a polyfill)
         }],
@@ -200,7 +206,7 @@ module.exports = {
             // which means the `/` import alias isn't being honored by this rule.
             // Fix that by scanning through all files/directories in the project root and ignoring
             // unresolved-module errors only for those files.
-            ignore: fs.readdirSync('.').map(fileOrDirInRoot => `^/${fileOrDirInRoot}.*`),
+            ignore: Object.entries(ImportAliases).flatMap(([ alias ]) => `^${alias.replace(/\/$/, '')}/.*`),
         }],
         // Prevent circular dependencies
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],

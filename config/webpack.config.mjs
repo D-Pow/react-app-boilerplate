@@ -12,6 +12,7 @@ import {
     Paths,
     FileTypeRegexes,
     getOutputFileName,
+    ImportAliases,
     LocalLanHostIpAddresses,
     importNonEsmFile,
 } from './utils/index.mjs';
@@ -248,10 +249,9 @@ const webpackConfig = {
             // Paths.SRC.ABS, // allows treating src/* dirs/files as modules, i.e. `import X from 'dirUnderSrc/nested/File.ext';`. Unnecessary since src/* has been aliased to `/` and `@/`.
             'node_modules',
         ],
-        alias: {
-            '@': Paths.SRC.ABS,
-            '/': Paths.ROOT.ABS,
-        },
+        alias: ImportAliases.toCustomObject({
+            pathMatchModifier: pathMatch => Paths.getFileAbsPath(Paths.ROOT.ABS, pathMatch),
+        }),
     },
     entry: {
         client: {

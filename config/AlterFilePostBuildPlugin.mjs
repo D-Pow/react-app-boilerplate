@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 // These still need `await import()` because they're types, not actual classes, so it won't work in .js
 const { WebpackPluginInstance, Compiler, NormalModule } = await import('webpack');
 

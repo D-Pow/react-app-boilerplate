@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import JestCssModulesTransformer from 'jest-css-modules-transform';
 

@@ -1,6 +1,6 @@
 const os = require('os');
 
-const devServerPort = 3000;
+const devServerPort = process.env.PORT || 3000;
 
 
 function getOsHostnameAndLanIP(protocolVersion = 4) {

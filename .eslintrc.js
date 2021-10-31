@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 
 const {
@@ -57,6 +56,7 @@ module.exports = {
         'react-hooks',
         'import',
         'import-alias',
+        'unused-imports',
     ],
     // Settings for specific plugins
     settings: {
@@ -211,6 +211,8 @@ module.exports = {
         }],
         // Prevent circular dependencies
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
+        // Remove unused imports (since `no-unused-vars` is only `warn` for now)
+        'unused-imports/no-unused-imports': 'error',
 
 
         'react/jsx-indent': [ 'error', 4, { // Enforce 4 extra spaces of indentation for nested children

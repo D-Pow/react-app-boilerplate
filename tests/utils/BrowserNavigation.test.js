@@ -1,6 +1,5 @@
 import {
     getQueryParams,
-    pushQueryParamOnHistory,
     getUrlSegments,
     isIpAddress,
 } from '@/utils/BrowserNavigation';

@@ -376,16 +376,14 @@ Object.defineProperties(ImportAliases, {
         value: ({
             aliasModifier = alias => alias,
             pathMatchModifier = pathMatch => pathMatch,
-        } = {}) => {
-            return Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
-                const modifiedAlias = aliasModifier(alias);
-                const modifiedPathMatch = pathMatchModifier(pathMatch);
+        } = {}) => Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
+            const modifiedAlias = aliasModifier(alias);
+            const modifiedPathMatch = pathMatchModifier(pathMatch);
 
-                modifiedAliases[modifiedAlias] = modifiedPathMatch;
+            modifiedAliases[modifiedAlias] = modifiedPathMatch;
 
-                return modifiedAliases;
-            }, {});
-        },
+            return modifiedAliases;
+        }, {}),
     },
     stripTrailingSlash: {
         configurable: false,

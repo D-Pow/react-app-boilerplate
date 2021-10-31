@@ -13,15 +13,15 @@ import { createRequire } from 'module';
  * @param {string} filePath - Path to the file desired to be imported.
  * @returns {*} - Content of that file. JS files will be treated as normal and JSON files will be objects.
  */
-function importNonEsmFile(filePath) {
+export function importNonEsmFile(filePath) {
     const require = createRequire(import.meta.url);
 
     return require(filePath);
 }
 
 
-const parseCliArgs = importNonEsmFile('./parseCliArgs');
-const {
+export const parseCliArgs = (await import('./parseCliArgs.js')).default;
+export const {
     Paths,
     findFile,
     FileTypeRegexes,
@@ -29,23 +29,8 @@ const {
     getGitignorePathsWithExtraGlobStars,
     stripJsComments,
     tsconfig,
-} = importNonEsmFile('./Files');
-const {
+} = await import('./Files.js');
+export const {
     getOsHostnameAndLanIP,
     LocalLanHostIpAddresses,
-} = importNonEsmFile('./Network');
-
-
-export {
-    importNonEsmFile,
-    parseCliArgs,
-    Paths,
-    findFile,
-    FileTypeRegexes,
-    getOutputFileName,
-    getGitignorePathsWithExtraGlobStars,
-    stripJsComments,
-    tsconfig,
-    getOsHostnameAndLanIP,
-    LocalLanHostIpAddresses,
-};
+} = await import('./Network.js');

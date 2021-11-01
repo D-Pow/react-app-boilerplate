@@ -18,7 +18,7 @@ export function encodeToBase64(str, mimeType) {
         }
 
         return base64String;
-    } catch(e) {
+    } catch (e) {
         // Could not encode
     }
 
@@ -28,7 +28,7 @@ export function encodeToBase64(str, mimeType) {
 export function decodeBase64(base64String) {
     try {
         return atob(base64String);
-    } catch(e) {
+    } catch (e) {
         // Could not decode, likely a malformed Base64 string
     }
 
@@ -69,7 +69,7 @@ export function getTextFromBase64DataUrl(dataUrl = '', decode = false) {
 export function getMimeTypeFromDataUrl(dataUrl = '') {
     try {
         return dataUrl.match(/(?<=data:)[^;]+/)[0];
-    } catch(e) {
+    } catch (e) {
         // Could not find match, likely a malformed data URL
     }
 

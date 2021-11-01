@@ -21,11 +21,13 @@ class WebWorker {
         //  If so, then convert this class to a function and make file name plural.
         if (typeof workerSource === typeof '') {
             return new Worker(workerSource);
-        } else if (typeof workerSource === typeof this.constructor) {
-            return WebWorker.createWorkerFromFunctionString(workerSource.toString());
-        } else {
-            throw new TypeError(`Type "${typeof workerSource}" is not supported. Please use a string (path to your WebWorker script) or a function (to be converted to a WebWorker).`);
         }
+
+        if (typeof workerSource === typeof this.constructor) {
+            return WebWorker.createWorkerFromFunctionString(workerSource.toString());
+        }
+
+        throw new TypeError(`Type "${typeof workerSource}" is not supported. Please use a string (path to your WebWorker script) or a function (to be converted to a WebWorker).`);
     }
 }
 

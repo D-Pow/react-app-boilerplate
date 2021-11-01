@@ -57,7 +57,7 @@ function broadcastMessage(message) {
         const broadcastChannel = new BroadcastChannel(process.env.BROADCAST_CHANNEL);
 
         broadcastChannel.postMessage(message);
-    } catch(e) {
+    } catch (e) {
         // BroadcastChannel not defined, likely because client is using Safari or IE
     }
 }
@@ -112,9 +112,7 @@ function checkValidServiceWorker(swUrl) {
             }
         })
         .catch(() => {
-            console.log(
-                'No internet connection found. App is running in offline mode.',
-            );
+            console.log('No internet connection found. App is running in offline mode.');
         });
 }
 

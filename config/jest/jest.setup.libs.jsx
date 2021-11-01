@@ -142,9 +142,7 @@ export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
     const getElementMaybeAsync = async () => {
         try {
             return await funcToGetElement();
-        } catch (reactTestingLibraryNotFoundError) {
-            return undefined;
-        }
+        } catch (reactTestingLibraryNotFoundError) {}
     };
 
     if (callNow) {

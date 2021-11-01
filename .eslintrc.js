@@ -101,12 +101,30 @@ module.exports = {
             ignoreGlobals: true, // Allow using global variables written in snake_case
         }],
         semi: [ 'error', 'always' ], // Enforce semicolon usage
+        'block-scoped-var': 'error', // Prevent relying on `var` hoisting to allow usage outside its scope, e.g. error: `if (foo) { var x = 'X'; } return x + 1;`
         'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
         'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
+        'no-else-return': [ 'error', { // Prevent return statements in else-statements if a return exists in the if-statement, e.g. error: `if (x) { return 1; } else { return 2; }`
+            allowElseIf: false, // Also prevent else-if, e.g. error: `if (x) { return 1; } else if (y) { return 2; }`
+        }],
+        'no-lonely-if': 'error', // Merge if-statements into the parent else-statement if it's the only one in the code block, e.g. `else { if (x) { return 3; } }` --> `else if (x) { return 3; }`
+        'no-empty': [ 'error', { // Prevent empty blocks (default in `eslint:recommended`), e.g. error: `if (x) {}`
+            allowEmptyCatch: true, // Exception: Allow empty catch-statements, e.g. `catch (e) {}`
+        }],
+        curly: 'error', // Enforce using curly braces around if/else/while/for/etc.
+        'nonblock-statement-body-position': [ 'error', 'beside' ], // Enforce inline statements without braces to be on one line (shouldn't be needed due to `curly` above), e.g. `if (foo) bar();`
+        'keyword-spacing': 'error', // Enforce spaces around language keywords, e.g. else would error in `if (foo) {...}else{...}`
+        'semi-spacing': 'error', // Enforce spacing after semicolons but never before; exception: `for(;;)`, `;func()`, and similar
         'comma-spacing': [ 'error', { // Enforce spaces only after commas
             before: false, // prevent `[ 2 , 3 ]` and `[ 2 ,3 ]`
             after: true, // e.g. `[ 2, 3 ]` instead of `[ 2,3 ]`
         }],
+        'space-unary-ops': [ 'error', {
+            words: true, // Enforce spacing around keywords that accept parentheses, e.g. error: `typeof(obj)`
+            nonwords: false, // Allow spaces around operators, e.g. `!foo` or `foo++`
+        }],
+        // TODO Find a rule that only affects equals operator, nothing else
+        // 'space-infix-ops': 'error', // Enforce spaces between all infix operators (non-unary, non-ternary), e.g. `x = 1`, `1 + 2`, etc.
         'object-curly-spacing': [ 'error', 'always', { // Enforce spacing between curly braces except for nested objects
             arraysInObjects: false, // e.g. `x = { a: [ 3 ]}`
             objectsInObjects: false, // e.g. `x = { a: { b: 3 }}`
@@ -118,6 +136,37 @@ module.exports = {
         'key-spacing': [ 'error', { // Add spaces after object keys' colons
             beforeColon: false, // prevent `{ key : val }` and `{ key :val }`
             afterColon: true, // e.g. `{ key: val }` instead of `{ key:val }`
+        }],
+        'no-whitespace-before-property': 'error', // Prevent spaces between objects and their properties, e.g. `foo [bar]`, `foo. bar`, `foo .bar` (doesn't include chained methods)
+        'space-before-function-paren': [ 'error', {
+            named: 'never', // Prevent spacing between function name and parentheses, e.g. `function foo() {}` and `class Foo { bar() {} }`
+            anonymous: 'ignore', // Allow spacing around anonymous "function" functions and parentheses, e.g. `function() {}` or `function () {}`
+            asyncArrow: 'ignore', // Allow spacing around anonymous async arrow functions, e.g. `async() => {}` or `async () => {}`
+        }],
+        'func-call-spacing': 'error', // Prevent spacing between function name and parentheses when called, e.g. `func ()`
+        'space-before-blocks': 'error', // Enforce spacing before inline function/class brackets, e.g. error: `func(){ return 3; }`
+        'block-spacing': 'error', // Enforce spacing inside inline function brackets, e.g. error: `func() {return 3;}`
+        'arrow-spacing': 'error', // Enforce spacing before/after `=>` in arrow functions
+        'generator-star-spacing': [ 'error', {
+            before: false, // Prevent generator * to be on function name, e.g. error: `function *gen() {}`
+            after: true, // Enforce generator * to be on `function` keyword, e.g. `function* gen() {}`
+            anonymous: 'after', // Enforce * after `function` keyword, e.g. `x = function* () {}`
+            method: { // Opposite for classes (since they don't use the `function` keyword)
+                before: true, // Enforce * before function name, e.g. `x = { *gen() {} }`
+                after: false, // Prevent superfluous * after function name, e.g. `x = { * gen() {} }`
+            },
+        }],
+        'yield-star-spacing': [ 'error', 'after' ], // Enforce `yield* generator()` instead of `yield *generator()` (only applicable for yielding generator calls, not values)
+        'require-atomic-updates': 'error', // Prevent race conditions from mixing async functions and generators when, for example, both alter the same variable
+        'computed-property-spacing': 'error', // Prevent spaces in computed properties, e.g. error: the variable in `x = { [ variable ]: 'hi' }`
+        'switch-colon-spacing': 'error', // Enforce spacing after `case X:` colon but not before
+        'no-trailing-spaces': 'error', // Don't allow trailing spaces at the ends of lines
+        'spaced-comment': [ 'error', 'always', { // Enforce at least one space after `//` or `/*`
+            exceptions: [ '*', '-', '+', '#' ], // Exception for comments containing only these characters, e.g. block comments with makeshift sections: `/*****`
+            markers: [ '/' ], // Exception for comments with single instances of these characters after the comment, e.g. TypeScript's `/// <reference>`
+            block: {
+                balanced: true, // If the comment is a block comment `/**/` instead of inline `//`, then enforce a space after the opening and before the closing
+            },
         }],
         quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
             avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
@@ -228,6 +277,7 @@ module.exports = {
             afterOpening: 'never', // never allow a space between opening < and component name, e.g. `< MyComp>`
             closingSlash: 'never', // never allow a space between closing < and /, e.g. `< /MyComp>`
         }],
+        'react/jsx-equals-spacing': 'error', // Prevent spaces between JSX prop names and equals sign, e.g. `<MyComp prop = {value} />`
         'react/jsx-filename-extension': [ 'error', {
             // allow: 'as-needed', // Only allow .jsx for files with JSX in them
             extensions: [ '.jsx', '.tsx' ], // Allow both .jsx and .tsx for file extensions (default is only .jsx)

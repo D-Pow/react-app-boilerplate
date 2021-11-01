@@ -63,7 +63,7 @@ function postMessageToClient(message) {
         var channel = new BroadcastChannel(BROADCAST_CHANNEL);
 
         channel.postMessage(message);
-    } catch(e) {
+    } catch (e) {
         // BroadcastChannel not defined, likely because client is using Safari or IE
     }
 }
@@ -160,7 +160,9 @@ self.addEventListener('fetch', event => {
                     }
 
                     return response;
-                } else if (!shouldNotCache && (isResourceFile || isIndexHtml)) {
+                }
+
+                if (!shouldNotCache && (isResourceFile || isIndexHtml)) {
                     // Not cached - fetch it and then store for future network requests
                     return fetchAndCache(event, cache);
                 }

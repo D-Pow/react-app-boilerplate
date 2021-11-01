@@ -80,7 +80,7 @@ class AlterFilePostBuildPlugin {
             const newFileContents = fileContents.replace(oldText, newText);
 
             fs.writeFileSync(fileAbsPath, newFileContents);
-        } catch(e) {
+        } catch (e) {
             console.error(`Error replacing text in ${fileAbsPath}. Error:`, e);
         }
     }

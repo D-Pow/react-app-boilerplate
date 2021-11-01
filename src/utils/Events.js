@@ -25,7 +25,7 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
             }
 
             return assetSrc;
-        } catch(error) {
+        } catch (error) {
             // default return below handles error case
         }
     }

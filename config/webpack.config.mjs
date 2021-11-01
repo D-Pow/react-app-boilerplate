@@ -346,7 +346,7 @@ const webpackConfig = {
             'ServiceWorker.js',
             /urlsNotToCache ?= ?\[\]/g,
             `urlsNotToCache=[${fileUrlsNotToCacheInPwa
-                .map(url => url instanceof RegExp ? url : `"./${url}"` )
+                .map(url => url instanceof RegExp ? url : `"./${url}"`)
                 .join(',')
             }]`,
             isProduction,

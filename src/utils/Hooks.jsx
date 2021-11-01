@@ -493,7 +493,7 @@ export function useServiceWorkerBroadcastChannel(messageEventListener, channelNa
 
     try {
         broadcastChannel = new BroadcastChannel(channelName);
-    } catch(e) {
+    } catch (e) {
         // BroadcastChannel not defined, likely because client is using Safari or IE
     }
 

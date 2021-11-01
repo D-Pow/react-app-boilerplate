@@ -44,7 +44,7 @@ function getClassComponentText(componentName, typescript) {
 
 function getFunctionalComponentText(componentName, typescript) {
     let functionDefinitionStr =
-`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''} = {})${typescript ? ': React.ReactNode' : ''} {
+`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''} = {}) {
     return (
         <>
             {props.children}
@@ -69,7 +69,7 @@ function getComponentText(componentName, { functionalComponent = false, typescri
         propTypesImport =
 `\ninterface ${componentName}Props {
     className?: string;
-    children?: React.ReactChildren | string;
+    children?: React.ReactNode;
 }`;
     }
 

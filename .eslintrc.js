@@ -95,6 +95,18 @@ module.exports = {
         eqeqeq: [ 'warn', 'always', { // Enforce using triple equals, ===/!===
             null: 'ignore', // Exception for `x != null` since `!= null` means `!== null && !== undefined`
         }],
+        camelcase: [ 'error', { // Enforce camelCase for all variables unless they're in ALL_CAPS
+            properties: 'never', // Allow snake_case in object keys (e.g. for endpoint payload objects)
+            // ignoreDestructuring: true, // Allows destructured object keys to be used without being renamed to camelCase (e.g. `const { a_b } = obj; doSomething(a_b);`)
+            ignoreGlobals: true, // Allow using global variables written in snake_case
+        }],
+        semi: [ 'error', 'always' ], // Enforce semicolon usage
+        'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
+        'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
+        'comma-spacing': [ 'error', { // Enforce spaces only after commas
+            before: false, // prevent `[ 2 , 3 ]` and `[ 2 ,3 ]`
+            after: true, // e.g. `[ 2, 3 ]` instead of `[ 2,3 ]`
+        }],
         'object-curly-spacing': [ 'error', 'always', { // Enforce spacing between curly braces except for nested objects
             arraysInObjects: false, // e.g. `x = { a: [ 3 ]}`
             objectsInObjects: false, // e.g. `x = { a: { b: 3 }}`
@@ -107,23 +119,11 @@ module.exports = {
             beforeColon: false, // prevent `{ key : val }` and `{ key :val }`
             afterColon: true, // e.g. `{ key: val }` instead of `{ key:val }`
         }],
-        'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
-        'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
-        'comma-spacing': [ 'error', { // Enforce spaces only after commas
-            before: false, // prevent `[ 2 , 3 ]` and `[ 2 ,3 ]`
-            after: true, // e.g. `[ 2, 3 ]` instead of `[ 2,3 ]`
-        }],
         quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
             avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
             allowTemplateLiterals: true, // Allow back-tick quotes all the time regardless of escaping or not, e.g. x = `hello world`
         }],
         'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
-        camelcase: [ 'error', { // Enforce camelCase for all variables unless they're in ALL_CAPS
-            properties: 'never', // Allow snake_case in object keys (e.g. for endpoint payload objects)
-            // ignoreDestructuring: true, // Allows destructured object keys to be used without being renamed to camelCase (e.g. `const { a_b } = obj; doSomething(a_b);`)
-            ignoreGlobals: true, // Allow using global variables written in snake_case
-        }],
-        semi: [ 'error', 'always' ], // Enforce semicolon usage
         'no-unused-vars': [ 'warn', {
             /*
              * TODO Find or write a plugin to support the below, then change `warn` to `error`:

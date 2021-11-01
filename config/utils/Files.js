@@ -218,6 +218,7 @@ function getOutputFileName(
  * @param {Object} [options]
  * @param {string} [options.startDirectory=rootDir] - Starting search directory (dirname, without file name).
  * @param {string[]} [options.ignoredFiles] - Files/directories to ignore when searching; always includes `.git/`.
+ * @param {boolean} [options.dfs=false] - If depth-first-search should be used instead of breadth-first-search.
  * @returns {(string|undefined)} - Absolute path of the file if found.
  */
 function findFile(
@@ -225,6 +226,7 @@ function findFile(
     {
         startDirectory = '',
         ignoredFiles = [],
+        dfs = false,
     } = {},
 ) {
     const packageJsonFileName = 'package.json';
@@ -292,7 +294,21 @@ function findFile(
         }
 
         if (fs.lstatSync(filePath).isDirectory()) {
-            dirsToSearch.push(filePath);
+            if (!dfs) {
+                dirsToSearch.push(filePath);
+            } else {
+                const filePathFound = findFile(
+                    filename,
+                    {
+                        startDirectory: filePath,
+                        ignoredFiles,
+                    },
+                );
+
+                if (filePathFound) {
+                    return filePathFound;
+                }
+            }
         }
     }
 

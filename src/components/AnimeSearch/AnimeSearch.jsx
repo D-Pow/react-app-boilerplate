@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { fetchKitsuTitleSearch } from '@/services/KitsuAnimeSearchService';
 import { useKeyboardEvent } from '@/utils/Hooks';
@@ -7,6 +7,7 @@ function AnimeSearch(props) {
     const [ searchText, setSearchText ] = useState('');
     const [ keyDown, setKeyDown ] = useKeyboardEvent();
     const [ searchResults, setSearchResults ] = useState([]);
+    const inputRef = useRef();
 
     const handleTyping = ({ target: { value }}) => {
         setSearchText(value);
@@ -23,6 +24,10 @@ function AnimeSearch(props) {
         setKeyDown(null);
         handleSubmit();
     }
+
+    useEffect(() => {
+        inputRef?.current?.focus();
+    }, []);
 
     const renderSearchResults = () => {
         if (!searchResults.length) {
@@ -49,6 +54,7 @@ function AnimeSearch(props) {
                 placeholder={'e.g. "Kimi no na wa"'}
                 value={searchText}
                 onChange={handleTyping}
+                ref={inputRef}
             />
             <button className={'mx-5px'} onClick={handleSubmit}>
                 Search

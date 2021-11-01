@@ -88,10 +88,7 @@ module.exports = {
         module: 'writable', // TODO Only used for src/index.jsx hot reloading, but that block might not be needed anymore
     },
     rules: {
-        indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
-            SwitchCase: 1, // Same for switch-case statements
-            ignoredNodes: [ 'TemplateLiteral' ],
-        }],
+        /* Syntax, logic, and common error-causing rules */
         eqeqeq: [ 'warn', 'always', { // Enforce using triple equals, ===/!===
             null: 'ignore', // Exception for `x != null` since `!= null` means `!== null && !== undefined`
         }],
@@ -113,6 +110,35 @@ module.exports = {
         }],
         curly: 'error', // Enforce using curly braces around if/else/while/for/etc.
         'nonblock-statement-body-position': [ 'error', 'beside' ], // Enforce inline statements without braces to be on one line (shouldn't be needed due to `curly` above), e.g. `if (foo) bar();`
+        'require-atomic-updates': 'error', // Prevent race conditions from mixing async functions and generators when, for example, both alter the same variable
+        quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
+            avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
+            allowTemplateLiterals: true, // Allow back-tick quotes all the time regardless of escaping or not, e.g. x = `hello world`
+        }],
+        'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
+        'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
+        'no-control-regex': 'off', // Allow regexes with unicode strings and other control sequences (e.g. colors for console output: `\x1B[36mHELLO\x1B[39mWORLD`
+        'prefer-regex-literals': 'error', // Force using `/regex/` instead of `new RegExp()` when possible
+        'no-unused-vars': [ 'warn', {
+            /*
+             * TODO Find or write a plugin to support the below, then change `warn` to `error`:
+             *  - Error on unused vars unless they're functions (see: https://github.com/eslint/eslint/issues/15078).
+             *    Starter regex (doesn't capture all functions): '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])'
+             *  - Don't error on unused vars from array spreading (`ignoreRestSiblings` doesn't apply to arrays).
+             */
+            // Ignore function arguments whose names match this regex
+            // varsIgnorePattern: 'React',
+            // Ignore function arguments whose names match this regex
+            argsIgnorePattern: 'props',
+            // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
+            ignoreRestSiblings: true,
+        }],
+
+        /* Spacing rules */
+        indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
+            SwitchCase: 1, // Same for switch-case statements
+            ignoredNodes: [ 'TemplateLiteral' ],
+        }],
         'keyword-spacing': 'error', // Enforce spaces around language keywords, e.g. else would error in `if (foo) {...}else{...}`
         'semi-spacing': 'error', // Enforce spacing after semicolons but never before; exception: `for(;;)`, `;func()`, and similar
         'comma-spacing': [ 'error', { // Enforce spaces only after commas
@@ -157,7 +183,6 @@ module.exports = {
             },
         }],
         'yield-star-spacing': [ 'error', 'after' ], // Enforce `yield* generator()` instead of `yield *generator()` (only applicable for yielding generator calls, not values)
-        'require-atomic-updates': 'error', // Prevent race conditions from mixing async functions and generators when, for example, both alter the same variable
         'computed-property-spacing': 'error', // Prevent spaces in computed properties, e.g. error: the variable in `x = { [ variable ]: 'hi' }`
         'switch-colon-spacing': 'error', // Enforce spacing after `case X:` colon but not before
         'no-trailing-spaces': 'error', // Don't allow trailing spaces at the ends of lines
@@ -168,30 +193,9 @@ module.exports = {
                 balanced: true, // If the comment is a block comment `/**/` instead of inline `//`, then enforce a space after the opening and before the closing
             },
         }],
-        quotes: [ 'error', 'single', { // Enforce using single quotes instead of double quotes
-            avoidEscape: true, // Allow double quotes if escaping would be necessary, e.g. x = "hello 'new' world"
-            allowTemplateLiterals: true, // Allow back-tick quotes all the time regardless of escaping or not, e.g. x = `hello world`
-        }],
-        'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
-        'no-unused-vars': [ 'warn', {
-            /*
-             * TODO Find or write a plugin to support the below, then change `warn` to `error`:
-             *  - Error on unused vars unless they're functions (see: https://github.com/eslint/eslint/issues/15078).
-             *    Starter regex (doesn't capture all functions): '(?<= )(\\w+)(?=( = )?\\([^\\)]*\\)( =>)? [\\(\\{])'
-             *  - Don't error on unused vars from array spreading (`ignoreRestSiblings` doesn't apply to arrays).
-             */
-            // Ignore function arguments whose names match this regex
-            // varsIgnorePattern: 'React',
-            // Ignore function arguments whose names match this regex
-            argsIgnorePattern: 'props',
-            // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
-            ignoreRestSiblings: true,
-        }],
-        'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
-        'no-control-regex': 'off', // Allow regexes with unicode strings and other control sequences (e.g. colors for console output: `\x1B[36mHELLO\x1B[39mWORLD`
-        'prefer-regex-literals': 'error', // Force using `/regex/` instead of `new RegExp()` when possible
 
 
+        /* Import rules */
         // Ensure aliased imports are always used instead of relative paths for imports in the `src/` directory.
         'import-alias/import-alias': [ 'error', {
             relativeDepth: 0, // Only allow imports from same directory (e.g. `import './SubComponent'` as used in `index.js` or parent components)
@@ -263,6 +267,7 @@ module.exports = {
         'unused-imports/no-unused-imports': 'error',
 
 
+        /* React/JSX rules */
         'react/jsx-indent': [ 'error', 4, { // Enforce 4 extra spaces of indentation for nested children
             checkAttributes: true, // Indent for nested props, e.g. `<App someProp={\n[INDENT] () => 5 \n[DE-INDENT]} />`
             indentLogicalExpressions: true, // Indent components inside short-circuiting, e.g. `<App>\n {condition && (\n[INDENT] <Child/> \n[DE-INDENT] )} \n </App>`

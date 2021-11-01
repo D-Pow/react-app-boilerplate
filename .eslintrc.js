@@ -83,6 +83,7 @@ module.exports = {
         },
     },
     globals: {
+        JSX: 'readable',
         process: 'writable', // `webpack.DefinePlugin` injects `process.env` object into `src/` files.
         module: 'writable', // TODO Only used for src/index.jsx hot reloading, but that block might not be needed anymore
     },

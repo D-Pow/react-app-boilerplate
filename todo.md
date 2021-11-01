@@ -1,5 +1,4 @@
 * Jest improvements.
-    - WebStorm not recognizing aliases (probably due to a `npm_package_config` field).
     - Set `testEnvironment` based on file extension.
         + `.[tj]sx --> 'jsdom'`
         + `.[tj]s --> 'node'`

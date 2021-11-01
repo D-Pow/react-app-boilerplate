@@ -24,7 +24,7 @@ const gitIgnorePaths = parseCliArgs().ignorePath === '.gitignore'
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
-    root: true,
+    root: true, // This is the base ESLint config file, so don't search any higher
     env: {
         browser: true,
         es2021: true,

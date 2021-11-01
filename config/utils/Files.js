@@ -272,6 +272,8 @@ function findFile(
         .join('|');
     const ignoredFilesRegex = new RegExp(ignoredFilesRegexString, 'i');
 
+    const dirsToSearch = [];
+
     // `stat()` follows symbolic links
     // `lstat()` doesn't
     // `fstat()` is the same as `stat()` except takes in a file descriptor instead of path
@@ -290,17 +292,21 @@ function findFile(
         }
 
         if (fs.lstatSync(filePath).isDirectory()) {
-            const filePathFound = findFile(
-                filename,
-                {
-                    startDirectory: filePath,
-                    ignoredFiles,
-                },
-            );
+            dirsToSearch.push(filePath);
+        }
+    }
 
-            if (filePathFound) {
-                return filePathFound;
-            }
+    for (const dir of dirsToSearch) {
+        const filePathFound = findFile(
+            filename,
+            {
+                startDirectory: dir,
+                ignoredFiles,
+            },
+        );
+
+        if (filePathFound) {
+            return filePathFound;
         }
     }
 }

@@ -205,9 +205,7 @@ module.exports = {
         // Ensure all imports resolve/exist
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
-            // which means the `/` import alias isn't being honored by this rule.
-            // Fix that by scanning through all files/directories in the project root and ignoring
-            // unresolved-module errors only for those files.
+            // which means import aliases aren't being honored by this rule and need to be added in manually.
             ignore: Object.entries(ImportAliases).flatMap(([ alias ]) => `^${ImportAliases.stripTrailingSlash(alias)}/.*`),
         }],
         // Prevent circular dependencies

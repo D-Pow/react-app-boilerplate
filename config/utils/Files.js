@@ -367,6 +367,17 @@ function stripJsComments(jsStr) {
 
 const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(findFile('tsconfig.json')).toString()));
 
+/**
+ * Object containing normalized import aliases of the form `{ alias: pathMatch }`.
+ *
+ * Both aliases and path matches are normalized to strip leading/trailing path slashes, periods,
+ * and glob stars so all files using the aliases can format them as needed.
+ *
+ * Includes some non-enumerable utility functions for individually reformatting the alias/path-match
+ * and for stripping a single trailing path slash.
+ *
+ * @type {Object} - Mapping of aliases to their respective path matchers, as well as some util functions.
+ */
 const ImportAliases = Object.entries(tsconfig.compilerOptions.paths)
     .reduce((aliasesWithoutGlobs, [ aliasGlob, pathMatchesGlobArray ]) => {
         const { regexToString, combineRegexes } = FileTypeRegexes;
@@ -388,7 +399,7 @@ const ImportAliases = Object.entries(tsconfig.compilerOptions.paths)
 
         return aliasesWithoutGlobs;
     }, {});
-// Add utils for ImportAliases, but prevent them from being included in `Object.(keys|values|entries)` as well as object spreads
+// Add utils for ImportAliases, but prevent them from being included in `Object.(keys|values|entries)` and object spreads
 // so that the ImportAliases object can be used directly instead of having to filter out the utils
 Object.defineProperties(ImportAliases, {
     toCustomObject: {

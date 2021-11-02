@@ -13,6 +13,7 @@
         + [How to (not super in depth though)](https://dev.to/thejohnstew/differential-serving-3dkf)
         + Option: [webpack-module-nomodule-plugin](https://www.npmjs.com/package/webpack-module-nomodule-plugin)
         + Option: [html-webpack-multi-build-plugin](https://www.npmjs.com/package/html-webpack-multi-build-plugin)
+        + Option: [EsmWebpackPlugin](https://github.com/purtuga/esm-webpack-plugin)
         + Babel [targest.esmodules](https://babeljs.io/docs/en/babel-preset-env#targetsesmodules)
     - Investigate Babel preset-env [bugfixes](https://babeljs.io/docs/en/babel-preset-env#bugfixes)
         + Might help with browser ESM.

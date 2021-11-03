@@ -60,7 +60,7 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
     }
     ```
 
-3. Set up a `.github/workflows/publish-npm-package.yml` (name can be anything you want):
+4. Set up a `.github/workflows/publish-npm-package.yml` (name can be anything you want):
 
     ```yaml
     name: publish-npm-package
@@ -108,10 +108,10 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
             run: npm publish
     ```
 
-4. Make sure you specify which files/directories you want published in the [files](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#files) package.json field so that `npm publish` only includes the files you want.
+5. Make sure you specify which files/directories you want published in the [files](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#files) package.json field so that `npm publish` only includes the files you want.
 
-5. For private packages, set the [private](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#private) package.json field.
+6. For private packages, set the [private](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#private) package.json field.
 
-6. For browser packages (e.g. published micro-frontend apps), you should use the [browser](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#browser) package.json field instead of [main](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main).
+7. For browser packages (e.g. published micro-frontend apps), you should use the [browser](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#browser) package.json field instead of [main](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#main).
 
-7. Install via `npm install @myorg/appName`.
+8. Install via `npm install @myorg/appName`.

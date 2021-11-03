@@ -39,6 +39,7 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
     registry=https://registry.npmjs.org/  // keep the default npm registry
     # if you want to make it private, you'll need to ensure no one outside your org can access the package using the below.
     # Though, they will have to `npm/yarn login` to install it.
+    # NOTE: Both `always-auth` and `_auth` work the same: https://docs.npmjs.com/cli/v7/using-npm/config#_auth
     always-auth=true
     ```
 

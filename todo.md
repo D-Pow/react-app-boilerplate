@@ -19,9 +19,10 @@
         + Might help with browser ESM.
 * Allow `type: module` in package.json without webpack crashing on src/ imports without extensions.
     - Starter: https://developpaper.com/browser-module-main-field-priority-you-dont-know-about-in-package-json/
+* Add preview/start image in `manifest.json` for when the installed PWA is opening before the page content is actually loaded and the spinner shows.
 * Improve output website SEO/usability on different sites.
     - Duplicate/add useful `<meta>` tags in `HtmlWebpackPlugin` for [OpenGraph](https://www.freecodecamp.org/news/what-is-open-graph-and-how-can-i-use-it-for-my-website/) (how preview images/text appear when embedded in social media, Slack, etc.).
-    - Site-map for which pages/routes exist on a website (helps for SEO).
+    - Site-map for which pages/routes exist on a website (helps for SEO). One possibly helpful package is [next-sitemap](https://www.npmjs.com/package/next-sitemap) in a `postbuild` npm script.
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically
     - Another option other than InterpolateHtmlPlugin: [serviceworker-webpack-plugin](https://github.com/oliviertassinari/serviceworker-webpack-plugin/blob/master/src/index.js)

@@ -65,3 +65,5 @@ This varies depending on specific cloud service provider and project setup. Some
 * [What `ubuntu-latest` supports](https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md)
 * [YAML syntax (recc from GitHub)](https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes)
 * [Sample StackOverflow answer on Workflows vs Actions](https://stackoverflow.com/questions/63710029/github-action-error-top-level-runs-section-is-required/63710170#63710170)
+* [GitHub docs about markdown](https://guides.github.com/features/mastering-markdown/)
+    - [GitHub markdown supported languages](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml)

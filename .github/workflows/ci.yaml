@@ -1,0 +1,64 @@
+name: CI
+
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+# Specify defaults for all jobs' `run` blocks.
+# See:
+#   https://github.community/t/use-working-directory-for-entire-job/16747/9
+#   https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_iddefaultsrun
+#   https://github.community/t/github-actions-configure-defaults-option/18438/3
+defaults:
+  run:
+    shell: bash
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Job 1. Handles everything related to the client/ folder
+  ci-verify-and-build-client:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Specify defaults for all runs/steps.
+    defaults:
+      run:
+        # Specify directory in which to run all subsequent steps/commands
+        #
+        # If using a monolith with `./client/` and `./server/` directories:
+        # working-directory: ./client
+        working-directory: ./
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout repository branch
+        uses: actions/checkout@v2
+
+      - name: Verify and Build - Client
+        uses: ./.github/workflows/actions/client
+
+
+  # Job 2. Handles everything related to the server/ folder
+  # ci-verify-and-build-server:
+  #   runs-on: ubuntu-latest
+
+  #   defaults:
+  #     run:
+  #       working-directory: ./server
+
+  #   steps:
+  #     - name: Checkout repository branch
+  #       uses: actions/checkout@v2
+
+  #     - name: Verify and Build - Server
+  #       uses: ./.github/workflows/actions/server

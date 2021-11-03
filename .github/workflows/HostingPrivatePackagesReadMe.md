@@ -37,11 +37,22 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
     //npm.pkg.github.com/:_authToken={GITHUB_AUTH_TOKEN}   // intentionally commented
     @myorg:registry=https://npm.pkg.github.com/  // mark GitHub's npm registry for your package (REQUIRES SCOPE!!)
     registry=https://registry.npmjs.org/  // keep the default npm registry
-    // if you want to make it private, you'll need to ensure no one outside your org can access the package via:
+    # if you want to make it private, you'll need to ensure no one outside your org can access the package using the below.
+    # Though, they will have to `npm/yarn login` to install it.
     always-auth=true
     ```
 
-3. Set your package.json to use the specified registry via [publishConfig](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#publishconfig) (because `.npmrc` [doesn't affect when you run `npm publish`](https://stackoverflow.com/questions/54074906/do-i-need-the-registry-defined-in-npmrc-file-when-i-have-the-publishconfig-defi)):
+    and this to your .yarnrc (if using Yarn):
+
+    ```npmrc
+    # .yarnrc picks up the private/scoped registry from .npmrc, but then it sets all packages to use it.
+    # This ensures Yarn installs all public packages from the normal registry rather than the private/scoped one.
+    registry "https://registry.yarnpkg.com"
+    ```
+
+    See: [Specify the registry via CLI](https://stackoverflow.com/questions/57633029/npm-how-to-specify-registry-to-publish-in-the-command-line/57633139#57633139).
+
+3. Set your package.json to use the specified registry via [publishConfig](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#publishconfig). This is necessary because `.npmrc` [doesn't affect when you run `npm publish`](https://stackoverflow.com/questions/54074906/do-i-need-the-registry-defined-in-npmrc-file-when-i-have-the-publishconfig-defi) (see: [GitHub npm issue](https://github.com/npm/npm/issues/5717#issuecomment-49549998)):
 
     ```jsonc
     "publishConfig": {
@@ -86,11 +97,9 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
             run: npm install
           - name: Build
             run: npm run build
-          - name: Add registry to .yarnrc
-            # Only if using Yarn and don't already have a .yarnrc
-            #   - ".npmrc doesn't affect .yarnrc": https://github.com/npm/npm/issues/5717#issuecomment-49549998
-            #   - "Publish to a private registry in the terminal/CD": https://stackoverflow.com/questions/57633029/npm-how-to-specify-registry-to-publish-in-the-command-line/57633139#57633139
-            run: echo '"@myorg:registry" "https://npm.pkg.github.com/"' > .yarnrc
+          # - name: Add registry to .yarnrc
+            # Only if using Yarn and don't already have a .yarnrc, add the registry in the CI.
+            # run: echo '"@myorg:registry" "https://npm.pkg.github.com/"' > .yarnrc
           - name: Set Package Version
             # Only required for option (2) so that you create a new semver version
             # Note: The `tag_name` will require `major`, `minor`, or `patch`

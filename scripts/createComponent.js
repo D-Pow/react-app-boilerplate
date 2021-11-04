@@ -44,7 +44,7 @@ function getClassComponentText(componentName, typescript) {
 
 function getFunctionalComponentText(componentName, typescript) {
     let functionDefinitionStr =
-`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''} = {}) {
+`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''}) {
     return (
         <>
             {props.children}

@@ -52,7 +52,7 @@ function ResourceViewer({
     includeNestedEmbedTag = false,
     objectRef,
     ...props
-} = {}) {
+}) {
     if (!src || !altLinkText) {
         return null;
     }

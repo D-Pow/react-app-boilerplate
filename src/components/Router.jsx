@@ -72,7 +72,7 @@ function Router({
         fallback: (<SpinnerCircle show={true} />),
     },
     children,
-} = {}) {
+}) {
     return (
         <React.Suspense {...suspenseProps}>
             <div {...wrapperProps}>

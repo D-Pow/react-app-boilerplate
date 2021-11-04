@@ -4,7 +4,7 @@ interface AboutProps {
     className?: string;
 }
 
-function About(props: AboutProps = {}) {
+function About(props: AboutProps) {
     return (
         <>
             <div className={props.className}>About</div>

@@ -13,7 +13,7 @@ function Image({
     updateAppContext = true,
     onLoad = () => {},
     aria = {},
-} = {}) {
+}) {
     const [ imageSrc, setImageSrc ] = useState('');
     const { setContextState } = useContext(AppContext.Context);
 

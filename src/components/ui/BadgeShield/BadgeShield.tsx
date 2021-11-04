@@ -1,6 +1,8 @@
 import { LINKS } from '@/utils/Constants';
 import Image from '@/components/ui/Image';
 
+import type { InferProps } from '@/utils/Types';
+
 
 function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor: string) {
     const urlPathnameParams = [ leftText, rightText, rightColor ]
@@ -12,11 +14,16 @@ function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor:
 }
 
 
+// Segment type declarations for better IDE quick-documentation
+type ImagePropTypesInitial = InferProps<typeof Image.propTypes>;
+type ImagePropTypes = Omit<ImagePropTypesInitial, 'src' | 'className' | 'updateAppContext'>
+
 interface BadgeShieldProps {
     label: string;
     message: string;
     color: string;
     className?: string;
+    imageProps?: Partial<ImagePropTypes>;
 }
 
 function BadgeShield({
@@ -24,6 +31,7 @@ function BadgeShield({
     message = '',
     color = '',
     className = '',
+    imageProps = {},
 }: BadgeShieldProps) {
     if (!label || !message || !color) {
         return null;
@@ -34,9 +42,10 @@ function BadgeShield({
     return (
         <>
             <Image
+                alt={`shield-${label}-${message}`}
+                {...imageProps} // Only allow `alt` to be overridden
                 className={className}
                 src={badgeShieldImageUrl}
-                alt={`${label}-${message}`}
             />
         </>
     );

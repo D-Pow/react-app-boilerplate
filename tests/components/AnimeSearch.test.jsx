@@ -40,7 +40,7 @@ describe('<AnimeSearch/>', () => {
 
     it('should search for anime by search-button click', async () => {
         const animeSearchComponent = await testAnimeSearchWorksForNaruto(
-            rootComponent => fireEvent.click(rootComponent.getByText('Search'))
+            rootComponent => fireEvent.click(rootComponent.getByText('Search')),
         );
 
         // Two ways to get the `innerText` of a rendered element.

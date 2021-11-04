@@ -15,6 +15,7 @@ function getPropTypesText(indentForClassStaticVar, typescript) {
 
     return (
 `propTypes = {
+${extraIndent}    className: PropTypes.string,
 ${extraIndent}    children: PropTypes.node,
 ${extraIndent}};`
     );
@@ -34,7 +35,7 @@ function getClassComponentText(componentName, typescript) {
     render() {
         return (
             <>
-                {this.props.children}
+                <div className={this.props.className}>{this.props.children}</div>
             </>
         );
     }
@@ -47,7 +48,7 @@ function getFunctionalComponentText(componentName, typescript) {
 `function ${componentName}(props${typescript ? `: ${componentName}Props` : ''}) {
     return (
         <>
-            {props.children}
+            <div className={className}>{children}</div>
         </>
     );
 }`;

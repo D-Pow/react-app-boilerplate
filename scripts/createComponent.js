@@ -45,7 +45,10 @@ function getClassComponentText(componentName, typescript) {
 
 function getFunctionalComponentText(componentName, typescript) {
     let functionDefinitionStr =
-`function ${componentName}(props${typescript ? `: ${componentName}Props` : ''}) {
+`function ${componentName}({
+    className = '',
+    children,
+}${typescript ? `: ${componentName}Props` : ''}) {
     return (
         <>
             <div className={className}>{children}</div>

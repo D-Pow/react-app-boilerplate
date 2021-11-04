@@ -3,9 +3,9 @@
         + `.[tj]sx --> 'jsdom'`
         + `.[tj]s --> 'node'`
 * [Webpack tree shaking](https://webpack.js.org/guides/tree-shaking/)
-* `BrowserRouter` vs `HashRouter`
-    - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
-    - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)
+* How to make your React app importable from an `npm install`.
+    - Also would likely want to convert TypeScript interfaces/types to PropTypes.
+        + [Possible starting place](https://stackoverflow.com/questions/54060057/generating-proptypes-for-react-components-written-in-typescript/54329083#54329083).
 * ESM in browser.
     - Maybe mark all in `src/` as [externals](https://webpack.js.org/configuration/externals/)?
     - They'd probably still at least need Babel transpilation
@@ -23,6 +23,9 @@
 * Improve output website SEO/usability on different sites.
     - Duplicate/add useful `<meta>` tags in `HtmlWebpackPlugin` for [OpenGraph](https://www.freecodecamp.org/news/what-is-open-graph-and-how-can-i-use-it-for-my-website/) (how preview images/text appear when embedded in social media, Slack, etc.).
     - Site-map for which pages/routes exist on a website (helps for SEO). One possibly helpful package is [next-sitemap](https://www.npmjs.com/package/next-sitemap) in a `postbuild` npm script.
+* `BrowserRouter` vs `HashRouter`
+    - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
+    - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)
 * Change AlterFilePostBuild to match [InterpolateHtmlPlugin](https://github.com/egoist/interpolate-html-plugin)
     - It's possible fs read/write isn't even necessary and maybe webpack does that part automatically
     - Another option other than InterpolateHtmlPlugin: [serviceworker-webpack-plugin](https://github.com/oliviertassinari/serviceworker-webpack-plugin/blob/master/src/index.js)

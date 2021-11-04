@@ -12,7 +12,7 @@
  *
  * @see [TC39 proposal docs]{@link https://github.com/tc39/proposal-decorators#2-calling-decorators}
  */
-interface DecoratorDescriptor {
+export interface DecoratorDescriptorNew {
     kind: 'class' | 'method' | 'field';
     key: string;
     placement: 'static' | 'prototype' | 'own';
@@ -26,13 +26,13 @@ interface DecoratorDescriptor {
      * Only for `kind: class`, this gives descriptors for every property a
      * class might have, regardless of static, prototype, or own.
      */
-    elements?: DecoratorDescriptor[];
+    elements?: DecoratorDescriptorNew[];
 }
 
 /**
  * Decorator function API described in the [tc39-proposal]{@link https://github.com/tc39/proposal-decorators}.
  */
-type DecoratorFunctionNew = (decoratorDescriptor: DecoratorDescriptor) => any;
+export type DecoratorFunctionNew = (decoratorDescriptor: DecoratorDescriptorNew) => any;
 
 
 /**
@@ -41,7 +41,7 @@ type DecoratorFunctionNew = (decoratorDescriptor: DecoratorDescriptor) => any;
  *
  * @see [TypeScript decorator docs]{@link https://www.typescriptlang.org/docs/handbook/decorators.html}
  */
-type DecoratorFunctionLegacy = (
+export type DecoratorFunctionLegacy = (
     /**
      * Class (constructor) or class instance that is/owns the property being decorated.
      * Note: Class instances won't have instance variables/arrow functions due to `constructor()` not being called, yet.
@@ -63,7 +63,7 @@ export type Decorator = (DecoratorFunctionNew | DecoratorFunctionLegacy);
 /**
  * Generic type-definition of a non-arg decorator.
  */
-export function decoratorWithoutArgs(...params: Parameters<Decorator>) {
+function decoratorWithoutArgs(...params: Parameters<Decorator>) {
     logArgs({
         target: params[0],
         propertyName: params[1],
@@ -74,7 +74,7 @@ export function decoratorWithoutArgs(...params: Parameters<Decorator>) {
 /**
  * Generic type-definition of an arg-dependent decorator.
  */
-export function decoratorWithArgs(...decoratorArgs: any[]) {
+function decoratorWithArgs(...decoratorArgs: any[]) {
     function actualDecorator(...params: Parameters<Decorator>) {
         logArgs({
             decoratorArgs,

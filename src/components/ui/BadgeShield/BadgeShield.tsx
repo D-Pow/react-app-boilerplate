@@ -18,7 +18,7 @@ function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor:
 type ImagePropTypesInitial = InferProps<typeof Image.propTypes>;
 type ImagePropTypes = Omit<ImagePropTypesInitial, 'src' | 'className' | 'updateAppContext'>
 
-interface BadgeShieldProps {
+export interface BadgeShieldProps {
     label: string;
     message: string;
     color: string;

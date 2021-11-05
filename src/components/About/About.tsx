@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface AboutProps {
+export interface AboutProps {
     className?: string;
 }
 

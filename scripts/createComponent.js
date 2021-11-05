@@ -71,7 +71,7 @@ function getComponentText(componentName, { functionalComponent = false, typescri
 
     if (typescript) {
         propTypesImport =
-`\ninterface ${componentName}Props {
+`\nexport interface ${componentName}Props {
     className?: string;
     children?: React.ReactNode;
 }`;

@@ -91,7 +91,7 @@ export async function doXhr(url, {
             ? {
                 // Adds a new field for easier parsing of XHR `headers`
                 headers: {
-                    configurable: false,
+                    configurable: true,
                     enumerable: true,
                     get() {
                         return xhr.getAllResponseHeaders()

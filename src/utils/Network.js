@@ -140,3 +140,4 @@ export async function doXhr(url, {
 
     return await responsePromise;
 }
+doXhr.HttpMethods = HttpMethods;

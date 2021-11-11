@@ -1,4 +1,21 @@
-import React, { useState } from 'react';
+import { createContext, useState, useCallback, memo } from 'react';
+
+import type { Nullable } from '@/utils/Types';
+
+// Override `React.Context` interface to add `Context` field
+export interface Context<T> {
+    Context: Context<T>;
+}
+
+interface ContextFactoryOptions<ContextState> {
+    defaultStateValue?: Nullable<ContextState>;
+    displayName?: string;
+}
+
+export interface ContextValue<ContextState> {
+    contextState: ContextState;
+    setContextState: Function;
+}
 
 /**
  * Creates a new Context and returns the Consumer, Provider, and Context for component use.
@@ -84,39 +101,58 @@ import React, { useState } from 'react';
  *         mySecondContextStateKey: 'something'
  *     }); // preserves value of `myFirstContextStateKey`
  *
- * @param {*} defaultValue - Default value for the context
- * @param {string} displayName - Optional display name for the context
+ * @param {Object} [options]
+ * @param {any} [options.defaultStateValue] - Default value for the context state
+ * @param {string} [options.displayName] - Optional display name for the context
  * @returns {{Consumer: React.Component, Provider: React.Component, Context: Object }} - The newly-created Context-related objects
  */
-export default function ContextFactory(defaultValue = null, displayName = '') {
-    const Context = React.createContext();
+export default function ContextFactory<ContextState>({
+    defaultStateValue = null,
+    displayName = '' ,
+}: ContextFactoryOptions<ContextState> = {}) {
+    type ContextProviderValue = ContextValue<ContextState>;
 
-    if (displayName && (typeof displayName === typeof '')) {
-        Context.displayName = displayName;
-    }
+    const defaultContextValue: ContextProviderValue = {
+        // @ts-ignore - Possible for default value to be undefined by the parent
+        contextState: defaultStateValue,
+        setContextState: () => {},
+    };
 
-    const Provider = props => {
-        const [ contextState, hookSetContextState ] = useState(defaultValue);
+    // const Context = createContext<typeof defaultContextValue['contextState']>(defaultStateValue);
+    const Context = createContext<ContextProviderValue>(defaultContextValue);
+    Context.displayName = displayName;
 
-        const setContextState = args => {
+    const Provider = (props: any) => {
+        const [ contextState, setHookStateForContext ] = useState<
+            ContextFactoryOptions<ContextState>['defaultStateValue']
+        >(defaultStateValue);
+
+        const setContextState = useCallback((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
                 // so setState can be called directly.
-                hookSetContextState(args);
+                setHookStateForContext(args);
             } else if (typeof args === typeof {}) {
-                // State is an object, user expects to use standard 'this.setState` API with an individual key/val.
-                // Preserve previous state and set new state key/val.
-                hookSetContextState(prevState => ({
+                // State is an object. Make the `setState` API simple like `this.setState` in class components where
+                // they can set the state with an individual key/val.
+                // To do so in hooks, use a function to preserve previous state and overwrite old values with new ones.
+                setHookStateForContext(prevState => ({
                     ...prevState,
                     ...args,
                 }));
             }
-        };
+        }, []);
 
         return (
-            <Context.Provider value={{ contextState, setContextState }} {...props} />
+            <Context.Provider {...props} value={{ contextState, setContextState }} />
         );
     };
 
-    return { Consumer: Context.Consumer, Provider, Context };
+    const memoizedProvider = memo(Provider);
+
+    return {
+        Provider: memoizedProvider,
+        Consumer: Context.Consumer,
+        Context,
+    };
 }

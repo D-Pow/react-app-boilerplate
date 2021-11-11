@@ -108,7 +108,7 @@ export interface ContextValue<ContextState> {
  */
 export default function ContextFactory<ContextState>({
     defaultStateValue = null,
-    displayName = '' ,
+    displayName = '',
 }: ContextFactoryOptions<ContextState> = {}) {
     type ContextProviderValue = ContextValue<ContextState>;
 

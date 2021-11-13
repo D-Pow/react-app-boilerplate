@@ -40,7 +40,7 @@ export type Optional<T> = T | undefined;
  * - If `T` is left out, then the type it was remains.
  * - The specified `T` type.
  */
-type PartialDeep<O, T = never> = {
+export type PartialDeep<O, T = never> = {
     // `?:` makes the key optional
     [K in keyof O]?: O[K] extends Record<string, any>
         ? PartialDeep<O[K]>
@@ -104,7 +104,7 @@ export type ModifyIntersection<T, NT> = Omit<T, keyof NT> & NT;
  * interface ModifiedType extends Modify<OrigType, { b: { d: string, e: number } }> {}
  * type ResultingModifiedType = { a: string, b: { c: number, d: string, e: number }}
  */
-type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O1 | any, any>> = {
+export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O1 | any, any>> = {
     [K in keyof O1]: O2[K] extends never
         ? O1[K]
         : O2[K] extends Record<string, any>

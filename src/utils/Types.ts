@@ -33,6 +33,23 @@ export type Nullable<T> = T | null | undefined;
 export type Optional<T> = T | undefined;
 
 /**
+ * Companion to built-in `Partial` except that it makes each nested property optional
+ * as well.
+ *
+ * Each non-object/leaf value will be either:
+ * - If `T` is left out, then the type it was remains.
+ * - The specified `T` type.
+ */
+type PartialDeep<O, T = never> = {
+    // `?:` makes the key optional
+    [K in keyof O]?: O[K] extends Record<string, any>
+        ? PartialDeep<O[K]>
+        : T extends never
+            ? O[K]
+            : T
+}
+
+/**
  * Companion to built-in `keyof` except for getting all value types of an Object
  * instead of keys.
  *

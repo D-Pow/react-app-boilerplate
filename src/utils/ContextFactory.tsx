@@ -1,132 +1,165 @@
-import { createContext, useState, useCallback, memo } from 'react';
+import {
+    createContext,
+    useCallback,
+    useState,
+    useMemo,
+} from 'react';
 
-import type { Nullable } from '@/utils/Types';
+import type {
+    ReactElement,
+    ComponentType,
+    PropsWithChildren,
+    Context as ReactContext,
+    Provider as ReactProvider,
+} from 'react';
 
-// Override `React.Context` interface to add `Context` field
-export interface Context<T> {
-    Context: Context<T>;
+import type { Nullable, PartialDeep } from '@/utils/Types';
+
+// `Context.Provider` with `value` already populated
+type ProviderWithPopulatedValue<ContextState> = Omit<ReactProvider<ContextState>, 'value' | 'propTypes' | '$$typeof'>;
+// `Context.Provider` with optional object keys
+type ProviderWithOptionalEntries<ContextState> = PartialDeep<ReactProvider<ContextState>>;
+// `Context.Provider` as a React component (regardless of class or functional component)
+type ProviderAsComponent<ContextState> = ComponentType<ProviderWithPopulatedValue<ContextState>>;
+// `Context.Provider` combining all the above with the required essentials for `<MyContext.Provider>` and `useContext(MyContext)`
+type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithOptionalEntries<ContextState>)
+    & {
+        (props?: object): (ReactElement|null);
+        $$typeof: symbol;
+    };
+
+// Overwrite `Context` to accept `Provider` as a React component.
+// Cannot redeclare `Context` from import b/c we have to change its interfaceit won't take effect throughout the app.
+interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provider'> {
+    Provider: Provider<ContextState>;
 }
 
-interface ContextFactoryOptions<ContextState> {
+
+export interface ContextFactoryOptions<ContextState> {
     defaultStateValue?: Nullable<ContextState>;
     displayName?: string;
 }
 
 export interface ContextValue<ContextState> {
-    contextState: ContextState;
+    contextState: Nullable<ContextState>;
     setContextState: Function;
 }
 
 /**
- * Creates a new Context and returns the Consumer, Provider, and Context for component use.
- * A new Context is created each time this function is called so it may be helpful to call outside
- * your component declaration depending on your use case.
+ * Creates a new Context with the respective Consumer and Provider for component use.
+ * A new Context is created each time this function is called so call it outside your
+ * component block.
  *
- * The context created passes both a `contextState` field and `setContextState` function to the
- * created `Provider.props.value` so that consuming components can update the context's state.
+ * The context value creats an object containing both a `contextState` field and `setContextState()`
+ * function so the consuming components can read and update the context's state and so that
+ * `Provider.props.value` is already pre-populated for easier usage.
  *
  * Usage:
  *
- * 1. First, create the context with `ContextFactory(defaultStateValueToStart)`.
- *     @example
- *     const { Consumer, Provider, Context } = ContextFactory({ firstColor: 'blue', secondColor: 'red' });
+ * - Create the context with `ContextFactory(initialStateValueToStart, 'CustomContextDisplayName')`.
+ * - Wrap your component(s) in the returned Provider. The Provider already has a memoized `state`/`setState` object as a value.
+ * - Access the Context using the standard React Context API access methods.
+ * - Use the `setContextState()` function as you would a class component's `setState()` function.
+ *   This means you can set individual state keys without erasing other keys, e.g. `setContextState({ certainKey: newVal })`,
+ *   or `setContextState(prevState => ...)`:
  *
- * 2. In a parent, nest your component that uses the context inside the Provider.
- *    @example
- *    <Provider>
- *        <MyComponent />
- *    </Provider>
+ * @example <caption>Create the context with initial state and display name</caption>
+ * const MyContext = ContextFactory(
+ *     { firstColor: 'blue', secondColor: 'red' },
+ *     'MyContext'
+ * );
  *
- * 3. Access the Context based on standard React Context API access methods.
- *      a. Class components - either:
- *          i. Set the returned `MyContext.Context` to the static `contextType` field.
- *             @example
- *             class MyComponent {
- *                 static contextType = MyContext.Context;
+ * export default function App() {
+ *     return (
+ *         <MyContext.Provider>
+ *             <MyComponent />
+ *         </MyContext.Provider>
+ *     );
+ * }
  *
- *                 render() {
- *                     const { contextState, setContextState } = this.context;
+ * @example <caption>Set the context to the static `contextType` field.</caption>
+ * class MyComponent {
+ *     static contextType = MyContext;
  *
- *                     return (
- *                         <MyChild color={contextState.firstColor} />
- *                         <MyChild color={contextState.secondColor} />
- *                         <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
- *                             Click to change context!
- *                         </button>
- *                     );
- *                 }
- *             }
+ *     render() {
+ *         const { contextState, setContextState } = this.context;
  *
- *          ii. As described in the {@link https://reactjs.org/docs/context.html#consuming-multiple-contexts React docs},
- *              using multiple contexts in class components requires using functions in the render function, which
- *              would be better off separating into an intermediate component.
- *              If you must use multiple contexts within the render function, then do the following:
- *              @example
- *              <FirstContext.Consumer>
- *                  {({ contextState: firstContextState, setContextState: setFistContextState }) => (
- *                      <SecondContext.Consumer>
- *                          {({ contextState: secondContextState, setContextState: setSecondContextState }) => (
- *                              <MyChild firstColor={firstContextState.color} secondColor={secondContextState.color} />
- *                          )}
- *                      </SecondContext.Consumer>
- *                  )}
- *              </FirstContext.Consumer>
+ *         return (
+ *             <MyChild color={contextState.firstColor} />
+ *             <MyChild color={contextState.secondColor} />
+ *             <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
+ *                 Click to change context!
+ *             </button>
+ *         );
+ *     }
+ * }
  *
- *     b. Functional components: use the returned `Context` object inside a `useContext()` call.
- *        @example
- *        function MyComponent() {
- *            const { contextState, setContextState } = useContext(MyContext.Context);
+ * @example <caption>Use >= 1 contexts through [inline functions]{@link https://reactjs.org/docs/context.html#consuming-multiple-contexts}.</caption>
+ * <FirstContext.Consumer>
+ *     {({ contextState: firstContextState, setContextState: setFistContextState }) => (
+ *         <SecondContext.Consumer>
+ *             {({ contextState: secondContextState, setContextState: setSecondContextState }) => (
+ *                 <MyChild firstColor={firstContextState.color} secondColor={secondContextState.color} />
+ *             )}
+ *         </SecondContext.Consumer>
+ *     )}
+ * </FirstContext.Consumer>
  *
- *            return (
- *                <div>
- *                    <MyChild color={contextState.firstColor} />
- *                    <MyChild color={contextState.secondColor} />
- *                    <button onClick={() => setContextState({ firstColor: 'red', secondColor: 'blue'})}>
- *                        Click to change context!
- *                    </button>
- *                </div>
- *            );
- *        }
+ * @example <caption>Use `useContext()` in functional components.</caption>
+ * function MyComponent() {
+ *     const { contextState, setContextState } = useContext(MyContext);
  *
- * 4. Use the returned `Context.setContextState()` function as you would any other `setState()` method,
- *    including class component individual keys `setContextState({ certainKey: newVal })`
- *    or `setContextState(prevState => ...)`:
- *     @example
- *     this.context.setContextState(prevState => ({
- *         ...prevState,
- *         myFirstContextStateKey: prevState.myFirstContextStateKey + 1
- *     }));
- *     // or
- *     this.context.setContextState({
- *         mySecondContextStateKey: 'something'
- *     }); // preserves value of `myFirstContextStateKey`
+ *     return (
+ *         <div>
+ *             <MyChild color={contextState.firstColor} />
+ *             <MyChild color={contextState.secondColor} />
+ *             <button onClick={() => setContextState({ secondColor: 'green' })}>
+ *                 Click to change context!
+ *             </button>
+ *         </div>
+ *     );
+ * }
+ *
+ * @example <caption>Use `setContextState()` as you would in class components even if in a functional component.</caption>
+ * // Change only one key, keeping the other keys as-is (assuming state is an object).
+ * this.context.setContextState({
+ *     someStateKey: 'something'
+ * });
+ * // Or use a function - Requires spreading `prevState` if it's an object.
+ * this.context.setContextState(prevState => ({
+ *     ...prevState,
+ *     someStateKey: prevState.someStateKey + 1
+ * }));
  *
  * @param {Object} [options]
- * @param {any} [options.defaultStateValue] - Default value for the context state
- * @param {string} [options.displayName] - Optional display name for the context
- * @returns {{Consumer: React.Component, Provider: React.Component, Context: Object }} - The newly-created Context-related objects
+ * @param {any} [options.defaultStateValue] - Default/initial value for the context state.
+ * @param {string} [options.displayName] - Display name for the context.
+ * @returns {Context} - The newly-created Context with a Provider prefilled with a memoized state/setState value.
  */
 export default function ContextFactory<ContextState>({
     defaultStateValue = null,
     displayName = '',
-}: ContextFactoryOptions<ContextState> = {}) {
-    type ContextProviderValue = ContextValue<ContextState>;
-
-    const defaultContextValue: ContextProviderValue = {
-        // @ts-ignore - Possible for default value to be undefined by the parent
+}: ContextFactoryOptions<ContextState> = {}): Context<ContextValue<ContextState>> {
+    const defaultContextValue: ContextValue<ContextState> = {
         contextState: defaultStateValue,
         setContextState: () => {},
     };
 
-    // const Context = createContext<typeof defaultContextValue['contextState']>(defaultStateValue);
-    const Context = createContext<ContextProviderValue>(defaultContextValue);
-    Context.displayName = displayName;
+    const Context = createContext<ContextValue<ContextState>>(defaultContextValue);
 
-    const Provider = (props: any) => {
+    if (displayName) {
+        Context.displayName = displayName;
+    }
+
+    const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>
+    ;
+
+    function ProviderWithState(props: PropsWithChildren<any>) {
         const [ contextState, setHookStateForContext ] = useState<
             ContextFactoryOptions<ContextState>['defaultStateValue']
         >(defaultStateValue);
 
+        // Don't ever change the value of `setContextState()`
         const setContextState = useCallback((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
@@ -143,16 +176,27 @@ export default function ContextFactory<ContextState>({
             }
         }, []);
 
+        /*
+         * Memoize the Provider's `value` object so a new object isn't created on every re-render
+         * See:
+         * - https://stackoverflow.com/questions/62230532/is-usememo-required-to-manage-state-via-the-context-api-in-reactjs
+         * - https://blog.agney.dev/useMemo-inside-context/
+         */
+        const memoizedValue = useMemo<ContextValue<ContextState>>(() => ({
+            contextState,
+            setContextState,
+        }), [ contextState, setContextState ]);
+
         return (
-            <Context.Provider {...props} value={{ contextState, setContextState }} />
+            <ProviderWithoutState {...props} value={memoizedValue} />
         );
-    };
+    }
 
-    const memoizedProvider = memo(Provider);
+    ProviderWithState.displayName = `${displayName}Provider`;
+    ProviderWithState['$$typeof'] = ProviderWithoutState['$$typeof'];
 
-    return {
-        Provider: memoizedProvider,
-        Consumer: Context.Consumer,
-        Context,
-    };
+    Context.Provider = ProviderWithState as Provider<ContextState>;
+
+    // @ts-ignore - Allow overriding of native `Context` with better/enhanced/memoized Provider
+    return Context;
 }

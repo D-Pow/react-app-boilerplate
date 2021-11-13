@@ -23,14 +23,14 @@ import type { InferProps as PropTypesInferProps } from 'prop-types';
 export * from '@/utils/Decorators';
 
 /**
- * Opposite of built-in `NonNullable`.
- */
-export type Nullable<T> = T | null | undefined;
-
-/**
  * Same as Nullable except without `null`.
  */
 export type Optional<T> = T | undefined;
+
+/**
+ * Opposite of built-in `NonNullable`.
+ */
+export type Nullable<T> = Optional<T> | null;
 
 /**
  * Companion to built-in `Partial` except that it makes each nested property optional
@@ -43,10 +43,10 @@ export type Optional<T> = T | undefined;
 export type PartialDeep<O, T = never> = {
     // `?:` makes the key optional. Record<string, any> == Object
     [K in keyof O]?: O[K] extends Record<string, any>
-        ? PartialDeep<O[K]>
+        ? Nullable<PartialDeep<O[K]>>
         : T extends never
-            ? O[K]
-            : T
+            ? Nullable<O[K]>
+            : Nullable<T>
 }
 
 /**

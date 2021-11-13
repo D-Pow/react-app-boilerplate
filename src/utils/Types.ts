@@ -66,6 +66,55 @@ export type OmitValues<O, V> = {
 };
 
 /**
+ * Overwrites a type or interface, `T`, with all the keys/values from the type or
+ * interface, `NT`, resulting in the intersection of the two objects.
+ *
+ * @example Change field types.
+ * interface OrigType { a: object, b: string };
+ * interface ModifiedType extends Modify<OrigType, { b: boolean }> {}
+ * type ResultingModifiedType = { a: object, b: boolean }
+ * @example Add new fields.
+ * interface OrigType { a: object, b: string };
+ * interface ModifiedType extends Modify<OrigType, { c: boolean }> {}
+ * type ResultingModifiedType = { a: object, b: string, c: boolean }
+ * @example Modify nested fields (deletes unspecified keys).
+ * type OrigType = { a: string, b: { c: number } };
+ * interface ModifiedType extends Modify<OrigType, { b: { d: string, e: number } }> {}
+ * type ResultingModifiedType = { a: string, b: { d: string, e: number }}
+ */
+export type ModifyIntersection<T, NT> = Omit<T, keyof NT> & NT;
+
+/**
+ * Joins the keys/values from the type/interface, `O1`, with all the keys/values from
+ * the type/interface, `O2`, resulting in the union of the two objects.
+ *
+ * Companion to `ModifyIntersection` except that any unspecified keys in
+ * `O2` don't result in losing the keys/values from `O1`.
+ *
+ * @example Change field types.
+ * interface OrigType { a: object, b: string };
+ * interface ModifiedType extends Modify<OrigType, { b: boolean }> {}
+ * type ResultingModifiedType = { a: object, b: boolean }
+ * @example Add new fields.
+ * interface OrigType { a: object, b: string };
+ * interface ModifiedType extends Modify<OrigType, { c: boolean }> {}
+ * type ResultingModifiedType = { a: object, b: string, c: boolean }
+ * @example Modify nested fields (keeps unspecified keys).
+ * type OrigType = { a: string, b: { c: number } };
+ * interface ModifiedType extends Modify<OrigType, { b: { d: string, e: number } }> {}
+ * type ResultingModifiedType = { a: string, b: { c: number, d: string, e: number }}
+ */
+type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O1 | any, any>> = {
+    [K in keyof O1]: O2[K] extends never
+        ? O1[K]
+        : O2[K] extends Record<string, any>
+            ? ModifyUnion<O1[K], O2[K]>
+            : O2[K]
+} & (
+    O1 extends Record<string, any> ? Omit<O2, keyof O1> : O1
+);
+
+/**
  * Infers the type of a variable, recursing through object keys/properties if necessary.
  *
  * Usually not needed, try `typeof` first.

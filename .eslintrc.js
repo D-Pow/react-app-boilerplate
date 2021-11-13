@@ -250,6 +250,7 @@ module.exports = {
             }),
             'newlines-between': 'always-and-inside-groups', // Force newlines between groups, allow them within groups
             warnOnUnassignedImports: true, // Warn if `import 'a'` is used before `import X from 'b'` but don't error in case `a` causes global changes (e.g. a polyfill)
+            pathGroupsExcludedImportTypes: [ 'builtin', 'external', 'type' ], // Don't apply `pathGroups` sorting to these types of imports; allows type-imports to be in any order (otherwise aliased are forced before `builtin`/`external`)
         }],
         // Ensure there is at least one newline between imports and file logic
         'import/newline-after-import': [ 'error', {

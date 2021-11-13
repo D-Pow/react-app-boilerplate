@@ -41,7 +41,7 @@ export type Optional<T> = T | undefined;
  * - The specified `T` type.
  */
 export type PartialDeep<O, T = never> = {
-    // `?:` makes the key optional
+    // `?:` makes the key optional. Record<string, any> == Object
     [K in keyof O]?: O[K] extends Record<string, any>
         ? PartialDeep<O[K]>
         : T extends never

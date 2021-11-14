@@ -8,6 +8,9 @@ const initialState = {
     [AppContextFields.REQUESTED]: 0,
     [AppContextFields.LOADED]: 0,
 };
-const AppContext = ContextFactory(initialState);
+const AppContext = ContextFactory({
+    defaultStateValue: initialState,
+    displayName: 'AppContext',
+});
 
 export default AppContext;

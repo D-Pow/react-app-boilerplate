@@ -12,7 +12,7 @@ import { isMicrosoftBrowser } from '@/utils/BrowserIdentification';
 const blockInternetExplorer = true;
 
 function App() {
-    const { contextState, setContextState } = useContext(AppContext.Context);
+    const { contextState, setContextState } = useContext(AppContext);
 
     if (blockInternetExplorer && isMicrosoftBrowser(false)) {
         return <IncompatibleBrowserFallback />;

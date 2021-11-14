@@ -15,7 +15,7 @@ function Image({
     aria = {},
 }) {
     const [ imageSrc, setImageSrc ] = useState('');
-    const { setContextState } = useContext(AppContext.Context);
+    const { setContextState } = useContext(AppContext);
 
     async function loadImageSrc() {
         let imgSrc = src;

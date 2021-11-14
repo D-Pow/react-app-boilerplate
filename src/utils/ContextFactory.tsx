@@ -151,8 +151,7 @@ export default function ContextFactory<ContextState>({
         Context.displayName = displayName;
     }
 
-    const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>
-    ;
+    const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>;
 
     function ProviderWithState(props: PropsWithChildren<any>) {
         const [ contextState, setHookStateForContext ] = useState<
@@ -192,7 +191,10 @@ export default function ContextFactory<ContextState>({
         );
     }
 
-    ProviderWithState.displayName = `${displayName}Provider`;
+    if (displayName) {
+        ProviderWithState.displayName = `${displayName}Provider`;
+    }
+
     ProviderWithState['$$typeof'] = ProviderWithoutState['$$typeof'];
 
     Context.Provider = ProviderWithState as Provider<ContextState>;

@@ -7,7 +7,7 @@ import { fireEvent } from '@testing-library/react';
 
 import ContextFactory, { ContextValue } from '@/utils/ContextFactory';
 
-import { renderWithWrappingParent, waitForElementVisible } from '/tests';
+import { renderWithWrappingParent, waitForElementVisible, waitForUpdate } from '/tests';
 
 
 interface MyAppContextState {
@@ -76,12 +76,21 @@ class ClassComponent extends Component<{}, {}> {
 
 
 describe('ContextFactory util', () => {
-    function getContextValueChanger(rootComponent: any) {
-        return rootComponent.getByRole('button');
+    function getContextValueChangers(rootComponent: any, multiple?: false): Element;
+    function getContextValueChangers(rootComponent: any, multiple?: true): Element[];
+    function getContextValueChangers(rootComponent: any, multiple: boolean = false) {
+        if (!multiple) {
+            return rootComponent.getByRole('button');
+        }
+
+        return rootComponent.getAllByRole('button');
     }
 
-    async function getContextValueElem(rootComponent: any): Promise<Node> {
-        return (await waitForElementVisible(rootComponent, '#context-value')) as Node;
+    // TODO Move these overloads to jest.setup.libs.tsx
+    async function getContextValueElems(rootComponent: any, multiple?: false): Promise<Node>;
+    async function getContextValueElems(rootComponent: any, multiple?: true): Promise<NodeList>;
+    async function getContextValueElems(rootComponent: any, multiple = false) {
+        return await waitForElementVisible(rootComponent, '#context-value', { all: multiple });
     }
 
     it('should create a React.Context with state/setState', async () => {
@@ -106,33 +115,81 @@ describe('ContextFactory util', () => {
             },
         );
 
-        const elemContainingContextValue = await getContextValueElem(rootWithFuncComp);
+        const elemContainingContextValue = await getContextValueElems(rootWithFuncComp);
 
         expect(elemContainingContextValue.textContent).toEqual(JSON.stringify(initialContextState));
 
         letters.split('').forEach((letter, i) => {
-            fireEvent.click(getContextValueChanger(rootWithFuncComp));
+            fireEvent.click(getContextValueChangers(rootWithFuncComp));
 
             expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, a: letters.slice(0, i+1) }));
         });
     });
 
     it('should work with class components via `static contextType`', async () => {
-        const rootWithFuncComp = renderWithWrappingParent(
+        const rootWithClassComp = renderWithWrappingParent(
             <ClassComponent />,
             {
                 wrapper: MyApp,
             },
         );
 
-        const elemContainingContextValue = await getContextValueElem(rootWithFuncComp);
+        const elemContainingContextValue = await getContextValueElems(rootWithClassComp);
 
         expect(elemContainingContextValue.textContent).toEqual(JSON.stringify(initialContextState));
 
         Array.from({ length: 5 }).forEach((nul, i) => {
-            fireEvent.click(getContextValueChanger(rootWithFuncComp));
+            fireEvent.click(getContextValueChangers(rootWithClassComp));
 
             expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, b: initialContextState.b + (i+1) }));
         });
+    });
+
+    it('should permeate state changes amongst multiple components', async () => {
+        const rootWithBothFuncAndClassComps = renderWithWrappingParent(
+            (
+                <>
+                    <FunctionalComponent />
+                    <ClassComponent />
+                </>
+            ),
+            {
+                wrapper: MyApp,
+            },
+        );
+
+        const elemsContainingContextValue = await getContextValueElems(rootWithBothFuncAndClassComps, true);
+        const elemsChangingContextValue = await getContextValueChangers(rootWithBothFuncAndClassComps, true);
+
+        elemsContainingContextValue.forEach(elem => {
+            expect(elem.textContent).toEqual(JSON.stringify(initialContextState));
+        });
+
+        /**
+         * Use for-loop instead of forEach to ensure sequential execution of context state updates, i.e.
+         * prevent running all tests via `Promise.all(letters.split('').map(async (letter, i) => { ...test }))` since
+         * that will run the beginning of each test immediately, so test-1's iteration results will be impacted by test-4's actions.
+         *
+         * Alternatively, to force await-ing them sequentially using the above logic:
+         * @example
+         * // `for await ()` forces mapped-promises to be run sequentially, but the empty block is less readable than for-loop
+         * const allActionPromises = myList.map(async (...) => {...});
+         * for await (const actionPromise of allActionPromises) {}
+         */
+        for (let i = 0; i < letters.length; i++) {
+            elemsChangingContextValue.forEach(elem => {
+                fireEvent.click(elem);
+            });
+
+            await waitForUpdate();
+
+            elemsContainingContextValue.forEach(elem => {
+                expect(elem.textContent).toEqual(JSON.stringify({
+                    ...initialContextState,
+                    a: letters.slice(0, i+1),
+                    b: initialContextState.b + (i+1),
+                }));
+            });
+        }
     });
 });

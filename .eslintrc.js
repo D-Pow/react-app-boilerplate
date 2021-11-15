@@ -300,6 +300,15 @@ module.exports = {
         {
             files: [ '*.ts?(x)' ],
             parser: '@typescript-eslint/parser',
+            rules: {
+                /**
+                 * Allow function overloads for different return types based on param instead of type
+                 *
+                 * @see [Function overload docs]{@link https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads}
+                 * @see [Conditional function return types]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html}
+                 */
+                'no-redeclare': 'off',
+            },
         },
         // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).
         // Add the NodeJS environment for autocompletion/allowing its defined variables.

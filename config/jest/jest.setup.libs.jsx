@@ -166,13 +166,13 @@ export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
  * @param {string} querySelectorString - Query selector for >= 1 element.
  * @param {Object} [options]
  * @param {boolean} [options.all=true] - If `querySelectorAll()` should be called instead of `querySelector()`.
- * @returns {Promise<(NodeList|null)>} - A Promise that resolves after the element(s) are visible, returning the element(s).
+ * @returns {Promise<(Node|NodeList|null)>} - A Promise that resolves after the element(s) are visible, returning the element(s).
  */
 export async function waitForElementVisible(
     component,
     querySelectorString,
     {
-        all = true,
+        all = false,
     } = {},
 ) {
     const container = component.container || component;

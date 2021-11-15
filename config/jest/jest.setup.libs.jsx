@@ -69,7 +69,9 @@ export function stripColorsFromString(str) {
 
 
 
-/** @typedef {import('react').ReactElement} ReactElement */
+/** @typedef {(import('react').ComponentType|import('react').ReactElement|import('react').ElementType|Element)} ComponentInstance */
+/** @typedef {(import('react').ComponentType|function: Element)} ComponentDeclaration */
+/** @typedef {(ComponentInstance|ComponentDeclaration)} ReactComponent */
 /** @typedef {import('@testing-library/react').RenderResult} RenderedComponent */
 /** @typedef {import('@testing-library/react').RenderOptions} RenderOptions */
 
@@ -78,9 +80,9 @@ export function stripColorsFromString(str) {
  * Renders your component with the specified parent wrapper.
  * Useful for testing components using context from a provider, ReactRouter, etc.
  *
- * @param {ReactElement} component - Component to wrap with a parent.
+ * @param {ComponentInstance} component - Component to wrap with a parent.
  * @param {RenderOptions} [options]
- * @param {ReactElement} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
+ * @param {ComponentDeclaration} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
  * @returns {RenderedComponent} - Rendered component with the provider as its parent.
  */
 export function renderWithWrappingParent(

@@ -302,12 +302,16 @@ module.exports = {
             parser: '@typescript-eslint/parser',
             rules: {
                 /**
-                 * Allow function overloads for different return types based on param instead of type
+                 * Allow function overloads for different return types based on param instead of type by ignoring
+                 * redeclared function signatures and their unused parameters.
                  *
                  * @see [Function overload docs]{@link https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads}
                  * @see [Conditional function return types]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html}
                  */
                 'no-redeclare': 'off',
+                'no-unused-vars': [ 'warn', {
+                    args: 'none',
+                }],
             },
         },
         // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).

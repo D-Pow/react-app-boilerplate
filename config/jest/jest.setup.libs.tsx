@@ -22,8 +22,6 @@ import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
 
 import type {
-    ComponentType,
-    ReactNode,
     ReactElement,
     PropsWithChildren,
 } from 'react';
@@ -35,11 +33,9 @@ import type {
     Fiber,
 } from 'react-reconciler';
 
-
-// TODO Convert ReactParsing.js to TypeScript and move these there
-export type ComponentInstance = ReactNode | Element;
-export type ComponentDeclaration = ComponentType | ((...args: unknown[]) => Element);
-export type ReactComponent = ComponentInstance | ComponentDeclaration;
+import type {
+    ComponentInstance,
+} from '@/utils/Types';
 
 
 // Prevent automatic redirection since tests will want to render their individual components without

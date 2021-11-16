@@ -29,7 +29,7 @@ type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithO
     };
 
 // Overwrite `Context` to accept `Provider` as a React component.
-// Cannot redeclare `Context` from import b/c we have to change its interfaceit won't take effect throughout the app.
+// Cannot redeclare `Context` from import b/c it won't take effect throughout the whole app.
 interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provider'> {
     Provider: Provider<ContextState>;
 }

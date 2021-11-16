@@ -19,13 +19,9 @@
  * @see [Getting type from another declared generic-type variable]{@link https://stackoverflow.com/questions/18215899/get-type-of-generic-parameter/62733441#62733441}
  * @see [Example `IF` conditional type]{@link https://stackoverflow.com/questions/65659576/how-to-define-a-conditional-return-type-based-on-if-an-object-property-is-set-in/65661015#65661015}
  * @see [`infer`]{@link https://stackoverflow.com/questions/60067100/why-is-the-infer-keyword-needed-in-typescript}
+ *
  * @file
  */
-
-import type { InferProps as PropTypesInferProps } from 'prop-types';
-
-
-export * from '@/utils/Decorators';
 
 
 /**
@@ -47,24 +43,6 @@ export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K
 
 
 /**
- * Companion to built-in `Partial` except that it makes each nested property optional
- * as well.
- *
- * Each non-object/leaf value will be either:
- * - If `T` is left out, then the type it was remains.
- * - The specified `T` type.
- */
-export type PartialDeep<O, T = never> = {
-    // `?:` makes the key optional. Record<string, any> == Object
-    [K in keyof O]?: O[K] extends Record<string, any>
-        ? Nullable<PartialDeep<O[K]>>
-        : T extends never
-            ? Nullable<O[K]>
-            : Nullable<T>
-};
-
-
-/**
  * Companion to built-in `keyof` except for getting all value types of an Object
  * instead of keys.
  *
@@ -79,6 +57,24 @@ export type ValueOf<O, K extends keyof O> = O[K];
  */
 export type OmitValues<O, V> = {
     [ K in keyof O ]: Exclude<ValueOf<O, K>, V>;
+};
+
+
+/**
+ * Companion to built-in `Partial` except that it makes each nested property optional
+ * as well.
+ *
+ * Each non-object/leaf value will be either:
+ * - If `T` is left out, then the type it was remains.
+ * - The specified `T` type.
+ */
+export type PartialDeep<O, T = never> = {
+    // `?:` makes the key optional. Record<string, any> == Object
+    [K in keyof O]?: O[K] extends Record<string, any>
+        ? Nullable<PartialDeep<O[K]>>
+        : T extends never
+            ? Nullable<O[K]>
+            : Nullable<T>
 };
 
 
@@ -144,19 +140,3 @@ export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O
 export type InferType<T> = T extends Object
     ? { [ K in keyof T ]: InferType<ValueOf<T, K>> }
     : T;
-
-
-/**
- * Extracts types of JSX component props defined using PropTypes.
- *
- * `PropTypes.InferProps` has a bug where they inject `null` as a possible type for
- * JSX `propTypes` (e.g. `type | null | undefined`) but non-required types can only
- * be `type | undefined`.
- *
- * This fixes the bug by stripping out the `null` values from the resulting
- * `PropTypes.InferProps` call.
- * Note: It must be done for each key-value pair separately so the pairing is maintained.
- *
- * @see [PropTypes.InferProps bug]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45094}
- */
-export type InferProps<O> = OmitValues<PropTypesInferProps<O>, null>;

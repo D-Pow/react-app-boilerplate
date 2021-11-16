@@ -21,11 +21,30 @@ import { render, act, waitFor, prettyDOM } from '@testing-library/react';
 import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
 
+import type {
+    ComponentType,
+    ReactNode,
+    ReactElement,
+    PropsWithChildren,
+} from 'react';
+import type {
+    RenderResult as RenderedComponent,
+    RenderOptions,
+} from '@testing-library/react';
+import type {
+    Fiber,
+} from 'react-reconciler';
+
+
+export type ComponentInstance = ReactNode | Element;
+export type ComponentDeclaration = ComponentType | ((...args: unknown[]) => Element);
+export type ReactComponent = ComponentInstance | ComponentDeclaration;
+
 
 // Prevent automatic redirection since tests will want to render their individual components without
 // also rendering components from redirects.
 // e.g. Prevent `/` from redirecting to `/home` so testing `<Home/>` doesn't render two Home components.
-const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
+export const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
     routeProps = { ...routeProps };
 
     if (routeProps.render?.toString().match(/\bRedirect[\s\S]*to[:=]\s*['"][^'"]+/)) {
@@ -35,7 +54,7 @@ const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
     return routeProps;
 });
 
-export function AppProviderWithRouter({ children }) {
+export function AppProviderWithRouter({ children }: PropsWithChildren<any>) {
     return (
         <>
             <AppContext.Provider>
@@ -60,39 +79,33 @@ export function AppProviderWithRouter({ children }) {
  *
  * TODO Move this to a util file.
  *
- * @param {string} str - String from which to remove colors.
- * @returns {string} - String with all unicode colors removed.
+ * @param str - String from which to remove colors.
+ * @returns String with all unicode colors removed.
  */
-export function stripColorsFromString(str) {
+export function stripColorsFromString(str: string): string {
     return str?.replace?.(/\u001b[^m]*?m/gu, '');
 }
 
 
 
-/** @typedef {(import('react').ComponentType|import('react').ReactElement|import('react').ElementType|Element)} ComponentInstance */
-/** @typedef {(import('react').ComponentType|function: Element)} ComponentDeclaration */
-/** @typedef {(ComponentInstance|ComponentDeclaration)} ReactComponent */
-/** @typedef {import('@testing-library/react').RenderResult} RenderedComponent */
-/** @typedef {import('@testing-library/react').RenderOptions} RenderOptions */
-
-
+export function renderWithWrappingParent(...args: Parameters<typeof render>): ReturnType<typeof render>;
 /**
  * Renders your component with the specified parent wrapper.
  * Useful for testing components using context from a provider, ReactRouter, etc.
  *
- * @param {ComponentInstance} component - Component to wrap with a parent.
- * @param {RenderOptions} [options]
- * @param {ComponentDeclaration} [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
- * @returns {RenderedComponent} - Rendered component with the provider as its parent.
+ * @param component - Component to wrap with a parent.
+ * @param [options]
+ * @param [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
+ * @returns - Rendered component with the provider as its parent.
  */
 export function renderWithWrappingParent(
-    component,
+    component: ComponentInstance,
     {
         wrapper = AppProviderWithRouter,
         ...renderOptions
-    } = {},
+    }: RenderOptions = {},
 ) {
-    return render(component, {
+    return render(component as ReactElement, {
         ...renderOptions,
         wrapper,
     });
@@ -106,7 +119,6 @@ export function renderWithWrappingParent(
  * promises that don't use real event timers. For those that do, you'll have to use
  * a combination of `jest.runAllTimers()` followed by this function.
  *
- * @returns {Promise<void>}
  * @see [Apollo docs on React testing]{@link https://www.apollographql.com/docs/react/development-testing/testing/#testing-the-success-state}
  */
 export async function waitForUpdate() {
@@ -135,12 +147,12 @@ export async function waitForUpdate() {
  * fireEvent.click(someButton);
  * expect(funcToGetElement()).toBeDefined();
  *
- * @param {function} funcToGetElement - The callback get-element function, e.g. `() => render(<Comp/>).getByText('Hello')`.
- * @param {Object} [options]
- * @param {boolean} [options.callNow=false] - If the return value should be the function (false, default) or if it should be called immediately and return the resulting Promise(true).
- * @returns {((function(): Promise<*>)|Promise<*>)} - An async function to fire the get-element check, or its resulting Promise.
+ * @param funcToGetElement - The callback get-element function, e.g. `() => render(<Comp/>).getByText('Hello')`.
+ * @param [options]
+ * @param [options.callNow] - If the return value should be the function (false, default) or if it should be called immediately and return the resulting Promise(true).
+ * @returns An async function to fire the get-element check, or its resulting Promise.
  */
-export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
+export function getElementMaybe(funcToGetElement: Function, { callNow = false } = {}): (() => Promise<any>) | Promise<any> {
     const getElementMaybeAsync = async () => {
         try {
             return await funcToGetElement();
@@ -154,7 +166,51 @@ export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
     return getElementMaybeAsync;
 }
 
-
+/**
+ * Re type check: Other attempts at checking the type of the defaulted `options` object, `O`, were made in the `O extends () ?` return
+ * type-check block, but none worked. Attempts include but aren't limited to:
+ * - Omit<O, 'all'>
+ * - { [K in keyof O]?: never }
+ * Nothing worked except defaulting it to either:
+ * - `never` or `Record<string, never>` AND including `null` in the check.
+ * - `Record<string, undefined>`
+ * Doing so forces the type of `O` to be of the specified type unless it's actually passed by the parent.
+ * However, it is always passed, so `undefined` has to be included in the check.
+ * Similarly, using `never` or `Record<string, never>` requires `never` to be in the check (as well as `Record` if that's used instead)
+ * since it's a helper type that doesn't actually exist in JS.
+ * Thus, simplify all of it by defaulting the value of `O` to `Record<string, undefined>`.
+ * See the note about `Record` in Types.ts for more details.
+ *
+ * Alternatively, we could split the declarations up into three separate declarations, but then the default value for the `options` object
+ * gets lost and the parent calling the function has to manually cast it to one of the types itself. Declarations are as follows:
+ * @example Split declarations.
+ * export async function waitForElementVisible(component: RenderedComponent, querySelectorString: string, options: { all: false }): Promise<Node>;
+ * export async function waitForElementVisible(component: RenderedComponent, querySelectorString: string, options: { all: true }): Promise<NodeList>;
+ * export async function waitForElementVisible(component: RenderedComponent, querySelectorString: string, options?: { all: boolean }): Promise<Node | NodeList | null>;
+ *
+ * In either case, the code is duplicated substantially. We should probably extract it to an interface, but this is still
+ * helpful for learning experience.
+ *
+ * @see [Overloading functions for different return values]{@link https://stackoverflow.com/questions/54165536/typescript-function-return-type-based-on-input-parameter/54165564}
+ * @see [Docs for overloading function]{@link https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads}
+ * @see [Overloading: 'boolean' isn't assignable to type 'false']{@link https://stackoverflow.com/questions/50932591/typescript-overloading-type-boolean-is-not-assignable-to-type-false/50932701#50932701}
+ * @see [Custom 'ReturnTypeWithArgs<FUNC,ARGS>' type util]{@link https://stackoverflow.com/questions/52760509/typescript-returntype-of-overloaded-function/60822641#60822641}
+ * @see [Generic type as field in another generic type (1)]{@link https://stackoverflow.com/questions/66586780/typescript-how-to-infer-the-type-of-one-generic-based-on-another-generic}
+ * @see [Generic type as field in another generic type (2)]{@link https://stackoverflow.com/questions/52856496/typescript-object-keys-return-string/52856805#52856805}
+ * @see [Extending functions]{@link https://stackoverflow.com/questions/42840466/is-it-possible-to-implement-a-function-interface-in-typescript}
+ */
+export async function waitForElementVisible<
+    T extends O['all'],
+    O extends (Partial<{ all: boolean }>) = Record<string, undefined>
+>(component: RenderedComponent, querySelectorString: string, options?: O): Promise<
+    null
+    |
+    O extends (Record<string, undefined>)
+        ? Node
+        : T extends true
+            ? NodeList
+            : Node
+>;
 /**
  * Waits for >= 1 elements as specified by the `querySelectorString` to be visible before proceeding with the test.
  * Essentially the opposite of `waitForElementToBeRemoved()`.
@@ -162,22 +218,21 @@ export function getElementMaybe(funcToGetElement, { callNow = false } = {}) {
  * Solves the issue that react-testing-library only allows searching by visible attributes and/or accessibility
  * attributes that screen readers parse. See more details in the [query priorities docs]{@link https://testing-library.com/docs/queries/about/#priority}.
  *
- * @param {RenderedComponent} component - Parent component/container from which to query for child elements.
- * @param {string} querySelectorString - Query selector for >= 1 element.
- * @param {Object} [options]
- * @param {boolean} [options.all=true] - If `querySelectorAll()` should be called instead of `querySelector()`.
- * @returns {Promise<(Node|NodeList|null)>} - A Promise that resolves after the element(s) are visible, returning the element(s).
+ * @param component - Parent component/container from which to query for child elements.
+ * @param querySelectorString - Query selector for >= 1 element.
+ * @param [options]
+ * @param [options.all] - If `querySelectorAll()` should be called instead of `querySelector()`.
+ * @returns A Promise that resolves after the element(s) are visible, returning the element(s).
  */
 export async function waitForElementVisible(
-    component,
-    querySelectorString,
+    component: RenderedComponent,
+    querySelectorString: string,
     {
         all = false,
     } = {},
-) {
+): Promise<Node | NodeList | null> {
     const container = component.container || component;
-    const querySelectorMethod = all ? 'querySelectorAll' : 'querySelector';
-    const queryForElements = () => container[querySelectorMethod](querySelectorString);
+    const queryForElements = () => all ? container.querySelectorAll(querySelectorString) : container.querySelector(querySelectorString);
 
     await waitFor(async () => {
         expect(queryForElements()).toBeDefined();
@@ -194,10 +249,10 @@ export async function waitForElementVisible(
  * so that this function can track the original/new URLs in order to ensure redirection
  * occurred.
  *
- * @param {(function|Promise<*>)} fireEventThatRedirects - Function containing `fireEvent` call that will trigger the redirect.
- * @returns {Promise<string>} - The URL after redirection.
+ * @param fireEventThatRedirects - Function containing `fireEvent` call that will trigger the redirect.
+ * @returns The URL after redirection.
  */
-export async function waitForRedirect(fireEventThatRedirects) {
+export async function waitForRedirect(fireEventThatRedirects: () => (any | Promise<any>)) {
     const currentUrl = location.href;
 
     await fireEventThatRedirects();
@@ -228,12 +283,17 @@ export async function waitForRedirect(fireEventThatRedirects) {
 /**
  * Gets the HTML element and its associated DOM string from a render.
  *
- * @param {RenderedComponent} component - Component from which to get the underlying HTML element.
- * @param {Object} [options]
- * @param {boolean} [options.fromParent=false] - If the HTML element/DOM string should be from the parent container of the component instead of the component itself.
- * @returns {{element: (Element|Document), html: string}} - The DOM element and its associated HTML string.
+ * @param component - Component from which to get the underlying HTML element.
+ * @param [options]
+ * @param [options.fromParent] - If the HTML element/DOM string should be from the parent container of the component instead of the component itself.
+ * @returns The DOM element and its associated HTML string.
  */
-export function getDomFromRender(component, { fromParent = false } = {}) {
+export function getDomFromRender(
+    component: RenderedComponent,
+    {
+        fromParent = false,
+    } = {},
+): { element: Element | Document, html: string } {
     const element = (
         fromParent
             ? (component?.baseElement ?? component?.container)
@@ -241,7 +301,7 @@ export function getDomFromRender(component, { fromParent = false } = {}) {
     ) ?? component;
     const isDomElement = !!(element?.addEventListener ?? null);
 
-    const html = stripColorsFromString(prettyDOM(element));
+    const html = stripColorsFromString(prettyDOM(element) || '');
     const domNode = isDomElement ? element : (new DOMParser()).parseFromString(html, 'text/html');
 
     return {
@@ -254,16 +314,16 @@ export function getDomFromRender(component, { fromParent = false } = {}) {
 /**
  * Gets the React FiberNode from a rendered component.
  *
- * @param {RenderedComponent} component - Component for which to extract the underlying FiberNode.
- * @returns {{ fiberNode: import('react-reconciler').Fiber, fiberNodeProps: Object}} - React's internal `FiberNode` created by the `render()` function and the components props.
+ * @param component - Component for which to extract the underlying FiberNode.
+ * @returns React's internal `FiberNode` created by the `render()` function and the components props.
  */
-export function getReactFiberNodeFromRender(component) {
-    const exposedComponentKeys = Object.keys(component);
+export function getReactFiberNodeFromRender(component: RenderedComponent): { fiberNode: Fiber | null, fiberNodeProps: object | null } {
+    const exposedComponentKeys = Object.keys(component) as Array<keyof RenderedComponent>;
     const reactFiberNodeKey = exposedComponentKeys.find(key => key.match(/^__reactFiber/));
     const reactPropsKey = exposedComponentKeys.find(key => key.match(/^__reactProps/));
 
     return {
-        fiberNode: component[reactFiberNodeKey],
-        fiberNodeProps: component[reactPropsKey],
+        fiberNode: reactFiberNodeKey != null ? component[reactFiberNodeKey] as unknown as Fiber : null,
+        fiberNodeProps: reactPropsKey != null ? component[reactPropsKey] : null,
     };
 }

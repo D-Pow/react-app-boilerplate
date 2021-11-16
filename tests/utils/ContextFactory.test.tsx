@@ -9,6 +9,10 @@ import ContextFactory, { ContextValue } from '@/utils/ContextFactory';
 
 import { renderWithWrappingParent, waitForElementVisible, waitForUpdate } from '/tests';
 
+import type {
+    RenderResult as RenderedComponent,
+} from '@testing-library/react';
+
 
 interface MyAppContextState {
     a: string;
@@ -76,9 +80,10 @@ class ClassComponent extends Component<{}, {}> {
 
 
 describe('ContextFactory util', () => {
-    function getContextValueChangers(rootComponent: any, multiple?: false): Element;
-    function getContextValueChangers(rootComponent: any, multiple?: true): Element[];
-    function getContextValueChangers(rootComponent: any, multiple: boolean = false) {
+    // Note: Marking `multiple?: false` makes it include `undefined`, thus making it the default signature.
+    function getContextValueChangers(rootComponent: RenderedComponent, multiple?: false): Element;
+    function getContextValueChangers(rootComponent: RenderedComponent, multiple: true): Element[];
+    function getContextValueChangers(rootComponent: RenderedComponent, multiple: boolean = false): Element | Element[] {
         if (!multiple) {
             return rootComponent.getByRole('button');
         }
@@ -86,10 +91,9 @@ describe('ContextFactory util', () => {
         return rootComponent.getAllByRole('button');
     }
 
-    // TODO Move these overloads to jest.setup.libs.tsx
-    async function getContextValueElems(rootComponent: any, multiple?: false): Promise<Node>;
-    async function getContextValueElems(rootComponent: any, multiple?: true): Promise<NodeList>;
-    async function getContextValueElems(rootComponent: any, multiple = false) {
+    async function getContextValueElems(rootComponent: RenderedComponent, multiple?: false): Promise<Node>;
+    async function getContextValueElems(rootComponent: RenderedComponent, multiple: true): Promise<NodeList>;
+    async function getContextValueElems(rootComponent: RenderedComponent, multiple: boolean = false) {
         return await waitForElementVisible(rootComponent, '#context-value', { all: multiple });
     }
 
@@ -159,9 +163,9 @@ describe('ContextFactory util', () => {
         );
 
         const elemsContainingContextValue = await getContextValueElems(rootWithBothFuncAndClassComps, true);
-        const elemsChangingContextValue = await getContextValueChangers(rootWithBothFuncAndClassComps, true);
+        const elemsChangingContextValue = getContextValueChangers(rootWithBothFuncAndClassComps, true);
 
-        elemsContainingContextValue.forEach(elem => {
+        elemsContainingContextValue.forEach((elem: Node) => {
             expect(elem.textContent).toEqual(JSON.stringify(initialContextState));
         });
 
@@ -183,7 +187,7 @@ describe('ContextFactory util', () => {
 
             await waitForUpdate();
 
-            elemsContainingContextValue.forEach(elem => {
+            elemsContainingContextValue.forEach((elem: Node) => {
                 expect(elem.textContent).toEqual(JSON.stringify({
                     ...initialContextState,
                     a: letters.slice(0, i+1),

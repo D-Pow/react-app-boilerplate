@@ -12,7 +12,7 @@ import type {
 
 
 export type ComponentInstance = ReactNode | Element;
-export type ComponentDeclaration = ComponentType | ((...args: unknown[]) => Element);
+export type ComponentDeclaration = ComponentType | ((...args: unknown[]) => ComponentInstance);
 export type ReactComponent = ComponentInstance | ComponentDeclaration;
 
 

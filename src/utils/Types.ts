@@ -27,20 +27,24 @@ import type { InferProps as PropTypesInferProps } from 'prop-types';
 
 export * from '@/utils/Decorators';
 
+
 /**
  * Same as Nullable except without `null`.
  */
 export type Optional<T> = T | undefined;
+
 
 /**
  * Opposite of built-in `NonNullable`.
  */
 export type Nullable<T> = Optional<T> | null;
 
+
 /**
  * Specifies specific keys that are optional.
  */
 export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K>
+
 
 /**
  * Companion to built-in `Partial` except that it makes each nested property optional
@@ -57,7 +61,8 @@ export type PartialDeep<O, T = never> = {
         : T extends never
             ? Nullable<O[K]>
             : Nullable<T>
-}
+};
+
 
 /**
  * Companion to built-in `keyof` except for getting all value types of an Object
@@ -67,6 +72,7 @@ export type PartialDeep<O, T = never> = {
  */
 export type ValueOf<O, K extends keyof O> = O[K];
 
+
 /**
  * Companion to built-in `Omit` except for omitting all value types of an Object
  * instead of keys.
@@ -74,6 +80,7 @@ export type ValueOf<O, K extends keyof O> = O[K];
 export type OmitValues<O, V> = {
     [ K in keyof O ]: Exclude<ValueOf<O, K>, V>;
 };
+
 
 /**
  * Overwrites a type or interface, `T`, with all the keys/values from the type or
@@ -93,6 +100,7 @@ export type OmitValues<O, V> = {
  * type ResultingModifiedType = { a: string, b: { d: string, e: number }}
  */
 export type ModifyIntersection<T, NT> = Omit<T, keyof NT> & NT;
+
 
 /**
  * Joins the keys/values from the type/interface, `O1`, with all the keys/values from
@@ -124,6 +132,7 @@ export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O
     O1 extends Record<string, any> ? Omit<O2, keyof O1> : O1
 );
 
+
 /**
  * Infers the type of a variable, recursing through object keys/properties if necessary.
  *
@@ -135,6 +144,7 @@ export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O
 export type InferType<T> = T extends Object
     ? { [ K in keyof T ]: InferType<ValueOf<T, K>> }
     : T;
+
 
 /**
  * Extracts types of JSX component props defined using PropTypes.

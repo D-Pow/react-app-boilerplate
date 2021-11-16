@@ -1,7 +1,7 @@
 import {
     createContext,
-    useCallback,
     useState,
+    useCallback,
     useMemo,
 } from 'react';
 
@@ -35,14 +35,14 @@ interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provid
 }
 
 
-export interface ContextFactoryOptions<ContextState> {
-    defaultStateValue?: Nullable<ContextState>;
-    displayName?: string;
-}
-
 export interface ContextValue<ContextState> {
     contextState: Nullable<ContextState>;
     setContextState: Function;
+}
+
+export interface ContextFactoryOptions<ContextState> {
+    defaultStateValue?: Nullable<ContextState>;
+    displayName?: string;
 }
 
 /**
@@ -154,7 +154,7 @@ export default function ContextFactory<ContextState>({
     const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>;
 
     function ProviderWithState(props: PropsWithChildren<any>) {
-        const [ contextState, setHookStateForContext ] = useState<
+        const [ contextState, setStateForContext ] = useState<
             ContextFactoryOptions<ContextState>['defaultStateValue']
         >(defaultStateValue);
 
@@ -163,12 +163,12 @@ export default function ContextFactory<ContextState>({
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
                 // so setState can be called directly.
-                setHookStateForContext(args);
+                setStateForContext(args);
             } else if (typeof args === typeof {}) {
-                // State is an object. Make the `setState` API simple like `this.setState` in class components where
-                // they can set the state with an individual key/val.
-                // To do so in hooks, use a function to preserve previous state and overwrite old values with new ones.
-                setHookStateForContext(prevState => ({
+                // State is an object. Simplify the `setState` API to mimic `this.setState` in class components such
+                // that they can set the state with an individual key/val.
+                // To do so using hooks, use a function to preserve previous state and overwrite old values with new ones.
+                setStateForContext(prevState => ({
                     ...prevState,
                     ...args,
                 }));
@@ -176,7 +176,10 @@ export default function ContextFactory<ContextState>({
         }, []);
 
         /*
-         * Memoize the Provider's `value` object so a new object isn't created on every re-render
+         * Memoize the Provider's `value` object so a new object isn't created on every re-render.
+         * However, don't memoize the Provider itself so that nested/parent providers' state changes cause
+         * a re-render of this Provider's children.
+         *
          * See:
          * - https://stackoverflow.com/questions/62230532/is-usememo-required-to-manage-state-via-the-context-api-in-reactjs
          * - https://blog.agney.dev/useMemo-inside-context/
@@ -199,6 +202,6 @@ export default function ContextFactory<ContextState>({
 
     Context.Provider = ProviderWithState as Provider<ContextState>;
 
-    // @ts-ignore - Allow overriding of native `Context` with better/enhanced/memoized Provider
+    // @ts-ignore - Allow overriding of native `Context` with memoized, state-enhanced Provider
     return Context;
 }

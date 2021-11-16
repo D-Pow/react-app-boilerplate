@@ -36,6 +36,7 @@ import type {
 } from 'react-reconciler';
 
 
+// TODO Convert ReactParsing.js to TypeScript and move these there
 export type ComponentInstance = ReactNode | Element;
 export type ComponentDeclaration = ComponentType | ((...args: unknown[]) => Element);
 export type ReactComponent = ComponentInstance | ComponentDeclaration;

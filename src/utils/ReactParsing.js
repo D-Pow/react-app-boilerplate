@@ -5,8 +5,8 @@
  * @returns {string} - The string representation of the node
  */
 export function getChildName(child) {
-    // child.type.name for React.Component
     // child.type for HTML elements
+    // child.type.name for React.Component
     // child.type.type.name for React.memo(MyComponent)
     // child.render.name for React.forwardRef(MyComponent)
     if (typeof child.type === typeof {}) {

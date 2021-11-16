@@ -6,6 +6,11 @@
  *  - `readonly` = Make properties immutable.
  *  - `-` = Remove specified modifier (e.g. `-readonly` or `-?`).
  *
+ * Note about `Record`:
+ * - Record<string, never> == {}
+ * - Record<string, undefined> == { [optional keys]: undefined }
+ * - Record<string, any> == { [optional keys]: any }
+ *
  * @see [Utility types]{@link https://www.typescriptlang.org/docs/handbook/utility-types.html}
  * @see [Generic types]{@link https://www.typescriptlang.org/docs/handbook/2/generics.html}
  * @see [Mapping types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html}
@@ -31,6 +36,11 @@ export type Optional<T> = T | undefined;
  * Opposite of built-in `NonNullable`.
  */
 export type Nullable<T> = Optional<T> | null;
+
+/**
+ * Specifies specific keys that are optional.
+ */
+export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K>
 
 /**
  * Companion to built-in `Partial` except that it makes each nested property optional

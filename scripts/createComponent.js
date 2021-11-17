@@ -136,8 +136,8 @@ function printUsage() {
     Options:
         -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
         -f|--func                   |   Make the component a functional component (default: class component).
+        -j|--javascript             |   Use JavaScript to create the component (default: TypeScript).
         -s|--solo                   |   Create the component file only without nest it in its own directory.
-        --no-typescript             |   Use JavaScript to create the component (default: TypeScript).
 `;
 
     console.log(usage);
@@ -166,7 +166,7 @@ function createComponent(argv) {
         varNameToFlagAliases: {
             functionalComponent: [ 'f', 'func' ],
             dirName: [ 'd', 'dir' ],
-            typescript: [ 't' ],
+            javascript: [ 'j' ],
             soloComponent: [ 's', 'solo' ],
         },
         numArgs: {
@@ -175,15 +175,12 @@ function createComponent(argv) {
             typescript: 0,
             soloComponent: 0,
         },
-        defaultValues: {
-            typescript: true,
-        },
     });
 
     const {
         functionalComponent,
         dirName,
-        typescript,
+        javascript,
         soloComponent,
     } = args;
     const componentName = args._?.[0];
@@ -197,7 +194,7 @@ function createComponent(argv) {
         {
             dirName,
             functionalComponent,
-            typescript,
+            typescript: !javascript,
             soloComponent,
         },
     );

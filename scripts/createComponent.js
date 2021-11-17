@@ -23,14 +23,14 @@ ${extraIndent}};`
 
 function getClassComponentText(componentName, typescript) {
     return (
-`class ${componentName} extends React.Component${typescript ? `<${componentName}Props, any>` : ''} {
+`class ${componentName} extends React.Component${typescript ? `<${componentName}Props, ${componentName}State>` : ''} {
     ${
         typescript
             ? ''
-            : `static ${getPropTypesText(true, typescript)}\n\n    `
-    }static defaultProps = {
+            : `static ${getPropTypesText(true, typescript)}\n    `
+    }static defaultProps = {};
 
-    };
+    state = {};
 
     render() {
         return (
@@ -75,6 +75,10 @@ function getComponentText(componentName, { functionalComponent = false, typescri
     className?: string;
     children?: React.ReactNode;
 }`;
+
+        if (!functionalComponent) {
+            propTypesImport += `\n\ninterface ${componentName}State {}`;
+        }
     }
 
     return (

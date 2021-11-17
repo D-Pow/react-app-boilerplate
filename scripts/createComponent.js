@@ -136,8 +136,8 @@ function printUsage() {
     Options:
         -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
         -f|--func                   |   Make the component a functional component (default: class component).
-        -t|--typescript             |   Use TypeScript to create the component (default: JavaScript).
         -s|--solo                   |   Create the component file only without nest it in its own directory.
+        --no-typescript             |   Use JavaScript to create the component (default: TypeScript).
 `;
 
     console.log(usage);
@@ -174,6 +174,9 @@ function createComponent(argv) {
             dirName: 1,
             typescript: 0,
             soloComponent: 0,
+        },
+        defaultValues: {
+            typescript: true,
         },
     });
 

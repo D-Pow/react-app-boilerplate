@@ -158,7 +158,6 @@ export default function ContextFactory<ContextState>({
             ContextFactoryOptions<ContextState>['defaultStateValue']
         >(defaultStateValue);
 
-        // Don't ever change the value of `setContextState()`
         const setContextState = useCallback((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
@@ -173,7 +172,7 @@ export default function ContextFactory<ContextState>({
                     ...args,
                 }));
             }
-        }, []);
+        }, []); // Don't ever need to redefine the value of `setContextState()`
 
         /*
          * Memoize the Provider's `value` object so a new object isn't created on every re-render.

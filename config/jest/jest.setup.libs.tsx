@@ -196,6 +196,20 @@ export function getElementMaybe(funcToGetElement: Function, { callNow = false } 
  * @see [Generic type as field in another generic type (2)]{@link https://stackoverflow.com/questions/52856496/typescript-object-keys-return-string/52856805#52856805}
  * @see [Extending functions]{@link https://stackoverflow.com/questions/42840466/is-it-possible-to-implement-a-function-interface-in-typescript}
  */
+/**
+ * Companion to `waitForElementToBeRemoved()` except the opposite:
+ * Waits for >= 1 element(s) -- as specified by the `querySelectorString` -- to be visible before proceeding with the test.
+ *
+ * Solves the issue that react-testing-library only allows searching by visible attributes and/or accessibility
+ * attributes that screen readers parse.
+ *
+ * @param component - Parent component/container from which to query for child elements.
+ * @param querySelectorString - Query selector for >= 1 element.
+ * @param [options]
+ * @param [options.all] - If `querySelectorAll()` should be called instead of `querySelector()`.
+ * @returns A Promise that resolves after the element(s) are visible, returning the element(s).
+ * @see [React testing library's "query priorities" docs]{@link https://testing-library.com/docs/queries/about/#priority}
+ */
 export async function waitForElementVisible<
     T extends O['all'],
     O extends (Partial<{ all: boolean }>) = Record<string, undefined>
@@ -208,19 +222,6 @@ export async function waitForElementVisible<
             ? NodeList
             : Node
 >;
-/**
- * Waits for >= 1 elements as specified by the `querySelectorString` to be visible before proceeding with the test.
- * Essentially the opposite of `waitForElementToBeRemoved()`.
- *
- * Solves the issue that react-testing-library only allows searching by visible attributes and/or accessibility
- * attributes that screen readers parse. See more details in the [query priorities docs]{@link https://testing-library.com/docs/queries/about/#priority}.
- *
- * @param component - Parent component/container from which to query for child elements.
- * @param querySelectorString - Query selector for >= 1 element.
- * @param [options]
- * @param [options.all] - If `querySelectorAll()` should be called instead of `querySelector()`.
- * @returns A Promise that resolves after the element(s) are visible, returning the element(s).
- */
 export async function waitForElementVisible(
     component: RenderedComponent,
     querySelectorString: string,

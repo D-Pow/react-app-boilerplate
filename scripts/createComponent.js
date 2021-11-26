@@ -141,7 +141,7 @@ function printUsage() {
         -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
         -f|--func                   |   Make the component a functional component (default: class component).
         -j|--javascript             |   Use JavaScript to create the component (default: TypeScript).
-        -s|--solo                   |   Create the component file only without nest it in its own directory.
+        -s|--solo                   |   Create the component file only without nesting it in a new directory.
 `;
 
     console.log(usage);

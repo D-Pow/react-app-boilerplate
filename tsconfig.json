@@ -14,7 +14,8 @@
      */
     "compilerOptions": {
         "target": "ESNext", // target environment to transpile down to; since we're using webpack/babel, do not transpile resulting JS b/c babel does a better job
-                            // Note: If `target >= ES2022|ESNext`, then `useDefineForClassFields === true` to use native class properties instead of TS v3.7 constructor initialization
+                            // Note: If `target >= ES2022|ESNext`, then `useDefineForClassFields` is set to `true` by default in order
+                            // to use native class properties instead of TS v3.7 constructor initialization.
         "lib": [
             "ESNext", // modern JS features
             "DOM", // DOM features like HTMLElement, NodeList, fetch, XMLHttpRequest, etc.

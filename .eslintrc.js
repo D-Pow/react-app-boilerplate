@@ -83,7 +83,7 @@ module.exports = {
         },
     },
     globals: {
-        JSX: 'readable',
+        JSX: 'readable', // Mark the new `JSX` variable as a global (introduced by React v17 for ubiquitous transforms without needing to `import React`)
         process: 'writable', // `webpack.DefinePlugin` injects `process.env` object into `src/` files.
         module: 'writable', // TODO Only used for src/index.jsx hot reloading, but that block might not be needed anymore
     },

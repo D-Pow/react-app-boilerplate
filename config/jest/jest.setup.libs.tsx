@@ -164,13 +164,15 @@ export function getElementMaybe(funcToGetElement: Function, { callNow = false } 
 }
 
 /**
- * Re type check: Other attempts at checking the type of the defaulted `options` object, `O`, were made in the `O extends () ?` return
+ * Regarding the type check: Other attempts at checking the type of the defaulted `options` object, `O`, were made in the `O extends () ?` return
  * type-check block, but none worked. Attempts include but aren't limited to:
  * - Omit<O, 'all'>
  * - { [K in keyof O]?: never }
+ *
  * Nothing worked except defaulting it to either:
  * - `never` or `Record<string, never>` AND including `null` in the check.
  * - `Record<string, undefined>`
+ *
  * Doing so forces the type of `O` to be of the specified type unless it's actually passed by the parent.
  * However, it is always passed, so `undefined` has to be included in the check.
  * Similarly, using `never` or `Record<string, never>` requires `never` to be in the check (as well as `Record` if that's used instead)

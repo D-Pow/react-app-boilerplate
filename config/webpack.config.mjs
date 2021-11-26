@@ -116,7 +116,7 @@ const webpackConfig = {
                         options: {
                             configFile: `${Paths.ROOT.ABS}/tsconfig.json`,
                             compilerOptions: {
-                                outDir: null,
+                                outDir: null, // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)
                             },
                         },
                     },

@@ -170,11 +170,13 @@ describe('ContextFactory util', () => {
         });
 
         /**
-         * Use for-loop instead of forEach to ensure sequential execution of context state updates, i.e.
-         * prevent running all tests via `Promise.all(letters.split('').map(async (letter, i) => { ...test }))` since
-         * that will run the beginning of each test immediately, so test-1's iteration results will be impacted by test-4's actions.
+         * Use for-loop instead of forEach to ensure sequential execution of context state updates.
          *
-         * Alternatively, to force await-ing them sequentially using the above logic:
+         * i.e. Prevent running all tests via `Promise.all(letters.split('').map(async (letter, i) => { ...test }))` since
+         * that will run the beginning of each test immediately, resulting in test-1's iteration results being impacted
+         * by test-4's actions.
+         *
+         * Alternatively, to force await-ing them sequentially, we could use the logic below:
          * @example
          * // `for await ()` forces mapped-promises to be run sequentially, but the empty block is less readable than for-loop
          * const allActionPromises = myList.map(async (...) => {...});

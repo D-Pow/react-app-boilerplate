@@ -68,5 +68,5 @@ export function isFirefoxBrowser() {
  * @returns {boolean} - If the website is running from PWA "installed" mode.
  */
 export function isInStandaloneMode() {
-    return !!self?.matchMedia('(display-mode: standalone)')?.matches;
+    return !!self?.matchMedia?.('(display-mode: standalone)')?.matches;
 }

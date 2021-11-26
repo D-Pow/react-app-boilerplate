@@ -56,18 +56,18 @@ export interface ContextFactoryOptions<ContextState> {
  *
  * Usage:
  *
- * - Create the context with `ContextFactory(initialStateValueToStart, 'CustomContextDisplayName')`.
- * - Wrap your component(s) in the returned Provider. The Provider already has a memoized `state`/`setState` object as a value.
+ * - Create the context with `ContextFactory({ defaultStateValue: initialStateValueToStart, displayName: 'CustomContextDisplayName'})`.
+ * - Wrap your component(s) in the returned Provider. The Provider already has a memoized `contextState`/`setContextState` object as a value.
  * - Access the Context using the standard React Context API access methods.
- * - Use the `setContextState()` function as you would a class component's `setState()` function.
+ * - Use the `setContextState()` function as you would a class component's `setContextState()` function.
  *   This means you can set individual state keys without erasing other keys, e.g. `setContextState({ certainKey: newVal })`,
  *   or `setContextState(prevState => ...)`:
  *
  * @example <caption>Create the context with initial state and display name</caption>
- * const MyContext = ContextFactory(
- *     { firstColor: 'blue', secondColor: 'red' },
- *     'MyContext'
- * );
+ * const MyContext = ContextFactory({
+ *     defaultStateValue: { firstColor: 'blue', secondColor: 'red' },
+ *     displayName: 'MyContext',
+ * });
  *
  * export default function App() {
  *     return (
@@ -131,10 +131,10 @@ export interface ContextFactoryOptions<ContextState> {
  *     someStateKey: prevState.someStateKey + 1
  * }));
  *
- * @param {Object} [options]
- * @param {any} [options.defaultStateValue] - Default/initial value for the context state.
- * @param {string} [options.displayName] - Display name for the context.
- * @returns {Context} - The newly-created Context with a Provider prefilled with a memoized state/setState value.
+ * @param [options]
+ * @param [options.defaultStateValue] - Default/initial value for the context state.
+ * @param [options.displayName] - Display name for the context.
+ * @returns The newly-created Context with a Provider prefilled with a memoized `contextState`/`setContextState` value.
  */
 export default function ContextFactory<ContextState>({
     defaultStateValue = null,

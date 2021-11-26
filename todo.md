@@ -23,6 +23,12 @@
 * Improve output website SEO/usability on different sites.
     - Duplicate/add useful `<meta>` tags in `HtmlWebpackPlugin` for [OpenGraph](https://www.freecodecamp.org/news/what-is-open-graph-and-how-can-i-use-it-for-my-website/) (how preview images/text appear when embedded in social media, Slack, etc.).
     - Site-map for which pages/routes exist on a website (helps for SEO). One possibly helpful package is [next-sitemap](https://www.npmjs.com/package/next-sitemap) in a `postbuild` npm script.
+* Investigate isomorphic JavaScript.
+    - Could be SSR, could be React Native, or something else.
+    - During investigation, check out differences between:
+        + [NextJS](https://nextjs.org/) - All-in-one/no-configuration-required system.
+        + [React Starter Kit](https://github.com/kriasoft/react-starter-kit) - Not as much no-configuration-required, meaning we have more control over configs.
+            * Uses [isomorphic-style-loader](https://github.com/kriasoft/isomorphic-style-loader) for loading (S)CSS styles in all (back-/front-end) contexts.
 * `BrowserRouter` vs `HashRouter`
     - [Client vs Server routing](https://stackoverflow.com/questions/27928372/react-router-urls-dont-work-when-refreshing-or-writing-manually)
     - [Catch-all in Spring for index.html](https://stackoverflow.com/questions/39331929/spring-catch-all-route-for-index-html)

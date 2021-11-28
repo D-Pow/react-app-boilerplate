@@ -69,7 +69,7 @@ function Router({
     routerProps = {},
     wrapperProps = {},
     suspenseProps = {
-        fallback: (<SpinnerCircle show={true} />),
+        fallback: (<SpinnerCircle show />),
     },
     children,
 }) {

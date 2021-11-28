@@ -15,7 +15,8 @@
   },
   "config": {
     "buildOutputDir": "dist",
-    "eslintExtensions": ".tsx,.ts,.jsx,.js,.mjs,.cjs"
+    "eslintExtensions": ".tsx,.ts,.jsx,.js,.mjs,.cjs",
+    "supportIe": false
   },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.mjs",

@@ -55,6 +55,7 @@ const publicEnv = {
     PUBLIC_URL: process.env.PUBLIC_URL,
     BROADCAST_CHANNEL: broadcastChannel,
     MOCK: process.env.MOCK,
+    SUPPORT_IE: !!process?.env?.npm_package_config_supportIe,
 };
 
 const {
@@ -259,7 +260,11 @@ const webpackConfig = {
     },
     entry: {
         client: {
-            import: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.jsx'),
+            import: [
+                // If supporting IE, ensure `core-js` polyfills are loaded before source/vendor code
+                ...(process?.env?.npm_package_config_supportIe ? [ 'core-js' ] : []),
+                Paths.getFileAbsPath(Paths.SRC.ABS, 'index.jsx'),
+            ],
             dependOn: 'common',
         },
         common: [

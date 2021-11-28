@@ -12,7 +12,7 @@ import { isMicrosoftBrowser } from '@/utils/BrowserIdentification';
 //          - Works because the extra `.{length}` after the look-ahead is effectively the equivalent
 //  - Proxy
 //  - Reflect (?)
-const blockInternetExplorer = true;
+const blockInternetExplorer = !process.env.SUPPORT_IE;
 
 function App() {
     const { contextState, setContextState } = useContext(AppContext);

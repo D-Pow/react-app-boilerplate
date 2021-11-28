@@ -8,7 +8,7 @@ module.exports = {
         [
             '@babel/preset-env',
             {
-                useBuiltIns: 'usage',
+                useBuiltIns: process?.env?.npm_package_config_supportIe ? 'entry' : 'usage',
                 corejs: {
                     version: '3.18',
                     proposals: true,

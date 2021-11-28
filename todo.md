@@ -15,6 +15,8 @@
         + Option: [html-webpack-multi-build-plugin](https://www.npmjs.com/package/html-webpack-multi-build-plugin)
         + Option: [EsmWebpackPlugin](https://github.com/purtuga/esm-webpack-plugin)
         + Babel [targest.esmodules](https://babeljs.io/docs/en/babel-preset-env#targetsesmodules)
+            * Would likely require the module/nomodule pattern offered by [@babel/preset-modules](https://www.npmjs.com/package/@babel/preset-modules).
+            * See the [preset-env bugfixes](https://babeljs.io/docs/en/babel-preset-env#bugfixes) option for more details.
     - Investigate Babel preset-env [bugfixes](https://babeljs.io/docs/en/babel-preset-env#bugfixes)
         + Might help with browser ESM.
 * Allow `type: module` in package.json without webpack crashing on src/ imports without extensions.

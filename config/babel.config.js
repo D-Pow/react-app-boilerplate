@@ -18,6 +18,7 @@ module.exports = {
                     node: 'current',
                     browsers: '> 0.25%, not dead',
                 },
+                bugfixes: true,
             },
         ],
         [

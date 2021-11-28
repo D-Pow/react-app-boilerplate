@@ -6,7 +6,10 @@ import AppContext from '@/utils/AppContext';
 import { isMicrosoftBrowser } from '@/utils/BrowserIdentification';
 
 // TODO find a good polyfill for:
-//  - Positive/negative look-ahead/-behind regex (not supported on IE)
+//  - Positive/negative look-behind regex (not supported on IE)
+//      - No polyfills seem to exist for look-behinds
+//      - Starter: https://stackoverflow.com/questions/641407/javascript-negative-lookbehind-equivalent/27213663#27213663
+//          - Works because the extra `.{length}` after the look-ahead is effectively the equivalent
 //  - Proxy
 //  - Reflect (?)
 const blockInternetExplorer = true;

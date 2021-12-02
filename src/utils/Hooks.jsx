@@ -41,6 +41,67 @@ export function Hooked({ hook, hookArgs, children }) {
 }
 
 /**
+ * Tracks the previous value of a variable before it was last updated.
+ *
+ * Useful for e.g. comparing previous state to current state in code existing
+ * outside the `setState()` function itself.
+ *
+ * Note:
+ * * `identicalValuesCountAsRefreshes` only takes effect if `maxRefreshes` is anything other than `Infinity`.
+ * * If using `identicalValuesCountAsRefreshes: true`, it is highly recommended to also use `initializeWithFirstValue: true`
+ *   to avoid "wasting" refreshes on initial component load (e.g. when other `useEffect` calls are present).
+ *
+ * @param {any} value - Value to track.
+ * @param {Object} [options]
+ * @param {number} [maxRefreshes=Infinity] - Max number of times the variable's value will be updated.
+ * @param {boolean} [initializeWithFirstValue=false] - If the returned previous value should equal the initial value on first call.
+ * @param {boolean} [identicalValuesCountAsRefreshes=false] - If refreshes should be counted when the previous/current values are equal.
+ * @returns {(any|undefined)} Previous value of the variable.
+ */
+export function usePrevious(value, {
+    maxRefreshes = Infinity,
+    initializeWithFirstValue = false,
+    identicalValuesCountAsRefreshes = false,
+} = {}) {
+    const ref = useRef({
+        // Tracks previous values
+        value: initializeWithFirstValue ? value : undefined,
+        // Tracks how many times the previous value was refreshed (the first value counts as the first refresh)
+        numRefreshes: 0,
+    });
+
+    const shouldRefreshForNewValue = ref.current.value !== value;
+    // If identical values count as refreshes, then we need to force `useEffect()` to be called.
+    // However, we don't want to do so using `ref` because that's always the same value,
+    // nor `ref.current` because that value is always different so using it would interfere with `identicalValuesCountAsRefreshes = false`.
+    const shouldRefreshForIdenticalValue = (
+        identicalValuesCountAsRefreshes
+        && ref.current.value === value
+        && ref.current.numRefreshes !== 0 //
+        && ref.current.value !== undefined // Avoid "wasting" refreshes when no value has been
+        && Math.random()
+    );
+    const shouldRefresh = (
+        ref.current.numRefreshes < maxRefreshes
+        && (
+            shouldRefreshForNewValue || shouldRefreshForIdenticalValue
+        )
+    );
+
+    useEffect(() => {
+        if (shouldRefresh) {
+            ref.current = {
+                value,
+                numRefreshes: ref.current.numRefreshes + 1,
+            };
+        }
+    }, [ value, shouldRefresh ]);
+
+    // Return previous value (`useEffect` is run after re-renders so `ref` will still hold the old value)
+    return ref.current.value;
+}
+
+/**
  * @callback hookModifiedForGlobalState
  * @param {*} origHookParams - Parameters for the original hook, passed by calling component.
  * @param {*} globalHookState - The global state for all hook instances.

@@ -234,6 +234,7 @@ function findFile(
     let currentDir = path.resolve(startDirectory || __dirname);
 
     if (!startDirectory) {
+        // TODO Could also be done with `npm prefix` - https://docs.npmjs.com/cli/v8/commands/npm-prefix
         // We have no clue where to start, so go up to the root
         // so that we can then search downwards later
         while (!fs.readdirSync(currentDir).includes(packageJsonFileName)) {

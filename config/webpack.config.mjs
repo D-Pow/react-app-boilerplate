@@ -273,10 +273,8 @@ const webpackConfig = {
         common: [
             /*
              * Polyfills not covered with core-js include:
-             * fetch, Proxy, BigInt, Intl, String.prototype.normalize
+             * fetch, Proxy, BigInt, Intl, String.prototype.normalize, among others
              * See: https://github.com/zloirock/core-js#missing-polyfills
-             *
-             * Only polyfill `fetch()` since it's the only one used for now.
              */
             'isomorphic-fetch',
         ],

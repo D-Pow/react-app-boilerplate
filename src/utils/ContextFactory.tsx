@@ -197,7 +197,7 @@ export default function ContextFactory<ContextState>({
         ProviderWithState.displayName = `${displayName}Provider`;
     }
 
-    ProviderWithState['$$typeof'] = ProviderWithoutState['$$typeof'];
+    ProviderWithState.$$typeof = ProviderWithoutState.$$typeof;
 
     Context.Provider = ProviderWithState as Provider<ContextState>;
 

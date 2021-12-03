@@ -89,6 +89,7 @@ module.exports = {
     },
     rules: {
         /* Syntax, logic, and common error-causing rules */
+        'linebreak-style': [ 'error', 'unix' ], // Enforce LF (\n) for newlines and prevent CRLF (\r\n)
         eqeqeq: [ 'warn', 'always', { // Enforce using triple equals, ===/!===
             null: 'ignore', // Exception for `x != null` since `!= null` means `!== null && !== undefined`
         }],
@@ -132,6 +133,17 @@ module.exports = {
             argsIgnorePattern: 'props',
             // Ignore unused vars when they are part of rest spreads, e.g. `const { used, ...unused } = obj;`
             ignoreRestSiblings: true,
+        }],
+        'wrap-iife': [ 'error', 'inside', { // Force Immediately-Invoked-Function-Expressions to have parentheses around the declaration, e.g. `(function x() { ... })()`
+            functionPrototypeMethods: true, // Also wrap in parentheses for Function.prototype methods, e.g. `(function x() { ... }).call(...)`
+        }],
+        'dot-notation': 'error', // Enforce using `.` when possible, e.g. `foo.bar` instead of `foo['bar']`. Computed properties are still allowed, e.g. `const bar = 'myField'; foo[bar];`
+        'new-cap': [ 'error', { // Enforce PascalCase for any constructor-based function calls
+            newIsCap: true, // Anything using `new` needs to be PascalCase (also means classes need to be PascalCase so that `new myClass()` fails)
+            capIsNew: false, // Don't force `new` to be prepended to PascalCase functions since they aren't all necessarily constructors
+        }],
+        'func-style': [ 'error', 'declaration', { // Enforce function declarations instead of expressions, i.e. use `function foo() {...}` instead of `const foo = function () {...}`. Object fields are still allowed: `foo.bar = function () {...}`
+            allowArrowFunctions: true, // Allow arrow functions, i.e. allow `const foo = () => {...}` but not `const foo = function () {...}`
         }],
 
         /* Spacing rules */
@@ -192,6 +204,11 @@ module.exports = {
             block: {
                 balanced: true, // If the comment is a block comment `/**/` instead of inline `//`, then enforce a space after the opening and before the closing
             },
+        }],
+        'eol-last': 'error', // Enforce newlines at the end of files
+        'no-multiple-empty-lines': [ 'error', { // Prevent extra newlines above the `max` allowed number
+            max: Infinity, // Allow any number of newlines in code
+            maxEOF: 0, // Prevent more than 1 newline at the end of a file. Note: `eol-last` rule forces 1 newline at the end, so `0` here means 0 additional newlines after the single `eol-last` newline
         }],
 
 
@@ -264,6 +281,8 @@ module.exports = {
         }],
         // Prevent circular dependencies
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
+        // Ensure imports are at the top of the file, not sprinkled throughout the body of the file
+        'import/first': 'error',
         // Remove unused imports (since `no-unused-vars` is only `warn` for now)
         'unused-imports/no-unused-imports': 'error',
 

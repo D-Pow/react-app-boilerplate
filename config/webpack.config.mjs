@@ -6,6 +6,8 @@ import TerserJSPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 
+// TODO Update mock-requests' webpack plugin to allow static instead of dynamic import
+/* eslint-disable import/first */
 const MockRequestsWebpackPlugin = (await import('mock-requests/bin/MockRequestsWebpackPlugin.js')).default;
 import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
 import {
@@ -16,6 +18,7 @@ import {
     LocalLanHostIpAddresses,
     importNonEsmFile,
 } from './utils/index.mjs';
+/* eslint-enable import/first */
 
 const babelConfig = importNonEsmFile(Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js'));
 const packageJson = importNonEsmFile(Paths.getFileAbsPath(Paths.ROOT.ABS, 'package.json'));

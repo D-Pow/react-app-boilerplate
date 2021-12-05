@@ -16,13 +16,11 @@ import {
     getOutputFileName,
     ImportAliases,
     LocalLanHostIpAddresses,
-    importNonEsmFile,
 } from './utils/index.mjs';
+import babelConfig from './babel.config.js';  // eslint-disable-line import/order -- Allow config file imports from both current and parent dirs to be grouped together without extra newlines
+import packageJson from '../package.json';
+import manifestJson from '../src/manifest.json';
 /* eslint-enable import/first */
-
-const babelConfig = importNonEsmFile(Paths.getFileAbsPath(Paths.CONFIG.ABS, 'babel.config.js'));
-const packageJson = importNonEsmFile(Paths.getFileAbsPath(Paths.ROOT.ABS, 'package.json'));
-const manifestJson = importNonEsmFile(Paths.getFileAbsPath(Paths.SRC.ABS, 'manifest.json'));
 
 
 const isProduction = process.env.NODE_ENV === 'production';

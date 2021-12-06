@@ -33,7 +33,9 @@ export type Optional<T> = T | undefined;
 /**
  * Opposite of built-in `NonNullable`.
  */
-export type Nullable<T> = Optional<T> | null;
+export type Nullable<T, OnlyNull = false> = OnlyNull extends false
+    ? Optional<T> | null
+    : T | null;
 
 
 /**

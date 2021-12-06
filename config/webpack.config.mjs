@@ -5,22 +5,20 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import TerserJSPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin';
 
-// TODO Update mock-requests' webpack plugin to allow static instead of dynamic import
-/* eslint-disable import/first */
-const MockRequestsWebpackPlugin = (await import('mock-requests/bin/MockRequestsWebpackPlugin.js')).default;
-import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
+import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin';
 import {
     Paths,
     FileTypeRegexes,
     getOutputFileName,
     ImportAliases,
     LocalLanHostIpAddresses,
-} from './utils/index.mjs';
-import babelConfig from './babel.config.js';  // eslint-disable-line import/order -- Allow config file imports from both current and parent dirs to be grouped together without extra newlines
+} from './utils';
+import babelConfig from './babel.config';
+
 import packageJson from '../package.json';
 import manifestJson from '../src/manifest.json';
-/* eslint-enable import/first */
 
 
 const isProduction = process.env.NODE_ENV === 'production';

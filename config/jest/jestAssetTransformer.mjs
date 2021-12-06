@@ -2,7 +2,7 @@ import path from 'path';
 
 import JestCssModulesTransformer from 'jest-css-modules-transform';
 
-import { FileTypeRegexes } from '../utils/index.mjs';
+import { FileTypeRegexes } from '../utils';
 
 
 /** @type {import('@jest/core/node_modules/@jest/transform/build/types').SyncTransformer} */

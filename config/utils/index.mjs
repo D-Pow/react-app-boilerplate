@@ -18,20 +18,3 @@ export function importNonEsmFile(filePath) {
 
     return require(filePath);
 }
-
-
-export const parseCliArgs = (await import('./parseCliArgs.js')).default;
-export const {
-    Paths,
-    findFile,
-    FileTypeRegexes,
-    getOutputFileName,
-    getGitignorePathsWithExtraGlobStars,
-    stripJsComments,
-    tsconfig,
-    ImportAliases,
-} = await import('./Files.js');
-export const {
-    getOsHostnameAndLanIP,
-    LocalLanHostIpAddresses,
-} = await import('./Network.js');

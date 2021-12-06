@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { defaults } from 'jest-config';
 
-import { Paths, FileTypeRegexes, ImportAliases } from '../utils/index.mjs';
+import { Paths, FileTypeRegexes, ImportAliases } from '../utils';
 
 /*
  * Note: Add the `--no-cache` CLI option during development of jest transformers

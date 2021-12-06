@@ -63,15 +63,15 @@ module.exports = {
         react: { // `eslint-plugin-react` docs: https://github.com/yannickcr/eslint-plugin-react#configuration
             version: 'detect', // Automatically detect React version
         },
-        'import/extensions': extensions,
+        'import/extensions': [ ...extensions, '.json' ],
         // Mark import aliases' keys as part of the internal-imports group for `import/order` since they're our code
         'import/internal-regex': `^(${Object.keys(ImportAliases).map(alias => `${ImportAliases.stripTrailingSlash(alias)}/`).filter(Boolean).join('|')})`,
         'import/resolver': {
             node: {
-                extensions,
+                extensions: [ ...extensions, '.json' ],
             },
             alias: {
-                extensions,
+                extensions: [ ...extensions, '.json' ],
                 map: [
                     Object.entries(ImportAliases.toCustomObject({
                         // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots.

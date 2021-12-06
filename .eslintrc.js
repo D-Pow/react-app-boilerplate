@@ -331,6 +331,9 @@ module.exports = {
                 'no-unused-vars': [ 'warn', {
                     args: 'none',
                 }],
+                'space-before-function-paren': [ 'error', {
+                    named: 'ignore', // Allow typedefs using functions, e.g. `<Func extends () => {}>`
+                }],
             },
         },
         // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).

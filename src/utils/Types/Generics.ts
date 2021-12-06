@@ -37,7 +37,7 @@ export type Nullable<T> = Optional<T> | null;
 
 
 /**
- * Specifies specific keys that are optional.
+ * Makes all top-level keys optional.
  */
 export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K>
 

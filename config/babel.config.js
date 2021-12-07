@@ -40,11 +40,19 @@ module.exports = {
         [
             '@babel/plugin-proposal-decorators',
             {
+                /**
+                 * TODO Wait until TC39 passes an official decorator syntax: https://github.com/tc39/proposal-decorators#why-prioritize-the-features-of-legacy-decorators-like-classes-over-other-features-that-decorators-could-provide
+                 *
+                 * Note: Alternative is to use a legacy-to-modern wrapper/processor like [decorators-compat]{@link https://babeljs.io/blog/2018/09/17/decorators#upgrading}
+                 * to use modern decorator syntax in e.g. TypeScript.
+                 * Upside: If using Webpack, we could simply use the util as an [entry point]{@link https://github.com/nicolo-ribaudo/legacy-decorators-migration-utility#decorators-compat}
+                 * instead of re-/over-writing current code.
+                 */
                 ...(useLegacyDecorators =>
                     useLegacyDecorators
                         ? { legacy: true }
                         : { decoratorsBeforeExport: true } // Whether decorators should be placed before or after `export`
-                )(true), // TODO Wait until TC39 passes an official decorator syntax: https://github.com/tc39/proposal-decorators#why-prioritize-the-features-of-legacy-decorators-like-classes-over-other-features-that-decorators-could-provide
+                )(true),
             },
         ],
         [

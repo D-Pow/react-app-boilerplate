@@ -77,8 +77,8 @@ export function usePrevious(value, {
     const shouldRefreshForIdenticalValue = (
         identicalValuesCountAsRefreshes
         && ref.current.value === value
-        && ref.current.numRefreshes !== 0 //
-        && ref.current.value !== undefined // Avoid "wasting" refreshes when no value has been
+        && ref.current.numRefreshes !== 0 // `useEffect` will set the initial value after rendering for the first time, so don't refresh on first run
+        && ref.current.value !== undefined // Avoid "wasting" refreshes when no value has been set; same as `numRefreshes !== 0` except will change before it
         && Math.random()
     );
     const shouldRefresh = (

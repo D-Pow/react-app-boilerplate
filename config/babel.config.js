@@ -44,7 +44,7 @@ module.exports = {
                     useLegacyDecorators
                         ? { legacy: true }
                         : { decoratorsBeforeExport: true } // Whether decorators should be placed before or after `export`
-                )(false),
+                )(true), // TODO Wait until TC39 passes an official decorator syntax: https://github.com/tc39/proposal-decorators#why-prioritize-the-features-of-legacy-decorators-like-classes-over-other-features-that-decorators-could-provide
             },
         ],
         [

@@ -273,6 +273,7 @@ const webpackConfig = {
              * See: https://github.com/zloirock/core-js#missing-polyfills
              */
             'isomorphic-fetch',
+            'reflect-metadata',
         ],
     },
     output: {

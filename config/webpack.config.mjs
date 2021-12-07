@@ -274,6 +274,7 @@ const webpackConfig = {
              */
             'isomorphic-fetch',
             'reflect-metadata',
+            'proxy-polyfill',
         ],
     },
     output: {

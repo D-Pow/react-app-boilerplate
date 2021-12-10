@@ -6,7 +6,7 @@
  *  - `readonly` = Make properties immutable.
  *  - `-` = Remove specified modifier (e.g. `-readonly` or `-?`).
  *
- * Note about `Record`:
+ * [Notes about `Record`]{@link https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type}:
  * - Record<string, never> == {}
  * - Record<string, undefined> == { [optional keys]: undefined }
  * - Record<string, any> == { [optional keys]: any }
@@ -45,7 +45,7 @@ export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K
 
 
 /**
- * Companion to built-in `keyof` except for getting all value types of an Object
+ * Companion to built-in `keyof` except gets all value types of an Object
  * instead of keys.
  *
  * @see [`ValueOf` example]{@link https://stackoverflow.com/questions/49285864/is-there-a-valueof-similar-to-keyof-in-typescript/49286056#49286056}
@@ -86,15 +86,15 @@ export type PartialDeep<O, T = never> = {
  *
  * @example Change field types.
  * interface OrigType { a: object, b: string };
- * interface ModifiedType extends Modify<OrigType, { b: boolean }> {}
+ * interface ModifiedType extends ModifyIntersection<OrigType, { b: boolean }> {}
  * type ResultingModifiedType = { a: object, b: boolean }
  * @example Add new fields.
  * interface OrigType { a: object, b: string };
- * interface ModifiedType extends Modify<OrigType, { c: boolean }> {}
+ * interface ModifiedType extends ModifyIntersection<OrigType, { c: boolean }> {}
  * type ResultingModifiedType = { a: object, b: string, c: boolean }
  * @example Modify nested fields (deletes unspecified keys).
  * type OrigType = { a: string, b: { c: number } };
- * interface ModifiedType extends Modify<OrigType, { b: { d: string, e: number } }> {}
+ * interface ModifiedType extends ModifyIntersection<OrigType, { b: { d: string, e: number } }> {}
  * type ResultingModifiedType = { a: string, b: { d: string, e: number }}
  */
 export type ModifyIntersection<T, NT> = Omit<T, keyof NT> & NT;
@@ -109,15 +109,15 @@ export type ModifyIntersection<T, NT> = Omit<T, keyof NT> & NT;
  *
  * @example Change field types.
  * interface OrigType { a: object, b: string };
- * interface ModifiedType extends Modify<OrigType, { b: boolean }> {}
+ * interface ModifiedType extends ModifyUnion<OrigType, { b: boolean }> {}
  * type ResultingModifiedType = { a: object, b: boolean }
  * @example Add new fields.
  * interface OrigType { a: object, b: string };
- * interface ModifiedType extends Modify<OrigType, { c: boolean }> {}
+ * interface ModifiedType extends ModifyUnion<OrigType, { c: boolean }> {}
  * type ResultingModifiedType = { a: object, b: string, c: boolean }
  * @example Modify nested fields (keeps unspecified keys).
  * type OrigType = { a: string, b: { c: number } };
- * interface ModifiedType extends Modify<OrigType, { b: { d: string, e: number } }> {}
+ * interface ModifiedType extends ModifyUnion<OrigType, { b: { d: string, e: number } }> {}
  * type ResultingModifiedType = { a: string, b: { c: number, d: string, e: number }}
  */
 export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O1 | any, any>> = {

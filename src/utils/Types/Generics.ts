@@ -75,17 +75,17 @@ export type OmitValues<T, V = never> = {
  * Companion to built-in `Partial` except that it makes each nested property optional
  * as well.
  *
- * Each non-object/leaf value will be either:
- * - If `T` is left out, then the type it was remains.
- * - The specified `T` type.
+ * Each non-object key's value will be either:
+ * - If `NT` (NewType) is left out, then the original type from `T` remains.
+ * - The specified `NT` type.
  */
-export type PartialDeep<O, T = never> = {
+export type PartialDeep<T, NT = never> = {
     // `?:` makes the key optional. Record<string, any> == Object
-    [K in keyof O]?: O[K] extends Record<string, any>
-        ? Nullable<PartialDeep<O[K]>>
-        : T extends never
-            ? Nullable<O[K]>
-            : Nullable<T>
+    [K in keyof T]?: T[K] extends Record<string, any>
+        ? Nullable<PartialDeep<T[K], NT>>
+        : NT extends never
+            ? Nullable<T[K]>
+            : Nullable<NT>
 };
 
 

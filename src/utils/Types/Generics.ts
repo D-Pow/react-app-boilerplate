@@ -56,9 +56,18 @@ export type ValueOf<O, K extends keyof O> = O[K];
 /**
  * Companion to built-in `Omit` except for omitting all value types of an Object
  * instead of keys.
+ *
+ * If the result after omitting the specified value is null or undefined,
+ * then the key is removed as well.
+ *
+ * @see [Filtering out keys if they extend a type]{@link https://stackoverflow.com/questions/49397567/how-to-remove-properties-via-mapped-type-in-typescript/63990350#63990350}
  */
-export type OmitValues<O, V> = {
-    [ K in keyof O ]: Exclude<ValueOf<O, K>, V>;
+export type OmitValues<T, V = never> = {
+    [K in keyof T as Exclude<T[K], V> extends
+        never | null | undefined
+            ? never
+            : K
+    ]: Exclude<T[K], V>;
 };
 
 

@@ -25,6 +25,12 @@
 
 
 /**
+ * Valid JSON primitive types.
+ */
+export type JsonPrimitive = string | number | boolean | null | Array<JsonPrimitive> | { [key: string]: JsonPrimitive };
+
+
+/**
  * Same as Nullable except without `null`.
  */
 export type Optional<T> = T | undefined;

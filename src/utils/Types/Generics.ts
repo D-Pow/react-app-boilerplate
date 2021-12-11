@@ -72,6 +72,39 @@ export type OmitValues<T, V = never> = {
 
 
 /**
+ * Picks only the optional properties from a type, removing the required ones.
+ * Optionally, recurses through nested objects if `DEEP` is true.
+ */
+export type PickOptional<T, DEEP = false> = { // `DEEP` must be false b/c `never` interferes with root level objects with both optional/required properties
+    // If `undefined` extends the type of the value, it's optional (e.g. `undefined extends string | undefined`)
+    [K in keyof T as undefined extends T[K]
+        ? K
+        : never
+    ]: DEEP extends false
+        ? T[K]
+        : T[K] extends Optional<Record<string, unknown>> // Like above, we must include `undefined` so we can recurse through both keys in `{ o?: object, ro: object }`
+            ? PickOptional<T[K], DEEP>
+            : T[K];
+};
+
+
+/**
+ * Picks only the required fields out of a type, removing the optional ones.
+ * Optionally, recurses through nested objects if `DEEP` is true.
+ */
+export type PickRequired<T, DEEP = false> = {
+    [K in keyof T as undefined extends T[K]
+        ? never
+        : K
+    ]: DEEP extends false
+        ? T[K]
+        : T[K] extends Optional<Record<string, unknown>>
+            ? PickRequired<T[K], DEEP>
+            : T[K];
+};
+
+
+/**
  * Companion to built-in `Partial` except that it makes each nested property optional
  * as well.
  *

@@ -31,6 +31,20 @@ export type JsonPrimitive = string | number | boolean | null | Array<JsonPrimiti
 
 
 /**
+ * Anything that can be indexed with valid generic values.
+ * e.g. Objects can be indexed by strings and symbols; arrays by numbers, strings, and symbols; etc.
+ *
+ * To avoid false positives, this excludes any of the built-in keys from `Object` and `Array` so that
+ * only the keys of the specified type are considered.
+ *
+ * @see [StackOverflow post about excluding inherited keys]{@link https://stackoverflow.com/questions/44130410/typescript-keyof-and-indexer-compatibility/44130727#44130727}
+ */
+export type Indexable<T> = {
+    [key: string | number | symbol]: T;
+} & Omit<T, keyof Array<T> | keyof Object>;
+
+
+/**
  * Same as Nullable except without `null`.
  */
 export type Optional<T> = T | undefined;

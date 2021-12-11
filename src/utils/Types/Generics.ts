@@ -92,6 +92,24 @@ export type OmitValues<T, V = never> = {
 
 
 /**
+ * Companion to built-in `Pick` except for picking all keys containing the specified value
+ * types instead of keys.
+ *
+ * If the result after picking the specified value is null or undefined,
+ * then the key is removed as well.
+ *
+ * @see [Filtering out keys if they extend a type]{@link https://stackoverflow.com/questions/49397567/how-to-remove-properties-via-mapped-type-in-typescript/63990350#63990350}
+ */
+export type PickKeysContainingValues<T, V> = keyof {
+    [K in keyof Indexable<T> as Extract<Indexable<T>[K], V> extends
+        never | null | undefined
+            ? never
+            : K
+    ]: Extract<Indexable<T>[K], V>;
+};
+
+
+/**
  * Picks only the optional properties from a type, removing the required ones.
  * Optionally, recurses through nested objects if `DEEP` is true.
  */

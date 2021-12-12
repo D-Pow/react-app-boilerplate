@@ -38,17 +38,33 @@ export type JsonPrimitive = string | number | boolean | null | Array<JsonPrimiti
 
 
 /**
- * Anything that can be indexed with valid generic values.
- * e.g. Objects can be indexed by strings and symbols; arrays by numbers, strings, and symbols; etc.
+ * Gets all keys from a type, excluding those of the specified parent, `P`.
  *
- * To avoid false positives, this excludes any of the built-in keys from `Object` and `Array` so that
+ * Valid key types are:
+ * - Objects: strings, symbols.
+ * - Arrays: numbers, strings, symbols.
+ *
+ * By default, this excludes all the built-in keys from `Object` and `Array` so that
  * only the keys of the specified type are considered.
  *
  * @see [StackOverflow post about excluding inherited keys]{@link https://stackoverflow.com/questions/44130410/typescript-keyof-and-indexer-compatibility/44130727#44130727}
  */
-export type Indexable<T> = {
-    [key: string | number | symbol]: T;
-} & Omit<T, keyof Array<T> | keyof Object>;
+export type OwnKeys<T, P = Array<T> | Object> = {
+    /*
+     * Note: We can't use `[key: string | number | symbol]: T[K]` here because that would force
+     * all keys to have to be of one type rather than allowing mixing of all three.
+     *
+     * For example, if `T` is an array, then ignore the built-in functions when omitting type `V` from entries.
+     * This results in filtering the "plain" array (without built-ins).
+     * They could be added back in with `& Array<T>`.
+     * As such, that would make use of the default, interface-based logic by casting arrays to
+     * an object for filtering, then back to an array for usability.
+     */
+    [K in keyof T as K extends (string | number | symbol)
+        ? K
+        : never
+    ]: T[K];
+} & Omit<T, keyof P>;
 
 
 /**
@@ -100,19 +116,19 @@ export type OmitValues<T, V = never> = {
 
 /**
  * Companion to built-in `Pick` except for picking all keys containing the specified value
- * types instead of keys.
+ * types instead of keys, maintaining if keys were optional or required.
  *
- * If the result after picking the specified value is null or undefined,
+ * If the result after picking the specified value is null, undefined, or never,
  * then the key is removed as well.
  *
  * @see [Filtering out keys if they extend a type]{@link https://stackoverflow.com/questions/49397567/how-to-remove-properties-via-mapped-type-in-typescript/63990350#63990350}
  */
-export type PickKeysContainingValues<T, V> = keyof {
-    [K in keyof Indexable<T> as Extract<Indexable<T>[K], V> extends
+export type PickValues<T, V> = {
+    [K in keyof T as Extract<T[K], V> extends
         never | null | undefined
             ? never
             : K
-    ]: Extract<Indexable<T>[K], V>;
+    ]: Extract<T[K], V>;
 };
 
 

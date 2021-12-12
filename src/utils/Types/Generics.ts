@@ -6,6 +6,12 @@
  *  - `readonly` = Make properties immutable.
  *  - `-` = Remove specified modifier (e.g. `-readonly` or `-?`).
  *
+ * [`any` vs `unknown`]{@link https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability}:
+ * - It's typically better when writing generic types to favor `unknown` over `any`.
+ * - `unknown` is more typesafe than `any` because it forces the uses/extensions of
+ *    the type to specify an actual type (e.g. [function example]{@link https://www.typescriptlang.org/docs/handbook/2/functions.html#unknown}).
+ * - `any` lets anything go, so there is little-to-no type safety when writing generics.
+ *
  * [Notes about `Record`]{@link https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type}:
  * - Record<string, never> == {}
  * - Record<string, undefined> == { [optional keys]: undefined }
@@ -16,6 +22,7 @@
  * @see [Mapping types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html}
  * @see [Modifying modifiers while mapping types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#mapping-modifiers}
  * @see [Conditional types and `infer`]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#inferring-within-conditional-types}
+ * @see [Conditional types and `infer` release notes]{@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#type-inference-in-conditional-types}
  * @see [Getting type from another declared generic-type variable]{@link https://stackoverflow.com/questions/18215899/get-type-of-generic-parameter/62733441#62733441}
  * @see [Example `IF` conditional type]{@link https://stackoverflow.com/questions/65659576/how-to-define-a-conditional-return-type-based-on-if-an-object-property-is-set-in/65661015#65661015}
  * @see [`infer`]{@link https://stackoverflow.com/questions/60067100/why-is-the-infer-keyword-needed-in-typescript}

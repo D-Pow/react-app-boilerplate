@@ -154,14 +154,12 @@ export type PickOptional<T, DEEP extends boolean = false> = { // `DEEP` must be 
  * Optionally, recurses through nested objects if `DEEP` is true.
  */
 export type PickRequired<T, DEEP extends boolean = false> = {
-    [K in keyof T as undefined extends T[K]
+    [K in keyof T as K extends keyof PickOptional<T, DEEP>
         ? never
         : K
-    ]: DEEP extends false
-        ? T[K]
-        : T[K] extends Optional<Record<string, unknown>>
-            ? PickRequired<T[K], DEEP>
-            : T[K];
+    ]: T[K] extends Record<string, unknown>
+        ? PickRequired<T[K], DEEP>
+        : T[K];
 };
 
 

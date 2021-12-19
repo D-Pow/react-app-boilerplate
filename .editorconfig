@@ -10,6 +10,10 @@ indent_size = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
 indent_brace_style = 1tbs
+spaces_around_brackets = inside
 
-[{package.json,.yml}]
+[*.{sh,profile,bash,*rc,*conf*,properties}]
+spaces_around_brackets = none
+
+[{package.json,.yaml,.yml}]
 indent_size = 2

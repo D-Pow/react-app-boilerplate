@@ -94,8 +94,7 @@ export type Nullable<T, OnlyNull = false> = OnlyNull extends false
  *
  * @see [`ValueOf` example]{@link https://stackoverflow.com/questions/49285864/is-there-a-valueof-similar-to-keyof-in-typescript/49286056#49286056}
  */
-export type ValueOf<O, K extends keyof O> = O[K];
-
+export type ValueOf<O, K extends keyof O = keyof O> = O[K];
 
 /**
  * Companion to built-in `Omit` except for omitting all value types of an Object

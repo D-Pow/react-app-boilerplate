@@ -182,6 +182,213 @@ export type PartialDeep<T, NT = never> = {
 
 
 /**
+ * Converts an arrays entries to a Union type (i.e. `(Val1 | Val2 | ...)`.).
+ *
+ * @see [Inspiration]{@link https://stackoverflow.com/questions/45251664/typescript-derive-union-type-from-tuple-array-values}
+ */
+export type UnionArrayEntries<Arr extends Array<unknown>> = Arr[number];
+
+
+
+/*****
+ * Helpful type utils and shortcuts for boolean logic.
+ *
+ * @see [Inspiration: Lack of and/or/not expressions in TS]{@link https://github.com/microsoft/TypeScript/issues/31579}
+ *****/
+
+
+/**
+ * Negates a boolean type expression.
+ *
+ * Optionally, define the true/false return types instead of `true`/`false`.
+ */
+export type Not<BoolCheck, TrueReturn = true, FalseReturn = false> =
+    BoolCheck extends TrueReturn | true
+        ? FalseReturn
+        : TrueReturn;
+
+
+/**
+ * Ensures all boolean type expressions in the specified tuple are true.
+ *
+ * Optionally, define the true/false return types instead of `true`/`false`.
+ */
+export type And<BoolChecks, TrueReturn = true, FalseReturn = false> =
+    // Accept arrays of both booleans and the parent-specified return type
+    BoolChecks extends Array<TrueReturn> | Array<true>
+        ? TrueReturn
+        : FalseReturn;
+
+
+/**
+ * Checks if at least one boolean type expression in the specified tuple is true.
+ *
+ * Optionally, define the true/false return types instead of `true`/`false`.
+ */
+export type Or<BoolChecks, TrueReturn = true, FalseReturn = false> =
+    // Like `And<>`, accept both booleans and desired return types
+    BoolChecks extends Array<TrueReturn> | Array<boolean>
+        // To execute `Or<>` instead of `And<>`, check if *any* value matches `TrueReturn`, not *all*
+        ? TrueReturn extends ValueOf<BoolChecks>
+            ? TrueReturn
+            : FalseReturn
+        : never;
+
+
+/**
+ * Simplifies the check of whether or not type `Child` extends type `Parent`
+ * so you don't have to write the ternary statement yourself, dramatically
+ * improving the readability of your code by removing multiple nested layers
+ * of `extends` clauses.
+ *
+ * Note: For optional keys in `Child`, you MUST specify `Optional<myType>`, otherwise
+ * it will fail because `number extends (number | undefined) === (true | false)`.
+ *
+ * @example Ensure your array is the correct type.
+ * type IsNumberArray<T> = IsA<T, Array<number>>;
+ * const numArr = [ 3, 4, 5 ];
+ * IsNumberArray<typeof numArr>;  // true
+ *
+ * @example Check if a type is a valid object/array/anything index type.
+ * type IndexSignature = string | number | symbol;
+ * const potentialKeys = [ 'a', 7, {} ];
+ * type ValidKeyTypes = Extract<(typeof potentialKeys)[number], IndexSignature>;
+ * type ValidKeys = Array<ValidKeyTypes>;
+ * class MyClass<T extends Array<IndexSignature>> {
+ *     [V: IndexSignature]: any;
+ *
+ *     constructor(...initialKeys: T) {
+ *         for (const K of initialKeys) {
+ *             this[K] = null;
+ *         }
+ *     }
+ * }
+ * const validKeys: ValidKeys = [ 'a', 8 ];
+ * new MyClass(...validKeys);
+ *
+ * @example Simplify inference/type declarations with boolean logic. {@link NumberRestricted}
+ *
+ *
+ * @see [`Infer` docs (old but good examples)]{@link https://www.typescriptlang.org/docs/handbook/advanced-types.html#type-inference-in-conditional-types}
+ * @see [`Infer` docs (new but fewer examples)]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#inferring-within-conditional-types}
+ */
+export type IsA<Child, Parent, TrueReturn = true, FalseReturn = false> = Child extends Parent
+    ? TrueReturn
+    : FalseReturn;
+
+
+
+/*****
+ * Other helpful typedefs that aren't directly related to TS internals or boolean logic.
+ *****/
+
+
+/**
+ * If the key is able to be an index value for objects, arrays, etc.
+ */
+export type IsIndexSignature<T> = Or<[IsA<T, string>, IsA<T, number>, IsA<T, symbol>]>;
+
+
+/**
+ * Ensures number `N` is restricted to not match any of the specified criteria.
+ * Returns `N` if it matches all criteria or `never` if it fails even one.
+ *
+ * All criteria default to the most permissive; toggle them off by declaring them `false`.
+ */
+export type NumberRestricted<
+    N extends number,
+    Options extends {
+        positive?: boolean;
+        negative?: boolean;
+        zero?: boolean;
+        decimals?: boolean;
+    } = {
+        positive: true;
+        negative: true;
+        zero: true;
+        decimals: true;
+    }
+> = IsA<And<[
+    // Filter out generic number types, like Infinity and NaN, so we're only dealing with "real" numbers
+    Not<IsA<number, N>>,
+    // All criteria must be met - either the flag is true|undefined, or `N` doesn't match the number-type format
+    And<[
+        Or<[
+            IsA<Options['positive'], Optional<true>>,
+            Not<And<[
+                IsA<Optional<Options['positive']>, Optional<false>>,
+                IsA<`${N}`, `${string}`>
+            ]>>,
+            IsA<`${N}`, '0'>,
+            IsA<`${N}`, `-${string}`>,
+        ]>,
+        Or<[
+            IsA<Options['negative'], Optional<true>>,
+            Not<And<[
+                IsA<Optional<Options['negative']>, Optional<false>>,
+                IsA<`${N}`, `-${string}`>,
+            ]>>,
+        ]>,
+        Or<[
+            IsA<Options['zero'], Optional<true>>,
+            Not<And<[
+                IsA<Optional<Options['zero']>, Optional<false>>,
+                IsA<N, 0>,
+            ]>>,
+        ]>,
+        Or<[
+            IsA<Options['decimals'], Optional<true>>,
+            Not<And<[
+                IsA<Optional<Options['decimals']>, Optional<false>>,
+                IsA<`${N}`, `${string}.${string}`>,
+            ]>>,
+        ]>,
+    ]>
+]>, true, N, never>; // If all `And<>` results are true, then return `N`, else `never`
+
+
+/**
+ * Infers the nested type from TypeScript generic types.
+ *
+ * Doesn't include DOM types.
+ *
+ * TODO
+ *  - Simplify with boolean logic above.
+ *  - Find a better way to infer nested generics than to hard-code them like this.
+ */
+export type InferGenericBuiltin<T, Default = T> =
+    T extends Promise<infer I> ? I
+    : T extends PromiseLike<infer I> ? I
+    : T extends Array<infer I> ? I
+    : T extends ArrayLike<infer I> ? I
+    : T extends ReadonlyArray<infer I> ? I
+    : T extends ConcatArray<infer I> ? I
+    : T extends (...args: (infer A)[]) => infer R ? (...args: A[]) => R
+    : T extends TypedPropertyDescriptor<infer I> ? I
+    : T extends Partial<infer I> ? I
+    : T extends Required<infer I> ? I
+    : T extends Readonly<infer I> ? I
+    : T extends Record<string, infer I> ? I
+    : T extends Pick<infer I, infer K> ? I
+    : T extends Omit<infer I, infer K> ? I
+    : T extends Exclude<infer I, infer K> ? I
+    : T extends Extract<infer I, infer K> ? I
+    : T extends NonNullable<infer I> ? I
+    : T extends Parameters<infer I> ? I
+    : T extends ReturnType<infer I> ? I
+    : T extends ConstructorParameters<infer I> ? I
+    : T extends InstanceType<infer I> ? I
+    : T extends ThisType<infer I> ? I
+    : T extends ThisParameterType<infer I> ? I
+    : T extends OmitThisParameter<infer I> ? I
+    : T extends Uppercase<infer I> ? I
+    : T extends Lowercase<infer I> ? I
+    : T extends Capitalize<infer I> ? I
+    : T extends Uncapitalize<infer I> ? I
+    : Default;
+
+
+/**
  * Overwrites a type or interface, `T`, with all the keys/values from the type or
  * interface, `NT`, resulting in the intersection of the two objects.
  *

@@ -34,7 +34,14 @@
 /**
  * Valid JSON primitive types.
  */
-export type JsonPrimitive = string | number | boolean | null | Array<JsonPrimitive> | { [key: string]: JsonPrimitive };
+export type JsonPrimitive = (
+    string
+    | number
+    | boolean
+    | null
+    | Array<JsonPrimitive>
+    | { [key: string]: JsonPrimitive }
+);
 
 
 /**
@@ -79,12 +86,6 @@ export type Optional<T> = T | undefined;
 export type Nullable<T, OnlyNull = false> = OnlyNull extends false
     ? Optional<T> | null
     : T | null;
-
-
-/**
- * Makes all top-level keys optional.
- */
-export type OptionalKeys<O, K extends keyof O> = Partial<Pick<O, K>> & Omit<O, K>
 
 
 /**

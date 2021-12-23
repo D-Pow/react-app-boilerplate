@@ -45,6 +45,10 @@ export interface ContextFactoryOptions<ContextState> {
     displayName?: string;
 }
 
+// TODO Add flag for useReducer instead of useState for more complex state.
+//  See:
+//  - https://reactjs.org/docs/hooks-reference.html#usereducer
+//  - https://reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down
 /**
  * Creates a new Context with the respective Consumer and Provider for component use.
  * A new Context is created each time this function is called so call it outside your

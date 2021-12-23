@@ -12,7 +12,7 @@ trim_trailing_whitespace = true
 indent_brace_style = 1tbs
 spaces_around_brackets = inside
 
-[*.{sh,profile,bash,*rc,*conf*,properties}]
+[*.{sh,profile,bash,*rc,properties,env,*conf,*config}]
 spaces_around_brackets = none
 
 [{package.json,.yaml,.yml}]

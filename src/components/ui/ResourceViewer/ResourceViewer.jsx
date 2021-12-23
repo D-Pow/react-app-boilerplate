@@ -99,4 +99,5 @@ ResourceViewer.propTypes = {
     ]),
 };
 
+// TODO Stop from re-rendering if parent re-renders
 export default React.memo(ResourceViewer);

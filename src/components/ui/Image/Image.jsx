@@ -5,12 +5,13 @@ import { importAssetAsync } from '@/utils/Events';
 import { extractFinalPathnameSegmentFromUrl, isUrl } from '@/utils/BrowserNavigation';
 import AppContext, { AppContextFields } from '@/utils/AppContext';
 
+// TODO Don't reload images that have already been loaded
 function Image({
     className = '',
     src = '',
     alt,
     fluidImage = true,
-    updateAppContext = true,
+    updateAppContext = false,
     onLoad = () => {},
     aria = {},
 }) {

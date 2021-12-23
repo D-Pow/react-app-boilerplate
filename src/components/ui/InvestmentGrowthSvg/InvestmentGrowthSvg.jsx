@@ -72,6 +72,7 @@ class InvestmentGrowthSvg extends React.Component {
     constructor(props) {
         super(props);
 
+        // TODO See if this can be put in class property
         this.previousFrequency.current = STARTING_POSITION;
     }
 

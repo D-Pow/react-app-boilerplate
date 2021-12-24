@@ -1,4 +1,10 @@
-import { useState, useReducer, useEffect, useRef } from 'react';
+import {
+    useState,
+    useEffect,
+    useCallback,
+    useReducer,
+    useRef,
+} from 'react';
 
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/utils/Events';
 import { getQueryParams, pushQueryParamOnHistory } from '@/utils/BrowserNavigation';
@@ -97,6 +103,35 @@ export function usePrevious(value, {
 
     // Return previous value (`useEffect` is run after re-renders so `ref` will still hold the old value)
     return ref.current.value;
+}
+
+/**
+ * `useReducer()` with an async `reducer()` function.
+ *
+ * `initialValue` and `initialValueInit()` must still be synchronous.
+ *
+ * @param {function} reducer - Async reducer for `useReducer(reducer)`.
+ * @param {any} [initialValue] - Initial value for `useReducer(reducer, initialValue)`.
+ * @param {function} [initialValueInit] - Initial value generator function for `useReducer(reducer, initialValue, initialValueInit)`.
+ * @returns {[ any, function(any): Promise<any> ]} - The `state` value/`dispatch()` function for `useReducer()`.
+ *
+ * @see [Related StackOverflow answer]{@link https://stackoverflow.com/questions/53146795/react-usereducer-async-data-fetch/62554888#62554888}
+ */
+export function useReducerAsync(reducer, initialValue, initialValueInit) {
+    const [ state, setState ] = useState(() =>
+        initialValueInit
+            ? initialValueInit(initialValue)
+            : initialValue,
+    );
+    const dispatch = useCallback(async (action) => {
+        const newState = await reducer(state, action);
+
+        setState(newState);
+
+        return newState;
+    }, [ state, reducer ]);
+
+    return [ state, dispatch ];
 }
 
 /**

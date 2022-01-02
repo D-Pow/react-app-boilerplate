@@ -51,6 +51,11 @@ const Paths = (() => {
             pathConfig.ABS = path.resolve(pathMappings.ROOT.ABS, pathConfig.REL);
         }
 
+        if (/\\/.test(pathConfig.ABS + pathConfig.REL)) {
+            pathConfig.ABS = normalizePathWithForwardSlashes(pathConfig.ABS);
+            pathConfig.REL = normalizePathWithForwardSlashes(pathConfig.REL);
+        }
+
         // Recurse if nested path config present
         Object.values(pathConfig)
             .filter(configVal => configVal instanceof Object)
@@ -59,11 +64,30 @@ const Paths = (() => {
 
     Object.values(pathMappings).forEach(pathConfig => setAbsPaths(pathConfig));
 
-    pathMappings.getFileAbsPath = (...pathSegments) => path.resolve(...pathSegments);
-    pathMappings.getFileRelPath = (...pathSegments) => path.relative(...pathSegments);
+    pathMappings.normalize = normalizePathWithForwardSlashes;
+    pathMappings.getFileAbsPath = (...pathSegments) => pathMappings.normalize(path.resolve(...pathSegments));
+    pathMappings.getFileRelPath = (...pathSegments) => pathMappings.normalize(path.relative(...pathSegments));
 
     return pathMappings;
 })();
+
+
+/**
+ * Normalizes a path, always using `/` instead of `\\` and removing any trailing slashes.
+ *
+ * Note: This is useful and safe because
+ * - `/` is supported on both Posix and Windows (see: [path.sep]{@link https://nodejs.org/docs/latest-v16.x/api/path.html#pathsep}).
+ * - Trailing slashes are preserved in the standard [path.normalize()]{@link https://nodejs.org/docs/latest-v16.x/api/path.html#pathnormalizepath} function.
+ * - Passing paths with backslashes into the RegExp constructor causes one of the two slashes to be removed,
+ *   i.e. `new RegExp('path\\to\\file') == /path\to\file/` instead of `/path\\to\\file/`,
+ *   meaning we'd have to manually add an extra slash in any function using a path in its RegExp logic.
+ *
+ * @param {string} pathStr - Path string to normalize.
+ * @returns {string} - Normalized path string.
+ */
+function normalizePathWithForwardSlashes(pathStr = '') {
+    return path.normalize(pathStr).replace(/\\/g, '/').replace(/\/$/, '');
+}
 
 
 const FileTypeRegexes = {
@@ -179,12 +203,7 @@ function getOutputFileName(
     // Remove absolute path up to the root directory, if they exist.
     // Depending on the loader/plugin options, the path may be relative or absolute,
     // so handle all cases to ensure consistent output.
-    filenameWithRelativePath = filenameWithRelativePath.replace(
-        new RegExp(`${Paths.ROOT.ABS + '[/\\\\]*'}`
-            // Fix RegExp converting `\\` in Windows' paths to `\` by adding an additional `\\`, i.e. `new RegExp('path\\to\\file') == /path\to\file/` instead of `/path\\to\\file/`
-            .replace(/(?<!\\)\\(?!\\)/g, '\\\\')),
-        '',
-    );
+    filenameWithRelativePath = Paths.normalize(filenameWithRelativePath);
 
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
@@ -192,7 +211,7 @@ function getOutputFileName(
         : path.extname(fileNameFull); // babel.config.js  -->  .js
     const fileNameWithoutExtension = fileNameFull.replace(fileExtension, '');
     const filePath = path.dirname(filenameWithRelativePath);
-    const filePathInsideSrc = filePath.replace(new RegExp(`.*${Paths.SRC.REL}[/\\\\]*`), '');
+    const filePathInsideSrc = filePath.replace(new RegExp(`.*${Paths.SRC.REL}/?`), '');
 
     const outputFileName = [
         fileNameWithoutExtension,

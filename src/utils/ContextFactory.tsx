@@ -15,14 +15,17 @@ import type {
 
 import type { Nullable, PartialDeep } from '@/utils/Types';
 
+
 // `Context.Provider` with `value` already populated
 type ProviderWithPopulatedValue<ContextState> = Omit<ReactProvider<ContextState>, 'value' | 'propTypes' | '$$typeof'>;
 // `Context.Provider` with optional object keys
 type ProviderWithOptionalEntries<ContextState> = PartialDeep<ReactProvider<ContextState>>;
 // `Context.Provider` as a React component (regardless of class or functional component)
 type ProviderAsComponent<ContextState> = ComponentType<ProviderWithPopulatedValue<ContextState>>;
+
+
 // `Context.Provider` combining all the above with the required essentials for `<MyContext.Provider>` and `useContext(MyContext)`
-type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithOptionalEntries<ContextState>)
+export type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithOptionalEntries<ContextState>)
     & {
         (props?: object): ReactElement | null; // Expresses that the object typedef (in `MyType & { ... }`) is a function, which allows additional properties to be added to the function (e.g. `MyFuncComp.$$typeof`)
         $$typeof: symbol;
@@ -30,7 +33,7 @@ type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithO
 
 // Overwrite `Context` to accept `Provider` as a React component.
 // Cannot redeclare `Context` from import b/c it won't take effect throughout the whole app.
-interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provider'> {
+export interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provider'> {
     Provider: Provider<ContextState>;
 }
 
@@ -44,6 +47,7 @@ export interface ContextFactoryOptions<ContextState> {
     defaultStateValue?: Nullable<ContextState>;
     displayName?: string;
 }
+
 
 // TODO Add flag for useReducer instead of useState for more complex state.
 //  See:

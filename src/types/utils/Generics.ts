@@ -20,6 +20,7 @@
  * @see [Utility types]{@link https://www.typescriptlang.org/docs/handbook/utility-types.html}
  * @see [Generic types]{@link https://www.typescriptlang.org/docs/handbook/2/generics.html}
  * @see [Mapping types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html}
+ * @see [Catch-all types (any, void, never, etc.)]{@link https://www.typescriptlang.org/docs/handbook/type-compatibility.html#any-unknown-object-void-undefined-null-and-never-assignability}
  * @see [Modifying modifiers while mapping types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#mapping-modifiers}
  * @see [Conditional types and `infer`]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#inferring-within-conditional-types}
  * @see [Conditional types and `infer` release notes]{@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#type-inference-in-conditional-types}

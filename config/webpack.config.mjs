@@ -178,6 +178,8 @@ const webpackConfig = {
                         options: {
                             // See: https://react-svgr.com/docs/options/
                             // outDir: `${Paths.BUILD_OUTPUT.REL}/assets`,
+                            // TODO: Investigate options used in CRA: https://github.com/facebook/create-react-app/blob/5614c87bfbaae0ce52ac15aedd2cd0f91ffd420d/packages/react-scripts/config/webpack.config.js#L391-L398
+                            //  SVGR options: https://react-svgr.com/docs/options
                             ref: true,
                         },
                     },

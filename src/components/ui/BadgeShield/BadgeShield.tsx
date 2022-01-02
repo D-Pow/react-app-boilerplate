@@ -1,7 +1,7 @@
 import { LINKS } from '@/utils/Constants';
 import Image from '@/components/ui/Image';
 
-import type { InferProps } from '@/utils/Types';
+import type { InferProps } from '@/types';
 
 
 function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor: string) {

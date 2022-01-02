@@ -8,7 +8,7 @@ import type {
 
 import type {
     OmitValues,
-} from '@/utils/Types/Generics';
+} from '@/types';
 
 
 export type ComponentInstance = ReactNode | Element;

@@ -11,7 +11,7 @@ import { getQueryParams, pushQueryParamOnHistory } from '@/utils/BrowserNavigati
 import { objEquals } from '@/utils/Objects';
 
 /**
- * @typedef {import('./Types/Generics').JsonPrimitive} JsonPrimitive
+ * @typedef {import('@/types').JsonPrimitive} JsonPrimitive
  */
 /**
  * The type of a hook's setState(value) function's {@code value} parameter.

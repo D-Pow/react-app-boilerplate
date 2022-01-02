@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import type { Optional } from '@/utils/Types';
+import type { Optional } from '@/types';
 
 // Could alternatively be done with /* globals MutationCallback MutationObserverInit */
 // but this is a bit nicer.

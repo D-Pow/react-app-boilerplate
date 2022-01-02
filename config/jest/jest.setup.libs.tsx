@@ -35,7 +35,7 @@ import type {
 
 import type {
     ComponentInstance,
-} from '@/utils/Types';
+} from '@/types';
 
 
 // Prevent automatic redirection since tests will want to render their individual components without
@@ -178,7 +178,7 @@ export function getElementMaybe(funcToGetElement: Function, { callNow = false } 
  * Similarly, using `never` or `Record<string, never>` requires `never` to be in the check (as well as `Record` if that's used instead)
  * since it's a helper type that doesn't actually exist in JS.
  * Thus, simplify all of it by defaulting the value of `O` to `Record<string, undefined>`.
- * See the note about `Record` in Types.ts for more details.
+ * See the note about `Record` in `src/types` for more details.
  *
  * Alternatively, we could split the declarations up into three separate declarations, but then the default value for the `options` object
  * gets lost and the parent calling the function has to manually cast it to one of the types itself. Declarations are as follows:

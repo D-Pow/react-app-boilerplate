@@ -13,7 +13,7 @@ import type {
     Provider as ReactProvider,
 } from 'react';
 
-import type { Nullable, PartialDeep } from '@/utils/Types';
+import type { Nullable, PartialDeep } from '@/types';
 
 
 // `Context.Provider` with `value` already populated

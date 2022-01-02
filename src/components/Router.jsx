@@ -96,7 +96,7 @@ Router.Types = {
 
 Router.propTypes = {
     routes: PropTypes.arrayOf(PropTypes.object).isRequired,
-    ReactRouter: PropTypes.elementType,
+    ReactRouter: PropTypes.oneOf(Object.values(Router.Types)),
     routerProps: PropTypes.object,
     suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
     wrapperProps: PropTypes.object,

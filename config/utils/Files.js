@@ -179,7 +179,12 @@ function getOutputFileName(
     // Remove absolute path up to the root directory, if they exist.
     // Depending on the loader/plugin options, the path may be relative or absolute,
     // so handle all cases to ensure consistent output.
-    filenameWithRelativePath = filenameWithRelativePath.replace(new RegExp(Paths.ROOT.ABS + '/?'), '');
+    filenameWithRelativePath = filenameWithRelativePath.replace(
+        new RegExp(`${Paths.ROOT.ABS + '[/\\\\]*'}`
+            // Fix RegExp converting `\\` in Windows' paths to `\` by adding an additional `\\`, i.e. `new RegExp('path\\to\\file') == /path\to\file/` instead of `/path\\to\\file/`
+            .replace(/(?<!\\)\\(?!\\)/g, '\\\\')),
+        '',
+    );
 
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
@@ -187,7 +192,7 @@ function getOutputFileName(
         : path.extname(fileNameFull); // babel.config.js  -->  .js
     const fileNameWithoutExtension = fileNameFull.replace(fileExtension, '');
     const filePath = path.dirname(filenameWithRelativePath);
-    const filePathInsideSrc = filePath.replace(new RegExp(`\\/?${Paths.SRC.REL}\\/`), '');
+    const filePathInsideSrc = filePath.replace(new RegExp(`.*${Paths.SRC.REL}[/\\\\]*`), '');
 
     const outputFileName = [
         fileNameWithoutExtension,

@@ -24,7 +24,7 @@ type ProviderAsComponent<ContextState> = ComponentType<ProviderWithPopulatedValu
 // `Context.Provider` combining all the above with the required essentials for `<MyContext.Provider>` and `useContext(MyContext)`
 type Provider<ContextState> = (ProviderAsComponent<ContextState> | ProviderWithOptionalEntries<ContextState>)
     & {
-        (props?: object): (ReactElement|null);
+        (props?: object): ReactElement | null; // Expresses that the object typedef (in `MyType & { ... }`) is a function, which allows additional properties to be added to the function (e.g. `MyFuncComp.$$typeof`)
         $$typeof: symbol;
     };
 

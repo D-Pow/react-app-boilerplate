@@ -362,7 +362,10 @@ function getGitignorePathsWithExtraGlobStars() {
 
 
 function stripJsComments(jsStr) {
-    return jsStr.replace(/(?<!\S)\/\/[^\n]*\n/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+    return jsStr
+        .replace(/(?<!\S)\/\/[^\n]*/g, '') // Remove comments using `//`
+        .replace(/\/\*[\s\S]*?\*\//g, '') // Remove comments using `/*` and `/**`
+        .replace(/[\s\n]+(?=\n)/g, ''); // Remove extra newlines and hanging space characters at the ends of lines that were introduced by comment deletion above
 }
 
 

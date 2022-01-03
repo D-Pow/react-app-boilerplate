@@ -117,7 +117,7 @@ const FileTypeRegexes = {
     },
 
     Svg: /\.svg$/,
-    Binaries: /\.(png|gif|jpe?g|ico|pdf)$/,
+    Binaries: /\.(png|gif|jpe?g|ico|webp|mp3|mp4|pdf)$/,
     Text: /\.(txt|md|log|tex)$/,
     Fonts: /\.(ttf|woff2?|eot)$/,
     get Assets() {

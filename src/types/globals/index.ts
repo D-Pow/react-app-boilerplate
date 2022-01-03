@@ -9,11 +9,12 @@
  *
  * Thus, add global support for these (or any home-brewed types) here.
  *
- * Note: We would not want to add these libs to the tsconfig's [types]{@link https://www.typescriptlang.org/tsconfig#types}
- * or [typeRoots]{@link https://www.typescriptlang.org/tsconfig#typeRoots} arrays because
+ * Note: We would not want to add these libs to the tsconfig's [`types`]{@link https://www.typescriptlang.org/tsconfig#types}
+ * or [`typeRoots`]{@link https://www.typescriptlang.org/tsconfig#typeRoots} arrays because
  * those override the ability to parse the default `node_modules(/pkg?)/@types/` dirs.
  *
  * @file
  */
 
-import 'reflect-metadata';
+import './augmentations';
+import './assets';

@@ -46,15 +46,15 @@ export type DecoratorFunctionLegacy = (
      * Class (constructor) or class instance that is/owns the property being decorated.
      * Note: Class instances won't have instance variables/arrow functions due to `constructor()` not being called, yet.
      */
-    target: (Object|Function),
+    target: object | ((...args: any[]) => any),
     /**
      * Name of the decorated property; undefined if on the class itself.
      */
-    propertyName: (string|undefined),
+    propertyName?: string,
     /**
      * Property descriptor of the decorated property; undefined if on the class itself.
      */
-    propertyDescriptor: (PropertyDescriptor|undefined),
+    propertyDescriptor?: PropertyDescriptor,
 ) => any;
 
 

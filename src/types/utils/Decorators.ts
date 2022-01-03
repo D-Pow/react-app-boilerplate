@@ -57,7 +57,62 @@ export type DecoratorFunctionLegacy = (
     propertyDescriptor: (PropertyDescriptor|undefined),
 ) => any;
 
+
 export type Decorator = (DecoratorFunctionNew | DecoratorFunctionLegacy);
+
+
+/**
+ * `Reflect` metadata keys introduced by [reflect-metadata]{@link https://www.npmjs.com/package/reflect-metadata}.
+ *
+ * Note: Generally speaking, these only really work best when in TypeScript files; JavaScript files will often miss
+ * many details from a given `Reflect.metadata` key.
+ *
+ * @example - Print each metadata key's value
+ * `@MyClass.printMetadata`
+ * class MyClass {
+ *     private static printMetadata(...args: Parameters<DecoratorFunctionLegacy>): ReturnType<DecoratorFunctionLegacy>;
+ *     private static printMetadata(target: object, key?: string, propertyDescriptor?: PropertyDescriptor) {
+ *         console.log('metadata:', { // or `arguments?.callee` to get the function name
+ *             target,
+ *             key,
+ *             propertyDescriptor,
+ *             designType: Reflect.getMetadata(DecoratorMetadataKeys.Type, target, key ?? ''),
+ *             designParamTypes: Reflect.getMetadata(DecoratorMetadataKeys.ParamTypes, target, key ?? ''),
+ *             designReturnType: Reflect.getMetadata(DecoratorMetadataKeys.ReturnType, target, key ?? ''),
+ *         });
+ *     }
+ *
+ *     `@MyClass.printMetadata`
+ *     x: string = 'hi';
+ *
+ *     // @MyClass.printMetadata // Not valid due to "real" private variable (`private` is still accessible, `#` is not)
+ *     static #printVars(name: string, varObj: Record<string, any>) {
+ *         console.log(name, varObj);
+ *     }
+ *
+ *     `@MyClass.printMetadata`
+ *     sayHi(a: string, b: string, c: number) {
+ *         // console.log('args.callee', arguments.callee);
+ *         MyClass.#printVars('sayHi', {
+ *             a,
+ *             b,
+ *             c,
+ *             x: this.x,
+ *         });
+ *         this.x += a + b + `${c}`;
+ *     }
+ * }
+ * const myClass = new MyClass();
+ * myClass.sayHi('A', 'B', 7);
+ *
+ * @see [`reflect-metadata` in action blog]{@link http://blog.wolksoftware.com/decorators-metadata-reflection-in-typescript-from-novice-to-expert-part-4}
+ * @see [TypeScript decorator docs]{@link https://www.typescriptlang.org/docs/handbook/decorators.html#metadata}
+ */
+export const DecoratorMetadataKeys = {
+    Type: 'design:type',
+    ParamTypes: 'design:paramtypes',
+    ReturnType: 'design:returntype',
+};
 
 
 /**

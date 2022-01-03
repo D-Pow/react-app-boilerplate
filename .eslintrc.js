@@ -328,6 +328,7 @@ module.exports = {
                  * @see [Conditional function return types]{@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html}
                  */
                 'no-redeclare': 'off',
+                'no-dupe-class-members': 'off',
                 'no-unused-vars': [ 'warn', {
                     args: 'none',
                 }],

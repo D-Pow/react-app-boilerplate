@@ -150,6 +150,123 @@ export function matrixToObj(matrix) {
 }
 
 /**
+ * Generates a path from the root `<html>` element to the specified HTML element/node.
+ * Created by doing a recursive tree traversal from the leaf element passed as an arg
+ * to the top-level element (usually `<html>`), tracking each element's index in its parent's
+ * child list along the way.
+ *
+ * Note: Unique IDs will change if the DOM changes.
+ *
+ * @param {(HTMLElement|Node)} targetNode - Element for which to get the unique ID.
+ * @returns {string} - Unique ID for the element, based on its location in the DOM.
+ */
+export function getElementLocationInDom(targetNode) {
+    const pieces = [ 'doc' ];
+    let node = targetNode;
+
+    while (node && node.parentNode) {
+        // `Node.childNodes` returns all children, including elements, plain text, comments, etc.
+        // `Element.children` returns only HTML elements.
+        // Each have their own pros/cons. See: https://stackoverflow.com/questions/7935689/what-is-the-difference-between-children-and-childnodes-in-javascript
+        pieces.push(Array.prototype.indexOf.call(node.parentNode.children, node));
+        // `parentNode` is slightly more reliable than `parentElement` for special elements, e.g. DocumentFragment, SVGs, etc.
+        node = node.parentNode;
+    }
+
+    return pieces.join('/');
+}
+
+/**
+ * Gets the inheritance chain from the specified object up to `Object` (the top-level class all others extend from).
+ *
+ * @param {any} obj - Object for which to get the inheritance chain.
+ * @returns {any[]} - List of inherited prototypes, from the passed argument (index 0) to Object (index lenght-1).
+ * @see [StackOverflow inspiration]{@link https://stackoverflow.com/questions/17329462/javascript-prototype-chaining-get-parent-of-parent-of}
+ */
+export function getPrototypeChain(obj) {
+    let proto = Object.getPrototypeOf(obj);
+    const prototypeChain = [ proto ];
+
+    while (proto) {
+        proto = Object.getPrototypeOf(proto);
+
+        if (proto) {
+            // Object is the top-level prototype which has no parents from which it extended.
+            // In this case, `proto` will be null, so don't add that to the prototype chain list.
+            prototypeChain.push(proto);
+        }
+    }
+
+    return prototypeChain;
+}
+
+/**
+ * Adds a new `uniqueId` field to all non-primitive objects.
+ *
+ * The unique ID is lazy-loaded, meaning it won't be instantiated until called, so
+ * objects created later could possibly have lower IDs than those created earlier if
+ * the earlier ones didn't access `uniqueId`.
+ *
+ * IDs are generated in a naive way: Simply incrementing from 1 to infinity
+ * as more objects are created.
+ *
+ * Overwriting a variable with a new instance will cause that new instance to have
+ * a new unique ID.
+ *
+ * @param {Object} options
+ * @param {boolean} [options.resetIds] - If calling the function again after it's already been called should reset all IDs.
+ */
+export function augmentObjectsWithUniqueIds({
+    resetIds = false,
+} = {}) {
+    if (Object.__uniqueIdCounter && !resetIds) {
+        return;
+    }
+
+    Object.defineProperties(Object, {
+        __uniqueIdCounter: {
+            configurable: true, // Allow the property to be rewritten in case `resetIds` is true
+            enumerable: false,
+            writable: true,
+            value: 1,
+        },
+        uniqueIdCounter: {
+            configurable: true,
+            enumerable: false,
+            get() {
+                // Auto-increment the global unique-ID counter if it's requested (see `prototype.uniqueId` below)
+                return this.__uniqueIdCounter++;
+            },
+        },
+    });
+
+    Object.defineProperties(Object.prototype, {
+        __uniqueId: {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: null,
+        },
+        uniqueId: {
+            configurable: true,
+            enumerable: false,
+            get() {
+                if (!this.__uniqueId) {
+                    // If `__uniqueId` isn't defined, then instantiate it with the global ID counter.
+                    // This only happens on the first request for it; subsequent reads will use `__uniqueId`
+                    this.uniqueId = Object.uniqueIdCounter;
+                }
+
+                return this.__uniqueId;
+            },
+            set(newId) {
+                this.__uniqueId = newId;
+            },
+        },
+    });
+}
+
+/**
  * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
  *
  * Particularly useful for converting CLI arg objects created by `yargs-parser`, `minimist`, etc.

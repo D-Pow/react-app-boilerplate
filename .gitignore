@@ -5,3 +5,4 @@ dist/
 tsDist/
 coverage/
 .env
+*.tsbuildinfo

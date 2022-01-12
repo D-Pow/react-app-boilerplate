@@ -55,5 +55,58 @@
     ],
     "exclude": [
         "./node_modules"
-    ]
+    ],
+
+    /**
+     * Configuring `ts-node` for running TypeScript files
+     * --------------------------------------------------
+     * - Website: https://typestrong.org/ts-node/docs/configuration
+     * - Usage: https://github.com/TypeStrong/ts-node#api
+     * - Options: https://github.com/TypeStrong/ts-node#options
+     *
+     * Most of the description is in the .npmrc, but the gist is that this allows running TypeScript files without
+     * having to compile them to JavaScript first, i.e. no more `tsc && node output.js`!
+     *
+     * It does so by using a custom NodeJS module loader, so we can't use `--experimental-specifier-resolution=node`.
+     * Since the project doesn't use `type: module` but does use `.mjs` files, we must override the base tsconfig's
+     * `module` field - which is set to `ESNext` for source code - to be CJS. This can be reverted when package.json
+     * is changed to `type: module`. See the .npmrc for more details.
+     *
+     *
+     * Regarding `paths` import aliases
+     * --------------------------------
+     * Other than avoiding unnecessary disk writes to run TypeScript files, ts-node is particularly
+     * helpful because without it, `paths` import aliases aren't respected in the local environment, even if
+     * they're defined in tsconfig. `tsconfig-paths` fixes this without having to duplicate the definitions in
+     * package.json like you would if you used `module-alias` (https://www.npmjs.com/package/module-alias).
+     * To use it, we must require `tsconfig-paths/register` so it's loaded before the `node` process starts
+     * running ts-node. This also helps with the lack of alias translation when building with `tsc` (especially
+     * if `target` is ES >= 2019 where aliases are supported).
+     * This is needed for ts-node regardless of how it's called (see .npmrc for a list of ways to call ts-node).
+     * Alternatively, we could add `-r tsconfig-paths/register` in the command line, but putting it here
+     * ensures it works all the time, making npm scripts more DRY.
+     */
+    "ts-node": {
+        "require": [
+            "tsconfig-paths/register"
+        ],
+        "preferTsExts": true,
+        "experimentalReplAwait": true,
+        /**
+         * Makes ts-node run faster by skipping type checking (see: https://github.com/TypeStrong/ts-node/discussions/1276).
+         * Ironically, in multiple places (website, GitHub issues, etc.), the ts-node team recommends disabling
+         * type chceking (even though it's active by default) because type checking, building, and other "formal"
+         * app operations should use `tsc` instead.
+         */
+        "transpileModule": false,
+//        "moduleTypes": { // Activate this if you change package.json to `type: module`
+//            "*.ts": "esm",
+//            "*.json": "esm"
+//        },
+        "compilerOptions": {
+            "module": "CommonJS",
+            // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser
+            "isolatedModules": false
+        }
+    }
 }

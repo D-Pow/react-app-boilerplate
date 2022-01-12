@@ -5,17 +5,17 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import TerserJSPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin';
+import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin.js';
 
-import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin';
+import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
 import {
     Paths,
     FileTypeRegexes,
     getOutputFileName,
     ImportAliases,
     LocalLanHostIpAddresses,
-} from './utils';
-import babelConfig from './babel.config';
+} from './utils/index.js';
+import babelConfig from './babel.config.js';
 
 import packageJson from '../package.json';
 import manifestJson from '../src/manifest.json';

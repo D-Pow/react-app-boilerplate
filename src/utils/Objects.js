@@ -215,6 +215,7 @@ export function getPrototypeChain(obj) {
  *
  * @param {Object} options
  * @param {boolean} [options.resetIds] - If calling the function again after it's already been called should reset all IDs.
+ * @see [Crypto API]{@link https://developer.mozilla.org/en-US/docs/Web/API/Crypto}
  */
 export function augmentObjectsWithUniqueIds({
     resetIds = false,
@@ -228,14 +229,18 @@ export function augmentObjectsWithUniqueIds({
             configurable: true, // Allow the property to be rewritten in case `resetIds` is true
             enumerable: false,
             writable: true,
-            value: 1,
+            value: self.crypto?.randomUUID
+                ? self.crypto.randomUUID()
+                : 1,
         },
         uniqueIdCounter: {
             configurable: true,
             enumerable: false,
             get() {
                 // Auto-increment the global unique-ID counter if it's requested (see `prototype.uniqueId` below)
-                return this.__uniqueIdCounter++;
+                return self.crypto?.randomUUID
+                    ? self.crypto.randomUUID()
+                    : this.__uniqueIdCounter++;
             },
         },
     });

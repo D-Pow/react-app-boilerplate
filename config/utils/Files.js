@@ -259,51 +259,16 @@ function findFile(
         dfs = false,
     } = {},
 ) {
-    const packageJsonFileName = 'package.json';
-    const gitIgnoreFileName = '.gitignore';
-    let currentDir = path.resolve(startDirectory || __dirname);
+    let currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
 
-    if (!startDirectory) {
-        // TODO Could also be done with `npm prefix` - https://docs.npmjs.com/cli/v8/commands/npm-prefix
-        // We have no clue where to start, so go up to the root
-        // so that we can then search downwards later
-        while (!fs.readdirSync(currentDir).includes(packageJsonFileName)) {
-            currentDir = path.resolve(currentDir, '..');
-        }
-
-        // Add any files from .gitignore to ignoredFiles
-        const rootDir = currentDir;
-        const gitIgnoreFilePath = path.resolve(rootDir, gitIgnoreFileName);
-
-        if (fs.existsSync(gitIgnoreFilePath)) {
-            const gitIgnoredFiles = fs.readFileSync(gitIgnoreFilePath)
-                .toString()
-                .split('\n')
-                .filter(entryLine => entryLine);
-
-            ignoredFiles = new Set([
-                ...ignoredFiles,
-                '.git',
-                ...gitIgnoredFiles,
-            ]);
-        }
-    }
-
-    const ignoredFilesRegexString = [ ...ignoredFiles ]
-        // Replace globs with regex
-        .map(fileOrPathGlob => fileOrPathGlob
-            // Escape periods
-            .replace(/\./g, '\\.')
-            // Replace directory globs (`**`) with regex (`.*`)
-            // `**/` and `/` --> `.*/`
-            .replace(/^(\*\*)?\//, '.*/?')
-            // `/**` and `/` --> `/.*`
-            .replace(/\/(\*\*)?$/, '/?.*'),
-        )
-        // Prepend an optional `.*/` to ignore all leading directories like git does normally
-        .map(fileOrPathRegexString => `(^(.*/)?${fileOrPathRegexString}$)`)
-        .join('|');
-    const ignoredFilesRegex = new RegExp(ignoredFilesRegexString, 'i');
+    const ignoredFilesRegex = getGitignorePaths({
+        ignoredFiles,
+        asRegex: true,
+    });
+    ignoredFiles = getGitignorePaths({
+        ignoredFiles,
+        asSet: true,
+    });
 
     const dirsToSearch = [];
 
@@ -360,34 +325,130 @@ function findFile(
 
 
 /**
- * Prepends/appends `**` to leading/trailing `/` so the directories (and files if leading slash)
- * are ignored at every level.
+ * Returns a list of paths (files and directories) that are ignored by git based on the `.gitignore` file
+ * defined by `Paths.ROOT`.
  *
- * This isn't necessary for git, but might be for other glob-star interpreters.
+ * Optionally, can format the entries in a particular way or append paths to be ignored as well.
  *
- * @returns {string[]} - Glob entries from `.gitignore` with additional double glob-stars (`**`) for files/directories.
+ * @param {Object} [options]
+ * @param {string[]} [options.ignoredFiles] - Files/directories to ignore when searching; always includes `.git/` and `.gitignore` contents.
+ * @param {boolean} [options.asSet=false] - If paths should be returned as a Set instead of a list.
+ * @param {boolean} [options.asRegex=false] - If paths should be returned as a RegExp instead of collection of paths (surrounds each entry by `\b` and `.*` to work at all nesting levels).
+ * @param {boolean} [options.asGlobs=false] - If paths should be returned as a collection of globs instead of paths (prepends `**` to any dir/file and appends `/**` to dirs).
+ * @returns {(string[]|Set<string>|RegExp)} - Resulting path-ignore content.
  */
-function getGitignorePathsWithExtraGlobStars() {
-    return fs.readFileSync(findFile('.gitignore'))
-        .toString()
-        .split('\n')
-        .filter(ignoredPath => ignoredPath)
-        .map(ignoredPath => ignoredPath.replace(/(?:^[^*])|(?:[^*]$)/g, (fullStrMatch, strIndex) => {
-            // All strings matching the regex don't have either leading `**/`, trailing `/**`, or both.
+function getGitignorePaths({
+    ignoredFiles = [],
+    asSet = false,
+    asRegex = false,
+    asGlobs = false,
+} = {}) {
+    const gitIgnoreFileName = '.gitignore';
+    const gitIgnoreFilePath = path.resolve(Paths.ROOT.ABS, gitIgnoreFileName);
 
-            if (fullStrMatch === '/') {
-                // Directory without leading/trailing `**`
-                return strIndex === 0 ? '**/' : '/**';
-            }
+    if (!fs.existsSync(gitIgnoreFilePath)) {
+        throw new Error(`File not found (path: ${gitIgnoreFilePath})`);
+    }
 
-            if (strIndex === 0) {
-                // File or directory without leading `/`
-                return `**/${fullStrMatch}`;
-            }
+    let gitIgnoredFiles = [];
 
-            // File
-            return fullStrMatch;
-        }));
+    const setGitignoreFilesByProcess = () => {
+        /*
+         * Git Porcelain shows all files with a special char string for a status.
+         * `!! <entry>` == ignored and `?? <entry>` == untracked, so filter out
+         * those lines to serve as the git-ignored entries.
+         *
+         * Note: Even if .gitignore specifies `*.fileExt`, it will expand it during
+         * this command to be `real/path/name.fileExt`.
+         * This is fine b/c it means git already found all the ignored files, so we
+         * don't have to.
+         *
+         * Alternatives:
+         * - git ls-files -i -o --directory --exclude-from=/path/to/.gitignore
+         *   Basically the same except more complex.
+         *   `-i` = "ignored" - Files that currently exist in the repo.
+         *   `-o` = "others" - Untracked files that currently exist.
+         *   `--directory` = Show ignored/untracked directories instead of all the files contained within
+         *   `--exclude-from` = Include all "ignore" entries from the specified file, regardless of whether or not they currently exist
+         * - Reading content directly from the file and converting them all to
+         *   regex manually, e.g. `.fileExt => ^*.fileExt`, `dir/ => dir/.*`, `dir/** => dir/.*`, etc.
+         *   which is error-prone and unreliable.
+         */
+        gitIgnoredFiles = childProcess
+            .execSync('git status --porcelain --ignored')
+            .toString()
+            // Split entries by newline
+            .split('\n')
+            // Filter out empty lines and all those that aren't ignored files (`!!`)
+            .filter(entry => /^(!!|\?\?) /.test(entry))
+            // Remove the ignored-file prefix and quoted strings (added by the terminal if the path contains spaces)
+            .map(ignoredFilePath => ignoredFilePath.replace(/(^.. )|"/g, ''))
+            // Remove blank lines
+            .filter(Boolean);
+    };
+    const setGitignoreFilesByManualParsing = () => {
+        /*
+         * Ignore the error. It was probably caused by some sort of primitive/static parsers, e.g. an IDE trying to show
+         * linting errors from ESLint configuration in real time.
+         * These require the file to be read manually/directly.
+         * Thus, in the event that a child-process isn't sufficient for them, allow
+         * reading the .gitignore file manually.
+         */
+        gitIgnoredFiles = fs.readFileSync(gitIgnoreFilePath)
+            .toString()
+            // Split entries by newline
+            .split('\n')
+            // Remove blank lines
+            .filter(Boolean);
+    };
+
+    try {
+        setGitignoreFilesByProcess();
+    } catch (e) {
+        setGitignoreFilesByManualParsing();
+    }
+
+    if (!gitIgnoredFiles?.length) {
+        setGitignoreFilesByManualParsing();
+    }
+
+    ignoredFiles = Array.from(new Set([
+        ...ignoredFiles,
+        '.git/',
+        ...gitIgnoredFiles,
+    ]));
+
+    if (asRegex) {
+        const ignoredFilesRegexString = ignoredFiles
+            // Escape periods to keep them as period-strings instead of regex-dots
+            .map(fileOrPathGlob => fileOrPathGlob.replace(/^\./g, '\\.'))
+            // Prepend/append `.*/` to ignore all leading/trailing directories like git does normally
+            .map(fileOrPathRegexString => `(.*\\b${fileOrPathRegexString}\\b.*)`)
+            .join('|');
+
+        return new RegExp(ignoredFilesRegexString, 'i');
+    }
+
+    if (asGlobs) {
+        /*
+         * If globs are desired instead of regex, we need to add `**` to anything
+         * that begins/ends with a `/` so the result is the equivalent of
+         * `**\/dir/**` or `**\/file.ext`.
+         *
+         * Note that using the non-capturing look-(ahead|behind) means that we don't have
+         * to use separate `.replace()` calls for each, and can instead just inject `**`
+         * at the beginning/end of any .gitignore entry that contains slashes.
+         *
+         * Otherwise, if the entry has no slashes, then just prepend the `**\/` so the
+         * file name/extension is matched at all directory levels.
+         */
+        ignoredFiles = ignoredFiles.map(path => path
+            .replace(/(^(?=\/))|((?<=\/)$)/g, '**')
+            .replace(/(^(?!\*))/g, '**/'),
+        );
+    }
+
+    return asSet ? new Set(ignoredFiles) : ignoredFiles;
 }
 
 
@@ -466,7 +527,7 @@ module.exports = {
     FileTypeRegexes,
     getOutputFileName,
     findFile,
-    getGitignorePathsWithExtraGlobStars,
+    getGitignorePaths,
     stripJsComments,
     tsconfig,
     ImportAliases,

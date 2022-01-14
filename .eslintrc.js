@@ -3,7 +3,7 @@ const path = require('path');
 const {
     Paths,
     findFile,
-    getGitignorePathsWithExtraGlobStars,
+    getGitignorePaths,
     parseCliArgs,
     ImportAliases,
 } = require('./config/utils');
@@ -21,7 +21,9 @@ const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
 
 const gitIgnorePaths = parseCliArgs().ignorePath === '.gitignore'
     ? [] // `--ignore-path .gitignore` already specified
-    : getGitignorePathsWithExtraGlobStars(); // `--ignore-path someOtherFile` specified, so append .gitignore contents to ignored patterns
+    : getGitignorePaths({ // `--ignore-path someOtherFile` specified, so append .gitignore contents to ignored patterns
+        asGlobs: true,
+    });
 
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {

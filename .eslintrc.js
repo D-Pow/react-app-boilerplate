@@ -2,15 +2,15 @@ const path = require('path');
 
 const {
     Paths,
-    findFile,
+    FileTypeRegexes,
     getGitignorePaths,
+    tsconfig,
     parseCliArgs,
     ImportAliases,
 } = require('./config/utils');
 
 // ESLint requires config to be either a JSON or CommonJS file, it doesn't support ESM.
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
-const babelConfigPath = findFile('babel.config.js');
 
 const rootDir = Paths.ROOT.ABS;
 
@@ -32,16 +32,32 @@ module.exports = {
         browser: true,
         es2021: true,
     },
-    parser: '@babel/eslint-parser',
+    parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
-        babelOptions: {
-            configFile: babelConfigPath,
-        },
+
+        /* @babel/eslint-parser options */
+        // babelOptions: {
+        //     configFile: babelConfigPath,
+        // },
+
+        /* @typescript-eslint/parser options */
+        // Just like Babel's parser, we must specify a path to the config file.
+        // However, don't do it with `project: tsconfigPath` b/c that only allows
+        // one single tsconfig.json file to be parsed, ignoring the others.
+        // Since, we have a tsconfig.json in both the root and tests/ directories,
+        // specify the top-level dir from which to find all nested tsconfig files.
+        tsconfigRootDir: rootDir,
+        // Extra extensions other than `.[tj]sx?` to be defined explicitly
+        extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),
+        // Since we aren't setting `project`, we unfortunately have to set these even
+        // though they're ALREADY SET (yes, it's a bug from the TS-ESLint-parser team).
+        jsxPragma: null,
+        lib: tsconfig.compilerOptions.lib,
     },
     ignorePatterns: [
         '**/node_modules/**',
@@ -318,10 +334,9 @@ module.exports = {
         'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },
     overrides: [
-        // Use specified parser for TypeScript files
+        // Use specific configs for TypeScript files
         {
             files: [ '*.ts?(x)' ],
-            parser: '@typescript-eslint/parser',
             rules: {
                 /**
                  * Allow function overloads for different return types based on param instead of type by ignoring

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const childProcess = require('child_process');
 
 const Paths = (() => {
     const pathMappings = {
@@ -38,8 +39,13 @@ const Paths = (() => {
     };
 
     // `__dirname` doesn't exist in Node ESM, so use `process.cwd()` instead.
-    // Or, simply find the root dir from its package.json, as done here.
-    pathMappings.ROOT.ABS = path.dirname(findFile('package.json'));
+    // Or, simply find the root dir dynamically, as done here.
+    pathMappings.ROOT.ABS = path.resolve(
+        childProcess
+            .execSync('npm prefix')
+            .toString()
+            .replace(/\n/g, ''),
+    );
 
     function setAbsPaths(pathConfig, prevRelPath) {
         if (prevRelPath) {

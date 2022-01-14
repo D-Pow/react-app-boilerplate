@@ -1,6 +1,7 @@
 const path = require('path');
 
 const {
+    Paths,
     findFile,
     getGitignorePathsWithExtraGlobStars,
     parseCliArgs,
@@ -11,7 +12,7 @@ const {
 // Node cannot `require()` .mjs files either, so we can't use our custom `Paths` object.
 const babelConfigPath = findFile('babel.config.js');
 
-const rootDir = path.dirname(findFile('package.json'));
+const rootDir = Paths.ROOT.ABS;
 
 // Extensions supported by ESLint (includes JavaScript, TypeScript, and their derivatives)
 const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')

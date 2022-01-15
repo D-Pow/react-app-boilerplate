@@ -279,7 +279,7 @@ function findFile(
         // fileName is basename, so get the absolute path to it from current directory
         const filePath = path.resolve(currentDir, fileName);
         const fileExists = fs.existsSync(filePath);
-        const fileIsIgnored = ignoredFiles.has(fileName) || ignoredFilesRegex.test(filePath);
+        const fileIsIgnored = ignoredFiles.has(fileName) || ignoredFiles.has(`${fileName}/`) || ignoredFilesRegex.test(filePath);
 
         if (!fileExists || fileIsIgnored) {
             continue;

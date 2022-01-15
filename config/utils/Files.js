@@ -419,36 +419,58 @@ function getGitignorePaths({
     ]));
 
     if (asRegex) {
-        const ignoredFilesRegexString = ignoredFiles
-            // Escape periods to keep them as period-strings instead of regex-dots
-            .map(fileOrPathGlob => fileOrPathGlob.replace(/^\./g, '\\.'))
-            // Prepend/append `.*/` to ignore all leading/trailing directories like git does normally
-            .map(fileOrPathRegexString => `(.*\\b${fileOrPathRegexString}\\b.*)`)
-            .join('|');
-
-        return new RegExp(ignoredFilesRegexString, 'i');
+        return convertPathsToRegex(ignoredFiles);
     }
 
     if (asGlobs) {
-        /*
-         * If globs are desired instead of regex, we need to add `**` to anything
-         * that begins/ends with a `/` so the result is the equivalent of
-         * `**\/dir/**` or `**\/file.ext`.
-         *
-         * Note that using the non-capturing look-(ahead|behind) means that we don't have
-         * to use separate `.replace()` calls for each, and can instead just inject `**`
-         * at the beginning/end of any .gitignore entry that contains slashes.
-         *
-         * Otherwise, if the entry has no slashes, then just prepend the `**\/` so the
-         * file name/extension is matched at all directory levels.
-         */
-        ignoredFiles = ignoredFiles.map(path => path
-            .replace(/(^(?=\/))|((?<=\/)$)/g, '**')
-            .replace(/(^(?!\*))/g, '**/'),
-        );
+        ignoredFiles = convertPathsToGlobs(ignoredFiles);
     }
 
     return asSet ? new Set(ignoredFiles) : ignoredFiles;
+}
+
+
+/**
+ * Converts all paths to a RegExp matching them at any level of nesting.
+ *
+ * @param {string[]} paths - Paths to convert to RegExp.
+ * @param {string} [regexFlags='i'] - Flags for the RegExp.
+ * @returns {RegExp} - Single RegExp instance with which to match paths.
+ */
+function convertPathsToRegex(paths, regexFlags = 'i') {
+    const ignoredFilesRegexString = paths
+        // Escape periods to keep them as period-strings instead of regex-dots
+        .map(fileOrPathGlob => fileOrPathGlob.replace(/^\./g, '\\.'))
+        // Prepend/append `.*/` to capture all leading/trailing directories (e.g. like git does normally)
+        .map(fileOrPathRegexString => `(.*\\b${fileOrPathRegexString}\\b.*)`)
+        .join('|');
+
+    return new RegExp(ignoredFilesRegexString, regexFlags);
+}
+
+
+/**
+ * Converts all path entries to globs that will match at any level of nesting.
+ *
+ * @param {string[]} paths - Paths to convert to globs.
+ * @returns {string[]} - Array of path entries as globs.
+ */
+function convertPathsToGlobs(paths) {
+    /*
+     * Add `**` to anything that begins/ends with a `/` so the result is the
+     * equivalent of `**\/dir/**` or `**\/file.ext`.
+     *
+     * Note that using the non-capturing look-(ahead|behind) means that we don't have
+     * to use separate `.replace()` calls for each, and can instead just inject `**`
+     * at the beginning/end of any path entry that contains slashes.
+     *
+     * Otherwise, if the entry has no slashes, then just prepend the `**\/` so the
+     * file name/extension is matched at all directory levels.
+     */
+    return paths.map(path => path
+        .replace(/(^(?=\/))|((?<=\/)$)/g, '**')
+        .replace(/(^(?!\*))/g, '**/'),
+    );
 }
 
 
@@ -528,6 +550,8 @@ module.exports = {
     getOutputFileName,
     findFile,
     getGitignorePaths,
+    convertPathsToRegex,
+    convertPathsToGlobs,
     stripJsComments,
     tsconfig,
     ImportAliases,

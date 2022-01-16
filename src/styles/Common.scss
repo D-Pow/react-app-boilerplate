@@ -45,6 +45,12 @@ $container-max-widths: (
     xxl: 1440px
 );
 
+@each $color, $rgb in $theme-colors {
+    .bg-#{$color} {
+        background: $rgb;
+    }
+}
+
 .text-center {
     text-align: center;
 }

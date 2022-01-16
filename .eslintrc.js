@@ -51,6 +51,7 @@ module.exports = {
         // one single tsconfig.json file to be parsed, ignoring the others.
         // Since, we have a tsconfig.json in both the root and tests/ directories,
         // specify the top-level dir from which to find all nested tsconfig files.
+        // TODO Consider `declarationMap`, project `references`, and similar for selective inclusion of tests/tsconfig.json
         tsconfigRootDir: rootDir,
         // Extra extensions other than `.[tj]sx?` to be defined explicitly
         extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),

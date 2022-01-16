@@ -78,6 +78,15 @@ const Paths = (() => {
 })();
 
 
+const gitignoreFiles = getGitignorePaths();
+const gitignoreFilesRegex = convertPathsToRegex(gitignoreFiles);
+const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
+
+const babelConfigPath = findFile('babel.config.js');
+const tsconfigPath = findFile('tsconfig.json');
+const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
+
+
 /**
  * Normalizes a path, always using `/` instead of `\\` and removing any trailing slashes.
  *
@@ -259,16 +268,30 @@ function findFile(
         dfs = false,
     } = {},
 ) {
-    let currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
+    if (!findFile.foundFiles) {
+        findFile.foundFiles = new Map();
+    }
 
-    const ignoredFilesRegex = getGitignorePaths({
-        ignoredFiles,
-        asRegex: true,
-    });
-    ignoredFiles = getGitignorePaths({
-        ignoredFiles,
-        asSet: true,
-    });
+    if (findFile.foundFiles.has(filename)) {
+        return findFile.foundFiles.get(filename);
+    }
+
+    let currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
+    let ignoredFilesRegex;
+
+    // Short-circuit recursive calls by only checking if `ignoredFiles` is a list, not a Set.
+    // If so, it's passed from an upper call,rather than a recursive call.
+    if (ignoredFiles.length) {
+        const combinedIgnoredFiles = getGitignorePaths(ignoredFiles);
+
+        ignoredFiles = new Set(combinedIgnoredFiles);
+        ignoredFilesRegex = convertPathsToRegex(combinedIgnoredFiles);
+    } else if (ignoredFiles instanceof Set) {
+        ignoredFilesRegex = convertPathsToRegex([ ...ignoredFiles ]);
+    } else {
+        ignoredFiles = new Set(gitignoreFiles);
+        ignoredFilesRegex = gitignoreFilesRegex;
+    }
 
     const dirsToSearch = [];
 
@@ -284,6 +307,8 @@ function findFile(
         if (!fileExists || fileIsIgnored) {
             continue;
         }
+
+        findFile.foundFiles.set(path.basename(fileName), filePath);
 
         if (fileName === filename) {
             return filePath;
@@ -482,8 +507,6 @@ function stripJsComments(jsStr) {
 }
 
 
-const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(findFile('tsconfig.json')).toString()));
-
 /**
  * Object containing normalized import aliases of the form `{ alias: pathMatch }`.
  *
@@ -553,6 +576,11 @@ module.exports = {
     convertPathsToRegex,
     convertPathsToGlobs,
     stripJsComments,
+    gitignoreFiles,
+    gitignoreFilesRegex,
+    gitignoreFilesGlobs,
+    babelConfigPath,
+    tsconfigPath,
     tsconfig,
     ImportAliases,
 };

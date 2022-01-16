@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A simpler React boilerplate than CRA with more useful built-in features",
   "main": "index.js",
+  "types": "types/index.d.ts",
   "author": "D-Pow",
   "license": "MIT",
   "repository": {

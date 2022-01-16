@@ -29,7 +29,6 @@
 //        "checkJs": true, // allows TS to check code imported from JS files for type accuracy, both from `lib` and JSDoc (e.g. `location.href = 5` and `/** @type {number} */ const x = 'hi'` throw errors)
                          // Not used currently b/c many things throw superfluous errors, including undefined `useState()` values, dynamic component imports don't match expected types, etc.
 //        "skipLibCheck": true, // skip checking typings.d.ts files for JS imports (useful in case the same type is defined in different node_modules libs)
-        "declaration": true, // generates typings.d.ts files
         "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`
         "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
         "experimentalDecorators": true, // allows use of `@decorator` syntax
@@ -39,7 +38,9 @@
         "newLine": "lf", // Ensure emitted files (.d.ts and .js) use LF for newlines
         "incremental": true, // Saves info from each build to a file in the output dir to allow for faster subsequent builds (e.g. don't rebuild this file if it hasn't changed)
         "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
-        "outDir": "tsDist", // output dir of running `npx tsc`; don't use if using webpack/ts-loader, or override it manually in ts-loader options
+        "outDir": "dist", // Output dir of running `npx tsc`; don't use if using webpack/ts-loader, or override it manually in ts-loader options
+        "declaration": true, // Generates typings.d.ts files
+        "declarationDir": "dist/types", // Output dir for types
 //        "noEmit": true, // don't emit outputs
 //        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
 //        "rootDir": "..", // project dir/parent dir of source code;

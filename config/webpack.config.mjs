@@ -30,6 +30,9 @@ import manifestJson from '../src/manifest.json';
 const isProduction = process.env.NODE_ENV === 'production';
 const allowAccessFromOtherDevicesOnLan = Boolean(process.env.ALLOW_LAN_ACCESS);
 const useHttps = false;
+// If this app is a library to be consumed by other apps instead of a standalone website
+// TODO Update output configs to consider this option
+const isLibrary = false;
 const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
 
 const indexHtmlTitle = 'React App Boilerplate';
@@ -123,7 +126,13 @@ const webpackConfig = {
                             configFile: `${Paths.ROOT.ABS}/tsconfig.json`,
                             /** @type {import('typescript').CompilerOptions} */
                             compilerOptions: {
-                                outDir: null, // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)
+                                // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)
+                                outDir: null,
+                                // Deactivate declaration output if this isn't a library meant to be consumed, e.g. a website to be deployed
+                                ...(isLibrary ? {} : {
+                                    declaration: isLibrary,
+                                    declarationDir: isLibrary,
+                                }),
                             },
                         },
                     },

@@ -40,12 +40,30 @@ const Paths = (() => {
 
     // `__dirname` doesn't exist in Node ESM, so use `process.cwd()` instead.
     // Or, simply find the root dir dynamically, as done here.
-    pathMappings.ROOT.ABS = path.resolve(
-        childProcess
-            .execSync('npm prefix')
+    try {
+        pathMappings.ROOT.ABS = path.resolve(
+            childProcess
+                .execSync('npm prefix')
+                .toString()
+                .replace(/\n/g, ''),
+        );
+    } catch (couldntRunCommandDueToNpmNotInPathError) {
+        // child_process defaults to using `/bin/sh` on Unix, but if the user's
+        // default SHELL isn't `sh`, then `npm` won't be on `$PATH`. Thus, spawn a
+        // process using the specified `$SHELL` env var and fallback to Bash if undefined.
+        // Generally speaking, this will only ever happen if running in an IDE that
+        // is started with a non-login shell and/or if node/npm are defined in .profile
+        // instead of .bashrc (e.g. JetBrains IDEs background processes like ESLint).
+        pathMappings.ROOT.ABS = path.dirname(childProcess
+            .spawnSync('npm prefix', {
+                shell: process.env.SHELL || '/bin/bash',
+                cwd: __dirname,
+            })
+            .stdout
             .toString()
             .replace(/\n/g, ''),
-    );
+        );
+    }
 
     function setAbsPaths(pathConfig, prevRelPath) {
         if (prevRelPath) {

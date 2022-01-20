@@ -484,6 +484,8 @@ function convertPathsToRegex(paths, regexFlags = 'i') {
     const ignoredFilesRegexString = paths
         // Escape periods to keep them as period-strings instead of regex-dots
         .map(fileOrPathGlob => fileOrPathGlob.replace(/^\./g, '\\.'))
+        // Remove asterisks since all .gitignore entries' regexes are pre-/appended with `.*`
+        .map(fileOrPathGlob => fileOrPathGlob.replace(/\*/g, ''))
         // Prepend/append `.*/` to capture all leading/trailing directories (e.g. like git does normally)
         .map(fileOrPathRegexString => `(.*\\b${fileOrPathRegexString}\\b.*)`)
         .join('|');

@@ -6,12 +6,23 @@ import { MimeTypes } from '@/utils/Constants';
  * Optionally, creates a data URL if a `mimeType` is specified.
  *
  * @param {string} str - String to Base64-encode.
- * @param {string} [mimeType] - Mime type of the content; include this if you want a [Data URL]{@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}.
+ * @param {Object} [options]
+ * @param {string} [options.mimeType] - Mime type of the content; include this if you want a [Data URL]{@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}.
+ * @param {boolean} [options.urlEncode] - If the string should be Base64-URL-encoded instead of just Base64-encoded (e.g. for crypto).
  * @returns {string} - Base64-encoded string.
+ *
+ * @see [Why `urlEncode` needs to be specified]{@link https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem}
+ * @see [Base64 vs Base64-URL]{@link https://stackoverflow.com/questions/28100601/decode-url-safe-base64-in-javascript-browser-side}
+ * @see [Verifying JWT which uses Base64-URL-encoded strings]{@link https://stackoverflow.com/questions/56357330/how-to-verify-an-es256-jwt-token-using-web-crypto-when-public-key-is-distributed}
  */
-export function encodeToBase64(str, mimeType) {
+export function encodeToBase64(str, {
+    mimeType = '',
+    urlEncode = false,
+} = {}) {
     try {
-        const base64String = btoa(str);
+        const base64String = urlEncode
+            ? btoa(unescape(encodeURIComponent(str)))
+            : btoa(str);
 
         if (mimeType) {
             return `data:${mimeType};base64,${base64String}`;
@@ -25,9 +36,13 @@ export function encodeToBase64(str, mimeType) {
     return null;
 }
 
-export function decodeBase64(base64String) {
+export function decodeBase64(base64String, {
+    urlDecode = false,
+} = {}) {
     try {
-        return atob(base64String);
+        return urlDecode
+            ? decodeURIComponent(escape(atob(base64String)))
+            : atob(base64String);
     } catch (e) {
         // Could not decode, likely a malformed Base64 string
     }

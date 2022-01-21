@@ -1,6 +1,7 @@
 import { MOBILE_BROWSER_REGEX, MOBILE_OR_TABLET_REGEX } from '@/utils/Constants';
 import { getGridBreakpoints } from '@/utils/Scss';
 
+
 /**
  * Determines if the host browser is a mobile device.
  * Optionally, include the following in the check:
@@ -29,9 +30,11 @@ export function isMobileBrowser({ includeTablets = false, onlyXsScreenSizes = fa
     return isMobileBrowser;
 }
 
+
 export function isSafariBrowser() {
     return self.safari != null || navigator.vendor.toLocaleLowerCase().includes('apple');
 }
+
 
 /**
  * Determines if the browser is made from Microsoft. Automatically includes IE but selectively includes Edge.
@@ -54,13 +57,16 @@ export function isMicrosoftBrowser(includeEdge = true) {
     return Boolean(navigator.userAgent.toLowerCase().match(new RegExp(browserRegex, 'i')));
 }
 
+
 export function isChromeBrowser() {
     return Boolean(self.chrome);
 }
 
+
 export function isFirefoxBrowser() {
     return navigator.userAgent.toLowerCase().includes('firefox');
 }
+
 
 /**
  * Determines if a PWA is running from "installed" mode instead of from the browser.

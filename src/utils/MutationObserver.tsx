@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 import type { Optional } from '@/types';
 
+
 // Could alternatively be done with /* globals MutationCallback MutationObserverInit */
 // but this is a bit nicer.
 type MutationCallback = globalThis.MutationCallback;
@@ -45,6 +46,7 @@ export function createMutationObserver(
 
     return observer;
 }
+
 
 /**
  * Creates a `MutationObserver` that is automatically disconnected after a component unmounts.

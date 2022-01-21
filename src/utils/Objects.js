@@ -1,5 +1,6 @@
 import { hyphenOrSnakeCaseToCamelCase } from '@/utils/Text';
 
+
 /**
  * Checks if all fields passed into the function exist nested
  * inside each other. This does not check if multiple
@@ -28,6 +29,7 @@ export function validateObjNestedFields(obj, ...nestedFields) {
         && validateObjNestedFields(obj[nextField], fieldsArray.slice(1))
     );
 }
+
 
 /**
  * Attempts to parse a string into an object; stringifies anything else.
@@ -112,6 +114,7 @@ export function convertJson(variable, { keepFunctions = false, spaces = 4 } = {}
     }
 }
 
+
 /**
  * Attempts to parse an object into a vanilla JavaScript object literal.
  *
@@ -126,6 +129,7 @@ export function attemptParseObjLiteral(obj, { keepFunctions = false } = {}) {
         { keepFunctions },
     );
 }
+
 
 /**
  * Inverse of `Object.entries(obj)`: Converts an Nx2 matrix into an object.
@@ -148,6 +152,7 @@ export function matrixToObj(matrix) {
         return obj;
     }, {});
 }
+
 
 /**
  * Generates a path from the root `<html>` element to the specified HTML element/node.
@@ -176,6 +181,7 @@ export function getElementLocationInDom(targetNode) {
     return pieces.join('/');
 }
 
+
 /**
  * Gets the inheritance chain from the specified object up to `Object` (the top-level class all others extend from).
  *
@@ -199,6 +205,7 @@ export function getPrototypeChain(obj) {
 
     return prototypeChain;
 }
+
 
 /**
  * Adds a new `uniqueId` field to all non-primitive objects.
@@ -271,6 +278,7 @@ export function augmentObjectsWithUniqueIds({
     });
 }
 
+
 /**
  * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
  *
@@ -311,6 +319,7 @@ export function objKeysToCamelCase(obj, keepPreviousKeys = false) {
     }, {});
 }
 
+
 /**
  * Tests that the given variables are instances of the given class(es).
  *
@@ -341,6 +350,7 @@ export function areVarsInstancesOf(a, b, ...classes) {
         classes.some(Cls => isInstanceOfClass(variable, Cls)),
     );
 }
+
 
 /**
  * Sorts objects by the specified fields.
@@ -441,6 +451,7 @@ export function sortObjects(
         return reverse ? (-1 * comparatorVal) : comparatorVal;
     }, 0));
 }
+
 
 /**
  * Determines the differences between two objects, returning all nested
@@ -551,6 +562,7 @@ export function diffObjects(obj1, obj2, showArrayIndex = true) {
     return new Set(differences);
 }
 
+
 /**
  * Determines if two objects are equal.
  * Ignores prototypes and inheritance.
@@ -562,6 +574,7 @@ export function diffObjects(obj1, obj2, showArrayIndex = true) {
 export function objEquals(obj1, obj2) {
     return diffObjects(obj1, obj2).size === 0;
 }
+
 
 /**
  * Determines if a given variable is an object.
@@ -626,6 +639,7 @@ export function isObject(variable, {
 
     return checks.every(bool => bool);
 }
+
 
 /**
  * Deep-copies an object. Prevents pointers from being reused, and changes from being
@@ -799,6 +813,7 @@ export function deepCopy(obj) {
 
     return copy;
 }
+
 
 /**
  * Deep-copies an object using JavaScript's internal [Structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm).

@@ -22,6 +22,7 @@ export function getChildName(child) {
     return child.type.name || child.type;
 }
 
+
 /**
  * Determines if a given child is a certain type.
  * Type can be either React.Component or string name of an HTMLElement.
@@ -33,6 +34,7 @@ export function getChildName(child) {
 export function childIsOfType(child, component) {
     return (child.type === component) || (getChildName(child) === component);
 }
+
 
 /**
  * Determines if a given child is a React.Component vs an HTMLElement

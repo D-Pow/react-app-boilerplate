@@ -1,5 +1,6 @@
 import { MimeTypes } from '@/utils/Constants';
 
+
 /**
  * Encodes a string with Base64.
  *
@@ -36,6 +37,7 @@ export function encodeToBase64(str, {
     return null;
 }
 
+
 export function decodeBase64(base64String, {
     urlDecode = false,
 } = {}) {
@@ -49,6 +51,7 @@ export function decodeBase64(base64String, {
 
     return null;
 }
+
 
 /**
  * Extracts the content string from a Base64 data URL.
@@ -72,6 +75,7 @@ export function getTextFromBase64DataUrl(dataUrl = '', decode = false) {
     return decodeBase64(encodedContentString);
 }
 
+
 /**
  * Extracts the mime type from a Base64 data URL.
  *
@@ -90,6 +94,7 @@ export function getMimeTypeFromDataUrl(dataUrl = '') {
 
     return null;
 }
+
 
 /**
  * Gets a {@code Document} from the passed {@code dataUrl}.
@@ -196,6 +201,7 @@ export function extractQuotedStrings(str) {
 
     return str.match(quotedStringRegex);
 }
+
 
 /**
  * Gets all the letters of the english alphabet.

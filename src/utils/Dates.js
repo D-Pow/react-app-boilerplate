@@ -6,6 +6,7 @@ const Days = 24 * Hours;
 const Weeks = 7 * Days;
 const Years = 52 * Weeks;
 
+
 export const TimeInMillis = {
     Milliseconds,
     Seconds,
@@ -16,6 +17,7 @@ export const TimeInMillis = {
     Years,
 };
 
+
 export function getDate(dateStr) {
     if (!dateStr) {
         return new Date();
@@ -23,6 +25,7 @@ export function getDate(dateStr) {
 
     return new Date(Date.parse(dateStr));
 }
+
 
 export function getNumDaysBetween(earlierDateStr, laterDateStr, asDate = true) {
     const earlierDate = getDate(earlierDateStr);

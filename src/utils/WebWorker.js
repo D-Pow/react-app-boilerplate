@@ -1,5 +1,6 @@
 import { MimeTypes } from '@/utils/Constants';
 
+
 /**
  * Creates a new [WebWorker]{@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API}
  * using any of the methods to create one.

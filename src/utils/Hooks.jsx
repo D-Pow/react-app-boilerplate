@@ -10,6 +10,7 @@ import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/util
 import { getQueryParams, pushQueryParamOnHistory } from '@/utils/BrowserNavigation';
 import { objEquals } from '@/utils/Objects';
 
+
 /**
  * @typedef {import('@/types').JsonPrimitive} JsonPrimitive
  */
@@ -32,6 +33,8 @@ import { objEquals } from '@/utils/Objects';
  * @param {(*|Array<*>)} hookReturnVal - Value returned from useMyHook()
  * @returns {React.Component} - Children to render using hookReturnVal
  */
+
+
 /**
  * Component used when class components want to use hooks.
  *
@@ -43,6 +46,7 @@ import { objEquals } from '@/utils/Objects';
 export function Hooked({ hook, hookArgs, children }) {
     return children(hook(hookArgs));
 }
+
 
 /**
  * Tracks the previous value of a variable before it was last updated.
@@ -105,6 +109,7 @@ export function usePrevious(value, {
     return ref.current.value;
 }
 
+
 /**
  * `useReducer()` with an async `reducer()` function.
  *
@@ -134,6 +139,7 @@ export function useReducerAsync(reducer, initialValue, initialValueInit) {
     return [ state, dispatch ];
 }
 
+
 /**
  * @callback hookModifiedForGlobalState
  * @param {*} origHookParams - Parameters for the original hook, passed by calling component.
@@ -149,6 +155,8 @@ export function useReducerAsync(reducer, initialValue, initialValueInit) {
  * @param {number} hookCallerId - Unique ID of the parent that is calling the hook.
  * @returns {undefined}
  */
+
+
 /**
  * Wraps a hook such that all hook instances can access a single global
  * state. Returns the original hook that accepts caller arguments
@@ -192,6 +200,7 @@ export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
     };
 }
 
+
 /**
  * Reads and updates window's localStorage and sessionStorage while allowing
  * React components to re-render based on changes to the value of the stored
@@ -232,6 +241,7 @@ export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
 
     return [ storedState, setState ];
 }
+
 
 /**
  * Hook to read URL query parameters and update a specific key-value pair.
@@ -276,6 +286,7 @@ export function useQueryParams() {
 
     return [ queryParamsObj, setQueryParam ];
 }
+
 
 /**
  * Custom state handler function for useWindowEvent()
@@ -330,6 +341,7 @@ export function useWindowEvent(
     return [ eventState, setEventState ];
 }
 
+
 /**
  * Gets the `key` string value from a keyboard event.
  *
@@ -345,6 +357,7 @@ export function useKeyboardEvent(type = 'down') {
     return useWindowEvent(`key${type}`, { nestedEventField: 'key' });
 }
 
+
 /**
  * Get a hook state array containing the path from the clicked element to the root.
  *
@@ -356,6 +369,7 @@ export function useClickPath() {
 
     return [ clickPath, setEvent ]; // setEvent will be used as setClickPath
 }
+
 
 /**
  * A root-close hook that triggers closing an element based on if the user clicks outside the bounds
@@ -381,6 +395,7 @@ export function useRootClose(acceptableElement, closeElement) {
 
     return [ rootWasClosed, resetRootClosed ];
 }
+
 
 export function useWindowResize() {
     const initialState = {
@@ -411,6 +426,7 @@ export function useWindowResize() {
 
     return { windowSizeState, setWindowSizeState, resetWasSized };
 }
+
 
 /**
  * Determines if the mouse is hovering over an element using JavaScript.
@@ -459,6 +475,7 @@ export function useHover(overrideBoundingClientRect) {
 
     return [ ref, isHovered ];
 }
+
 
 /**
  * Blocks the `document.body` from being scrollable as long as the
@@ -520,6 +537,7 @@ export const useBlockDocumentScrolling = (() => {
     );
 })();
 
+
 /**
  * Returns an array of false booleans that will toggle to true one after another
  * according to the specified `intervalTimeMs`.
@@ -572,6 +590,7 @@ export function useTimedArrayToggle(arrayLength, intervalTimeMs, allowBackwardsT
 
     return [ toggledEntries, triggerArrayToggle ];
 }
+
 
 /**
  * Creates a new {@code BroadcastChannel} with the given name and attaches the

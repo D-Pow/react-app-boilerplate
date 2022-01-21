@@ -2,6 +2,7 @@ export function asNumber(str) {
     return Number(`${str}`.replace(/[^\d.]/g, ''));
 }
 
+
 export function sum(...nums) {
     if (nums.length === 1 && Array.isArray(nums[0])) {
         nums = nums[0];
@@ -9,6 +10,7 @@ export function sum(...nums) {
 
     return nums.reduce((sum, num) => sum + num, 0);
 }
+
 
 export function average(...nums) {
     if (nums.length === 1 && Array.isArray(nums[0])) {
@@ -23,6 +25,7 @@ export function average(...nums) {
         return (prevSum + num) / newNumCount;
     }, 0);
 }
+
 
 export function median(...nums) {
     if (nums.length === 1 && Array.isArray(nums[0])) {
@@ -40,6 +43,7 @@ export function median(...nums) {
     return (sortedNums[mid-1] + sortedNums[mid]) / 2;
 }
 
+
 export function randomNumber(min, max) {
     if (max == null) {
         max = min;
@@ -55,6 +59,7 @@ export function randomNumber(min, max) {
     return lerp(min, max, Math.random());
 }
 
+
 /**
  * Gets the value that is {@code factor} percent
  * between {@code start} and {@code end} via
@@ -68,6 +73,7 @@ export function randomNumber(min, max) {
 export function lerp(start, end, factor) {
     return start + (end - start)*factor;
 }
+
 
 /**
  * Gets the factor/percent that {@code value}
@@ -83,6 +89,7 @@ export function lerp(start, end, factor) {
 export function normalize(start, end, value) {
     return (value - start) / (end - start);
 }
+
 
 /**
  * Converts {@code value} from the scale [{@code fromMin}, {@code fromMax}]
@@ -101,6 +108,7 @@ export function mapValueBetweenRanges(value, fromMin, fromMax, toMin, toMax) {
     return lerp(toMin, toMax, factor);
 }
 
+
 /**
  * Restricts the {@code value} to be in the range [{@code min}, {@code max}],
  * returning either the original {@code value} if it's within the range
@@ -114,6 +122,7 @@ export function mapValueBetweenRanges(value, fromMin, fromMax, toMin, toMax) {
 export function clamp(min, max, value) {
     return Math.min(Math.max(value, min), max);
 }
+
 
 /**
  * Gets a list of numbers that are distributed evenly by a single factor
@@ -136,6 +145,7 @@ export function distributeValuesEvenlyBetween(start, end, numValues) {
         });
 }
 
+
 /**
  * Calculates the factorial of a number, i.e. `num!`.
  *
@@ -147,6 +157,7 @@ export function distributeValuesEvenlyBetween(start, end, numValues) {
 export function factorial(num) {
     return Array.from({ length: num }).reduce((fact, nul, i) => fact*(i+1), 1);
 }
+
 
 /**
  * Gets the permutation (ORDER MATTERS) for the number of choices in the number
@@ -170,6 +181,7 @@ export function permutation(nItems, kChoices, withReplacement = false) {
 
     return factorial(nItems) / factorial(nItems - kChoices);
 }
+
 
 /**
  * Gets the combination (ORDER DOES NOT MATTER) for the number of choices in the number
@@ -197,6 +209,7 @@ export function combination(nItems, kChoices, withReplacement = false) {
 
     return permutation(nItems, kChoices, false) / factorial(kChoices);
 }
+
 
 /**
  * Gets all permutations of the entries of an array.

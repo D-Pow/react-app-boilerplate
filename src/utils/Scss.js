@@ -1,7 +1,9 @@
 import { asNumber } from '@/utils/Numbers';
 import CommonStyles from '@/styles/Common.scss';
 
+
 const { themeColors, gridBreakpoints } = CommonStyles;
+
 
 /**
  * Parses an SCSS variable that was exported via `:export` block into the
@@ -51,9 +53,11 @@ export function parseScssVar(scssStr) {
     }
 }
 
+
 export function getThemeColors() {
     return parseScssVar(themeColors);
 }
+
 
 export function getGridBreakpoints(parsePxStrToNum = true) {
     const mapWithPxInStr = parseScssVar(gridBreakpoints);

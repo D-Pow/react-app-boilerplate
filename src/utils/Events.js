@@ -1,6 +1,7 @@
 import { fetchAsBase64 } from '@/utils/Network';
 import { MimeTypes } from '@/utils/Constants';
 
+
 /**
  * Asynchronously imports the specified binary asset from the 'assets/' folder.
  * Could be images, PDFs, videos, etc.
@@ -32,6 +33,7 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
 
     throw new Error(`${assetRelPath} was not found`);
 }
+
 
 /**
  * Higher-order function that restricts `func` calls to only fire once per `delay` milliseconds.
@@ -79,6 +81,7 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
     };
 }
 
+
 /**
  * Throttles a function to only be called once per time limit.
  *
@@ -115,6 +118,7 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
     };
 }
 
+
 /**
  * Gets the path from the clicked element to the root.
  *
@@ -143,6 +147,7 @@ export function getClickPath(event) {
 
     return clickPath;
 }
+
 
 /**
  * HTML element properties object used in searching for an element
@@ -178,6 +183,7 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
     return elementIsInPath;
 }
 
+
 /**
  * Resets the window scroll location to the top of the screen
  */
@@ -185,6 +191,7 @@ export function scrollWindowToTop() {
     // scrollTo() is supported on all browsers
     self.scrollTo(0, 0);
 }
+
 
 /**
  * Sets the scrolling ability of the whole `document.body`.
@@ -199,6 +206,7 @@ export function scrollWindowToTop() {
 export function setDocumentScrolling(allowScrolling = true) {
     document.body.style.overflow = allowScrolling ? 'auto' : 'hidden';
 }
+
 
 export function downloadDataAsFile(data, fileName, mimeType = MimeTypes.TEXT) {
     const dataBlob = new Blob([ data ], { type: mimeType });

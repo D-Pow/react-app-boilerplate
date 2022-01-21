@@ -272,35 +272,6 @@ export function augmentObjectsWithUniqueIds({
 }
 
 /**
- * Hashes a string according to the algorithm specified by `hash.Algos`.
- *
- * Defaults to SHA-256.
- *
- * @param {string} str - String to hash.
- * @param {string} algo - Algorithm to use.
- * @returns {Promise<string>} - Hashed string.
- * @see [Crypto.subtle hashing API]{@link https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string}
- */
-async function hash(str, algo = hash.Algos.SHA256) {
-    // Encode to UTF-8
-    const utf8IntArray = new TextEncoder().encode(str);
-    // Hash
-    const hashBuffer = await self.crypto.subtle.digest(algo, utf8IntArray);
-    // Convert buffer to bytes - Yes, this needs to be cast to an array even though it has its own `.map()` function
-    const hashBytes = [ ...new Uint8Array(hashBuffer) ];
-    // Convert bytes to readable hex string
-    const hashAsciiHex = hashBytes.map(byte => byte.toString(16).padStart(2, '0')).join('');
-
-    return hashAsciiHex;
-}
-hash.Algos = {
-    SHA1: 'SHA-1',
-    SHA256: 'SHA-256',
-    SHA384: 'SHA-384',
-    SHA512: 'SHA-512',
-};
-
-/**
  * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
  *
  * Particularly useful for converting CLI arg objects created by `yargs-parser`, `minimist`, etc.

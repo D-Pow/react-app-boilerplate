@@ -488,7 +488,7 @@ export function useHover(overrideBoundingClientRect) {
  * @function
  * @param {function(): boolean} shouldBlockScrolling - Function to determine if scrolling should be disabled.
  */
-export const useBlockDocumentScrolling = (() => {
+export const useBlockDocumentScrolling = (function useBlockDocumentScrollingFactory() {
     function useBlockDocumentScrollingHook(shouldBlockScrolling, allHooksBlockingScrollingGlobalState, id) {
         /**
          * Don't return a cleanup function to handle activating scrolling.
@@ -519,6 +519,7 @@ export const useBlockDocumentScrolling = (() => {
     }
 
     function setTrackAllHookCallsState(prevGlobalState, setGlobalState, hookReturnVal, id) {
+        prevGlobalState = [ ...prevGlobalState ];
         const thisHookEntry = prevGlobalState.find(entries => entries.id === id);
 
         if (thisHookEntry == null) {

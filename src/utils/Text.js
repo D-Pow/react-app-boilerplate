@@ -136,10 +136,8 @@ export async function hash(str, algorithm = hash.ALGORITHMS.Sha256) {
     const utf8IntArray = new TextEncoder().encode(str);
     // Hash the string
     const hashBuffer = await self.crypto.subtle.digest(algorithm, utf8IntArray);
-    // Convert buffer to bytes - Yes, this needs to be cast to an array even though it has its own `.map()` function
-    const hashBytes = [ ...new Uint8Array(hashBuffer) ];
-    // Convert bytes to readable hex string
-    const hashAsciiHex = hashBytes.map(byte => byte.toString(16).padStart(2, '0')).join('');
+    // Get hex string from buffer/byte array
+    const hashAsciiHex = byteArrayToHexString(new Uint8Array(hashBuffer));
 
     return hashAsciiHex;
 }
@@ -149,6 +147,48 @@ hash.ALGORITHMS = {
     Sha384: 'SHA-384',
     Sha512: 'SHA-512',
 };
+
+
+/**
+ * Converts an extension of `ArrayBuffer` (e.g. `Uint8Array`) to a hexadecimal string representation.
+ *
+ * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
+ * @returns {string} - The hex representation of the buffer.
+ */
+export function byteArrayToHexString(uint8Array) {
+    // TODO Support types of ArrayBuffers other than Uint8Array
+    // Convert buffer to bytes via spread - Yes, this needs to be cast to an array even though it has its own `.map()` function.
+    // Then, convert bytes to readable hex string.
+    return [ ...uint8Array ].map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+
+/**
+ * Converts a string of hexadecimal characters to a `Uint8Array` byte array.
+ *
+ * Every 2 characters is considered 1 array entry.
+ *
+ * @param {string} hexString - String of hexadecimal characters to convert to a byte array.
+ * @returns {Uint8Array} - Byte array containing the values in the specified hexadecimal string.
+ * @see [Hex to byte array StackOverflow post]{@link https://stackoverflow.com/questions/14603205/how-to-convert-hex-string-into-a-bytes-array-and-a-bytes-array-in-the-hex-strin/69980864#69980864}
+ */
+export function hexStringToByteArray(hexString) {
+    if (hexString.length % 2 !== 0) {
+        throw 'Must have an even number of hex digits to convert to bytes';
+    }
+
+    const numBytes = hexString.length / 2;
+
+    const byteArray = Array.from({ length: numBytes }).reduce((uint8Array, byte, i) => {
+        const bytesStr = hexString.substr(i * 2, 2);
+
+        uint8Array[i] = parseInt(bytesStr, 16);
+
+        return uint8Array;
+    }, new Uint8Array(numBytes));
+
+    return byteArray;
+}
 
 
 /**

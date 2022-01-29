@@ -48,16 +48,25 @@ const Paths = (() => {
                 .replace(/\n/g, ''),
         );
     } catch (couldntRunCommandDueToNpmNotInPathError) {
-        // child_process defaults to using `/bin/sh` on Unix, but if the user's
-        // default SHELL isn't `sh`, then `npm` won't be on `$PATH`. Thus, spawn a
-        // process using the specified `$SHELL` env var and fallback to Bash if undefined.
-        // Generally speaking, this will only ever happen if running in an IDE that
-        // is started with a non-login shell and/or if node/npm are defined in .profile
-        // instead of .bashrc (e.g. JetBrains IDEs background processes like ESLint).
+        /**
+         * child_process defaults to using `/bin/sh` on Unix, but if the user's
+         * default SHELL isn't `sh`, then `npm` won't be on `$PATH`. Thus, spawn a
+         * process using the specified `$SHELL` env var and fallback to Bash if undefined.
+         * Generally speaking, this will only ever happen if running in an IDE that
+         * is started with a non-login shell and/or if node/npm are defined in .profile
+         * instead of .bashrc (e.g. JetBrains IDEs background processes like ESLint).
+         *
+         * Likewise, ensure PATH has been inherited, which doesn't always happen by default.
+         *
+         * @see [PATH not inherited by `spawn`]{@link https://github.com/nodejs/node/issues/12986#issuecomment-300951831}
+         */
         pathMappings.ROOT.ABS = path.dirname(childProcess
             .spawnSync('npm prefix', {
                 shell: process.env.SHELL || '/bin/bash',
                 cwd: __dirname,
+                env: {
+                    PATH: process.env.PATH,
+                },
             })
             .stdout
             .toString()

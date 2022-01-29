@@ -28,7 +28,7 @@ import manifestJson from '../src/manifest.json';
 //  Another options is through module-alias: https://www.npmjs.com/package/module-alias
 
 const isProduction = process.env.NODE_ENV === 'production';
-const allowAccessFromOtherDevicesOnLan = Boolean(process.env.ALLOW_LAN_ACCESS);
+const allowAccessFromAllOrigins = Boolean(process.env.ALLOW_CORS_ACCESS);
 const useHttps = false;
 // If this app is a library to be consumed by other apps instead of a standalone website
 // TODO Update output configs to consider this option
@@ -428,12 +428,22 @@ const webpackConfig = {
     devtool: sourceMap ? 'source-map' : false,
     /** @type {import('@types/webpack-dev-server').Configuration} */
     devServer: {
+        /*
+         * NOTE: You must allow incoming traffic and/or Webpack through your firewall to access the dev-server
+         * from other devices on LAN.
+         */
         ...((exposeServerOnLan) => exposeServerOnLan
-            // NOTE: You must allow incoming traffic and/or webpack through your firewall for this to work.
             ? {
+                allowedHosts: 'all',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST',
+                    'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+                },
                 /**
-                 * Technically, this isn't required anymore since Webpack v5 allows LAN IPs even without setting the host,
-                 * so leaving it blank means `open` goes to `localhost` but the LAN IP is still accessible.
+                 * Technically, it isn't required anymore to explicitly define the IP address for accessing the
+                 * dev-server on local LAN since Webpack v5 allows LAN IPs even without setting the host.
+                 * Leaving it blank means `open` goes to `localhost` but the LAN IP is still accessible.
                  *
                  * Changes the domain from `localhost` to a specific name.
                  * e.g.
@@ -466,7 +476,7 @@ const webpackConfig = {
                 /*
                  * To use your own self-signed cert, use the Https.ts util.
                  */
-            } : {})(allowAccessFromOtherDevicesOnLan),
+            } : {})(allowAccessFromAllOrigins),
         port: LocalLanHostIpAddresses.port,
         open: true, // open browser window upon build
         hot: hotReloading, // for `module.hot` hot-reloading block in index.js

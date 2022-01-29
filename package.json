@@ -21,9 +21,9 @@
   },
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.mjs",
-    "start:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm start --",
+    "start:allowCorsAccess": "cross-env ALLOW_CORS_ACCESS=true npm start --",
     "mock": "cross-env MOCK=true npm start --",
-    "mock:allowLanAccess": "cross-env ALLOW_LAN_ACCESS=true npm run mock --",
+    "mock:allowCorsAccess": "cross-env ALLOW_CORS_ACCESS=true npm run mock --",
     "test": "jest tests",
     "lint": "eslint --ignore-path .gitignore --ext $npm_package_config_eslintExtensions",
     "lint:all": "npm run lint -- .",

@@ -59,6 +59,13 @@ const Paths = (() => {
          * Likewise, ensure PATH has been inherited, which doesn't always happen by default.
          *
          * @see [PATH not inherited by `spawn`]{@link https://github.com/nodejs/node/issues/12986#issuecomment-300951831}
+         * @see [`sh error: Executable not found` (node, npm, git, etc.)]{@link https://stackoverflow.com/questions/27876557/node-js-configuring-node-path-with-nvm}
+         * @see [ENOENT issue with WebStorm]{@link https://youtrack.jetbrains.com/issue/WEB-25141}
+         * @see [Debugging ENOENT]{@link https://stackoverflow.com/questions/27688804/how-do-i-debug-error-spawn-enoent-on-node-js}
+         * @see [Related WebStorm issue with `git` not found]{@link https://youtrack.jetbrains.com/issue/WI-63428}
+         * @see [Related WebStorm issue with `node` not found on WSL]{@link https://youtrack.jetbrains.com/issue/WEB-22794}
+         * @see [WebStorm using wrong directory for ESLint]{@link https://youtrack.jetbrains.com/issue/WEB-47258}
+         * @see [Related WebStorm ESLint issue for finding root directory]{@link https://youtrack.jetbrains.com/issue/WEB-45381#focus=Comments-27-4342029.0-0}
          */
         pathMappings.ROOT.ABS = path.dirname(childProcess
             .spawnSync('npm prefix', {
@@ -405,7 +412,7 @@ function getGitignorePaths({
     let gitIgnoredFiles = [];
 
     const setGitignoreFilesByProcess = () => {
-        /*
+        /**
          * Git Porcelain shows all files with a special char string for a status.
          * `!! <entry>` == ignored and `?? <entry>` == untracked, so filter out
          * those lines to serve as the git-ignored entries.

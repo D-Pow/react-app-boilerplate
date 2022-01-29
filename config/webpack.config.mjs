@@ -20,12 +20,15 @@ import babelConfig from './babel.config.js';
 import packageJson from '../package.json';
 import manifestJson from '../src/manifest.json';
 
-// TODO Make import aliases available to Node scripts
+// TODO Make import aliases available to npm scripts
 //  Best option is likely through ts-node: https://www.npmjs.com/package/ts-node
 //      Will it work with native npm scripts? See:
 //          https://jonjam.medium.com/writing-npm-scripts-using-typescript-a09b8712dc6b
 //          https://www.typescriptlang.org/tsconfig#module
 //  Another options is through module-alias: https://www.npmjs.com/package/module-alias
+//  See:
+//      https://github.com/nodejs/node/pull/41552
+//      https://github.com/nodejs/node/discussions/41711
 
 const isProduction = process.env.NODE_ENV === 'production';
 const allowAccessFromAllOrigins = Boolean(process.env.ALLOW_CORS_ACCESS);

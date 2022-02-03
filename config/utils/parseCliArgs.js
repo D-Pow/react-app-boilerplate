@@ -254,6 +254,23 @@ function printHelpMessageAndExit({
     optionsConfigs,
     booleanFlagNegationPrefix,
 } = {}) {
+    const scriptFilePath = Paths.getFileRelPath(Paths.ROOT.ABS, filename);
+    const scriptUsageHeader = `Usage: ${scriptFilePath} [options]... [args]...`;
+    const scriptOverviewHelpMessage = [
+        scriptUsageHeader,
+        '\n',
+        '\n',
+        helpMessage,
+        '\n',
+        '\n',
+        'Options:',
+        '\n',
+        `\tNote: Boolean flags can be negated by appending \`--${booleanFlagNegationPrefix}\` as a prefix (e.g. \`--flag\` => true,  \`--${booleanFlagNegationPrefix}flag\` => false).`,
+        '\n',
+    ].join('');
+
+    console.log(scriptOverviewHelpMessage);
+
     const flagsHelpMessagesMap = Object.entries(optionsConfigs)
         .reduce((map, [ flag, config ]) => {
             const allFlagAliases = [ ...config.aliases, flag ]
@@ -274,29 +291,13 @@ function printHelpMessageAndExit({
             return map;
         }, {});
 
-    const filePath = Paths.getFileRelPath(Paths.ROOT.ABS, filename);
-    const scriptUsageHeader = `Usage: ${filePath} [options]... [args]...`;
-    const helpMessageToPrint = [
-        scriptUsageHeader,
-        '\n',
-        '\n',
-        helpMessage,
-        '\n',
-        '\n',
-        'Options:',
-        '\n',
-        `\tNote: Boolean flags can be negated by appending \`--${booleanFlagNegationPrefix}\` as a prefix (e.g. \`--flag\` => true,  \`--${booleanFlagNegationPrefix}flag\` => false).`,
-        '\n',
-    ].join('');
-
-    console.log(helpMessageToPrint);
     console.table(flagsHelpMessagesMap);
 
     if (helpExitCode != null) {
         process.exit(helpExitCode);
     }
 
-    return helpMessageToPrint;
+    return scriptOverviewHelpMessage;
 }
 
 

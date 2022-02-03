@@ -152,7 +152,7 @@ function error(err) {
 function createComponent(argv) {
     const usage = `Creates a new component inside its own folder under \`src/components/\` along with an \`index.[tj]s\` file.
 
-Usage:
+Note - The format for using the script changes slightly based on how it's called:
     npm script (requires two hyphens if using \`npm\`, none if using \`yarn\`):
         npm run createComponent -- [options] <ComponentName>
     Direct script call:

@@ -5,6 +5,7 @@ const path = require('path');
 
 const parseCliArgs = require('../config/utils/parseCliArgs');
 
+
 function getPropTypesText(indentForClassStaticVar, typescript) {
     if (typescript) {
         return '';
@@ -20,6 +21,7 @@ ${extraIndent}    children: PropTypes.node,
 ${extraIndent}};`
     );
 }
+
 
 function getClassComponentText(componentName, typescript) {
     return (
@@ -43,6 +45,7 @@ function getClassComponentText(componentName, typescript) {
     );
 }
 
+
 function getFunctionalComponentText(componentName, typescript) {
     let functionDefinitionStr =
 `function ${componentName}({
@@ -65,6 +68,7 @@ ${componentName}.${getPropTypesText(false, typescript)}`;
 
     return functionDefinitionStr;
 }
+
 
 function getComponentText(componentName, { functionalComponent = false, typescript = false } = {}) {
     let propTypesImport = `import PropTypes from 'prop-types';`;
@@ -92,10 +96,11 @@ export default ${componentName};
     );
 }
 
+
 function createComponentInDirectory(
     componentName,
     {
-        dirName = '.',
+        dirName,
         functionalComponent,
         typescript,
         soloComponent,
@@ -128,30 +133,11 @@ function createComponentInDirectory(
 }
 
 
-function printUsage() {
-    const usage = `Creates a new component inside its own folder under \`src/components/\` along with an \`index.[tj]s\` file.
-
-    Usage:
-        npm script (requires two hyphens):
-            npm run createComponent -- [options] <ComponentName>
-        Direct script call:
-            ./createComponent.js [options] <ComponentName>
-
-    Options:
-        -d|--dir  <directory-name>  |   Directory under \`src/components/\` to place your component.
-        -f|--func                   |   Make the component a functional component (default: class component).
-        -j|--javascript             |   Use JavaScript to create the component (default: TypeScript).
-        -s|--solo                   |   Create the component file only without nesting it in a new directory.
-`;
-
-    console.log(usage);
-    process.exit(1);
-}
-
 function error(err) {
     console.error(err);
     process.exit(1);
 }
+
 
 /**
  * Creates a new React component under `src/components/`.
@@ -164,20 +150,42 @@ function error(err) {
  * @param {string[]} [argv] - Array of option flags with the component name arg as the final array entry.
  */
 function createComponent(argv) {
-    const args = parseCliArgs({
+    const usage = `Creates a new component inside its own folder under \`src/components/\` along with an \`index.[tj]s\` file.
+
+Usage:
+    npm script (requires two hyphens if using \`npm\`, none if using \`yarn\`):
+        npm run createComponent -- [options] <ComponentName>
+    Direct script call:
+        ./createComponent.js [options] <ComponentName>
+`;
+
+    const parsedArgs = parseCliArgs({
         argv,
         removeNodeAndScriptFromArgs: !argv,
-        varNameToFlagAliases: {
-            functionalComponent: [ 'f', 'func' ],
-            dirName: [ 'd', 'dir' ],
-            javascript: [ 'j' ],
-            soloComponent: [ 's', 'solo' ],
-        },
-        numArgs: {
-            functionalComponent: 0,
-            dirName: 1,
-            typescript: 0,
-            soloComponent: 0,
+        helpMessage: usage,
+        optionsConfigs: {
+            functionalComponent: {
+                description: 'Make the component a functional component (default: class component).',
+                aliases: [ 'f', 'func' ],
+            },
+            dirName: {
+                description: 'Directory under `src/components/` to place your component.',
+                numArgs: 1,
+                defaultValue: '.',
+                aliases: [ 'd', 'dir' ],
+            },
+            javascript: {
+                description: 'Use JavaScript to create the component (default: TypeScript).',
+                aliases: [ 'j' ],
+            },
+            soloComponent: {
+                description: 'Create the component file only without nesting it in a new directory.',
+                aliases: [ 's', 'solo' ],
+            },
+            help: {
+                description: 'Print this message and exit.',
+                aliases: [ 'h' ],
+            },
         },
     });
 
@@ -186,12 +194,8 @@ function createComponent(argv) {
         dirName,
         javascript,
         soloComponent,
-    } = args;
-    const componentName = args._?.[0];
-
-    if (!componentName) {
-        printUsage();
-    }
+    } = parsedArgs;
+    const componentName = parsedArgs._?.[0];
 
     createComponentInDirectory(
         componentName,

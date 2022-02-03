@@ -185,6 +185,9 @@ function parseCliArgs({
             configuration: {
                 // Defaults
                 'short-option-groups': true, // Treat single-hyphen flags with multiple letters as separate flags, e.g. `-abc` == `-a -b -c`.
+                'halt-at-non-option': false, // Don't stop parsing args after encountering the first unknown flag.
+                'nargs-eats-options': false, // Don't consume hyphen-prefixed args if placed after a flag with an unmet max `numArgs` value, e.g. if `nargs = { a: 2 }`, then`-a b -c` => `{ a: 'b', c: true }` instead of `{ a: [ 'b', '-c' ]}`.
+                'unknown-options-as-args': false, // Parse unknown flags into the flag object rather than putting them in the positional args array.
                 'camel-case-expansion': true, // Append camelCase keys to resulting object if hyphen-case was passed, e.g. `--my-flag` => `{ '--my-flag': val, myFlag: val }`.
                 'dot-notation': true, // Parse dots in flags as objects, e.g. `--foo.bar 3` => `{ foo: { bar: 3 }}`.
                 'parse-numbers': true, // Parse flag args containing numbers within quotes to numbers, e.g. `--foo '5'` => `{ foo: 5 }` instead of `{ foo: '5' }`.
@@ -194,9 +197,6 @@ function parseCliArgs({
                 'greedy-arrays': true, // Allow arrays to capture multiple values; `numArgs`/`nargs` still takes affect, but any array args < `nargs` with following positional args without a preceding `--` will be consumed by the array;  e.g. for `nargs=3` and `--arr 1 2 3 4 (-d|--) 5` - greedy-arrays=true: `{ arr: [ 1, 2, 3, 4 ], (d|--): 5 _: []}`  vs  greedy-arrays=false: `{ arr: [ 1 ], (d|--): 5 (_ if not --): [ 2, 3, 4 ]}`.
                 'duplicate-arguments-array': true, // Convert multiple flag usages into an array, e.g. `-a 1 -a 2` => `{ a: [ 1, 2 ]}`.
                 'flatten-duplicate-arrays': true, // Like `duplicate-arguments-array`, except flattens multiple entries for the flag, e.g. `-a 1 2 -a 3 4` => `{ a: [ 1, 2, 3, 4 ]}`.
-                'halt-at-non-option': false, // Don't stop parsing args after encountering the first unknown flag.
-                'nargs-eats-options': false, // Don't consume hyphen-prefixed args if placed after a flag with an unmet max `numArgs` value, e.g. if `nargs = { a: 2 }`, then`-a b -c` => `{ a: 'b', c: true }` instead of `{ a: [ 'b', '-c' ]}`.
-                'unknown-options-as-args': false, // Parse unknown flags into the flag object rather than putting them in the positional args array.
 
                 // Customizations
                 'populate--': true, // Set any args after `--` to its own key, e.g. `script -a val b c -- d e` => `{ a: 'val', _: [ 'b', 'c' ], '--': [ 'd', 'e' ] }` instead of `_: [ 'b', 'c', 'd', 'e' ]`.

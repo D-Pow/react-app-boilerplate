@@ -202,7 +202,7 @@ function parseCliArgs({
 
                 // Customizations
                 'populate--': true, // Set any args after `--` to its own key, e.g. `script -a val b c -- d e` => `{ a: 'val', _: [ 'b', 'c' ], '--': [ 'd', 'e' ] }` instead of `_: [ 'b', 'c', 'd', 'e' ]`.
-                'combine-arrays': true, // Combine any `opts: { default: { settings: pathToJson }}` (defaults from a config file) with defaults defined programmatically here rather than the file overwriting them.
+                'combine-arrays': true, // Combine any `opts: { default: { settings: pathToJson }}` (defaults from a config file) with defaults defined programmatically here rather than the file overwriting them; See: https://github.com/yargs/yargs-parser/blob/217aa62906d0bbd40e06d675b8a23df8d49a5ad4/test/yargs-parser.mjs#L29-L59.
                 'set-placeholder-key': addPlaceholderKeysForUnspecifiedOptions, // Adds `myFlag: undefined` to the output object if it isn't specified by the user; shows that the option exists without changing return object functionality.
                 'strip-dashed': removeHyphenatedOptionsFromOutput, // Remove hyphenated long option flags, leaving only the camelCase option flag values in the resulting object.
                 'strip-aliased': removeOptionAliasesFromOutput, // Remove flag aliases from the output object, leaving only the primary flag (key in the `alias` object) in the output object, e.g. `-n 3` => `{ num: 3 }` instead of `{ num: 3, n: 3 }`.

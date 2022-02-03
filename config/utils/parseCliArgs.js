@@ -101,6 +101,15 @@ function invertCliOptionsConfigs(optionsConfigs) {
                 invertedOptionsConfigs.defaultValues[primaryFlag] = config.defaultValue;
             }
 
+            if (config.type?.match(/array|\[\]/i)) {
+                invertedOptionsConfigs.array.push(primaryFlag);
+                delete invertedOptionsConfigs.numArgs[primaryFlag];
+            } else if (config.type?.match(/path|normalize/i)) {
+                invertedOptionsConfigs.normalize.push(primaryFlag);
+            } else {
+                invertedOptionsConfigs[config.type]?.push(primaryFlag);
+            }
+
             return invertedOptionsConfigs;
         }, {
             types: {},
@@ -108,6 +117,11 @@ function invertCliOptionsConfigs(optionsConfigs) {
             defaultValues: {},
             numArgs: {},
             helpOptionDescriptions: {},
+            array: [],
+            boolean: [],
+            normalize: [],
+            number: [],
+            string: [],
         });
 }
 
@@ -158,7 +172,12 @@ function parseCliArgs({
     const filteredArgv = argv.slice(argvStartIndex);
 
     normalizeCliOptionsConfig(optionsConfigs);
-    const invertedConfigForYargsParser = invertCliOptionsConfigs(optionsConfigs);
+    const {
+        aliases: alias,
+        defaultValues,
+        numArgs: narg,
+        ...otherConfigs
+    } = invertCliOptionsConfigs(optionsConfigs);
 
     const parsedArgs = YargsParser(
         filteredArgv,
@@ -186,9 +205,10 @@ function parseCliArgs({
                 'strip-dashed': removeHyphenatedOptionsFromOutput, // Remove hyphenated long option flags, leaving only the camelCase option flag values in the resulting object.
                 'strip-aliased': removeOptionAliasesFromOutput, // Remove flag aliases from the output object, leaving only the primary flag (key in the `alias` object) in the output object, e.g. `-n 3` => `{ num: 3 }` instead of `{ num: 3, n: 3 }`.
             },
-            alias: invertedConfigForYargsParser.aliases,
-            default: invertedConfigForYargsParser.defaultValues,
-            narg: invertedConfigForYargsParser.numArgs,
+            alias,
+            narg,
+            default: defaultValues,
+            ...otherConfigs,
         },
     );
 

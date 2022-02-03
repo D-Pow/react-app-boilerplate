@@ -240,6 +240,7 @@ function parseCliArgs({
  * Optionally, exits with the specified exit code.
  *
  * @param {Object} [options]
+ * @param {string} [options.filename] - Script file name/absolute path given from `process.argv[1]`.
  * @param {string} [options.helpMessage] - Description to print if `--help` flag is passed.
  * @param {(number|null)} [options.helpExitCode=1] - Exit code to use if `--help` flag is passed (`null` == don't exit).
  * @param {CliOptionsConfigs} [options.optionsConfigs] - CLI flags/options and their args to parse.

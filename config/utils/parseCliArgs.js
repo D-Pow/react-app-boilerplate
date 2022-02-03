@@ -103,7 +103,6 @@ function invertCliOptionsConfigs(optionsConfigs) {
 
             if (config.type?.match(/array|\[\]/i)) {
                 invertedOptionsConfigs.array.push(primaryFlag);
-                delete invertedOptionsConfigs.numArgs[primaryFlag];
             } else if (config.type?.match(/path|normalize/i)) {
                 invertedOptionsConfigs.normalize.push(primaryFlag);
             } else {
@@ -192,6 +191,7 @@ function parseCliArgs({
                 'parse-positional-numbers': true, // Same as `parse-numbers` but for positional args.
                 'boolean-negation': true, // Allows `--no-my-flag` to be converted to `{ myFlag: false }` instead of `{ noMyFlag: true }`.
                 'negation-prefix': booleanFlagNegationPrefix, // Sets the prefix used by `boolean-negation`.
+                'greedy-arrays': true, // Allow arrays to capture multiple values; `numArgs`/`nargs` still takes affect, but any array args < `nargs` with following positional args without a preceding `--` will be consumed by the array;  e.g. for `nargs=3` and `--arr 1 2 3 4 (-d|--) 5` - greedy-arrays=true: `{ arr: [ 1, 2, 3, 4 ], (d|--): 5 _: []}`  vs  greedy-arrays=false: `{ arr: [ 1 ], (d|--): 5 (_ if not --): [ 2, 3, 4 ]}`.
                 'duplicate-arguments-array': true, // Convert multiple flag usages into an array, e.g. `-a 1 -a 2` => `{ a: [ 1, 2 ]}`.
                 'flatten-duplicate-arrays': true, // Like `duplicate-arguments-array`, except flattens multiple entries for the flag, e.g. `-a 1 2 -a 3 4` => `{ a: [ 1, 2, 3, 4 ]}`.
                 'halt-at-non-option': false, // Don't stop parsing args after encountering the first unknown flag.
@@ -199,7 +199,6 @@ function parseCliArgs({
                 'unknown-options-as-args': false, // Parse unknown flags into the flag object rather than putting them in the positional args array.
 
                 // Customizations
-                'greedy-arrays': false, // Prevent flags from capturing more values than beyond their `numArgs` specifies, e.g. `--arr 1 2` => `{ arr: [ 1 ], _: [ 2 ]}`.
                 'populate--': true, // Set any args after `--` to its own key, e.g. `script -a val b c -- d e` => `{ a: 'val', _: [ 'b', 'c' ], '--': [ 'd', 'e' ] }` instead of `_: [ 'b', 'c', 'd', 'e' ]`.
                 'set-placeholder-key': addPlaceholderKeysForUnspecifiedOptions, // Adds `myFlag: undefined` to the output object if it isn't specified by the user; shows that the option exists without changing return object functionality.
                 'strip-dashed': removeHyphenatedOptionsFromOutput, // Remove hyphenated long option flags, leaving only the camelCase option flag values in the resulting object.

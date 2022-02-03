@@ -216,7 +216,7 @@ function parseCliArgs({
 
 
     if (parsedArgs?.help) {
-        printHelpMessageAndExit({
+        parsedArgs.helpMessageFormattedContent = printHelpMessageAndExit({
             filename: argv?.[1],
             helpMessage,
             helpExitCode,
@@ -245,7 +245,11 @@ function parseCliArgs({
  * @param {(number|null)} [options.helpExitCode=1] - Exit code to use if `--help` flag is passed (`null` == don't exit).
  * @param {CliOptionsConfigs} [options.optionsConfigs] - CLI flags/options and their args to parse.
  * @param {string} [options.booleanFlagNegationPrefix] - Prefix used to negate boolean flags.
- * @returns {string} - The help message that is printed (if the `exitCode` is null).
+ * @returns {{
+ *     finalString: string,
+ *     overviewString: string,
+ *     optionsHelpMap: Object,
+ * }} - The help message content that would be printed as well as its subsections.
  */
 function printHelpMessageAndExit({
     filename = '',
@@ -269,9 +273,7 @@ function printHelpMessageAndExit({
         '\n',
     ].join('');
 
-    console.log(scriptOverviewHelpMessage);
-
-    const flagsHelpMessagesMap = Object.entries(optionsConfigs)
+    const optionsHelpMessagesMap = Object.entries(optionsConfigs)
         .reduce((map, [ flag, config ]) => {
             const allFlagAliases = [ ...config.aliases, flag ]
                 .map(camelCaseToHyphenCase)
@@ -291,13 +293,55 @@ function printHelpMessageAndExit({
             return map;
         }, {});
 
-    console.table(flagsHelpMessagesMap);
 
     if (helpExitCode != null) {
+        console.log(scriptOverviewHelpMessage);
+        console.table(optionsHelpMessagesMap);
         process.exit(helpExitCode);
     }
 
-    return scriptOverviewHelpMessage;
+
+    const optionsHelpMessagesFormatter = Object.entries(optionsHelpMessagesMap)
+        .reduce((formatterObj, [ allFlagAliases, config ], i) => {
+            const flagConfigValues = Object.entries(config)
+                .map(([ configKey, configValue ]) => {
+                    if (i === 0) {
+                        // If discovering the flags-help-message config field for the first time,
+                        // add the title for the config field to the returned headers.
+                        formatterObj.headers.push(configKey);
+                    }
+
+                    return configValue;
+                });
+
+            const allFlagAliasesWithConfigsString = [
+                allFlagAliases,
+                ...flagConfigValues,
+            ].join('\t');
+
+            formatterObj.body.push(allFlagAliasesWithConfigsString);
+
+            return formatterObj;
+        }, {
+            headers: [ 'Flag(s)' ],
+            body: [],
+        });
+
+    const optionsHelpMessagesString = [
+        optionsHelpMessagesFormatter.headers.join('\t'),
+        ...optionsHelpMessagesFormatter.body,
+    ].join('\n');
+    const scriptCompleteHelpMessage = [
+        scriptOverviewHelpMessage,
+        optionsHelpMessagesString,
+    ].join('\n');
+
+
+    return {
+        finalString: scriptCompleteHelpMessage,
+        overviewString: scriptOverviewHelpMessage,
+        optionsHelpMap: optionsHelpMessagesMap,
+    };
 }
 
 

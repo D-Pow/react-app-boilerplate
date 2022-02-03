@@ -258,9 +258,11 @@ function printHelpMessageAndExit({
     optionsConfigs,
     booleanFlagNegationPrefix,
 } = {}) {
+    const wasRunUsingYarn = !!process.env.npm_execpath.match(/yarn/i);
     const scriptFilePath = Paths.getFileRelPath(Paths.ROOT.ABS, filename);
     const scriptUsageHeader = `Usage: ${scriptFilePath} [options]... [args]...`;
     const scriptOverviewHelpMessage = [
+        wasRunUsingYarn ? '\n' : '', // yarn doesn't add extra newlines between npm script name/command-to-run STDOUT lines and command output lines like npm/node do, so add it manually here
         scriptUsageHeader,
         '\n',
         '\n',

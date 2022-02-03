@@ -384,6 +384,22 @@ function findFile(
 
 
 /**
+ * Opens the given URI (file path, URL, etc.) with the OS' default app for that URI.
+ *
+ * @param {string} uri - Identifier to open.
+ */
+function openWithDefaultApp(uri) {
+    const startTerminalCommand = process.platform === 'darwin'
+        ? 'open'
+        : process.platform === 'win32'
+            ? 'start'
+            : 'xdg-open';
+
+    childProcess.execSync(`${startTerminalCommand} ${uri}`);
+}
+
+
+/**
  * Returns a list of paths (files and directories) that are ignored by git based on the `.gitignore` file
  * defined by `Paths.ROOT`.
  *
@@ -608,6 +624,7 @@ module.exports = {
     FileTypeRegexes,
     getOutputFileName,
     findFile,
+    openWithDefaultApp,
     getGitignorePaths,
     convertPathsToRegex,
     convertPathsToGlobs,

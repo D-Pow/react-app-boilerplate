@@ -1,9 +1,10 @@
 const parseCliArgs = require('./parseCliArgs');
 const {
     Paths,
-    findFile,
     FileTypeRegexes,
     getOutputFileName,
+    findFile,
+    openWithDefaultApp,
     getGitignorePaths,
     convertPathsToRegex,
     convertPathsToGlobs,
@@ -33,9 +34,10 @@ const {
 module.exports = {
     parseCliArgs,
     Paths,
-    findFile,
     FileTypeRegexes,
     getOutputFileName,
+    findFile,
+    openWithDefaultApp,
     getGitignorePaths,
     convertPathsToRegex,
     convertPathsToGlobs,

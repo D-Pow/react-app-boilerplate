@@ -1,5 +1,7 @@
 const YargsParser = require('yargs-parser');
 
+const { Paths } = require('./Files');
+
 
 /**
  * Configuration for a single option flag coalescing all necessary fields for use
@@ -213,18 +215,19 @@ function parseCliArgs({
     );
 
 
-    if (clearArgvAfterProcessing) {
-        argv.splice(0, argv.length);
-    }
-
-
     if (parsedArgs?.help) {
         printHelpMessageAndExit({
+            filename: argv?.[1],
             helpMessage,
             helpExitCode,
             optionsConfigs,
             booleanFlagNegationPrefix,
         });
+    }
+
+
+    if (clearArgvAfterProcessing) {
+        argv.splice(0, argv.length);
     }
 
 
@@ -244,6 +247,7 @@ function parseCliArgs({
  * @returns {string} - The help message that is printed (if the `exitCode` is null).
  */
 function printHelpMessageAndExit({
+    filename = '',
     helpMessage,
     helpExitCode,
     optionsConfigs,
@@ -269,7 +273,12 @@ function printHelpMessageAndExit({
             return map;
         }, {});
 
+    const filePath = Paths.getFileRelPath(Paths.ROOT.ABS, filename);
+    const scriptUsageHeader = `Usage: ${filePath} [options]... [args]...`;
     const helpMessageToPrint = [
+        scriptUsageHeader,
+        '\n',
+        '\n',
         helpMessage,
         '\n',
         '\n',

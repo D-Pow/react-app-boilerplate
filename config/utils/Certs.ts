@@ -1,15 +1,16 @@
 /**
  * This is used to generate your own self-signed certificate information
- * for local dev servers.
+ * for local dev-servers using HTTPS.
  *
- * Does not remove the "Not secure, are you sure you want to proceed?"
- * browser message on https://localhost:<port>.
+ * Does not remove the initial "This site is insecure. Proceed anyway?"
+ * browser message on https://localhost:port, but caches the cert info afterwards
+ * so it won't be seen on subsequent visits.
  *
- * To use your own self-signed HTTPS dev-server certificate instead
+ * To manually use your own self-signed HTTPS dev-server certificate instead
  * of this dynamic one, you can run the `npx mkcert create-X` commands
  * and install them on your OS.
- * Doing so has the benefit of removing the above message from your browser,
- * but requires you to execute this logic manually and redo it when the certs expire.
+ * Doing so has the benefit of removing the above message from your browser for all other
+ * dev-servers, but requires you to execute this logic manually/redo it when the certs expire.
  *
  * @file
  */
@@ -120,8 +121,8 @@ export async function createCertificateAuthority(caCertOptions: CertAuthorityOpt
  * Generates the server's certificate/private key.
  * Both cert/key are needed to self-sign your own certificate, including the
  * private key since this is for the server.
- * This is usually safe since we're usually on localhost, but localhost.com or
- * similar could technically be purchased by a someone, so be cautious that
+ * This is usually safe since we're often on localhost, but localhost.com or
+ * similar could technically be purchased by someone, so be cautious that
  * no one except ourselves will see this key.
  *
  * @param serverCertOptions - Details for the generated certificate.
@@ -163,9 +164,9 @@ export async function createServerCertificate(serverCertOptions: ServerCertOptio
  * your own cert.
  *
  * @param certOptions - Details for the generated certificate.
- * @returns {Promise<{ ca: string, cert: string, key: string }>} - The CA's cert, server's cert, and server's private key.
+ * @returns The CA's cert, server's cert, and server's private key.
  */
-export async function createHttpsCredentialsForLocalServer(certOptions: SelfSignedCertOptions = {}): Promise<SecureContextOptions> {
+export async function createServerHttpsCredentials(certOptions: SelfSignedCertOptions = {}): Promise<DevServerSelfSignedCert> {
     const certificateAuthorityCreds = await createCertificateAuthority(certOptions);
     const serverCreds = await createServerCertificate({
         ...certOptions,

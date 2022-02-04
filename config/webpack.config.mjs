@@ -477,7 +477,7 @@ const webpackConfig = {
                 // }
 
                 /*
-                 * To use your own self-signed cert, use the Https.ts util.
+                 * To use your own self-signed cert, use the Certs.ts util.
                  */
             } : {})(allowAccessFromAllOrigins),
         port: LocalLanHostIpAddresses.port,

@@ -15,8 +15,11 @@
  * @file
  */
 
+import fs from 'fs';
+
 import mkcert from 'mkcert';
 
+import { Paths } from './Files';
 import { LocalLanHostIpAddresses } from './Network';
 
 import type { SecureContextOptions } from 'tls';
@@ -67,6 +70,23 @@ export interface SelfSignedCertificatesAndKeys {
 }
 export type CertAuthorityCertAndKey = Pick<SelfSignedCertificatesAndKeys, 'cacert' | 'cakey'>;
 export type CertAndKey = Pick<SelfSignedCertificatesAndKeys, 'cert' | 'key'>;
+
+/**
+ * JSON file structure containing the Certificate Authority's and server's self-signed certificate
+ * information.
+ *
+ * The file is Used to cache the certs' info so that the "This site is insecure. Proceed anyway?"
+ * page/button doesn't have to be encountered upon every local HTTPS dev-server boot.
+ */
+export interface SelfSignedCertFileContents {
+    created: string;
+    validityDays: number;
+    ca: string;
+    key: string;
+    cert: string;
+}
+export type DevServerSelfSignedCertSimple = Pick<SelfSignedCertFileContents, 'ca' | 'key' | 'cert'>;
+export type DevServerSelfSignedCert = DevServerSelfSignedCertSimple | SecureContextOptions;
 
 
 const defaultCertOptions: SelfSignedCertOptions = {
@@ -186,4 +206,132 @@ export async function createServerHttpsCredentials(certOptions: SelfSignedCertOp
         // Like the CA, the server has to provide a cert as well; AKA localhost.pem.
         cert: serverCreds.cert,
     };
+}
+
+
+
+const certFile = `${Paths.ROOT.ABS}/.env.cert.json`;
+/**
+ * Local process' cache of the certificate file's content to prevent
+ * reading the file multiple times for its lifetime.
+ *
+ * Allows multiple get-cert-info calls to be made without I/O
+ * becoming a bottleneck.
+ */
+let certFileInfo: SelfSignedCertFileContents | null;
+
+
+/**
+ * Reads certificate information from local disk.
+ *
+ * @returns The info from the cert file as an object or null if it doesn't exist.
+ */
+function getCachedCert(): typeof certFileInfo {
+    if (typeof certFileInfo !== typeof undefined) {
+        return certFileInfo;
+    }
+
+    if (!fs.existsSync(certFile)) {
+        certFileInfo = null;
+
+        return certFileInfo;
+    }
+
+    const certFileContents = fs.readFileSync(certFile).toString();
+
+    certFileInfo = JSON.parse(certFileContents);
+
+    return certFileInfo;
+}
+
+/**
+ * Saves certificate information to local disk.
+ *
+ * @param certInfo - Certificate to save.
+ */
+function setCachedCert(certInfo: Omit<SelfSignedCertFileContents, 'created'>): void {
+    const today = new Date();
+    const created = today.toLocaleString();
+    const certCache = {
+        ...certInfo,
+        created,
+    };
+
+    fs.writeFileSync(certFile, JSON.stringify(certCache, undefined, 4));
+
+    console.log(
+        `Saved local dev-server HTTPS certificate to "${certFile}".`,
+        `\nIt will be valid for ${certCache.validityDays} days unless deleted.`,
+    );
+}
+
+/**
+ * Checks if the local cached certificate information is still valid
+ * based on when it was created and how many days it was to remain valid.
+ */
+function isCachedCertValid(): boolean {
+    const certInfo = getCachedCert();
+
+    if (!certInfo) {
+        return false;
+    }
+
+    const {
+        created,
+        validityDays,
+    } = certInfo;
+
+    const today = new Date();
+    const dayLastGenerated = new Date(created);
+    const daysInMilliseconds = 1000 * 60 * 60 * 24;
+    const daysPassed = (today.valueOf() - dayLastGenerated.valueOf()) / daysInMilliseconds;
+    const isCertStillValid = validityDays > daysPassed;
+
+    return isCertStillValid;
+}
+
+
+/**
+ * Returns both the Certificate Authority's and server's certificates/private keys
+ * for self-signing your local HTTPS dev-server's certificate.
+ *
+ * Attempts reading certificate info from a local cache first, re-generating/caching
+ * them if they don't exist or have expired.
+ *
+ * Note: This is done instead of using checking for an existing cert so devs don't have to
+ * manually (re-)install the cert themselves. This helps keep the front-end code base
+ * self-contained, self-sustaining, easy to use, and DRY.
+ *
+ * @returns The CA's cert, server's cert, and server's private key.
+ */
+export async function getServerHttpsCredentials(
+    /**
+     * Details for the generated certificate.
+     */
+    certOptions: SelfSignedCertOptions = {},
+    {
+        /**
+         * Force creating/caching a new cert even if the cached one is still valid.
+         */
+        force = false,
+    } = {},
+): Promise<DevServerSelfSignedCert> {
+    if (isCachedCertValid() && !force) {
+        const certInfo = getCachedCert()!;
+
+        return {
+            ca: certInfo.ca,
+            key: certInfo.key,
+            cert: certInfo.cert,
+        };
+    }
+
+    const certInfo = await createServerHttpsCredentials(certOptions) as DevServerSelfSignedCertSimple;
+
+    setCachedCert({
+        ...certInfo,
+        validityDays: certOptions.validityDays!,
+    });
+
+    return certInfo;
 }

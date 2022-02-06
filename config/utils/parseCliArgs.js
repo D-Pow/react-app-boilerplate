@@ -347,4 +347,6 @@ function printHelpMessageAndExit({
 }
 
 
-module.exports = parseCliArgs;
+module.exports = {
+    parseCliArgs,
+};

@@ -1,4 +1,7 @@
-const parseCliArgs = require('./parseCliArgs');
+const {
+    parseCliArgs,
+} = require('./parseCliArgs');
+
 const {
     Paths,
     FileTypeRegexes,
@@ -18,10 +21,12 @@ const {
     tsconfig,
     ImportAliases,
 } = require('./Files');
+
 const {
     getOsHostnameAndLanIP,
     LocalLanHostIpAddresses,
 } = require('./Network');
+
 
 /*
  * Because this file is also imported by MJS files, if we want our MJS files to

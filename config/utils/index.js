@@ -14,6 +14,7 @@ const {
     gitignoreFilesGlobs,
     babelConfigPath,
     tsconfigPath,
+    tsconfigDevPath,
     tsconfig,
     ImportAliases,
 } = require('./Files');
@@ -47,6 +48,7 @@ module.exports = {
     gitignoreFilesGlobs,
     babelConfigPath,
     tsconfigPath,
+    tsconfigDevPath,
     tsconfig,
     ImportAliases,
     getOsHostnameAndLanIP,

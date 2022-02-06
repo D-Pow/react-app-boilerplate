@@ -5,6 +5,7 @@ const {
     FileTypeRegexes,
     gitignoreFilesGlobs,
     tsconfig,
+    tsconfigDevPath,
     parseCliArgs,
     ImportAliases,
 } = require('./config/utils');
@@ -54,7 +55,7 @@ module.exports = {
         extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),
         // Since we aren't setting `project`, we unfortunately have to set these even
         // though they're ALREADY SET (yes, it's a bug from the TS-ESLint-parser team).
-        project: `${rootDir}/tsconfig.json`,
+        project: tsconfigDevPath,
         jsxPragma: null,
         lib: tsconfig.compilerOptions.lib,
     },

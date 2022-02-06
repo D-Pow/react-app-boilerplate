@@ -118,6 +118,7 @@ const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
 
 const babelConfigPath = findFile('babel.config.js');
 const tsconfigPath = findFile('tsconfig.main.json');
+const tsconfigDevPath = findFile('tsconfig.json');
 
 const cmdTsconfigExpand = `npx tsc --showConfig --project '${tsconfigPath}'`;
 let tsconfig;
@@ -661,6 +662,7 @@ module.exports = {
     gitignoreFilesGlobs,
     babelConfigPath,
     tsconfigPath,
+    tsconfigDevPath,
     tsconfig,
     ImportAliases,
 };

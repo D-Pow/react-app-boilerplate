@@ -36,6 +36,7 @@
         "resolveJsonModule": true, // allow importing json files
         "forceConsistentCasingInFileNames": true, // Ensure file names and references maintain the same casing scheme (e.g. `import './myFile'` fails if file name is `MyFile.ts`)
         "newLine": "lf", // Ensure emitted files (.d.ts and .js) use LF for newlines
+        "preserveSymlinks": false, // Makes symlinks resolve to the actual file instead of the symlink itself (Note: Might cause issues with `npm link`). See: https://www.typescriptlang.org/tsconfig#preserveSymlinks and https://webpack.js.org/configuration/resolve/#resolvesymlinks
         "incremental": true, // Saves info from each build to a file in the output dir to allow for faster subsequent builds (e.g. don't rebuild this file if it hasn't changed)
         "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
         "outDir": "dist", // Output dir of running `npx tsc`; don't use if using webpack/ts-loader, or override it manually in ts-loader options
@@ -43,9 +44,12 @@
         "declarationDir": "dist/types", // Output dir for types
 //        "noEmit": true, // don't emit outputs
 //        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
-//        "rootDir": "..", // project dir/parent dir of source code;
-                           // doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
-                           // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
+//        "rootDir": ".", // Parent directory from which all transpiled code will be relative when outputted within `outDir`.
+                          // e.g. If transpiling `<root>/src/*` with `outDir: dist`, then:
+                          //    `rootDir: .`  =>  dist/src/*
+                          //    `rootDir: undefined`  =>  dist/*
+                          // Not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries.
+                          // Doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
         "baseUrl": ".", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
         "paths": {
             "@/*": [ "src/*" ],
@@ -56,7 +60,8 @@
         "./src/**/*"
     ],
     "exclude": [
-        "./node_modules"
+        "./node_modules",
+        "dist"
     ],
 
     /**
@@ -92,8 +97,16 @@
         "require": [
             "tsconfig-paths/register"
         ],
+        // TODO Find out how to use `/` alias
+        //   https://www.npmjs.com/package/tsconfig-paths
+        //   https://www.npmjs.com/package/ts-node#options
+        //   https://www.google.com/search?q=tsconfig-paths+path+alias+%2F
+//        "cwd": ".",
+//        "projectSearchDir": ".",
+//        "project": "./tsconfig.json",
         "preferTsExts": true,
         "experimentalReplAwait": true,
+
         /**
          * Makes ts-node run faster by skipping type checking (see: https://github.com/TypeStrong/ts-node/discussions/1276).
          * Ironically, in multiple places (website, GitHub issues, etc.), the ts-node team recommends disabling
@@ -101,10 +114,12 @@
          * app operations should use `tsc` instead.
          */
         "transpileModule": false,
-//        "moduleTypes": { // Activate this if you change package.json to `type: module`
+        "moduleTypes": { // Activate this to override file types to be
 //            "*.ts": "esm",
-//            "*.json": "esm"
-//        },
+            "*.mjs": "esm",
+            "*.cjs": "cjs",
+            "*.json": "esm"
+        },
         "compilerOptions": {
             "module": "nodenext",
             // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser

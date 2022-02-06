@@ -118,7 +118,34 @@ const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
 
 const babelConfigPath = findFile('babel.config.js');
 const tsconfigPath = findFile('tsconfig.main.json');
-const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
+
+const cmdTsconfigExpand = `npx tsc --showConfig --project '${tsconfigPath}'`;
+let tsconfig;
+
+try {
+    const tsconfigExpandedValue = childProcess
+        .execSync(cmdTsconfigExpand)
+        .toString();
+
+    tsconfig = JSON.parse(tsconfigExpandedValue);
+} catch (execDidntWork) {
+    try {
+        const tsconfigExpandedValue = childProcess
+            .spawnSync(cmdTsconfigExpand, {
+                shell: process.env.SHELL || '/bin/bash',
+                cwd: Paths.ROOT.ABS,
+                env: {
+                    PATH: process.env.PATH,
+                },
+            })
+            .stdout
+            .toString();
+
+        tsconfig = JSON.parse(tsconfigExpandedValue);
+    } catch (spawnDidntWork) {
+        tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
+    }
+}
 
 
 /**

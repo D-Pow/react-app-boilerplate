@@ -147,7 +147,7 @@ function invertCliOptionsConfigs(optionsConfigs) {
  * @param {string} [options.booleanFlagNegationPrefix='no-'] - Prefix to use for negating boolean flags (e.g. `--flag` => true,  `--no-flag` => false).
  * @param {string} [options.helpMessage] - Top-level description of the CLI script to print if `--help` flag is passed (excludes flag/option help descriptions).
  * @param {(number|null)} [options.helpExitCode=1] - Exit code to use if `--help` flag is passed (`null` == don't exit).
- * @returns {Object} - Parsed options with the format `key: (value|true)` and `_: [$@]`.
+ * @returns {Object<string, any>} - Parsed options with the format `key: (value|true)` and `_: [$@]`.
  */
 function parseCliArgs({
     argv = process.argv,

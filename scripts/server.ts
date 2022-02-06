@@ -166,7 +166,9 @@ async function runVanillaNodeServer() {
             const parsedUrl = new URL(url!, hostname);
 
             // TODO Use your custom server logic here
-            res.writeHead(200);
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+            });
 
             const response = JSON.stringify({
                 data: 'Hello world!',

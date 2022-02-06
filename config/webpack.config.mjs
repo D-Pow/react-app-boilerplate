@@ -10,6 +10,7 @@ import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlug
 import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
 import {
     Paths,
+    tsconfigPath,
     FileTypeRegexes,
     getOutputFileName,
     ImportAliases,
@@ -126,7 +127,7 @@ const webpackConfig = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            configFile: `${Paths.ROOT.ABS}/tsconfig.json`,
+                            configFile: tsconfigPath,
                             /** @type {import('typescript').CompilerOptions} */
                             compilerOptions: {
                                 // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)

@@ -1,114 +1,27 @@
 {
     /**
-     * Use `tsc -b config.json` instead of `-p` because it has more features,
-     * e.g. respecting project properties, only updating files that have changed, etc.
-     * See: https://www.typescriptlang.org/docs/handbook/project-references.html#build-mode-for-typescript
-     * Exception: To specify other flags (e.g. --outDir), you must use `-p`.
+     * This file is only used for development.
+     * It ensures all non-src directories use the same rules as the
+     * main tsconfig file by parsing all directories, not just src/,
+     * such that all TS/JS files still understand aliases, JSDoc, etc.
+     * from each other.
      *
-     * TS options:
-     * Config file: https://www.typescriptlang.org/tsconfig
-     * CLI: https://www.typescriptlang.org/docs/handbook/compiler-options.html
+     * For example, without this, a TS file in config/ that imports a JS
+     * file wouldn't necessarily pick up the JSDoc from JS, so the TS file
+     * wouldn't know how to call the function.
      *
-     * Walkthrough that's pretty old
-     * https://dev.to/open-wc/generating-typescript-definition-files-from-javascript-5bp2
+     * That being said, this is generally only a problem for IDEs, not
+     * linters or other tools, because IDEs (usually) automatically parse
+     * only the closest tsconfig.json file, not any others with different
+     * names (e.g. tsconfig.tests.json).
+     * Thus, to avoid putting a tsconfig.json file with the same contents
+     * as this one in every single directory, just use this one root-level
+     * file for IDEs but then don't use it in any code/read only the one
+     * it extends in config files (e.g. webpack.config).
      */
-    "compilerOptions": {
-        "target": "ESNext", // target environment to transpile down to; since we're using webpack/babel, do not transpile resulting JS b/c babel does a better job
-                            // Note: If `target >= ES2022|ESNext`, then `useDefineForClassFields` is set to `true` by default in order
-                            // to use native class properties instead of TS v3.7 constructor initialization.
-        "lib": [
-            "ESNext", // modern JS features
-            "DOM", // DOM features like HTMLElement, NodeList, fetch, XMLHttpRequest, etc.
-            "DOM.Iterable" // Additional entries for `[Symbol.iterator]()`, `entries()`, etc. for DOM classes/types
-        ],
-        "module": "ESNext", // how resulting tsc output module(s) will be imported by those who install our library; UMD for both node & browsers
-        "moduleResolution": "node", // use `import` instead of `require`
-        "strict": true, // error if there's a type mismatch or dangerous code (e.g. assuming `this` in `function` instead of in `() => {}`).
-        "jsx": "react-jsx", // how to handle JSX tags: "react" => `createElement()`,  "react-jsx" => `_jsx()`, "preserve" => `<MyComp />`
-        "allowJs": true, // allows .js(x) files instead of only .ts(x)
-//        "checkJs": true, // allows TS to check code imported from JS files for type accuracy, both from `lib` and JSDoc (e.g. `location.href = 5` and `/** @type {number} */ const x = 'hi'` throw errors)
-                         // Not used currently b/c many things throw superfluous errors, including undefined `useState()` values, dynamic component imports don't match expected types, etc.
-//        "skipLibCheck": true, // skip checking typings.d.ts files for JS imports (useful in case the same type is defined in different node_modules libs)
-        "esModuleInterop": true, // allows `import * as UserDefinedNamespace from 'my-module'`
-        "allowSyntheticDefaultImports": true, // allow imports of default exports even if .js files instead of .ts. Automatically activated if esModuleInterop is true
-        "experimentalDecorators": true, // allows use of `@decorator` syntax
-        "emitDecoratorMetadata": true, // adds useful additional information to decorators (see: https://stackoverflow.com/questions/1007981/how-to-get-function-parameter-names-values-dynamically/64169429#64169429)
-        "resolveJsonModule": true, // allow importing json files
-        "forceConsistentCasingInFileNames": true, // Ensure file names and references maintain the same casing scheme (e.g. `import './myFile'` fails if file name is `MyFile.ts`)
-        "newLine": "lf", // Ensure emitted files (.d.ts and .js) use LF for newlines
-        "incremental": true, // Saves info from each build to a file in the output dir to allow for faster subsequent builds (e.g. don't rebuild this file if it hasn't changed)
-        "isolatedModules": true, // make compatible with other typescript-processing plugins, e.g. babel, webpack, etc.
-        "outDir": "dist", // Output dir of running `npx tsc`; don't use if using webpack/ts-loader, or override it manually in ts-loader options
-        "declaration": true, // Generates typings.d.ts files
-        "declarationDir": "dist/types", // Output dir for types
-//        "noEmit": true, // don't emit outputs
-//        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
-//        "rootDir": "..", // project dir/parent dir of source code;
-                           // doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
-                           // not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries
-        "baseUrl": ".", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
-        "paths": {
-            "@/*": [ "src/*" ],
-            "/*": [ "*" ]
-        }
-    },
+    "extends": "./tsconfig.main.json",
     "include": [
-        "./src/**/*"
-    ],
-    "exclude": [
-        "./node_modules"
-    ],
-
-    /**
-     * Configuring `ts-node` for running TypeScript files
-     * --------------------------------------------------
-     * - Website: https://typestrong.org/ts-node/docs/configuration
-     * - Usage: https://github.com/TypeStrong/ts-node#api
-     * - Options: https://github.com/TypeStrong/ts-node#options
-     *
-     * Most of the description is in the .npmrc, but the gist is that this allows running TypeScript files without
-     * having to compile them to JavaScript first, i.e. no more `tsc && node output.js`!
-     *
-     * It does so by using a custom NodeJS module loader, so we can't use `--experimental-specifier-resolution=node`.
-     * Since the project doesn't use `type: module` but does use `.mjs` files, we must override the base tsconfig's
-     * `module` field - which is set to `ESNext` for source code - to be CJS. This can be reverted when package.json
-     * is changed to `type: module`. See the .npmrc for more details.
-     *
-     *
-     * Regarding `paths` import aliases
-     * --------------------------------
-     * Other than avoiding unnecessary disk writes to run TypeScript files, ts-node is particularly
-     * helpful because without it, `paths` import aliases aren't respected in the local environment, even if
-     * they're defined in tsconfig. `tsconfig-paths` fixes this without having to duplicate the definitions in
-     * package.json like you would if you used `module-alias` (https://www.npmjs.com/package/module-alias).
-     * To use it, we must require `tsconfig-paths/register` so it's loaded before the `node` process starts
-     * running ts-node. This also helps with the lack of alias translation when building with `tsc` (especially
-     * if `target` is ES >= 2019 where aliases are supported).
-     * This is needed for ts-node regardless of how it's called (see .npmrc for a list of ways to call ts-node).
-     * Alternatively, we could add `-r tsconfig-paths/register` in the command line, but putting it here
-     * ensures it works all the time, making npm scripts more DRY.
-     */
-    "ts-node": {
-        "require": [
-            "tsconfig-paths/register"
-        ],
-        "preferTsExts": true,
-        "experimentalReplAwait": true,
-        /**
-         * Makes ts-node run faster by skipping type checking (see: https://github.com/TypeStrong/ts-node/discussions/1276).
-         * Ironically, in multiple places (website, GitHub issues, etc.), the ts-node team recommends disabling
-         * type chceking (even though it's active by default) because type checking, building, and other "formal"
-         * app operations should use `tsc` instead.
-         */
-        "transpileModule": false,
-//        "moduleTypes": { // Activate this if you change package.json to `type: module`
-//            "*.ts": "esm",
-//            "*.json": "esm"
-//        },
-        "compilerOptions": {
-            "module": "CommonJS",
-            // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser
-            "isolatedModules": false
-        }
-    }
+        "./**/*", // All files - Includes config/, tests/, etc.
+        "./**/.*" // Dotfiles like .eslintrc.js
+    ]
 }

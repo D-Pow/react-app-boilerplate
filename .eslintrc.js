@@ -47,16 +47,14 @@ module.exports = {
 
         /* @typescript-eslint/parser options */
         // Just like Babel's parser, we must specify a path to the config file.
-        // However, don't do it with `project: tsconfigPath` b/c that only allows
-        // one single tsconfig.json file to be parsed, ignoring the others.
-        // Since, we have a tsconfig.json in both the root and tests/ directories,
-        // specify the top-level dir from which to find all nested tsconfig files.
-        // TODO Consider `declarationMap`, project `references`, and similar for selective inclusion of tests/tsconfig.json
+        // However, it only allows one single tsconfig.json file to be parsed, ignoring
+        // any nested ones, so use the dev-tsconfig instead of the main one.
         tsconfigRootDir: rootDir,
         // Extra extensions other than `.[tj]sx?` to be defined explicitly
         extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),
         // Since we aren't setting `project`, we unfortunately have to set these even
         // though they're ALREADY SET (yes, it's a bug from the TS-ESLint-parser team).
+        project: `${rootDir}/tsconfig.json`,
         jsxPragma: null,
         lib: tsconfig.compilerOptions.lib,
     },

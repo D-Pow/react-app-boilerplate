@@ -117,7 +117,7 @@ const gitignoreFilesRegex = convertPathsToRegex(gitignoreFiles);
 const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
 
 const babelConfigPath = findFile('babel.config.js');
-const tsconfigPath = findFile('tsconfig.json');
+const tsconfigPath = findFile('tsconfig.main.json');
 const tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
 
 

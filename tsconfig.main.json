@@ -110,10 +110,10 @@
         /**
          * Makes ts-node run faster by skipping type checking (see: https://github.com/TypeStrong/ts-node/discussions/1276).
          * Ironically, in multiple places (website, GitHub issues, etc.), the ts-node team recommends disabling
-         * type chceking (even though it's active by default) because type checking, building, and other "formal"
+         * type checking (even though it's active by default) because type checking, building, and other "formal"
          * app operations should use `tsc` instead.
          */
-        "transpileModule": false,
+        "transpileOnly": true,
         "moduleTypes": { // Activate this to override file types to be
 //            "*.ts": "esm",
             "*.mjs": "esm",

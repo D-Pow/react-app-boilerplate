@@ -20,7 +20,7 @@ const extensions = process?.env?.npm_package_config_eslintExtensions?.split(',')
     // Added solely for IDE integration since env vars (like npm config fields) can't be parsed statically. See: https://youtrack.jetbrains.com/issue/WEB-43731
     || [ '.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs' ];
 
-const gitIgnorePaths = parseCliArgs().ignorePath === '.gitignore'
+const gitIgnorePaths = parseCliArgs()?.ignorePath === '.gitignore'
     // `--ignore-path .gitignore` already specified
     ? []
     // `--ignore-path someOtherFile` specified, so append .gitignore contents to ignored patterns

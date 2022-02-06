@@ -115,10 +115,11 @@
          */
         "transpileOnly": true,
         "moduleTypes": { // Activate this to override file types to be
-//            "*.ts": "esm",
-            "*.mjs": "esm",
-            "*.cjs": "cjs",
-            "*.json": "esm"
+//            "**/*.json": "esm",
+//            "**/*.ts": "esm",
+//            "**/*.js": "esm",
+            "**/*.mjs": "esm",
+            "**/*.cjs": "cjs"
         },
         "compilerOptions": {
             "module": "nodenext",

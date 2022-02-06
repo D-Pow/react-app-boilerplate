@@ -284,7 +284,22 @@ function isCachedCertValid(): boolean {
     const today = new Date();
     const dayLastGenerated = new Date(created);
     const daysInMilliseconds = 1000 * 60 * 60 * 24;
-    const daysPassed = (today.valueOf() - dayLastGenerated.valueOf()) / daysInMilliseconds;
+    /**
+     * `Date` - `Date` works due to number type coercion in JavaScript,
+     * but we must be explicit about it in TypeScript.
+     *
+     * This could be done via
+     * - Unary operator: +(new Date())
+     * - Specific `Date` function: (new Date()).getTime()
+     * - Generic, overridden `Object.prototype` function that returns the primitive form of the object in question: (new Date()).valueOf()
+     *
+     * @see [Object.prototype.valueOf()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf#return_value}
+     * @see [Unary plus operator]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus}
+     * @see [Unary operators]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators#unary_operators}
+     */
+    // To keep things simple, just use the unary operator to coerce `Date` into a number, leaving it upto the `Date` class to decide how to do so.
+    const timePassedMillis = (+today) - (+dayLastGenerated);
+    const daysPassed = timePassedMillis / daysInMilliseconds;
     const isCertStillValid = validityDays > daysPassed;
 
     return isCertStillValid;

@@ -106,9 +106,12 @@
 //            "*.json": "esm"
 //        },
         "compilerOptions": {
-            "module": "CommonJS",
+            "module": "nodenext",
             // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser
             "isolatedModules": false
-        }
+        },
+        "include": [
+            "./**/*"
+        ]
     }
 }

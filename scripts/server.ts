@@ -266,7 +266,6 @@ async function verifyServerIsRunning() {
 async function runWebpackServer() {
     const Webpack = (await import('webpack')).default;
     const WebpackDevServer = (await import('webpack-dev-server')).default;
-    // TODO Figure out how to import .mjs files in TypeScript files
     const webpackConfig = (await import(`${Paths.CONFIG.ABS}/webpack.config.mjs`)).default;
 
     type Configuration = import('webpack').Configuration;

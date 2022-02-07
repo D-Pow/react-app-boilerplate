@@ -118,11 +118,13 @@
 //            "**/*.json": "esm",
 //            "**/*.ts": "esm",
 //            "**/*.js": "esm",
-            "**/*.mjs": "esm",
+//            "**/*": "esm",
+//            "**/*.mjs": "esm",
             "**/*.cjs": "cjs"
         },
         "compilerOptions": {
             "module": "nodenext",
+            "moduleResolution": "nodenext",
             // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser
             "isolatedModules": false
         },

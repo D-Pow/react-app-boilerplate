@@ -294,7 +294,7 @@ async function runNextJsServer() {
     const createNextServer = (await import('next')).default;
     // @ts-ignore - Same unrecognized import except for your custom NextJS config file
     // eslint-disable-next-line import/no-unresolved
-    const NextConfig = (await import('../next.config.js')).default;
+    const NextConfig = (await import(`${Paths.ROOT.ABS}/next.config.js`)).default;
 
     const nextJsServer = createNextServer({
         conf: NextConfig,

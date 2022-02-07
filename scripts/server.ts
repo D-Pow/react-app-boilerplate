@@ -20,6 +20,21 @@ import {
     getServerHttpsCredentials,
 } from '~/config/utils';
 
+
+type CreateServer = (
+    typeof createHttpServer
+    | typeof createHttpsServer
+    | (
+        (...args: any[]) => ReturnType<typeof createHttpServer | typeof createHttpsServer>
+    )
+);
+type Get = (
+    typeof httpGet
+    | typeof httpsGet
+);
+
+
+
 /**
  * Configures options for the dev-server.
  */
@@ -120,18 +135,6 @@ const {
 } = configureServer();
 
 
-
-type CreateServer = (
-    typeof createHttpServer
-    | typeof createHttpsServer
-    | (
-        (...args: any[]) => ReturnType<typeof createHttpServer | typeof createHttpsServer>
-    )
-);
-type Get = (
-    typeof httpGet
-    | typeof httpsGet
-);
 
 let createServer: CreateServer = createHttpServer;
 let get: Get = httpGet;

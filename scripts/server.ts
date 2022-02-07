@@ -43,7 +43,7 @@ function configureServer({
             protocol: {
                 description: 'Protocol to use for the dev-server.',
                 numArgs: 1,
-                defaultValue: process.env.PROTOCOL || 'https',
+                defaultValue: process.env.PROTOCOL || 'http',
             },
             port: {
                 description: 'Port to use for the dev-server.',

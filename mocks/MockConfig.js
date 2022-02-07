@@ -2,8 +2,8 @@ import MockRequests from 'mock-requests';
 
 import { kitsuTitleSearchUrl } from '@/services/Urls';
 
-import { staticUrlResponseConfig } from '/mocks/UrlResponseMappings';
-import { chooseMockBasedOnQuery } from '/mocks/DynamicResponses';
+import { staticUrlResponseConfig } from '~/mocks/UrlResponseMappings';
+import { chooseMockBasedOnQuery } from '~/mocks/DynamicResponses';
 
 /**
  * The below two configuration methods are identical in that they map the known search

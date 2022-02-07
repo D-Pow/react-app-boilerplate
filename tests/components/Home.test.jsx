@@ -3,7 +3,7 @@ import { fireEvent } from '@testing-library/react';
 import Home from '@/components/Home';
 import About from '@/components/About';
 
-import { renderWithWrappingParent, waitForRedirect, getDomFromRender } from '/tests';
+import { renderWithWrappingParent, waitForRedirect, getDomFromRender } from '~/tests';
 
 describe('<Home/>', () => {
     it('should render the word "Home"', () => {

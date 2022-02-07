@@ -1,4 +1,4 @@
-import { mockObjProperty } from '/config/jest/jest.setup.testUtils';
+import { mockObjProperty } from '~/config/jest/jest.setup.testUtils';
 
 global.XMLHttpRequest = global.XMLHttpRequest || jest.fn(() => {
     return {

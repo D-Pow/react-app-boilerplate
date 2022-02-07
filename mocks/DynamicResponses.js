@@ -4,7 +4,7 @@ import {
     getKitsuTitleSearchUrl,
     kitsuSearchQueryParamKey,
     queryParamResponseMap,
-} from '/mocks/UrlResponseMappings';
+} from '~/mocks/UrlResponseMappings';
 
 /**
  * Dynamic response function used to determine what response to return based on network request.

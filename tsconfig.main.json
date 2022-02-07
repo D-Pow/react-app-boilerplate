@@ -53,7 +53,7 @@
         "baseUrl": ".", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
         "paths": {
             "@/*": [ "src/*" ],
-            "/*": [ "*" ]
+            "~/*": [ "*" ]
         }
     },
     "include": [

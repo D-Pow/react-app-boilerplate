@@ -6,7 +6,7 @@ import {
     bleachResponse,
     fullmetalResponse,
     attackOnTitanResponse,
-} from '/mocks/StaticResponses';
+} from '~/mocks/StaticResponses';
 
 export function getKitsuTitleSearchUrl(searchText) {
     return getSearchUrl(kitsuTitleSearchUrl, searchText);

@@ -4,4 +4,4 @@
  * @file
  */
 
-export * from '/config/jest/jestSetup';
+export * from '~/config/jest/jestSetup';

@@ -7,7 +7,7 @@ import { fireEvent } from '@testing-library/react';
 
 import ContextFactory, { ContextValue } from '@/utils/ContextFactory';
 
-import { renderWithWrappingParent, waitForElementVisible, waitForUpdate } from '/tests';
+import { renderWithWrappingParent, waitForElementVisible, waitForUpdate } from '~/tests';
 
 import type {
     RenderResult as RenderedComponent,

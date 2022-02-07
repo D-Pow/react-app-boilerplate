@@ -18,8 +18,7 @@ import {
     openWithDefaultApp,
     parseCliArgs,
     getServerHttpsCredentials,
-} from '../config/utils';
-
+} from '~/config/utils';
 
 /**
  * Configures options for the dev-server.

@@ -4,7 +4,7 @@ import {
     isIpAddress,
 } from '@/utils/BrowserNavigation';
 
-import { mockObjProperty } from '/tests';
+import { mockObjProperty } from '~/tests';
 
 describe('BrowserNavigation utils', () => {
     function getFullUrlFromSegments(segmentedUrlObj) {

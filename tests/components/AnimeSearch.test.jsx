@@ -7,9 +7,9 @@ import {
     getElementMaybe,
     renderWithWrappingParent,
     waitForElementVisible,
-} from '/tests';
+} from '~/tests';
 
-import { narutoResponse } from '/mocks/StaticResponses';
+import { narutoResponse } from '~/mocks/StaticResponses';
 
 describe('<AnimeSearch/>', () => {
     /**

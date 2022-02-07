@@ -97,13 +97,12 @@
         "require": [
             "tsconfig-paths/register"
         ],
-        // TODO Find out how to use `/` alias
-        //   https://www.npmjs.com/package/tsconfig-paths
-        //   https://www.npmjs.com/package/ts-node#options
-        //   https://www.google.com/search?q=tsconfig-paths+path+alias+%2F
-//        "cwd": ".",
+        // Other ts-node configs that could be helpful with multiple tsconfig files.
+        // Not necessary for our usage since the root tsconfig.json already includes all directories.
+        // TODO Request that TS_NODE_OPTIONS be added as a config or environment variable so we can set configs only to be activated when running ts-node, e.g. TS_NODE_OPTIONS='--loader ts-node/esm'
+//        "cwd": ".", // Or from env var/in .npmrc: TS_NODE_CWD=.
 //        "projectSearchDir": ".",
-//        "project": "./tsconfig.json",
+//        "project": "./tsconfig.json", // Or from env var/in .npmrc: TS_NODE_PROJECT=./tsconfig.json
         "preferTsExts": true,
         "experimentalReplAwait": true,
 

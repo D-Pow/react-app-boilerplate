@@ -135,10 +135,11 @@ type Get = (
 
 let createServer: CreateServer = createHttpServer;
 let get: Get = httpGet;
+let httpsOptions: Awaited<ReturnType<typeof getServerHttpsCredentials>>;
 
 async function setCreateServerFunctionFromProtocol() {
     if (isHttps) {
-        const httpsOptions = await getServerHttpsCredentials(
+        httpsOptions = await getServerHttpsCredentials(
             {
                 validityDays: certLifetime,
             },
@@ -273,6 +274,7 @@ async function runWebpackServer() {
     const webpackCompiler = Webpack(webpackConfig as Configuration);
     const devServerOptions = {
         ...webpackConfig.devServer,
+        https: httpsOptions,
     };
 
     const server = new WebpackDevServer(devServerOptions, webpackCompiler);

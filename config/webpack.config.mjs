@@ -84,6 +84,7 @@ const hotReloading = false; // process.env.NODE_ENV === 'development';
 
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
 const webpackConfig = {
+    mode: isProduction ? 'production' : 'development',
     module: {
         /**
          * Webpack uses template strings when generating output files.

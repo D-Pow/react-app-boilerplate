@@ -248,14 +248,13 @@ async function verifyServerIsRunning() {
         });
 
         res.on('end', () => {
+            let receivedData = rawData;
+
             try {
-                const parsedData = JSON.parse(rawData);
-                console.log('Yay it worked!', parsedData);
-            } catch (couldntParseJsonError) {
-                const endErrorObj = couldntParseJsonError as unknown as Error;
-                console.error(endErrorObj.message);
-                console.log(`Received: ${rawData}`);
-            }
+                receivedData = JSON.parse(rawData);
+            } catch (jsonParsingError) {}
+
+            console.log('Server response from root `/` =', receivedData);
         });
     });
 

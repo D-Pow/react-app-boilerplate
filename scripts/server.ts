@@ -282,10 +282,6 @@ async function runWebpackServer() {
     console.log(`Starting server at "${hostname}"`);
 
     await server.start();
-
-    if (openBrowserOnBoot) {
-        openWithDefaultApp(hostname);
-    }
 }
 
 

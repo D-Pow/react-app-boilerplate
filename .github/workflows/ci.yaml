@@ -1,6 +1,7 @@
 name: CI
 
 
+# TODO Looks like workflows ARE reusable now: https://docs.github.com/en/actions/using-workflows/reusing-workflows#creating-a-reusable-workflow
 # Controls when the action will run.
 on:
   # Allows you to run this workflow manually from the Actions tab

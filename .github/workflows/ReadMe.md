@@ -62,7 +62,7 @@ This varies depending on specific cloud service provider and project setup. Some
 * [Cache output from other steps (e.g. build output)](https://docs.github.com/en/actions/advanced-guides/caching-dependencies-to-speed-up-workflows)
 * [Publishing packages using workflows](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions#publishing-a-package-using-an-action)
 * [Webhook API Reference](https://docs.github.com/en/rest/reference)
-* [What `ubuntu-latest` supports](https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md)
+* [What `ubuntu-latest` supports](https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-Readme.md)
 * [YAML syntax (recc from GitHub)](https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes)
 * [Sample StackOverflow answer on Workflows vs Actions](https://stackoverflow.com/questions/63710029/github-action-error-top-level-runs-section-is-required/63710170#63710170)
 * [GitHub docs about markdown](https://guides.github.com/features/mastering-markdown/)

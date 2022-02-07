@@ -53,9 +53,11 @@ module.exports = {
         tsconfigRootDir: rootDir,
         // Extra extensions other than `.[tj]sx?` to be defined explicitly
         extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),
-        // Since we aren't setting `project`, we unfortunately have to set these even
-        // though they're ALREADY SET (yes, it's a bug from the TS-ESLint-parser team).
-        project: tsconfigDevPath,
+        // Don't set `project` since it already defaults to the root-level tsconfig.json (which
+        // includes all project dirs) and b/c doing so ignores .js files if they have the same name as
+        // a .ts file in the same dir (e.g. an index.js file for NodeJS configs/scripts and a companion
+        // index.ts file for TypeScript/ts-node configs/scripts).
+        // project: tsconfigDevPath,
         jsxPragma: null,
         lib: tsconfig.compilerOptions.lib,
     },

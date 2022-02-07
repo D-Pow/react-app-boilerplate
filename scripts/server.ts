@@ -160,6 +160,7 @@ async function setCreateServerFunctionFromProtocol() {
 
 // If using vanilla `http(s)` server
 async function runVanillaNodeServer() {
+    // See: https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
     try {
         const server = createServer((req, res) => {
             // URL is pathname + query string
@@ -262,6 +263,10 @@ async function verifyServerIsRunning() {
         console.error(`Got error: ${error.message}`);
     });
 }
+
+
+
+// TODO Add Express server version: https://www.npmjs.com/package/express
 
 
 

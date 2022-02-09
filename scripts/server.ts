@@ -335,6 +335,9 @@ async function runNextJsServer() {
         conf: NextConfig,
         dev,
         dir: Paths.ROOT.ABS,
+        // Hostname (actually domain, excludes protocol) and port must be specified in order to use middleware. See: https://nextjs.org/docs/advanced-features/custom-server
+        hostname: domain,
+        port: port,
         customServer: true, // see: https://github.com/vercel/next.js/blob/3667eba385/packages/next/server/lib/start-server.ts#L47
         isNextDevCommand: false, // see: https://github.com/vercel/next.js/blob/3667eba385/packages/next/cli/next-dev.ts#L96
     });

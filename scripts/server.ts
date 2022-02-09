@@ -34,18 +34,34 @@ type Get = (
 );
 
 
+interface ServerConfigs {
+    /**
+     * Array of option flags and/or arguments.
+     */
+    argv?: string[];
+}
+
+interface ServerOptions {
+    openBrowserOnBoot: boolean;
+    certLifetime: number;
+    certRefresh?: boolean;
+    protocol: string;
+    port: number;
+    domain: string;
+    hostname: string;
+    isHttps: boolean;
+    production: boolean;
+    dev: boolean;
+    args?: unknown[];
+    unknownOptions?: unknown[];
+}
 
 /**
  * Configures options for the dev-server.
  */
 function configureServer({
-    /**
-     * Array of option flags and/or arguments.
-     */
     argv,
-}: Partial<{
-    argv: string[];
-}> = {}) {
+}: ServerConfigs = {}): ServerOptions {
     const parsedArgs = parseCliArgs({
         argv,
         helpMessage: 'Runs a dev-server with QoL customizations, including proxying API calls to Prod vs local back-end server, opening the browser on dev-server boot, etc.',
@@ -120,7 +136,7 @@ function configureServer({
         unknownOptions,
     };
 
-    return serverConfigs;
+    return serverConfigs as ServerOptions;
 }
 
 const {

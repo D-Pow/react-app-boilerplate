@@ -210,9 +210,9 @@ async function runVanillaNodeServer() {
 
 // If wanting to verify the server is running correctly
 async function verifyServerIsRunning() {
-    const verifyServerClientRequest: ClientRequest = get(hostname, (res: IncomingMessage) => {
-        const { statusCode = 400 } = res;
-        const contentType = res.headers['content-type'] || 'text/plain';
+    const verifyServerClientRequest: ClientRequest = get(hostname, (req: IncomingMessage) => {
+        const { statusCode = 400 } = req;
+        const contentType = req.headers['content-type'] || 'text/plain';
 
         const acceptableContentTypes = [
             'text/plain',
@@ -235,20 +235,20 @@ async function verifyServerIsRunning() {
             console.error(error.message);
 
             // Consume response data to free up memory
-            res.resume();
+            req.resume();
 
             return;
         }
 
-        res.setEncoding('utf-8');
+        req.setEncoding('utf-8');
 
         let rawData = '';
 
-        res.on('data', (chunk) => {
+        req.on('data', (chunk) => {
             rawData += chunk;
         });
 
-        res.on('end', () => {
+        req.on('end', () => {
             let receivedData = rawData;
 
             try {

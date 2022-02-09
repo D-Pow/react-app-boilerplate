@@ -158,6 +158,32 @@ async function setCreateServerFunctionFromProtocol() {
 
 
 
+async function getIncomingMessageBody<
+    T = string
+        | { [key: string | number | symbol]: unknown }
+        | unknown
+>(req: IncomingMessage): Promise<T> {
+    req.setEncoding('utf-8');
+
+    const rawData: T[] = [];
+
+    return await new Promise<T>((resolve, reject) => {
+        req.on('data', rawData.push.bind(rawData));
+
+        req.on('end', () => {
+            let receivedData: string = rawData.join('');
+
+            try {
+                receivedData = JSON.parse(receivedData);
+            } catch (jsonParsingError) {}
+
+            resolve(receivedData as unknown as T);
+        });
+    });
+}
+
+
+
 // If using vanilla `http(s)` server
 async function runVanillaNodeServer() {
     // See: https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
@@ -210,7 +236,7 @@ async function runVanillaNodeServer() {
 
 // If wanting to verify the server is running correctly
 async function verifyServerIsRunning() {
-    const verifyServerClientRequest: ClientRequest = get(hostname, (req: IncomingMessage) => {
+    const verifyServerClientRequest: ClientRequest = get(hostname, async (req: IncomingMessage) => {
         const { statusCode = 400 } = req;
         const contentType = req.headers['content-type'] || 'text/plain';
 
@@ -240,23 +266,9 @@ async function verifyServerIsRunning() {
             return;
         }
 
-        req.setEncoding('utf-8');
+        const body = await getIncomingMessageBody(req);
 
-        let rawData = '';
-
-        req.on('data', (chunk) => {
-            rawData += chunk;
-        });
-
-        req.on('end', () => {
-            let receivedData = rawData;
-
-            try {
-                receivedData = JSON.parse(rawData);
-            } catch (jsonParsingError) {}
-
-            console.log('Server response from root `/` =', receivedData);
-        });
+        console.log('Server response from root `/` =', body);
     });
 
     verifyServerClientRequest.on('error', (error) => {

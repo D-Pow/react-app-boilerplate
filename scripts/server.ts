@@ -7,11 +7,14 @@ import {
     get as httpGet,
     type ClientRequest,
     type IncomingMessage,
+    type OutgoingHttpHeaders,
 } from 'http';
 import {
     createServer as createHttpsServer,
     get as httpsGet,
 } from 'https';
+
+import 'isomorphic-fetch';
 
 import {
     Paths,
@@ -43,6 +46,8 @@ interface ServerConfigs {
 
 interface ServerOptions {
     openBrowserOnBoot: boolean;
+    proxyApis?: string[];
+    proxyServerUrl?: string;
     certLifetime: number;
     certRefresh?: boolean;
     protocol: string;
@@ -70,6 +75,17 @@ function configureServer({
                 description: 'If the browser should be opened when the dev-server boots.',
                 aliases: [ 'o', 'open' ],
                 defaultValue: true,
+            },
+            proxyApis: {
+                description: 'Network API paths to be proxied to another server instead of this one.',
+                type: 'array',
+                aliases: [ 'proxy' ],
+            },
+            proxyServerUrl: {
+                description: 'Server to which proxied API paths should be forwarded.',
+                type: 'string',
+                numArgs: 1,
+                aliases: [ 'server' ],
             },
             protocol: {
                 description: 'Protocol to use for the dev-server.',
@@ -112,6 +128,8 @@ function configureServer({
     const {
         production,
         openBrowserOnBoot,
+        proxyApis,
+        proxyServerUrl,
         certLifetime,
         certRefresh,
         protocol,
@@ -124,6 +142,8 @@ function configureServer({
     const serverConfigs = {
         production,
         openBrowserOnBoot,
+        proxyApis,
+        proxyServerUrl,
         certLifetime,
         certRefresh,
         protocol,
@@ -141,6 +161,8 @@ function configureServer({
 
 const {
     openBrowserOnBoot,
+    proxyApis,
+    proxyServerUrl,
     certLifetime,
     certRefresh,
     port,
@@ -170,6 +192,63 @@ async function setCreateServerFunctionFromProtocol() {
         createServer = createHttpsServer.bind(null, httpsOptions);
         get = httpsGet;
     }
+}
+
+
+
+/**
+ * Checks if the supplied URL should be proxied to the specified server.
+ *
+ * Converts the REST/glob format of the specified API paths to regex for manual checking against
+ * plain strings.
+ */
+function shouldProxyUrl(url: string): boolean {
+    if (!proxyApis?.length) {
+        return false;
+    }
+
+    if (!shouldProxyUrl.proxyApiRegex) {
+        shouldProxyUrl.proxyApiRegex = new RegExp(`(${proxyApis
+            .map(route => route.replace(
+                /:[^/]+/g, // Match all REST path-matchers, e.g. `:slug` and `:slug*`
+                '[^/]+', // Replace with regex matching anything other than slashes, taking care of both `:slug` and `:slug*` (`/path/:slug*` => `/path/any/level/of/nesting`)
+            ))
+            .join(')|(') // Segregate each URL path so that regex matches don't bleed over from one to the next
+        })`);
+    }
+
+    return shouldProxyUrl.proxyApiRegex.test(url);
+}
+namespace shouldProxyUrl { // Define custom field on function
+    export let proxyApiRegex: RegExp;
+}
+
+/**
+ * Modifies an incoming request object to pass through a CORS proxy, changing the relevant headers
+ * to look like they came from the specified server.
+ *
+ * Headers include:
+ * - Origin
+ * - Referer
+ * - Host
+ */
+function modifyRequestWithCorsProxy(req: IncomingMessage) {
+    // `req.url` is pathname + query string
+    const requestUrl = new URL(req.url!, hostname);
+
+    if (shouldProxyUrl(req.url!)) {
+        // Rewrite headers to make it look like it came from the desired destination instead of localhost.
+        // This is much simpler to do than using a nested Express server (see: https://stackoverflow.com/questions/60925133/proxy-to-backend-with-default-next-js-dev-server).
+        const corsProxyUrl = new URL(req.url!, proxyServerUrl);
+
+        req.headers.origin = corsProxyUrl.origin;
+        req.headers.referer = corsProxyUrl.origin;
+        req.headers.host = corsProxyUrl.host;
+
+        return corsProxyUrl;
+    }
+
+    return requestUrl;
 }
 
 
@@ -204,12 +283,48 @@ async function getIncomingMessageBody<
 async function runVanillaNodeServer() {
     // See: https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
     try {
-        const server = createServer((req, res) => {
-            // URL is pathname + query string
-            const { url } = req;
+        const server = createServer(async (req, res) => {
+            if (shouldProxyUrl(req.url!)) {
+                const reqBody = await getIncomingMessageBody(req);
+                const reqBodyString = (
+                    typeof reqBody === typeof ''
+                        ? reqBody
+                        : JSON.stringify(reqBody)
+                ) as string;
 
-            // Parse the URL relative to the user-defined protocol+domain+port
-            const parsedUrl = new URL(url!, hostname);
+                const corsProxyUrl = modifyRequestWithCorsProxy(req);
+                const corsResponse = await fetch(corsProxyUrl.toString(), {
+                    method: req.method,
+                    headers: { ...req.headers } as HeadersInit,
+                    credentials: 'include',
+                    mode: 'cors',
+                    body: reqBodyString,
+                });
+                const corsResponseHeaders = [ ...corsResponse.headers.entries() ]
+                    .reduce((obj, [ key, value ]) => {
+                        // Don't copy `Content-Encoding`, `Transfer-Encoding`, etc. as those are set
+                        // by this NodeJS server.
+                        if (!key.match(/(\w+-encoding$)/i)) {
+                            obj[key] = value;
+                        }
+
+                        return obj;
+                    }, {} as OutgoingHttpHeaders);
+                let corsResponseBody: string | Record<string | number | symbol, unknown> = await corsResponse.text();
+                const corsResponseBodyString: string = corsResponseBody;
+
+                try {
+                    // `isomorphic-fetch` uses `node-fetch@2` under the hood, which doesn't support `response.clone()`
+                    // so parse the JSON manually if possible.
+                    // See: https://github.com/node-fetch/node-fetch/blob/main/docs/v2-LIMITS.md
+                    corsResponseBody = JSON.parse(corsResponseBody);
+                } catch (bodyNotJsonError) {}
+
+                res.writeHead(corsResponse.status, corsResponseHeaders);
+                res.end(corsResponseBodyString);
+
+                return;
+            }
 
             // TODO Use your custom server logic here
             res.writeHead(200, {
@@ -252,6 +367,7 @@ async function runVanillaNodeServer() {
 
 // If wanting to verify the server is running correctly
 async function verifyServerIsRunning() {
+    // TODO Use `fetch()` instead
     const verifyServerClientRequest: ClientRequest = get(hostname, async (req: IncomingMessage) => {
         const { statusCode = 400 } = req;
         const contentType = req.headers['content-type'] || 'text/plain';
@@ -331,6 +447,43 @@ async function runNextJsServer() {
     // eslint-disable-next-line import/no-unresolved
     const NextConfig = (await import(`${Paths.ROOT.ABS}/next.config.js`)).default;
 
+    /**
+     * Custom function for proxying certain URL paths, query parameters, etc.
+     * to another location.
+     *
+     * After headers and [redirections]{@link https://nextjs.org/docs/api-reference/next.config.js/redirects}
+     * are applied, NextJS rewrites URL requests in the following order:
+     *
+     * 1. `beforeFiles` - Rewrites before any pages defined in the source code here are used.
+     * 2. Serve static files from `public/`, `_next/static`, and non-dynamic pages (i.e. `src/pages/`).
+     * 3. `afterFiles` - Rewrites after static files but before dynamic routes (i.e. routes defined via `<Router/>`, e.g. `src/pages/post/[postId].tsx`).
+     * 4. `fallback` - Rewrites after all the above have failed (e.g. API calls).
+     *
+     * We choose `fallback` so that any other routes that might possibly have the same name are chosen
+     * before proxying them to the server.
+     *
+     * Note: This means we must implement a CORS proxy ourselves to overwrite the related headers since they
+     * would've already been set by NextJS (see server logic below).
+     *
+     * @type {NextConfig.rewrites}
+     * @see [NextJS URL rewrites]{@link https://nextjs.org/docs/api-reference/next.config.js/rewrites}
+     */
+    async function getNextJsApiProxyConfig() {
+        /** @type {import('next/dist/lib/load-custom-routes').Rewrite[]} */
+        const proxyApiRewrites = proxyApis?.map(route => ({
+            source: route,
+            destination: `${proxyServerUrl}${route}`,
+        }));
+
+        return {
+            fallback: proxyApiRewrites,
+        };
+    }
+
+    if (proxyApis?.length) {
+        NextConfig.rewrites = getNextJsApiProxyConfig;
+    }
+
     const nextJsServer = createNextServer({
         conf: NextConfig,
         dev,
@@ -349,9 +502,10 @@ async function runNextJsServer() {
     const server = createServer((req, res) => {
         // URL is pathname + query string
         const { url } = req;
-
         // NextJS uses the deprecated `url.parse`, so we can't use `new URL(url, hostname)`
         const parsedUrl = parse(url!, true);
+
+        modifyRequestWithCorsProxy(req);
 
         // Let NextJS handle the request/response based on its own internal routing logic.
         appRequestHandler(req, res, parsedUrl);

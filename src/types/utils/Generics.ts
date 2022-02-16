@@ -97,6 +97,13 @@ export type Nullable<T, OnlyNull = false> = OnlyNull extends false
  */
 export type ValueOf<O, K extends keyof O = keyof O> = O[K];
 
+
+/**
+ * A string which can be either the casing of the original string, uppercase, or lowercase.
+ */
+export type UppercaseOrLowercase<Str extends string> = Str | Lowercase<Str> | Uppercase<Str>;
+
+
 /**
  * Companion to built-in `Omit` except for omitting all value types of an Object
  * instead of keys.

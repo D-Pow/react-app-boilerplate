@@ -79,34 +79,6 @@ export function getQueryParams(input = self.location.search + self.location.hash
         }, queryParamsObj);
 }
 
-/**
- * Gets all cookie key-value pairs as an object.
- * Cannot get `HttpOnly` cookies as they are inaccessible to JS.
- *
- * @param {string} [cookie=document.cookie] - Cookie to parse.
- * @param {boolean} [decodeBase64=true] - Toggle to attempt Base64-decoding cookie values.
- * @returns {Object} - Parsed cookie key-value entries.
- */
-export function getCookie({ cookie = document.cookie, decodeBase64 = true } = {}) {
-    return cookie.split('; ').reduce((cookieObj, entry) => {
-        const keyVal = entry.split('=');
-        const key = decodeURIComponent(keyVal[0]);
-        let value = decodeURIComponent(keyVal.slice(1).join('='));
-
-        if (decodeBase64) {
-            try {
-                value = atob(value);
-            } catch (e) {
-                // Not a Base64-encoded string
-            }
-        }
-
-        // Keys can only ever be assigned one value; old values are overwritten
-        cookieObj[key] = value;
-
-        return cookieObj;
-    }, {});
-}
 
 /**
  * Pushes a URL query parameter key-value pair to the URL bar.

@@ -16,7 +16,7 @@ import { MimeTypes } from '@/utils/Constants';
  * @see [Base64 vs Base64-URL]{@link https://stackoverflow.com/questions/28100601/decode-url-safe-base64-in-javascript-browser-side}
  * @see [Verifying JWT which uses Base64-URL-encoded strings]{@link https://stackoverflow.com/questions/56357330/how-to-verify-an-es256-jwt-token-using-web-crypto-when-public-key-is-distributed}
  */
-export function encodeToBase64(str, {
+export function base64Encode(str, {
     mimeType = '',
     urlEncode = false,
 } = {}) {
@@ -38,7 +38,7 @@ export function encodeToBase64(str, {
 }
 
 
-export function decodeBase64(base64String, {
+export function base64Decode(base64String, {
     urlDecode = false,
 } = {}) {
     try {
@@ -72,7 +72,7 @@ export function getTextFromBase64DataUrl(dataUrl = '', decode = false) {
         return encodedContentString;
     }
 
-    return decodeBase64(encodedContentString);
+    return base64Decode(encodedContentString);
 }
 
 

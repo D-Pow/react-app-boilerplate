@@ -125,21 +125,33 @@ export function getCookie({
 }
 
 
+export type GetCookieDetailsParams = {
+    /**
+     * Specific cookie to extract.
+     */
+    name?: string;
+    /**
+     * Attempt Base64-decoding cookie values.
+     */
+    decodeBase64?: boolean;
+    /**
+     * Return the cookies as a list instead of an object.
+     */
+    asList?: boolean;
+};
 /**
  * Gets all of either the specified cookie's or all cookies' attributes.
  * Cannot get `HttpOnly` cookies as they are inaccessible to JS.
- *
- * @param [options]
- * @param [options.name] - Specific cookie to extract.
- * @param [options.decodeBase64] - Attempt Base64-decoding cookie values.
- * @param [options.asList] - Return the cookies as a list instead of an object.
- * @returns Extracted cookie attributes/name-attributes entries.
  */
+export async function getCookieDetails(): Promise<Nullable<Record<string, CookieAttributes>, true>>;
+export async function getCookieDetails(options: { name: string } & GetCookieDetailsParams): Promise<Nullable<CookieAttributes, true>>;
+export async function getCookieDetails(options: { asList: true } & GetCookieDetailsParams): Promise<Nullable<CookieAttributes[], true>>;
+export async function getCookieDetails(options: GetCookieDetailsParams): Promise<Nullable<Record<string, CookieAttributes>, true>>;
 export async function getCookieDetails({
-    name = '',
+    name,
     decodeBase64 = true,
     asList = false,
-} = {}): Promise<Nullable<CookieAttributes | CookieAttributes[] | Record<string, CookieAttributes>, true>> {
+}: GetCookieDetailsParams = {}): Promise<Nullable<CookieAttributes | CookieAttributes[] | Record<string, CookieAttributes>, true>> {
     const cookieStore = ((self as any)?.cookieStore as CookieStore);
 
     if (name) {

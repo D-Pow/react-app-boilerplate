@@ -18,8 +18,8 @@ import {
 } from './utils/index.js';
 import babelConfig from './babel.config.js';
 
-import packageJson from '../package.json';
-import manifestJson from '../src/manifest.json';
+import packageJson from '../package.json' assert { type: 'json' };
+import manifestJson from '../src/manifest.json' assert { type: 'json' };
 
 // TODO Make import aliases available to npm scripts
 //  Best option is likely through ts-node: https://www.npmjs.com/package/ts-node

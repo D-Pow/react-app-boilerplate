@@ -49,7 +49,7 @@ export function base64Decode(base64String, {
         // Could not decode, likely a malformed Base64 string
     }
 
-    return null;
+    return base64String;
 }
 
 

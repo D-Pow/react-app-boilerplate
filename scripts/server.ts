@@ -309,7 +309,12 @@ async function runVanillaNodeServer() {
                     headers: { ...req.headers } as HeadersInit,
                     credentials: 'include',
                     mode: 'cors',
-                    body: reqBodyString,
+                    ...(() => (req.method?.match(/(GET|HEAD)/i) || !reqBody)
+                        ? {}
+                        : {
+                            body: reqBodyString,
+                        }
+                    )(),
                 });
                 const corsResponseHeaders = [ ...corsResponse.headers.entries() ]
                     .reduce((obj, [ key, value ]) => {

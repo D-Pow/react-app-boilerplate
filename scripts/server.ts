@@ -232,14 +232,17 @@ namespace shouldProxyUrl { // Define custom field on function
  * - Referer
  * - Host
  */
-function modifyRequestWithCorsProxy(req: IncomingMessage) {
-    // `req.url` is pathname + query string
-    const requestUrl = new URL(req.url!, hostname);
+function modifyRequestWithCorsProxy(request: IncomingMessage) {
+    // Avoid being forced to use `req.url!` to show the URL is defined by marking all fields of `req` as required
+    const req = request as Required<IncomingMessage>;
 
-    if (shouldProxyUrl(req.url!)) {
+    // `req.url` is pathname + query string
+    const requestUrl = new URL(req.url, hostname);
+
+    if (shouldProxyUrl(req.url)) {
         // Rewrite headers to make it look like it came from the desired destination instead of localhost.
         // This is much simpler to do than using a nested Express server (see: https://stackoverflow.com/questions/60925133/proxy-to-backend-with-default-next-js-dev-server).
-        const corsProxyUrl = new URL(req.url!, proxyServerUrl);
+        const corsProxyUrl = new URL(req.url, proxyServerUrl);
 
         req.headers.origin = corsProxyUrl.origin;
         req.headers.referer = corsProxyUrl.origin;
@@ -283,8 +286,10 @@ async function getIncomingMessageBody<
 async function runVanillaNodeServer() {
     // See: https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
     try {
-        const server = createServer(async (req, res) => {
-            if (shouldProxyUrl(req.url!)) {
+        const server = createServer(async (request, res) => {
+            const req = request as Required<IncomingMessage>;
+
+            if (shouldProxyUrl(req.url)) {
                 const reqBody = await getIncomingMessageBody(req);
                 const reqBodyString = (
                     typeof reqBody === typeof ''
@@ -499,11 +504,13 @@ async function runNextJsServer() {
 
     const appRequestHandler = nextJsServer.getRequestHandler();
 
-    const server = createServer((req, res) => {
+    const server = createServer((request, res) => {
+        const req = request as Required<IncomingMessage>;
+
         // URL is pathname + query string
         const { url } = req;
         // NextJS uses the deprecated `url.parse`, so we can't use `new URL(url, hostname)`
-        const parsedUrl = parse(url!, true);
+        const parsedUrl = parse(url, true);
 
         modifyRequestWithCorsProxy(req);
 

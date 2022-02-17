@@ -432,18 +432,74 @@ async function verifyServerIsRunning() {
 
 // If using Webpack
 async function runWebpackServer() {
-    const Webpack = (await import('webpack')).default;
-    const WebpackDevServer = (await import('webpack-dev-server')).default;
-    const webpackConfig = (await import(`${Paths.CONFIG.ABS}/webpack.config.mjs`)).default;
-
     type Configuration = import('webpack').Configuration;
+    type WebpackFactory = typeof import('webpack').webpack;
+    type WebpackDevServerClass = typeof import('webpack-dev-server');
+    type WebpackDevServerConfig = import('webpack-dev-server').Configuration;
+    type WebpackDevServerProxy = WebpackDevServerConfig['proxy'];
+    type ProxyConfig = import('webpack-dev-server').ProxyConfigArray;
+    type ProxyConfigArray = ProxyConfig[];
+    type ProxyConfigMap = import('webpack-dev-server').ProxyConfigMap;
 
-    const webpackCompiler = Webpack(webpackConfig as Configuration);
-    const devServerOptions = {
+    const Webpack: WebpackFactory = (await import('webpack')).default;
+    const WebpackDevServer: WebpackDevServerClass = (await import('webpack-dev-server')).default;
+    const webpackConfig: Configuration = (await import(`${Paths.CONFIG.ABS}/webpack.config.mjs`)).default;
+
+    const corsProxyUrl = new URL(proxyServerUrl!);
+
+    function getCliProxyConfig(): ProxyConfigArray;
+    function getCliProxyConfig(routes: string[]): ProxyConfigMap;
+    function getCliProxyConfig(routes?: string[]): WebpackDevServerProxy;
+    function getCliProxyConfig(routes?: string[]): WebpackDevServerProxy {
+        const baseConfig: Partial<ProxyConfig> = {
+            target: proxyServerUrl,
+            secure: false,
+            changeOrigin: true,
+            followRedirects: true,
+            headers: {
+                origin: corsProxyUrl.origin,
+                referer: corsProxyUrl.origin,
+                host: corsProxyUrl.host,
+            },
+        };
+
+        if (routes?.length) {
+            return routes.reduce((obj, route: string) => {
+                obj[route] = baseConfig;
+
+                return obj;
+            }, {} as ProxyConfigMap);
+        }
+
+        return [
+            {
+                ...baseConfig,
+                context: proxyApis,
+            },
+        ] as ProxyConfigArray;
+    }
+
+    const devServerOptions: WebpackDevServerConfig = {
         ...webpackConfig.devServer,
+        host: domain,
         https: httpsOptions,
+        open: openBrowserOnBoot,
+        proxy: !webpackConfig?.devServer?.proxy
+            ? getCliProxyConfig()
+            : Array.isArray(webpackConfig.devServer.proxy)
+                ? [
+                    ...webpackConfig.devServer.proxy,
+                    ...getCliProxyConfig(),
+                ]
+                : {
+                    ...webpackConfig.devServer.proxy,
+                    ...getCliProxyConfig(proxyApis),
+                } as WebpackDevServerProxy,
     };
 
+    webpackConfig.devServer = devServerOptions;
+
+    const webpackCompiler = Webpack(webpackConfig as Configuration);
     const server = new WebpackDevServer(devServerOptions, webpackCompiler);
 
     console.log(`Starting server at "${hostname}"`);

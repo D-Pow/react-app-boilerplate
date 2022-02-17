@@ -12,6 +12,7 @@ import {
 import {
     createServer as createHttpsServer,
     get as httpsGet,
+    Agent as HttpsAgent,
 } from 'https';
 
 import 'isomorphic-fetch';
@@ -165,6 +166,7 @@ const {
     proxyServerUrl,
     certLifetime,
     certRefresh,
+    protocol,
     port,
     domain,
     hostname,
@@ -383,44 +385,136 @@ async function runVanillaNodeServer() {
 
 // If wanting to verify the server is running correctly
 async function verifyServerIsRunning() {
-    // TODO Use `fetch()` instead
-    const verifyServerClientRequest: ClientRequest = get(hostname, async (req: IncomingMessage) => {
-        const { statusCode = 400 } = req;
-        const contentType = req.headers['content-type'] || 'text/plain';
+    async function verifyWithNodeRequest() {
+        const verifyServerClientRequest: ClientRequest = get(hostname, async (req: IncomingMessage) => {
+            const { statusCode = 400 } = req;
+            const contentType = req.headers['content-type'] || 'text/plain';
 
-        const acceptableContentTypes = [
-            'text/plain',
-            'text/html',
-            'application/json',
-        ];
+            const acceptableContentTypes = [
+                'text/plain',
+                'text/html',
+                'application/json',
+            ];
 
-        let error;
-        // Check for errors first.
-        // Any 2xx status code signals a successful response
-        if (statusCode < 200 && statusCode > 300) {
-            error = new Error(`Request Failed! Status Code: [${statusCode}], Content-Type: [${contentType}].`);
-        } else if (
-            !acceptableContentTypes.some(requestContentType => new RegExp(requestContentType).test(contentType))
-        ) {
-            error = new Error(`Invalid content-type! Expected one of [${acceptableContentTypes.join(', ')}] but received ${contentType}`);
-        }
+            let error;
+            // Check for errors first.
+            // Any 2xx status code signals a successful response
+            if (statusCode < 200 && statusCode > 300) {
+                error = new Error(`Request Failed! Status Code: [${statusCode}], Content-Type: [${contentType}].`);
+            } else if (
+                !acceptableContentTypes.some(requestContentType => new RegExp(requestContentType).test(contentType))
+            ) {
+                error = new Error(`Invalid content-type! Expected one of [${acceptableContentTypes.join(', ')}] but received ${contentType}`);
+            }
 
-        if (error) {
-            console.error(error.message);
+            if (error) {
+                console.error(error.message);
 
-            // Consume response data to free up memory
-            req.resume();
+                // Consume response data to free up memory
+                req.resume();
+
+                return;
+            }
+
+            const body = await getIncomingMessageBody(req);
+
+            console.log('Server response from root `/` =', body);
 
             return;
+
+            // Alternatively:
+            // import { type RequestOptions as HttpRequestOptions } from 'http';
+            // import { request as httpsRequest, type RequestOptions as HttpsRequestOptions } from 'https';
+            // await new Promise<void>((resolve, reject) => {
+            //     (async () => {
+            //         const options: HttpRequestOptions | HttpsRequestOptions = {
+            //             hostname: corsProxyUrl.hostname,
+            //             path: req.url,
+            //             method: req.method,
+            //             headers: req.headers,
+            //             agent: false,
+            //             setHost: false,
+            //             // @ts-ignore
+            //             insecureHTTPParser: true,
+            //             rejectUnauthorized: false,
+            //         };
+            //         // @ts-ignore
+            //         // options.agent = new HttpsAgent(options);
+            //         const req2 = httpsRequest(
+            //             corsProxyUrl.toString(),
+            //             options,
+            //             async res1 => {
+            //                 console.log({
+            //                     httpsRequest: corsProxyUrl.toString(),
+            //                     httpsReqHeaders: res1.headers,
+            //                     httpsReqBody: await getIncomingMessageBody(res1),
+            //                 });
+            //
+            //                 resolve();
+            //             },
+            //         );
+            //
+            //         req2.write(reqBodyString);
+            //         req2.end();
+            //     })();
+            // });
+        });
+
+        verifyServerClientRequest.on('error', (error) => {
+            console.error(`Got error: ${error.message}`);
+        });
+    }
+
+    async function verifyWithFetch() {
+        try {
+            const res = await fetch(hostname, {
+                ...(protocol.match(/https/i)
+                    ? {
+                        // Force accepting self-signed certs. See: https://sebtrif.xyz/blog/2019-10-03-client-side-ssl-in-node-js-with-fetch/
+                        agent: new HttpsAgent({
+                            rejectUnauthorized: false,
+                        }),
+                    } as RequestInit
+                    : {}
+                ),
+            });
+            const { ok: isSuccess, status } = res;
+
+            if (!isSuccess) {
+                throw new Error(`Could not make network request to ${hostname}! Got HTTP status code [${status}]`);
+            }
+
+            let body = await res.text();
+
+            try {
+                body = JSON.parse(body);
+            } catch (jsonParsingError) {
+                // If not JSON, then shorten HTML text response
+                body = body?.slice(0, 30);
+            }
+
+            console.log('Server is running! Response from root `/` =', body);
+        } catch (e) {
+            console.error('Could not verify that server is running!', e);
+        }
+    }
+
+    async function verify(useNodeGetRequest = false) {
+        if (useNodeGetRequest) {
+            return await verifyWithNodeRequest();
         }
 
-        const body = await getIncomingMessageBody(req);
+        return await verifyWithFetch();
+    }
 
-        console.log('Server response from root `/` =', body);
-    });
-
-    verifyServerClientRequest.on('error', (error) => {
-        console.error(`Got error: ${error.message}`);
+    return await new Promise<unknown>((res, rej) => {
+        setTimeout(async () => {
+            try {
+                res(await verify());
+            } catch (e) {
+                rej(e);
+            }
+        }, 2000);
     });
 }
 

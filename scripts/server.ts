@@ -209,10 +209,16 @@ function shouldProxyUrl(url: string): boolean {
 
     if (!shouldProxyUrl.proxyApiRegex) {
         shouldProxyUrl.proxyApiRegex = new RegExp(`(${proxyApis
-            .map(route => route.replace(
-                /:[^/]+/g, // Match all REST path-matchers, e.g. `:slug` and `:slug*`
-                '[^/]+', // Replace with regex matching anything other than slashes, taking care of both `:slug` and `:slug*` (`/path/:slug*` => `/path/any/level/of/nesting`)
-            ))
+            .map(route => route
+                .replace(
+                    /:[^/]+/g, // Match all REST path-matchers, e.g. `:slug` and `:slug*`
+                    '[^/]+/?\\??', // Replace with regex matching anything other than slashes, taking care of both `:slug` and `:slug*` (`/path/:slug*` => `/path/any/level/of/nesting`)
+                )
+                .replace(
+                    /\*\*?/g, // Match glob patterns for capture-all
+                    '.*', // Replace with regex
+                ),
+            )
             .join(')|(') // Segregate each URL path so that regex matches don't bleed over from one to the next
         })`);
     }

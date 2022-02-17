@@ -495,7 +495,7 @@ const webpackConfig = {
             overlay: true, // show full-screen display of compiler errors
             // progress: true, // show compilation progress in browser console when webpack is (re-)compiling
         },
-        /*
+        /**
          * For forwarding the specified URLs made to `devServer.host` to a different domain.
          *
          * Useful for:
@@ -513,17 +513,36 @@ const webpackConfig = {
          *     '/api': { ...everythingExceptContext },
          *     '/auth': { ...everythingExceptContext }
          * }
+         *
+         * @see [Webpack `devServer.proxy` docs]{@link https://webpack.js.org/configuration/dev-server/#devserverproxy}
+         * @see [All `http-proxy-middleware` options available to `devServer.proxy`]{@link https://github.com/chimurai/http-proxy-middleware#http-proxy-options}
          */
         // proxy: [{
-        //     // domain to which you want to forward all URLs specified by `context` (instead of having them be made to `devServer.host`)
-        //     // e.g. fetch('/api/getUser')
-        //     //      Original URL: 'https://localhost/api/user'
-        //     //      Proxied URL: 'https://test-env.example.com/api/user'
-        //     target: 'https://test-env.example.com',
-        //     context: [ '/**/*' ], // all URLs you want to be proxied to `target`. Here, we forward everything containing 2 slashes so that dev server's resource files are still served from `host`.
-        //     secure: false, // allows using HTTPS without a valid certificate (which is the default case, unless you manually add a localhost cert yourself).
-        //     changeOrigin: true // changes the origin of the request to be that of `target` (required for CORS).
-        // }]
+        //     ...(() => {
+        //         // domain to which you want to forward all URLs specified by `context` (instead of having them be made to `devServer.host`)
+        //         // e.g. fetch('/api/getUser')
+        //         //      Original URL: 'https://localhost/api/user'
+        //         //      Proxied URL: 'https://test-env.example.com/api/user'
+        //         const corsProxyDestination = 'https://test-env.example.com';
+        //         const corsProxyUrl = new URL(corsProxyDestination);
+        //
+        //         return {
+        //             target: corsProxyDestination,
+        //             context: [ '/**/*' ], // All URLs you want to be proxied to `target`. Here, we forward everything containing 2 slashes so that dev server's resource files are still served from `host`.
+        //             secure: false, // Allows using HTTPS without a valid certificate (which is the default case, unless you manually add a localhost cert yourself).
+        //             changeOrigin: true, // Changes the origin of the request to be that of `target` (required for CORS).
+        //             followRedirects: true, // Follow redirects (301, 302, 307, 308, etc.).
+        //             headers: { // Specific headers to pass to the proxied request.
+        //                 // Origin is overridden by `changeOrigin`, but `referer` and `host` aren't.
+        //                 // Since some servers check these headers, set all of them to the CORS proxy's destination.
+        //                 origin: corsProxyUrl.origin,
+        //                 referer: corsProxyUrl.origin,
+        //                 host: corsProxyUrl.host,
+        //             },
+        //             // cookieDomainRewrite: corsProxyUrl.host, // Override Set-Cookie `Domain` configs - Could be a single string or object of old-to-new mappings.
+        //         };
+        //     })(),
+        // }],
     },
 };
 

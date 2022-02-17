@@ -510,6 +510,7 @@ async function runWebpackServer() {
 
 
 // If using NextJS
+// Example: https://medium.com/bb-tutorials-and-thoughts/next-js-how-to-proxy-to-backend-server-987174737331
 async function runNextJsServer() {
     const { parse } = await import('url');
     // @ts-ignore - Unrecognized import b/c this boilerplate isn't based on NextJS

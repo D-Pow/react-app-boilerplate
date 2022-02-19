@@ -838,3 +838,45 @@ export async function deepCopyStructuredClone(obj) {
         });
     }
 }
+
+
+/**
+ * Merges object literals together in order of increasing precedence, i.e.
+ *
+ * - Later objects' keys/values overwrite earlier ones.
+ * - Nested objects/arrays are merged into one.
+ * - Previous values are maintained if not overwritten.
+ *
+ * @param {Object[]} objs - Objects to merge.
+ * @returns {Object} - Resulting merged object.
+ */
+export function mergeObjects(...objs) {
+    return objs.reduce((merged, obj) =>
+        Object.entries(obj).reduce((mergedNested, [ key, value ]) => {
+            const prevValue = mergedNested[key];
+
+            if (isObject(prevValue) && isObject(value)) {
+                mergedNested[key] = mergeObjects(prevValue, value);
+            } else if (areVarsInstancesOf(prevValue, value, Array)) {
+                mergedNested[key] = [
+                    ...prevValue,
+                    ...value,
+                ];
+            } else if (areVarsInstancesOf(prevValue, value, Set)) {
+                mergedNested[key] = new Set([
+                    ...prevValue,
+                    ...value,
+                ]);
+            } else if (areVarsInstancesOf(prevValue, value, Map)) {
+                mergedNested[key] = new Map([
+                    ...prevValue,
+                    ...value,
+                ]);
+            } else {
+                mergedNested[key] = value;
+            }
+
+            return mergedNested;
+        }, merged),
+    {});
+}

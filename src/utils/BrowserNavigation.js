@@ -84,8 +84,10 @@ export function getQueryParams(input = self.location.search + self.location.hash
  * Pushes a URL query parameter key-value pair to the URL bar.
  * Does not refresh the page, rather it just adds the new URL to the {@code history}.
  *
+ * If only a key (string) is specified without a value, then it deletes that query param.
+ *
  * @param {(string|Object)} key - Query param key, or object of all key-value pairs to be in the URL bar.
- * @param {string} value - Query param value to be assigned to the key (if key is a string).
+ * @param {string} [value] - Query param value to be assigned to the key (if key is a string).
  */
 export function pushQueryParamOnHistory(key, value) {
     const { origin, pathname, hash } = self.location;

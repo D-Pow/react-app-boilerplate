@@ -90,7 +90,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
  * @param {string} [value] - Query param value to be assigned to the key (if key is a string).
  */
 export function pushQueryParamOnHistory(key, value) {
-    const { origin, pathname, hash } = self.location;
+    const { origin, pathname } = self.location;
     let queryParams = getQueryParams();
 
     if (typeof key === typeof {}) {
@@ -104,7 +104,7 @@ export function pushQueryParamOnHistory(key, value) {
     }
 
     const queryParamsString = getQueryParams(queryParams);
-    const newUrl = origin + pathname + queryParamsString + hash;
+    const newUrl = origin + pathname + queryParamsString;
 
     history.pushState(
         null,

@@ -88,6 +88,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
  *
  * @param {(string|Object)} key - Query param key, or object of all key-value pairs to be in the URL bar.
  * @param {string} [value] - Query param value to be assigned to the key (if key is a string).
+ * @returns {Object} - All resulting query param key-value pairs, including the URL hash entry (if present).
  */
 export function pushQueryParamOnHistory(key, value) {
     const { origin, pathname } = self.location;
@@ -111,6 +112,8 @@ export function pushQueryParamOnHistory(key, value) {
         null,
         newUrl,
     );
+
+    return getQueryParams();
 }
 
 /**

@@ -98,15 +98,21 @@ export interface CookieStore {
  *
  * @param [options]
  * @param [options.name] - Specific cookie to extract.
- * @param [options.cookie] - Cookie string to parse.
  * @param [options.decodeBase64] - Attempt Base64-decoding cookie values.
+ * @param [options.asList] - Return the cookies as a list instead of an object.
+ * @param [options.cookie] - Cookie string to parse.
  * @returns Parsed cookie value/name-value entries.
  */
 export function getCookie({
     name = '',
     decodeBase64 = true,
+    asList = false,
     cookie = globalThis?.document?.cookie,
-} = {}): Nullable<(string | Record<string, string>)> {
+} = {}): Nullable<
+    string
+    | Record<string, string>
+    | Array<Pick<CookieAttributes, 'name' | 'value'>>
+> {
     const cookieObj = cookie?.split('; ').reduce((obj, entry) => {
         const keyVal = entry.split('=');
         const key = decodeURIComponent(keyVal[0]);
@@ -121,7 +127,11 @@ export function getCookie({
         return obj;
     }, {} as Record<string, string>);
 
-    return name ? cookieObj?.[name] : cookieObj;
+    return name
+        ? cookieObj?.[name]
+        : asList
+            ? Object.entries(cookieObj).map(([ key, value ]) => ({ name: key, value }))
+            : cookieObj;
 }
 
 

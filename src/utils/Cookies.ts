@@ -161,42 +161,58 @@ export async function getCookieDetails({
     name,
     decodeBase64 = true,
     asList = false,
-}: GetCookieDetailsParams = {}): Promise<Nullable<CookieAttributes | CookieAttributes[] | Record<string, CookieAttributes>, true>> {
-    const cookieStore = ((self as any)?.cookieStore as CookieStore);
+}: GetCookieDetailsParams = {}): Promise<Nullable<
+    CookieAttributes
+    | CookieAttributes[]
+    | Record<string, CookieAttributes>
+    | ReturnType<typeof getCookie>
+>> {
+    try {
+        const cookieStore = ((self as any)?.cookieStore as CookieStore);
 
-    if (name) {
-        const cookieDetails = await cookieStore.get(name);
+        if (name) {
+            const cookieDetails = await cookieStore.get(name);
 
-        if (!cookieDetails) {
+            if (!cookieDetails) {
+                return null;
+            }
+
+            if (decodeBase64) {
+                cookieDetails.value = base64Decode(cookieDetails.value);
+            }
+
+            return cookieDetails;
+        }
+
+        const cookieDetailsList = await cookieStore.getAll();
+
+        if (!cookieDetailsList?.length) {
             return null;
         }
 
         if (decodeBase64) {
-            cookieDetails.value = base64Decode(cookieDetails.value);
+            cookieDetailsList.forEach(cookie => {
+                cookie.value = base64Decode(cookie.value);
+            });
         }
 
-        return cookieDetails;
-    }
+        if (asList) {
+            return cookieDetailsList;
+        }
 
-    const cookieDetailsList = await cookieStore.getAll();
+        return cookieDetailsList.reduce((obj, cookie) => {
+            obj[cookie?.name] = cookie;
 
-    if (!cookieDetailsList?.length) {
-        return null;
-    }
+            return obj;
+        }, {} as Record<string, CookieAttributes>);
+    } catch (e: unknown) {
+        const error = e as Error;
+        console.warn('Could not extract cookie from `cookieStore`! Ensure your browser supports the `CookieStore` interface and is served over HTTPS.', error.message);
 
-    if (decodeBase64) {
-        cookieDetailsList.forEach(cookie => {
-            cookie.value = base64Decode(cookie.value);
+        return getCookie({
+            name,
+            decodeBase64,
+            asList,
         });
     }
-
-    if (asList) {
-        return cookieDetailsList;
-    }
-
-    return cookieDetailsList.reduce((obj, cookie) => {
-        obj[cookie?.name] = cookie;
-
-        return obj;
-    }, {} as Record<string, CookieAttributes>);
 }

@@ -11,6 +11,8 @@ import type {
     PropsWithChildren,
     Context as ReactContext,
     Provider as ReactProvider,
+    Dispatch,
+    SetStateAction,
 } from 'react';
 
 import type { Nullable, PartialDeep } from '@/types';
@@ -40,7 +42,7 @@ export interface Context<ContextState> extends Omit<ReactContext<ContextState>, 
 
 export interface ContextValue<ContextState> {
     contextState: Nullable<ContextState>;
-    setContextState: Function;
+    setContextState: Dispatch<SetStateAction<Nullable<ContextState>>>;
 }
 
 export interface ContextFactoryOptions<ContextState> {
@@ -166,7 +168,7 @@ export default function ContextFactory<ContextState>({
             ContextFactoryOptions<ContextState>['defaultStateValue']
         >(defaultStateValue);
 
-        const setContextState = useCallback((args: any) => {
+        const setContextState = useCallback<typeof setStateForContext>((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
                 // so setState can be called directly.

@@ -10,7 +10,8 @@ import { MimeTypes } from '@/utils/Constants';
  * @param {Object} [options]
  * @param {string} [options.mimeType] - Mime type of the content; include this if you want a [Data URL]{@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs}.
  * @param {boolean} [options.urlEncode] - If the string should be Base64-URL-encoded instead of just Base64-encoded (e.g. for crypto).
- * @returns {string} - Base64-encoded string.
+ * @param {boolean} [options.nullOnFail] - If null should be returned instead of the original string upon failure.
+ * @returns {string} - Base64-encoded string (or original string/null on failure).
  *
  * @see [Why `urlEncode` needs to be specified]{@link https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem}
  * @see [Base64 vs Base64-URL]{@link https://stackoverflow.com/questions/28100601/decode-url-safe-base64-in-javascript-browser-side}
@@ -19,6 +20,7 @@ import { MimeTypes } from '@/utils/Constants';
 export function base64Encode(str, {
     mimeType = '',
     urlEncode = false,
+    nullOnFail = false,
 } = {}) {
     try {
         const base64String = urlEncode
@@ -30,26 +32,32 @@ export function base64Encode(str, {
         }
 
         return base64String;
-    } catch (e) {
-        // Could not encode
-    }
+    } catch (couldNotEncodeError) {}
 
-    return null;
+    return nullOnFail ? null : str;
 }
 
 
-export function base64Decode(base64String, {
+/**
+ * Decodes a Base64-encoded string.
+ *
+ * @param {string} str - String to Base64-decode.
+ * @param {Object} options
+ * @param {boolean} [options.urlDecode] - If the string was Base64-URL-encoded instead of just Base64-encoded (e.g. for crypto).
+ * @param {boolean} [options.nullOnFail] - If null should be returned instead of the original string upon failure.
+ * @returns {string} - Base64-decoded string (or original string/null on failure).
+ */
+export function base64Decode(str, {
     urlDecode = false,
+    nullOnFail = false,
 } = {}) {
     try {
         return urlDecode
-            ? decodeURIComponent(escape(atob(base64String)))
-            : atob(base64String);
-    } catch (e) {
-        // Could not decode, likely a malformed Base64 string
-    }
+            ? decodeURIComponent(escape(atob(str)))
+            : atob(str);
+    } catch (couldNotDecodeLikelyMalformedError) {}
 
-    return base64String;
+    return nullOnFail ? null : str;
 }
 
 

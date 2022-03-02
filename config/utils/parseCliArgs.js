@@ -258,7 +258,7 @@ function printHelpMessageAndExit({
     optionsConfigs,
     booleanFlagNegationPrefix,
 } = {}) {
-    const wasRunUsingYarn = !!process.env.npm_execpath.match(/yarn/i);
+    const wasRunUsingYarn = !!process.env.npm_execpath?.match(/yarn/i);
     const scriptFilePath = Paths.getFileRelPath(Paths.ROOT.ABS, filename);
     const scriptUsageHeader = `Usage: ${scriptFilePath} [options]... [args]...`;
     const scriptOverviewHelpMessage = [

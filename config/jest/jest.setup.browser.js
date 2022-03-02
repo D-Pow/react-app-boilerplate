@@ -13,11 +13,25 @@ global.fetch = global.fetch || jest.fn(() => Promise.resolve({
     json: () => ({ realFetchResponse: 'realFetchResponse' }),
     text: () => 'realFetchResponse',
 }));
-global.Headers = global.Headers || jest.fn();
 global.Request = global.Request || jest.fn((url, options) => ({
     url,
     text: () => Promise.resolve(options ? options.body : ''),
 }));
+class Headers extends CustomizableObject {
+    append(key, value) {
+        if (this[key]) {
+            this[key] += `,${value}`;
+        } else {
+            this[key] = value;
+        }
+    }
+
+    entries() {
+        // Native `Headers.prototype.entries` reverses key/value
+        return super.entries().map(([ key, value ]) => [ value, key ]);
+    }
+}
+global.Headers = global.Headers || Headers;
 
 
 export class StorageMock extends CustomizableObject {

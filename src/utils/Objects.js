@@ -121,12 +121,12 @@ export class CustomizableObject {
      *   - JSON.stringify({ myKey: myClass }); // key == 'myKey'
      *   - JSON.stringify([ 'a', myClass ]); // key == 1
      *
-     * Thus, return the specified `storage` key only if it matches a key stored by the
+     * Thus, return the specified key only if it matches a key stored by the
      * calling parent.
      *
      * @param {(string|number)} key - Key this class is nested under when called by the
      *                                the parent's `JSON.stringify()`.
-     * @returns {Object} - The storage contents.
+     * @returns {Object} - The class' contents.
      *
      * @see [MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#tojson_behavior}
      * @see [Related StackOverflow post]{@link https://stackoverflow.com/questions/20734894/difference-between-tojson-and-json-stringify}
@@ -196,8 +196,7 @@ export class CustomizableObject {
      * Final result:
      *   - Use `Symbol.iterator` to mark that this method is to be called when iterating over the class instance.
      *   - Mark it as a generator so we don't have to manually implement `next()`/`done` values.
-     *   - Forward the iterator values for each iteration to `Object.entries()` to handle `this.storage` iteration automatically.
-     *   - Map the iterator values to objects so it shows proper `storageKey: storageVal` assignments.
+     *   - Forward the iterator values for each iteration to `Object.entries()` to handle class field iteration automatically.
      *   - Use `return` to automatically signal the end of the `yield` sequence, i.e. mark `done: true`.
      *
      * Note: It seems it's not possible to override object spreading logic at this time (see [this SO post]{@link https://stackoverflow.com/questions/68631046/how-to-override-object-destructuring-for-es-class-just-like-array-destructuring}).
@@ -209,7 +208,7 @@ export class CustomizableObject {
      * @see [yield* delegation to other iterables]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield*}
      */
     *[Symbol.iterator]() {
-        return yield* Object.entries(this.storage);
+        return yield* Object.entries(this);
     }
 }
 

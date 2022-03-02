@@ -24,6 +24,8 @@ class Headers extends CustomizableObject {
         } else {
             this[key] = value;
         }
+
+        return this;
     }
 
     entries() {

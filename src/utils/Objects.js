@@ -941,8 +941,8 @@ export function deepCopy(obj) {
     const isTypedArray = typedArrayRegex.test(getTypeFromTag(obj));
 
     if (isTypedArray) {
-        // (TypedArray.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice)
-        // technically returns a shallow copy, but since their entries are only ever primitives, this is acceptable.
+        // [TypedArray.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice)
+        // technically returns a shallow copy, but this is acceptable b/c their entries are only ever primitives.
         try {
             return obj.slice();
         } catch (e) {

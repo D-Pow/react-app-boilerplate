@@ -10,8 +10,8 @@ global.XMLHttpRequest = global.XMLHttpRequest || jest.fn(() => {
 });
 
 global.fetch = global.fetch || jest.fn(() => Promise.resolve({
-    json: () => ({ realFetchResponse: 'realFetchResponse' }),
-    text: () => 'realFetchResponse',
+    json: () => ({}),
+    text: () => '',
 }));
 global.Request = global.Request || jest.fn((url, options) => ({
     url,

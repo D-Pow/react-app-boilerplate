@@ -2,6 +2,8 @@ const path = require('path');
 
 const { ImportAliases } = require('./utils');
 
+// TODO Check out SWC Rust compiler instead of Babel: https://swc.rs/
+
 /** @type {import('@babel/core/src/config/files').ConfigFile} */
 module.exports = {
     presets: [

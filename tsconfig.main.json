@@ -93,6 +93,7 @@
      * Alternatively, we could add `-r tsconfig-paths/register` in the command line, but putting it here
      * ensures it works all the time, making npm scripts more DRY.
      */
+    // TODO Use swc: https://typestrong.org/ts-node/docs/transpilers#bundled-swc-integration
     "ts-node": {
         "require": [
             "tsconfig-paths/register"

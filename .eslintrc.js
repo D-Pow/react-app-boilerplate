@@ -355,6 +355,7 @@ module.exports = {
                 'space-before-function-paren': [ 'error', {
                     named: 'ignore', // Allow typedefs using functions, e.g. `<Func extends () => {}>`
                 }],
+                'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
             },
         },
         // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).

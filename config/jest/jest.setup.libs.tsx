@@ -16,6 +16,7 @@
  * @file
  */
 
+import React from 'react';
 import { render, act, waitFor, prettyDOM } from '@testing-library/react';
 
 import Router, { appRoutes } from '@/components/Router';
@@ -24,6 +25,8 @@ import AppContext from '@/utils/AppContext';
 import type {
     ReactElement,
     PropsWithChildren,
+    EffectCallback,
+    DependencyList,
 } from 'react';
 import type {
     RenderResult as RenderedComponent,
@@ -140,6 +143,69 @@ export async function waitForUpdate(
      * @see [`waitFor()` docs]{@link https://testing-library.com/docs/dom-testing-library/api-async/#waitfor}
      */
     await waitFor(async () => await func());
+}
+
+
+/**
+ * Mocks all `React.useEffect()` functions such that any with the specified dependencies
+ * are run immediately instead of waiting until after a render.
+ *
+ * Specifically, all `useEffect()` functions matching these conditions will run:
+ *
+ * - Any without dependencies are always run.
+ * - Any with an empty array are run only once.
+ * - Any whose dependency list's types match all those in the passed `string[]` or all of
+ *   at least one `string[]` in the passed `string[][]`.
+ * - If no specified dependency list types, all will be run (except those with an empty list).
+ * - `any`/`unknown` can be used to match any type in that index of the dependency list.
+ * - Type strings are case-insensitive.
+ *
+ * @param depsJsTypes - List of JS types returned from `Object.prototype.toString.call(depsList[i])`, minus the surrounding `[object ]` (e.g. `'Array'`).
+ * @returns Function to unmock `useEffect()`, restoring its original behavior.
+ */
+export function runAllUseEffectsWithDeps(depsJsTypes?: string[] | string[][]) {
+    const mock = jest.spyOn(React, 'useEffect');
+    const mockRestore = () => mock.mockRestore();
+
+    const checkDepsTypesMatch = (jsTypes: string[], deps: DependencyList) => jsTypes.every((jsType, i) => (
+        new RegExp(`${jsType}\\]?$`, 'i').test((
+            // Custom classes and named functions
+            deps[i].name
+            // Everything else
+            || Object.prototype.toString.call(deps[i])
+        ))
+        || /any|unknown/i.test(jsType)
+    ));
+
+    mock.mockImplementation((func: EffectCallback, deps?: DependencyList) => {
+        if (!deps) {
+            // No dependencies list means run the effect every time the component re-renders.
+            func();
+        } else if (deps.length === 0) {
+            // Empty dependencies list means run the effect once and never again.
+            // TODO Concoct an algo to iterate through `mock.mock.(calls|instances)`, compare
+            //  component IDs (not names b/c there could be > 1 of one component) and/or `func.toString()`
+            //  values, and don't call if the component ID/function string match this instance's function.
+            func();
+        } else if (!depsJsTypes) {
+            // No specified JS types means the calling parent test wants all effects to run.
+            // Run this after `deps.length` check so any effects that should only run once do so.
+            func();
+        } else if (
+            (Array.isArray(depsJsTypes[0]) && depsJsTypes.some(jsTypes => checkDepsTypesMatch(jsTypes as string[], deps)))
+            || checkDepsTypesMatch(depsJsTypes as string[], deps)
+        ) {
+            // Specified dependency types means only run the effect if desired.
+            // We have to compare their types to the desired types b/c we can't read variable names
+            // and storing their values for equality checks is very complicated due to how arrow
+            // functions are re-instantiated upon every render.
+            // We could use the `mock.mock.calls` array as done if `deps.length === 0`, but we'd
+            // still have a complex system of equality checks that likely isn't worthwhile.
+            func();
+        }
+    });
+
+    return mockRestore;
 }
 
 

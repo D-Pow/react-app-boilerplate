@@ -124,40 +124,6 @@ export function getXmlDocFromDataUrl(dataUrl) {
 
 
 /**
- * Hashes a string using the specified algorithm.
- *
- * Defaults to SHA-256. Available algorithms exist in the `hash.ALGORITHMS` object.
- *
- * @param {string} str - String to hash.
- * @param {string} [algorithm='SHA-256'] - Algorithm to use.
- * @returns {Promise<string>} - The hashed string.
- * @see [Crypto.subtle hashing API]{@link https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string}
- */
-export async function hash(str, algorithm = hash.ALGORITHMS.Sha256) {
-    const validAlgorithms = new Set(Object.values(hash.ALGORITHMS));
-
-    if (!validAlgorithms.has(algorithm)) {
-        throw new TypeError(`Error: Hash algorithm "${algorithm}" not supported. Valid values are: [ ${[ ...validAlgorithms ].join(', ')} ].`);
-    }
-
-    // Encode to (UTF-8) Uint8Array
-    const utf8IntArray = new TextEncoder().encode(str);
-    // Hash the string
-    const hashBuffer = await self.crypto.subtle.digest(algorithm, utf8IntArray);
-    // Get hex string from buffer/byte array
-    const hashAsciiHex = byteArrayToHexString(new Uint8Array(hashBuffer));
-
-    return hashAsciiHex;
-}
-hash.ALGORITHMS = {
-    Sha1: 'SHA-1',
-    Sha256: 'SHA-256',
-    Sha384: 'SHA-384',
-    Sha512: 'SHA-512',
-};
-
-
-/**
  * Converts an extension of `ArrayBuffer` (e.g. `Uint8Array`) to a hexadecimal string representation.
  *
  * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.

@@ -116,10 +116,30 @@ export function renderWithWrappingParent(
  * promises that don't use real event timers. For those that do, you'll have to use
  * a combination of `jest.runAllTimers()` followed by this function.
  *
+ * @param [func] - Custom function to wait for.
+ *
  * @see [Apollo docs on React testing]{@link https://www.apollographql.com/docs/react/development-testing/testing/#testing-the-success-state}
  */
-export async function waitForUpdate() {
+export async function waitForUpdate(
+    func: (...args: unknown[]) => (unknown | Promise<unknown>) = () => {},
+) {
     await act(async () => await new Promise(res => setTimeout(res, 0)));
+    /**
+     * `waitFor(callback, options)` runs the callback until it doesn't throw an error.
+     * As such, the return value doesn't matter.
+     *
+     * For this particular case, we could rewrite this like the example below, but since Jest `expect()` already
+     * throws errors, using it directly is simpler.
+     *
+     * @example
+     * if (location.href === currentUrl) {
+     *     throw 'some error';
+     * }
+     * return;
+     *
+     * @see [`waitFor()` docs]{@link https://testing-library.com/docs/dom-testing-library/api-async/#waitfor}
+     */
+    await waitFor(async () => await func());
 }
 
 
@@ -234,7 +254,7 @@ export async function waitForElementVisible(
     const container = component.container || component;
     const queryForElements = () => all ? container.querySelectorAll(querySelectorString) : container.querySelector(querySelectorString);
 
-    await waitFor(async () => {
+    await waitForUpdate(async () => {
         expect(queryForElements()).toBeDefined();
     });
 
@@ -257,22 +277,7 @@ export async function waitForRedirect(fireEventThatRedirects: () => (any | Promi
 
     await fireEventThatRedirects();
 
-    await waitFor(() => {
-        /**
-         * `waitFor(callback, options)` runs the callback until it doesn't throw an error.
-         * As such, the return value doesn't matter.
-         *
-         * For this particular case, we could rewrite this like the example below, but since Jest `expect()` already
-         * throws errors, using it directly is simpler.
-         *
-         * @example
-         * if (location.href === currentUrl) {
-         *     throw 'some error';
-         * }
-         * return;
-         *
-         * @see [`waitFor()` docs]{@link https://testing-library.com/docs/dom-testing-library/api-async/#waitfor}
-         */
+    await waitForUpdate(() => {
         expect(location.href).not.toEqual(currentUrl);
     });
 

@@ -1,5 +1,6 @@
 import { fetchAsBase64 } from '@/utils/Network';
 import { MimeTypes } from '@/utils/Constants';
+import { getMimeTypeFromDataUrl } from '@/utils/Text';
 
 
 /**
@@ -208,24 +209,41 @@ export function setDocumentScrolling(allowScrolling = true) {
 }
 
 
-export function downloadDataAsFile(data, fileName, mimeType = MimeTypes.TEXT) {
-    const dataBlob = new Blob([ data ], { type: mimeType });
+/**
+ * Downloads the specified data with the desired filename and MIME type.
+ *
+ * @param {unknown} data - Data to download.
+ * @param {string} [fileName] - Filename for the download.
+ * @param {string} [mimeType] - MIME type of the download content.
+ */
+export function downloadDataAsFile(data, {
+    fileName = 'download',
+    mimeType = getMimeTypeFromDataUrl(data) || MimeTypes.TEXT,
+} = {}) {
+    const isBase64Data = data?.match?.(/^data(:[^;]*);base64/i);
+    let downloadData = data;
+
+    if (!isBase64Data) {
+        const dataBlob = new Blob([ data ], { type: mimeType });
+        const dataBlobUrl = URL?.createObjectURL?.(dataBlob);
+
+        downloadData = dataBlobUrl;
+    }
 
     // IE & Edge
     if (self.navigator && navigator.msSaveOrOpenBlob) {
         // Download prompt allows for saving or opening the file
         // navigator.msSaveBlob(dataBlob, fileName) only downloads it
-        navigator.msSaveOrOpenBlob(dataBlob, fileName);
+        navigator.msSaveOrOpenBlob(downloadData, fileName);
 
         return;
     }
 
-    const dataBlobUrl = URL.createObjectURL(dataBlob);
     const anchor = document.createElement('a');
 
     anchor.style.display = 'none';
     anchor.download = fileName;
-    anchor.href = dataBlobUrl;
+    anchor.href = downloadData;
 
     document.body.appendChild(anchor); // Required for Firefox
     anchor.click();

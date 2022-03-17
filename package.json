@@ -30,6 +30,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:fixAll": "npm run lint:all -- --fix",
     "lint:verify": "npm run lint:all -- --quiet",
+    "typecheck": "tsc --noEmit",
     "createComponent": "node scripts/createComponent.js --",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
     "prebuild": "npm run clean --",

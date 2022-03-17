@@ -18,7 +18,7 @@ module.exports = {
             {
                 useBuiltIns: process?.env?.npm_package_config_supportIe ? 'entry' : 'usage',
                 corejs: {
-                    version: '3.19',
+                    version: '3.21',
                     proposals: true,
                 },
                 shippedProposals: true,

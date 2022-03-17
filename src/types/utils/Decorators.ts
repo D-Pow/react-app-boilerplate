@@ -58,7 +58,17 @@ export type DecoratorFunctionLegacy = (
 ) => any;
 
 
-export type Decorator = (DecoratorFunctionNew | DecoratorFunctionLegacy);
+/**
+ * Decorator type for all types of decorators, including both new and legacy APIs.
+ */
+export type Decorator = (
+    DecoratorFunctionNew
+    | DecoratorFunctionLegacy
+    | ClassDecorator
+    | PropertyDecorator
+    | MethodDecorator
+    | ParameterDecorator
+);
 
 
 /**

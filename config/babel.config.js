@@ -4,7 +4,13 @@ const { ImportAliases } = require('./utils');
 
 // TODO Check out SWC Rust compiler instead of Babel: https://swc.rs/
 
-/** @type {import('@babel/core/src/config/files').ConfigFile} */
+/**
+ * @type {import('@types/babel__core').TransformOptions}
+ *
+ * @see [Babel config options]{@link https://babeljs.io/docs/en/options}
+ * @see [Older yet more accurate `@types/babel__core` package]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/277df65eb7/types/babel__core/index.d.ts}
+ * @see [Newer yet less accurate `@types/babel-core` package]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/babel-core/index.d.ts}
+ */
 module.exports = {
     presets: [
         [

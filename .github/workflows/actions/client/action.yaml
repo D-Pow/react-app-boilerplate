@@ -53,19 +53,12 @@ runs:
       run: |
         npm install
 
-    - name: Client Lint (ESLint)
-      id: client-lint
+    - name: Client Verify
+      id: client-verify
       shell: bash
       working-directory: ./
       run: |
-        npm run lint:verify
-
-    - name: Client Tests
-      id: client-test
-      shell: bash
-      working-directory: ./
-      run: |
-        npm run test
+        npm run verify
 
     - name: Client Build
       id: client-build

@@ -3,6 +3,7 @@ import {
     useState,
     useCallback,
     useMemo,
+    Component,
 } from 'react';
 
 import type {
@@ -39,10 +40,14 @@ export interface Context<ContextState> extends Omit<ReactContext<ContextState>, 
     Provider: Provider<ContextState>;
 }
 
+export type SetContextState<ContextState> = (
+    Dispatch<SetStateAction<Nullable<ContextState>>>
+    & Parameters<typeof Component.prototype.setState>[0]
+);
 
 export interface ContextValue<ContextState> {
     contextState: Nullable<ContextState>;
-    setContextState: Dispatch<SetStateAction<Nullable<ContextState>>>;
+    setContextState: SetContextState<ContextState>;
 }
 
 export interface ContextFactoryOptions<ContextState> {
@@ -168,7 +173,7 @@ export default function ContextFactory<ContextState>({
             ContextFactoryOptions<ContextState>['defaultStateValue']
         >(defaultStateValue);
 
-        const setContextState = useCallback<typeof setStateForContext>((args: any) => {
+        const setContextState = useCallback<SetContextState<ContextState>>((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
                 // State is either a simple JSON primitive, an array, or a function,
                 // so setState can be called directly.

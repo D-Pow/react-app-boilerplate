@@ -51,8 +51,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    // TODO Should full URLs be supported or only search/hash? Even `URLSearchParams` only supports search (not even hash).
-    const queryParamHashString = fromUrl.replace(/^\?/, '');
+    const queryParamHashString = fromUrl.match(/([?#].*$)/i)?.[0] ?? '';
     const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
 
     const queryParamsObj = {};

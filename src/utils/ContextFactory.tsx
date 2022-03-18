@@ -16,7 +16,7 @@ import type {
     SetStateAction,
 } from 'react';
 
-import type { Nullable, PartialDeep } from '@/types';
+import type { PartialDeep } from '@/types';
 
 
 // `Context.Provider` with `value` already populated
@@ -41,17 +41,17 @@ export interface Context<ContextState> extends Omit<ReactContext<ContextState>, 
 }
 
 export type SetContextState<ContextState> = (
-    Dispatch<SetStateAction<Nullable<ContextState>>>
+    Dispatch<SetStateAction<ContextState>>
     & Parameters<typeof Component.prototype.setState>[0]
 );
 
 export interface ContextValue<ContextState> {
-    contextState: Nullable<ContextState>;
+    contextState: ContextState;
     setContextState: SetContextState<ContextState>;
 }
 
 export interface ContextFactoryOptions<ContextState> {
-    defaultStateValue?: Nullable<ContextState>;
+    defaultStateValue?: ContextState;
     displayName?: string;
 }
 
@@ -152,11 +152,11 @@ export interface ContextFactoryOptions<ContextState> {
  * @returns The newly-created Context with a Provider prefilled with a memoized `contextState`/`setContextState` value.
  */
 export default function ContextFactory<ContextState>({
-    defaultStateValue = null,
+    defaultStateValue,
     displayName = '',
 }: ContextFactoryOptions<ContextState> = {}): Context<ContextValue<ContextState>> {
     const defaultContextValue: ContextValue<ContextState> = {
-        contextState: defaultStateValue,
+        contextState: defaultStateValue as ContextState,
         setContextState: () => {},
     };
 
@@ -199,7 +199,7 @@ export default function ContextFactory<ContextState>({
          * - https://blog.agney.dev/useMemo-inside-context/
          */
         const memoizedValue = useMemo<ContextValue<ContextState>>(() => ({
-            contextState,
+            contextState: contextState!,
             setContextState,
         }), [ contextState, setContextState ]);
 

@@ -60,6 +60,8 @@ export interface ContextFactoryOptions<ContextState> {
 //  See:
 //  - https://reactjs.org/docs/hooks-reference.html#usereducer
 //  - https://reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down
+// TODO Upgrade to React v18 for `useSyncExternalStore()`/`useMutableSource()`
+//  - See JSDoc `@see` refs
 /**
  * Creates a new Context with the respective Consumer and Provider for component use.
  * A new Context is created each time this function is called so call it outside your
@@ -150,6 +152,10 @@ export interface ContextFactoryOptions<ContextState> {
  * @param [options.defaultStateValue] - Default/initial value for the context state.
  * @param [options.displayName] - Display name for the context.
  * @returns The newly-created Context with a Provider prefilled with a memoized `contextState`/`setContextState` value.
+ *
+ * @see [Optimizing React Context usage]{@link https://saul-mirone.github.io/performance-optimization-in-react-context/}
+ * @see [React 18's new `useSyncExternalStore()` and `useMutableSource()` alternatives to global state]{@link https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api}
+ * @see [Overview of how Redux works]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
  */
 export default function ContextFactory<ContextState>({
     defaultStateValue,

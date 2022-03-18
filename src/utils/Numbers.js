@@ -3,6 +3,50 @@ export function asNumber(str) {
 }
 
 
+/**
+ * Rounds a number to the specified precision.
+ *
+ * By default, rounds to the specified number of decimal places.
+ * Optionally, rounds based on significant digits, i.e. total number digits between the
+ * first non-zero digit and the last zero or non-zero digit, regardless of decimal places.
+ *
+ * @param {number} num - Number to round.
+ * @param {number} places - How many decimal places/significant digits to round to.
+ * @param {Object} [options]
+ * @param {boolean} [options.isTotalSignificantDigits] - Make `places == significantDigits` instead of `decimalPlaces`.
+ * @param {boolean} [options.keepTrailingZeros] - Maintains trailing zeros in the resulting decimal places (returns a string).
+ * @returns {(number|string)} - The rounded number.
+ *
+ * @see [MDN docs on `toFixed()` decimal rounding]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed}
+ * @see [MDN docs on `toPrecision()` significant-digit rounding]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision}
+ */
+export function round(num, places, {
+    isTotalSignificantDigits = false,
+    keepTrailingZeros = false,
+} = {}) {
+    num = Number(num);
+
+    if (isNaN(num)) {
+        throw new TypeError(`${num} is not of type Number or String.`);
+    }
+
+    let roundedNum = num;
+
+    // Both `toPrecision()` and `toFixed()` return a string
+    if (isTotalSignificantDigits) {
+        roundedNum = num.toPrecision(places);
+    } else {
+        roundedNum = num.toFixed(places);
+    }
+
+    if (keepTrailingZeros) {
+        return roundedNum;
+    }
+
+    return Number(roundedNum);
+}
+
+
 export function sum(...nums) {
     if (nums.length === 1 && Array.isArray(nums[0])) {
         nums = nums[0];

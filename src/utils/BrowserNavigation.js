@@ -7,7 +7,7 @@
  *
  * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
  *                                                                  an object to convert to a search+hash string.
- * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search+hash string (if input is an object).
+ * @returns {(Object|string)} - All query param key-value pairs, including the hash entry (if input is a string) or URL search+hash string (if input is an object).
  */
 export function getQueryParams(input = self.location.search + self.location.hash) {
     // TODO Allow setting the separator for Object --> String conversion (e.g. comma instead of multiple `key=val` entries)

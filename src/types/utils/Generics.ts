@@ -46,6 +46,12 @@ export type JsonPrimitive = (
 
 
 /**
+ * Types that can be used to index native JavaScript types, (Object, Array, etc.).
+ */
+export type IndexSignature = string | number | symbol;
+
+
+/**
  * Gets all keys from a type, excluding those of the specified parent, `P`.
  *
  * Valid key types are:
@@ -68,7 +74,7 @@ export type OwnKeys<T, P = Array<T> | Object> = {
      * As such, that would make use of the default, interface-based logic by casting arrays to
      * an object for filtering, then back to an array for usability.
      */
-    [K in keyof T as K extends (string | number | symbol)
+    [K in keyof T as K extends IndexSignature
         ? K
         : never
     ]: T[K];
@@ -258,7 +264,6 @@ export type Or<BoolChecks, TrueReturn = true, FalseReturn = false> =
  * IsNumberArray<typeof numArr>;  // true
  *
  * @example Check if a type is a valid object/array/anything index type.
- * type IndexSignature = string | number | symbol;
  * const potentialKeys = [ 'a', 7, {} ];
  * type ValidKeyTypes = Extract<(typeof potentialKeys)[number], IndexSignature>;
  * type ValidKeys = Array<ValidKeyTypes>;

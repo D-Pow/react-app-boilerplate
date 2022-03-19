@@ -51,7 +51,7 @@ export interface ContextValue<ContextState> {
 }
 
 export interface ContextFactoryOptions<ContextState> {
-    defaultStateValue?: ContextState;
+    defaultStateValue?: ContextState | (() => ContextState);
     displayName?: string;
 }
 
@@ -175,9 +175,8 @@ export default function ContextFactory<ContextState>({
     const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>;
 
     function ProviderWithState(props: PropsWithChildren<any>) {
-        const [ contextState, setStateForContext ] = useState<
-            ContextFactoryOptions<ContextState>['defaultStateValue']
-        >(defaultStateValue);
+        // @ts-ignore - Initial state value could be a function to generate state, but we don't want that function in the resulting `contextState` typedef
+        const [ contextState, setStateForContext ] = useState<ContextState>(defaultStateValue);
 
         const setContextState = useCallback<SetContextState<ContextState>>((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {
@@ -205,7 +204,7 @@ export default function ContextFactory<ContextState>({
          * - https://blog.agney.dev/useMemo-inside-context/
          */
         const memoizedValue = useMemo<ContextValue<ContextState>>(() => ({
-            contextState: contextState!,
+            contextState,
             setContextState,
         }), [ contextState, setContextState ]);
 

@@ -3,8 +3,13 @@ import {
     useState,
     useCallback,
     useMemo,
+    useContext,
+    memo,
     Component,
 } from 'react';
+
+import { objEquals } from '@/utils/Objects';
+import { getChildName } from '@/utils/ReactParsing';
 
 import type {
     ReactElement,
@@ -16,7 +21,10 @@ import type {
     SetStateAction,
 } from 'react';
 
-import type { PartialDeep } from '@/types';
+import type {
+    IndexSignature,
+    PartialDeep,
+} from '@/types';
 
 
 // `Context.Provider` with `value` already populated
@@ -152,10 +160,6 @@ export interface ContextFactoryOptions<ContextState> {
  * @param [options.initialState] - Default/initial value for the context state.
  * @param [options.displayName] - Display name for the context.
  * @returns The newly-created Context with a Provider prefilled with a memoized `contextState`/`setContextState` value.
- *
- * @see [Optimizing React Context usage]{@link https://saul-mirone.github.io/performance-optimization-in-react-context/}
- * @see [React 18's new `useSyncExternalStore()` and `useMutableSource()` alternatives to global state]{@link https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api}
- * @see [Overview of how Redux works]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
  */
 export default function ContextFactory<ContextState>({
     initialState,
@@ -223,4 +227,94 @@ export default function ContextFactory<ContextState>({
 
     // @ts-ignore - Allow overriding of native `Context` with memoized, state-enhanced Provider
     return Context;
+}
+
+
+/**
+ * HOC that selects only a subset of the fields in `context` , re-rendering only if they have changed.
+ * Sends the filtered context field(s) through props to the underlying component in the `props.contextState`
+ * field.
+ * When combined with the context produced by `ContextFactory()`, this also injects the `setContextState()`
+ * function into `props`.
+ *
+ * If no `arePropsEqual()` function is specified, then a deep-comparison of the context fields is executed
+ * rather than the default shallow-comparison done by React.
+ *
+ * This mitigates some of the major performance issues introduced when using Context instead of a
+ * global-state-management library.
+ *
+ * Note: Use of React 18's new `useSyncExternalStore()`/`useMutableSource()` alternatives and/or a global state
+ * management library should be prioritized over this. However, for small apps or apps with very little global state,
+ * this hook will suffice.
+ *
+ * @see [Optimizing React Context usage]{@link https://saul-mirone.github.io/performance-optimization-in-react-context/}
+ * @see [React 18's new `useSyncExternalStore()` and `useMutableSource()` alternatives to global state]{@link https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api}
+ * @see [Overview of how Redux works under the hood]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
+ */
+export function withContextSelector<ContextVal, ComponentProps = Record<string, unknown>>(
+    Component: ComponentType,
+    context: Context<ContextVal> | ReactContext<ContextVal>,
+    selector: IndexSignature | ((ctxVal: ContextVal) => Partial<keyof ContextVal>),
+    arePropsEqual?: Parameters<typeof memo>[1],
+) {
+    const componentName = getChildName(Component);
+    const HocComponentName = `${withContextSelector.name}(${componentName})`;
+
+    function propsAreEqual(prevProps: Record<string, unknown>, nextProps: Record<string, unknown>) {
+        return arePropsEqual?.(prevProps, nextProps) ?? objEquals(prevProps, nextProps);
+    }
+
+    /*
+     * First, create a new HOC that's memoized based on prop values.
+     */
+
+    const ComponentWithContextInjected = memo(
+        props => (
+            <Component {...props} />
+        ),
+        propsAreEqual,
+    );
+
+    ComponentWithContextInjected.displayName = componentName;
+
+    /*
+     * Next, read from Context and extract only the desired values.
+     * The values are spread into props such that if they're equal, then the component doesn't re-render.
+     */
+
+    function ComponentWithContextSelector(props: ComponentProps) {
+        const contextVal = useContext<ContextVal>(context);
+        const has = Object.prototype.hasOwnProperty.bind(contextVal);
+        const isCreatedFromContextFactory = (
+            has('contextState')
+            && has('setContextState')
+            && Object.keys(contextVal).length === 2
+        );
+        let filteredContext: ContextVal | ContextValue<ContextVal> = contextVal;
+
+        if (isCreatedFromContextFactory) {
+            filteredContext = (contextVal as unknown as ContextValue<ContextVal>).contextState;
+        }
+
+        if (typeof selector === typeof withContextSelector) {
+            filteredContext = (selector as Function)(filteredContext);
+        } else {
+            // @ts-ignore - Since the `contextVal` is unknown, it's possible it's undefined and can't be indexed
+            filteredContext = filteredContext?.[(selector as IndexSignature)];
+        }
+
+        return (
+            <ComponentWithContextInjected
+                {...props}
+                {...(isCreatedFromContextFactory
+                    ? { ...contextVal, contextState: filteredContext }
+                    : { contextState: filteredContext }
+                )}
+            />
+        );
+    }
+
+    ComponentWithContextSelector.displayName = HocComponentName;
+
+    return ComponentWithContextSelector;
 }

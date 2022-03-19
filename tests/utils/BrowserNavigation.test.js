@@ -103,6 +103,19 @@ describe('BrowserNavigation utils', () => {
         queryParamMap: { a: [ 'x', 'y', 'z' ], b: 'hello world', '#': 'myHash' },
         hash: 'myHash',
     };
+    const queryWithObject = {
+        get fullUrl() {
+            return getFullUrlFromSegments(this);
+        },
+        protocol: 'https',
+        domain: 'localhost.com',
+        port: '',
+        origin: 'https://localhost.com',
+        pathname: '',
+        queryParamHashString: '?a=%7B%22x%22%3A%22X%22%2C%22y%22%3A%5B%22Y%22%2C3%5D%7D&b=hello%20world#myHash',
+        queryParamMap: { a: { x: 'X', y: [ 'Y', 3 ]}, b: 'hello world', '#': 'myHash' },
+        hash: 'myHash',
+    };
 
     describe('getQueryParams', () => {
         Object.entries(Urls).forEach(([ urlType, urlSegmentsObj ]) => {
@@ -113,6 +126,14 @@ describe('BrowserNavigation utils', () => {
                 expect(getQueryParams(queryParamHashString)).toEqual(queryParamMap);
                 expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
             });
+        });
+
+        it('should parse query params with object values', () => {
+            const { fullUrl, queryParamHashString, queryParamMap } = queryWithObject;
+
+            expect(getQueryParams(fullUrl)).toEqual(queryParamMap);
+            expect(getQueryParams(queryParamHashString)).toEqual(queryParamMap);
+            expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
         });
 
         it('should allow custom delimiters for query params', () => {

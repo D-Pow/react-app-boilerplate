@@ -5,6 +5,8 @@
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
+ * An attempt will be made to parse/stringify query values to handle objects, arrays, etc.
+ *
  * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
  *                                                                  an object to convert to a search+hash string.
  * @param {Object} [options]
@@ -49,6 +51,14 @@ export function getQueryParams(input = self.location.search + self.location.hash
                                 .join('&');
                         }
 
+                        if (queryValue == null) {
+                            // Convert null/undefined to empty string
+                            queryValue = '';
+                        } else if (typeof queryValue === typeof {}) {
+                            // Stringify objects, arrays, etc.
+                            return getEncodedKeyValStr(queryKey, JSON.stringify(queryValue));
+                        }
+
                         return getEncodedKeyValStr(queryKey, queryValue);
                     })
                     .join('&')
@@ -67,6 +77,14 @@ export function getQueryParams(input = self.location.search + self.location.hash
         queryParamsObj['#'] = hash;
     }
 
+    const attemptParseJson = str => {
+        try {
+            return JSON.parse(str);
+        } catch (e) {}
+
+        return str;
+    };
+
     return [ ...new URLSearchParams(urlSearchQuery).entries() ]
         .reduce((queryParams, nextQueryParam) => {
             let [ key, value ] = nextQueryParam;
@@ -79,6 +97,12 @@ export function getQueryParams(input = self.location.search + self.location.hash
                 } else if (value.length === 1) {
                     value = value[0];
                 }
+            }
+
+            if (Array.isArray(value)) {
+                value = value.map(attemptParseJson);
+            } else {
+                value = attemptParseJson(value);
             }
 
             if (key in queryParams) {

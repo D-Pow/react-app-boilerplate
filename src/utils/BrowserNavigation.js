@@ -7,10 +7,13 @@
  *
  * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
  *                                                                  an object to convert to a search+hash string.
+ * @param {Object} [options]
+ * @param {string} [delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
  * @returns {(Object|string)} - All query param key-value pairs, including the hash entry (if input is a string) or URL search+hash string (if input is an object).
  */
-export function getQueryParams(input = self.location.search + self.location.hash) {
-    // TODO Allow setting the separator for Object --> String conversion (e.g. comma instead of multiple `key=val` entries)
+export function getQueryParams(input = self.location.search + self.location.hash, {
+    delimiter,
+} = {}) {
     let fromUrl;
     let fromObj;
 
@@ -37,6 +40,10 @@ export function getQueryParams(input = self.location.search + self.location.hash
                 queryParamEntries
                     .map(([ queryKey, queryValue ]) => {
                         if (Array.isArray(queryValue)) {
+                            if (delimiter) {
+                                return getEncodedKeyValStr(queryKey, queryValue.join(delimiter));
+                            }
+
                             return queryValue
                                 .map(val => getEncodedKeyValStr(queryKey, val))
                                 .join('&');
@@ -62,13 +69,27 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
     return [ ...new URLSearchParams(urlSearchQuery).entries() ]
         .reduce((queryParams, nextQueryParam) => {
-            const [ key, value ] = nextQueryParam;
+            let [ key, value ] = nextQueryParam;
+
+            if (delimiter != null) {
+                value = value.split(delimiter);
+
+                if (value.length === 0) {
+                    value = '';
+                } else if (value.length === 1) {
+                    value = value[0];
+                }
+            }
 
             if (key in queryParams) {
+                if (!Array.isArray(value)) {
+                    value = [ value ]; // cast to array for easier boolean logic below
+                }
+
                 if (Array.isArray(queryParams[key])) {
-                    queryParams[key].push(value);
+                    queryParams[key].push(...value);
                 } else {
-                    queryParams[key] = [ queryParams[key], value ];
+                    queryParams[key] = [ queryParams[key], ...value ];
                 }
             } else {
                 queryParams[key] = value;

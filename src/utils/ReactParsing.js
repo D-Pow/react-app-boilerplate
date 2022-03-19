@@ -1,7 +1,7 @@
 /**
  * Gets the string representation of a single React node
  *
- * @param {Node} child - Child whose name will be retrieved
+ * @param {(Node|function)} child - Child whose name will be retrieved
  * @returns {string} - The string representation of the node
  */
 export function getChildName(child) {
@@ -9,6 +9,7 @@ export function getChildName(child) {
     // child.type.name for React.Component
     // child.type.type.name for React.memo(MyComponent)
     // child.render.name for React.forwardRef(MyComponent)
+    // child.name for classes/functions that haven't yet been instantiated (Note: `child.constructor.name == Function`)
     if (typeof child.type === typeof {}) {
         while (!(child.type?.name)) {
             if (child.render) {
@@ -19,7 +20,7 @@ export function getChildName(child) {
         }
     }
 
-    return child.type.name || child.type;
+    return child.name || child.type.name || child.type;
 }
 
 

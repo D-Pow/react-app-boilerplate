@@ -51,7 +51,7 @@ export interface ContextValue<ContextState> {
 }
 
 export interface ContextFactoryOptions<ContextState> {
-    defaultStateValue?: ContextState | (() => ContextState);
+    initialState?: ContextState | (() => ContextState);
     displayName?: string;
 }
 
@@ -73,7 +73,7 @@ export interface ContextFactoryOptions<ContextState> {
  *
  * Usage:
  *
- * - Create the context with `ContextFactory({ defaultStateValue: initialStateValueToStart, displayName: 'CustomContextDisplayName'})`.
+ * - Create the context with `ContextFactory({ initialState: initialStateValueToStart, displayName: 'CustomContextDisplayName'})`.
  * - Wrap your component(s) in the returned Provider. The Provider already has a memoized `contextState`/`setContextState` object as a value.
  * - Access the Context using the standard React Context API access methods.
  * - Use the `setContextState()` function as you would a class component's `setContextState()` function.
@@ -82,7 +82,7 @@ export interface ContextFactoryOptions<ContextState> {
  *
  * @example <caption>Create the context with initial state and display name</caption>
  * const MyContext = ContextFactory({
- *     defaultStateValue: { firstColor: 'blue', secondColor: 'red' },
+ *     initialState: { firstColor: 'blue', secondColor: 'red' },
  *     displayName: 'MyContext',
  * });
  *
@@ -149,7 +149,7 @@ export interface ContextFactoryOptions<ContextState> {
  * }));
  *
  * @param [options]
- * @param [options.defaultStateValue] - Default/initial value for the context state.
+ * @param [options.initialState] - Default/initial value for the context state.
  * @param [options.displayName] - Display name for the context.
  * @returns The newly-created Context with a Provider prefilled with a memoized `contextState`/`setContextState` value.
  *
@@ -158,11 +158,11 @@ export interface ContextFactoryOptions<ContextState> {
  * @see [Overview of how Redux works]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
  */
 export default function ContextFactory<ContextState>({
-    defaultStateValue,
+    initialState,
     displayName = '',
 }: ContextFactoryOptions<ContextState> = {}): Context<ContextValue<ContextState>> {
     const defaultContextValue: ContextValue<ContextState> = {
-        contextState: defaultStateValue as ContextState,
+        contextState: initialState as ContextState,
         setContextState: () => {},
     };
 
@@ -176,7 +176,7 @@ export default function ContextFactory<ContextState>({
 
     function ProviderWithState(props: PropsWithChildren<any>) {
         // @ts-ignore - Initial state value could be a function to generate state, but we don't want that function in the resulting `contextState` typedef
-        const [ contextState, setStateForContext ] = useState<ContextState>(defaultStateValue);
+        const [ contextState, setStateForContext ] = useState<ContextState>(initialState);
 
         const setContextState = useCallback<SetContextState<ContextState>>((args: any) => {
             if (!(args instanceof Object) || Array.isArray(args) || typeof args === typeof ContextFactory) {

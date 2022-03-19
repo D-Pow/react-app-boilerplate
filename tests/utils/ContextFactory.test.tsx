@@ -24,7 +24,7 @@ const initialContextState: MyAppContextState = {
     b: 3,
 };
 const MyAppContext = ContextFactory<MyAppContextState>({
-    defaultStateValue: initialContextState,
+    initialState: initialContextState,
     displayName: 'MyAppContext',
 });
 

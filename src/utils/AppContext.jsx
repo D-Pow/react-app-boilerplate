@@ -13,7 +13,7 @@ const initialState = {
 };
 
 const AppContext = ContextFactory({
-    defaultStateValue: initialState,
+    initialState,
     displayName: 'AppContext',
 });
 

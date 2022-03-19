@@ -96,9 +96,8 @@ describe('BrowserNavigation utils', () => {
             it(`should create query string and decoded query params object for "${urlType}"`, () => {
                 const { fullUrl, queryParamHashString, queryParamMap } = urlSegmentsObj;
 
-                // expect(getQueryParams(fullUrl)).toEqual(queryParamMap);
+                expect(getQueryParams(fullUrl)).toEqual(queryParamMap);
                 expect(getQueryParams(queryParamHashString)).toEqual(queryParamMap);
-                expect(getQueryParams(queryParamHashString.replace(/^\?/, ''))).toEqual(queryParamMap);
                 expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
             });
         });

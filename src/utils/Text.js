@@ -126,14 +126,41 @@ export function getXmlDocFromDataUrl(dataUrl) {
 /**
  * Converts an extension of `ArrayBuffer` (e.g. `Uint8Array`) to a hexadecimal string representation.
  *
+ * @example <caption>Get the UTF-8 string of an emoji</caption>
+ * const emoji = new TextEncoder().encode('some emoji');
+ * byteArrayToHexString(emoji);
+ * // Output: 'AABBCC'
+ *
+ * @example <caption>Add spaces between hex entries for easy reading</caption>
+ * byteArrayToHexString(myData, { hexSeparator: ' ' });
+ * // Output: 'AA BB CC'
+ *
+ * @example <caption>Prepend hex entries with your preferred </caption>
+ * byteArrayToHexString(myData, { hexPrefix: '0x', hexSeparator: ' ' });
+ * // Output: '0xAA 0xBB 0xCC'
+ *
  * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
  * @returns {string} - The hex representation of the buffer.
+ *
+ * @see [StackOverflow post about encoding emojis/symbols to UTF-8 strings]{@link https://stackoverflow.com/questions/48419167/how-to-convert-one-emoji-character-to-unicode-codepoint-number-in-javascript}
+ * @see [StackOverflow post about decoding UTF-8]{@link https://stackoverflow.com/questions/13356493/decode-utf-8-with-javascript}
  */
-export function byteArrayToHexString(uint8Array) {
+export function byteArrayToHexString(uint8Array, {
+    hexPrefix = '',
+    hexSeparator = '',
+    asArray = false,
+} = {}) {
     // TODO Support types of ArrayBuffers other than Uint8Array
     // Convert buffer to bytes via spread - Yes, this needs to be cast to an array even though it has its own `.map()` function.
     // Then, convert bytes to readable hex string.
-    return [ ...uint8Array ].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    const hexStrings = [ ...uint8Array ].map(byte => byte.toString(16).padStart(2, '0'));
+    const hexStringsWithPrefixes = hexStrings.map(hexString => `${hexPrefix}${hexString}`);
+
+    if (asArray) {
+        return hexStringsWithPrefixes;
+    }
+
+    return hexStringsWithPrefixes.join(hexSeparator);
 }
 
 
@@ -142,8 +169,17 @@ export function byteArrayToHexString(uint8Array) {
  *
  * Every 2 characters is considered 1 array entry.
  *
+ * @example <caption>Convert a hex string created from `byteArrayToHexString()` back to a Uint8Array</caption
+ * const emoji = new TextEncoder().encode('some emoji');
+ * const emojiHexString = byteArrayToHexString(emoji); // e.g. 'AABBCC'
+ * const utf8Array = hexStringToByteArray(emojiHexString); // Uint8Array
+ * new TextDecoder().decode(utf8Array);
+ * // Output: Original 'some emoji' text
+ *
+ *
  * @param {string} hexString - String of hexadecimal characters to convert to a byte array.
  * @returns {Uint8Array} - Byte array containing the values in the specified hexadecimal string.
+ *
  * @see [Hex to byte array StackOverflow post]{@link https://stackoverflow.com/questions/14603205/how-to-convert-hex-string-into-a-bytes-array-and-a-bytes-array-in-the-hex-strin/69980864#69980864}
  */
 export function hexStringToByteArray(hexString) {

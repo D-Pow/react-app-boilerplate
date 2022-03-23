@@ -202,6 +202,35 @@ export function hexStringToByteArray(hexString) {
 
 
 /**
+ * Masks the first `numChars` characters of a string with the desired `maskChar` character.
+ *
+ * If no `maskChar` is an empty string, then this will just remove those characters from the string.
+ *
+ * @example <caption>Mask the beginning digits of a credit card</caption>
+ * maskBeginningChars(creditCardNumber, 4, { maskChar: '*' });
+ * // Output: '************1234'
+ *
+ * @param {(string|any)} str - String whose characters will be masked; non-strings will be cast to a string.
+ * @param {number} numChars - Number of characters to mask.
+ * @param {Object} [options]
+ * @param {string} [options.maskChar] - Character with which to mask the string.
+ * @return {string} - The masked string.
+ *
+ * @see [`padStart()` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart}
+ */
+export function maskBeginningChars(str, numChars, {
+    maskChar = '',
+} = {}) {
+    str = `${str}`;
+
+    const numEndingChars = -1 * Number(numChars); // For slicing backwards to get the end characters
+    const endingChars = str.slice(numEndingChars);
+
+    return endingChars.padStart(str.length, maskChar);
+}
+
+
+/**
  * Converts hyphen-case and snake_case to camelCase.
  *
  * @param {string} str - Hyphen/snake-case string to convert to camelCase.

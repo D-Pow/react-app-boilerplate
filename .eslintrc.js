@@ -371,6 +371,15 @@ module.exports = {
         /* TypeScript files */
         {
             files: [ '**/?(.)+(*.)ts?(x)' ],
+            globals: {
+                // `fetch()` API
+                RequestInfo: 'readable',
+                RequestInit: 'readable',
+                Request: 'readable',
+                Headers: 'readable',
+                HeadersInit: 'readable',
+                Response: 'readable',
+            },
             rules: {
                 /**
                  * Allow function overloads for different return types based on param instead of type by ignoring

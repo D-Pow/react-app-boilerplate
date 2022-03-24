@@ -338,7 +338,7 @@ module.exports = {
         },
         // Use specific configs for TypeScript files
         {
-            files: [ '*.ts?(x)' ],
+            files: [ '**/?(.)+(*.)ts?(x)' ],
             rules: {
                 /**
                  * Allow function overloads for different return types based on param instead of type by ignoring

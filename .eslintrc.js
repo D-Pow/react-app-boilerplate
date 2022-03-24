@@ -26,6 +26,7 @@ const gitIgnorePaths = parseCliArgs()?.ignorePath === '.gitignore'
     // `--ignore-path someOtherFile` specified, so append .gitignore contents to ignored patterns
     : gitignoreFilesGlobs;
 
+
 /** @type {import('eslint').Linter.BaseConfig} */
 module.exports = {
     root: true, // This is the base ESLint config file, so don't search any higher
@@ -35,14 +36,14 @@ module.exports = {
     },
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        /* ESLint root options */
+        /* ESLint root options - See: https://eslint.org/docs/user-guide/configuring/language-options#specifying-parser-options */
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
 
-        /* @typescript-eslint/parser options */
+        /* @typescript-eslint/parser options - See: https://github.com/typescript-eslint/typescript-eslint/tree/main/packages/parser */
         tsconfigRootDir: rootDir, // Directory that all tsconfig files' paths are relative to in the `parserOptions.project` option
         project: tsconfigDevPath, // tsconfig file (or array of files) from which to extract - Requires JS/JSX overrides (see below)
         extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)), // Extra extensions other than `.[tj]sx?` need to be defined explicitly
@@ -322,11 +323,42 @@ module.exports = {
         'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },
     overrides: [
-        // Use Babel parser for all dotfiles (e.g. .eslintrc.js), multi-extension JS files (e.g. *.test.js),
-        // and files that have duplicate names but different extensions (e.g. src/index.ts & src/index.js)
-        // See:
-        // - GitHub issue: https://github.com/typescript-eslint/typescript-eslint/issues/955
-        // - Related @typescript-eslint website docs: https://typescript-eslint.io/docs/linting/type-linting/
+        /**
+         * ESLint's `files` uses globs.
+         *
+         * Note the following differences between globs and regex:
+         *
+         * - *(pattern) = Zero or more occurrences.
+         * - ?(pattern) = Zero or one occurrence.
+         * - +(pattern) = One or more occurrences.
+         * - @(pattern) = One occurrence.
+         * - !(pattern) = Anything except one of the given patterns.
+         *
+         * Examples:
+         *
+         * - +(*.) = Allow any number of sub-extensions but ensure it ends with a period (e.g. matches `file.test.` in `file.test.ts`)
+         * - ?(.)* = Allow the file to begin with a period (e.g. matches `.eslint` in `.eslintrc.js`)
+         * - ?([mc])[tj]s = Allow the file to begin with `m` or `c` but ensure it ends with `ts` or `js` (e.g. matches `mjs`, `mts`, `js`, and `ts`)
+         *
+         * @see [Bash pattern matching]{@link https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching}
+         * @see [Bash globs and regex]{@link https://tldp.org/LDP/abs/html/regexp.html}
+         * @see [NextJS sample glob for test files]{@link https://github.com/vercel/next.js/blob/f16ee05f599de27e777ac2b736c3bf820a19bd7b/examples/with-jest/.eslintrc.json}
+         */
+
+        /**
+         * JS files (both ESM and CJS).
+         *
+         * Requires using Babel parser so there's no conflict with the TypeScript parser for files that overlap
+         * with the tsconfig file(s) specified in `parserOptions.project`, including:
+         *
+         * - Dotfiles (e.g. .eslintrc.js)
+         * - Multi-extension files (e.g. *.test.js)
+         * - Files that have duplicate names but different extensions (e.g. src/index.ts & src/index.js)
+         *
+         * @see [Docs]{@link https://github.com/babel/babel/tree/main/eslint/babel-eslint-parser}
+         * @see [`@typescript-eslint/parser` issue with duplicate TS/JS filenames]{@link https://github.com/typescript-eslint/typescript-eslint/issues/955}
+         * @see [Related `@typescript-eslint` type-aware linting docs]{@link https://typescript-eslint.io/docs/linting/type-linting}
+         */
         {
             files: [ '**/?(.)+(*.)?([mc])js?(x)' ],
             parser: '@babel/eslint-parser',
@@ -336,7 +368,7 @@ module.exports = {
                 },
             },
         },
-        // Use specific configs for TypeScript files
+        /* TypeScript files */
         {
             files: [ '**/?(.)+(*.)ts?(x)' ],
             rules: {
@@ -358,22 +390,21 @@ module.exports = {
                 'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
             },
         },
-        // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`).
-        // Add the NodeJS environment for autocompletion/allowing its defined variables.
+        /* Configs, scripts, etc. */
         {
             files: [ './*', './config/**', './scripts/**' ],
             env: {
-                node: true,
+                node: true, // Add the NodeJS environment for access to its special variables
             },
             rules: {
-                'import-alias/import-alias': 'off',
+                'import-alias/import-alias': 'off', // Allow `config/` and `scripts/` files to use relative imports (e.g. `import X from '../utils.mjs'`)
             },
         },
-        // Add jest environment for tests
+        /* Tests */
         {
             files: [ '**/tests/**', '**/__tests__/**', './config/jest/**', '**/+(*.)@(test|spec).[tj]s?(x)' ],
             env: {
-                jest: true,
+                jest: true, // Add jest environment for tests
                 node: true,
             },
         },

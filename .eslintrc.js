@@ -371,7 +371,7 @@ module.exports = {
         },
         // Add jest environment for tests
         {
-            files: [ './tests/**', './config/jest/**' ],
+            files: [ '**/tests/**', '**/__tests__/**', './config/jest/**', '**/+(*.)@(test|spec).[tj]s?(x)' ],
             env: {
                 jest: true,
                 node: true,

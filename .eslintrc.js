@@ -4,7 +4,7 @@ const {
     Paths,
     FileTypeRegexes,
     gitignoreFilesGlobs,
-    tsconfig,
+    babelConfigPath,
     tsconfigDevPath,
     parseCliArgs,
     ImportAliases,
@@ -35,31 +35,17 @@ module.exports = {
     },
     parser: '@typescript-eslint/parser',
     parserOptions: {
+        /* ESLint root options */
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true,
         },
 
-        /* @babel/eslint-parser options */
-        // babelOptions: {
-        //     configFile: babelConfigPath,
-        // },
-
         /* @typescript-eslint/parser options */
-        // Just like Babel's parser, we must specify a path to the config file.
-        // However, it only allows one single tsconfig.json file to be parsed, ignoring
-        // any nested ones, so use the dev-tsconfig instead of the main one.
-        tsconfigRootDir: rootDir,
-        // Extra extensions other than `.[tj]sx?` to be defined explicitly
-        extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)),
-        // Don't set `project` since it already defaults to the root-level tsconfig.json (which
-        // includes all project dirs) and b/c doing so ignores .js files if they have the same name as
-        // a .ts file in the same dir (e.g. an index.js file for NodeJS configs/scripts and a companion
-        // index.ts file for TypeScript/ts-node configs/scripts).
-        // project: tsconfigDevPath,
-        jsxPragma: null,
-        lib: tsconfig.compilerOptions.lib,
+        tsconfigRootDir: rootDir, // Directory that all tsconfig files' paths are relative to in the `parserOptions.project` option
+        project: tsconfigDevPath, // tsconfig file (or array of files) from which to extract - Requires JS/JSX overrides (see below)
+        extraFileExtensions: extensions.filter(ext => !FileTypeRegexes.JsAndTs.test(ext)), // Extra extensions other than `.[tj]sx?` need to be defined explicitly
     },
     ignorePatterns: [
         '**/node_modules/**',
@@ -336,6 +322,20 @@ module.exports = {
         'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },
     overrides: [
+        // Use Babel parser for all dotfiles (e.g. .eslintrc.js), multi-extension JS files (e.g. *.test.js),
+        // and files that have duplicate names but different extensions (e.g. src/index.ts & src/index.js)
+        // See:
+        // - GitHub issue: https://github.com/typescript-eslint/typescript-eslint/issues/955
+        // - Related @typescript-eslint website docs: https://typescript-eslint.io/docs/linting/type-linting/
+        {
+            files: [ '**/?(.)+(*.)?([mc])js?(x)' ],
+            parser: '@babel/eslint-parser',
+            parserOptions: {
+                babelOptions: {
+                    configFile: babelConfigPath,
+                },
+            },
+        },
         // Use specific configs for TypeScript files
         {
             files: [ '*.ts?(x)' ],

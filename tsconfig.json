@@ -21,6 +21,10 @@
      */
     "extends": "./tsconfig.main.json",
     "include": [
+        /*
+         * Note: We can't use `/?(.)*` to include both b/c that would conflict with JS-only parsing
+         * rules for programs like ESLint.
+         */
         "./**/*", // All files - Includes config/, tests/, etc.
         "./**/.*" // Dotfiles like .eslintrc.js
     ]

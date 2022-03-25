@@ -80,13 +80,11 @@ module.exports = {
             },
             alias: {
                 extensions: [ ...extensions, '.json' ],
-                map: [
-                    Object.entries(ImportAliases.toCustomObject({
-                        // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots.
-                        // e.g. { '@': 'src', '~/': '.' } => [ [ '@', './src' ], [ '~/', './' ] ]
-                        pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}`,
-                    })),
-                ],
+                map: Object.entries(ImportAliases.toCustomObject({
+                    // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots.
+                    // e.g. { '@': 'src', '~/': '.' } => [ [ '@', './src' ], [ '~/', './' ] ]
+                    pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}`,
+                })),
             },
         },
     },

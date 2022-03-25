@@ -365,6 +365,21 @@ module.exports = {
             parserOptions: {
                 babelOptions: {
                     configFile: babelConfigPath,
+                    // Plugins solely for ESLint
+                    plugins: [
+                        /**
+                         * Import assertions are required for NodeJS v16.14 and above.
+                         * However, ESLint doesn't support the [`shippedProposals`]{@link https://babeljs.io/docs/en/babel-preset-env#shippedproposals}
+                         * option in `@babel/preset-env`, so anything that isn't yet at TC39 stage 4
+                         * [won't be supported]{@link https://github.com/eslint/eslint/blob/a675c89573836adaf108a932696b061946abf1e6/README.md#what-about-experimental-features}.
+                         *
+                         * Thus, add the required import-assertion Babel plugin here, but not in the actual/official
+                         * Babel config file used by source code since it's [already included in `@babel/preset-env`]{@link https://babeljs.io/docs/en/babel-preset-env#shippedproposals}.
+                         *
+                         * @see [Related StackOverflow post]{@link https://stackoverflow.com/questions/71090960/is-there-a-way-to-make-eslint-understand-the-new-import-assertion-syntax-without/71128316#71128316}
+                         */
+                        '@babel/plugin-syntax-import-assertions',
+                    ],
                 },
             },
         },

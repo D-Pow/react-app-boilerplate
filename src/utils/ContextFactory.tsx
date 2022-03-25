@@ -6,20 +6,17 @@ import {
     useContext,
     memo,
     Component,
+    type ReactElement,
+    type ComponentType,
+    type PropsWithChildren,
+    type Context as ReactContext,
+    type Provider as ReactProvider,
+    type Dispatch,
+    type SetStateAction,
 } from 'react';
 
 import { objEquals } from '@/utils/Objects';
 import { getChildName } from '@/utils/ReactParsing';
-
-import type {
-    ReactElement,
-    ComponentType,
-    PropsWithChildren,
-    Context as ReactContext,
-    Provider as ReactProvider,
-    Dispatch,
-    SetStateAction,
-} from 'react';
 
 import type {
     IndexSignature,

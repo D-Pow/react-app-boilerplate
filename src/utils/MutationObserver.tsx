@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
-
-import type { Optional } from '@/types';
+import { useEffect, useRef } from 'react';
 
 
 // Could alternatively be done with /* globals MutationCallback MutationObserverInit */
@@ -53,7 +51,7 @@ export function createMutationObserver(
  *
  * @see [`createMutationObserver()`]{@link createMutationObserver}
  */
-export function useMutationObserver(...args: Parameters<typeof createMutationObserver>): Optional<ReturnType<typeof createMutationObserver>> {
+export function useMutationObserver(...args: Parameters<typeof createMutationObserver>): ReturnType<typeof createMutationObserver> {
     /*
      * Note: We have to use state instead of a ref here to prevent the MutationObserver from continuing to
      * receive events even after it's been disconnected (i.e. `mutationObserverRef.current = undefined` doesn't remove it completely).
@@ -61,14 +59,17 @@ export function useMutationObserver(...args: Parameters<typeof createMutationObs
      * Also, use a state-generation function to prevent `createMutationObserver()` from being called upon
      * every parent re-render.
      */
-    const [ mutationObserver, setMutationObserver ] = useState<Optional<MutationObserver>>(() => createMutationObserver(...args));
+    const mutationObserverRef = useRef<MutationObserver>(createMutationObserver(...args));
 
     useEffect(() => {
-        return () => {
-            mutationObserver?.disconnect();
-            setMutationObserver(undefined);
-        };
-    }, [ args.length ]); // `args.length` is > 0 when mounted and 0 when the component unmounts
+        mutationObserverRef.current = createMutationObserver(...args);
 
-    return mutationObserver;
+        const mutationObserver = mutationObserverRef.current;
+
+        return () => {
+            mutationObserver.disconnect();
+        };
+    }, [ ...args, args.length ]); // `args.length` is > 0 when mounted and 0 when the component unmounts
+
+    return mutationObserverRef.current;
 }

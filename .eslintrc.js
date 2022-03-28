@@ -411,6 +411,7 @@ module.exports = {
                 }],
                 'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
 
+                // Rules: https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/README.md
                 '@typescript-eslint/consistent-type-imports': [ 'error', { // Enforce type-import syntax using `import type { T }` and/or `import { type T }` instead of `import { T }`
                     disallowTypeAnnotations: false, // Allow type-imports when using dynamic imports
                 }],

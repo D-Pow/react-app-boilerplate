@@ -410,6 +410,8 @@ module.exports = {
                     named: 'ignore', // Allow typedefs using functions, e.g. `<Func extends () => {}>`
                 }],
                 'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
+
+                '@typescript-eslint/type-annotation-spacing': 'error', // Enforce spaces after colons when typing variables and around fat-arrow (=>) in arrow functions/typedefs
             },
         },
         /* Configs, scripts, etc. */

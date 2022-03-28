@@ -11,9 +11,9 @@
  * for more details.
  */
 declare module '*.svg' {
-    import { SVGAttributes } from 'react';
+    import type { SVGAttributes } from 'react';
 
-    import { ReactComponent } from '@/types';
+    import type { ReactComponent } from '@/types';
 
     const SvgSrc: string;
     export const ReactComponent: (

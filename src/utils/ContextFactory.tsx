@@ -5,7 +5,7 @@ import {
     useMemo,
     useContext,
     memo,
-    Component,
+    type Component,
     type ReactElement,
     type ComponentType,
     type PropsWithChildren,

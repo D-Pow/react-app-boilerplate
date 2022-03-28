@@ -411,6 +411,9 @@ module.exports = {
                 }],
                 'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
 
+                '@typescript-eslint/consistent-type-imports': [ 'error', { // Enforce type-import syntax using `import type { T }` and/or `import { type T }` instead of `import { T }`
+                    disallowTypeAnnotations: false, // Allow type-imports when using dynamic imports
+                }],
                 '@typescript-eslint/type-annotation-spacing': 'error', // Enforce spaces after colons when typing variables and around fat-arrow (=>) in arrow functions/typedefs
             },
         },

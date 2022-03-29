@@ -32,10 +32,10 @@
     "lint:verify": "npm run lint:all -- --quiet",
     "typecheck": "tsc --noEmit",
     "verify": "npm run lint:verify && npm run typecheck && npm run test",
-    "createComponent": "node scripts/createComponent.js --",
+    "clean": "npx shx rm -rf $npm_package_config_buildOutputDir coverage",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
     "prebuild": "npm run clean --",
-    "clean": "npx shx rm -rf $npm_package_config_buildOutputDir coverage",
+    "createComponent": "node scripts/createComponent.js --",
     "deploy": "gh-pages -d $npm_package_config_buildOutputDir",
     "predeploy": "npm run build --"
   },

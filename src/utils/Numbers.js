@@ -10,7 +10,7 @@ export function asNumber(str) {
  * Optionally, rounds based on significant digits, i.e. total number digits between the
  * first non-zero digit and the last zero or non-zero digit, regardless of decimal places.
  *
- * @param {number} num - Number to round.
+ * @param {(number|any)} num - Number to round.
  * @param {number} places - How many decimal places/significant digits to round to.
  * @param {Object} [options]
  * @param {boolean} [options.isTotalSignificantDigits] - Make `places == significantDigits` instead of `decimalPlaces`.

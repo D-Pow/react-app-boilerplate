@@ -18,18 +18,9 @@ export const TimeInMillis = {
 };
 
 
-export function getDate(dateStr: string | number) {
-    if (!dateStr) {
-        return new Date();
-    }
-
-    return new Date(Date.parse(`${dateStr}`));
-}
-
-
-export function getNumDaysBetween(earlierDateStr: string | number, laterDateStr: string | number, asDate = true) {
-    const earlierDate = getDate(earlierDateStr);
-    const laterDate = getDate(laterDateStr);
+export function getNumDaysBetween(earlierDateStr: string | number | Date, laterDateStr: string | number | Date, asDate = true) {
+    const earlierDate = new Date(earlierDateStr);
+    const laterDate = new Date(laterDateStr);
 
     return (laterDate.valueOf() - earlierDate.valueOf()) / TimeInMillis.Days;
 }

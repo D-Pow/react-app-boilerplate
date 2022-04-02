@@ -41,19 +41,31 @@ const jestAssetTransformer = {
         }
 
         if (FileTypeRegexes.Svg.test(srcAbsPath)) {
+            if (/url$/.test(srcAbsPath)) {
+                /**
+                 * Mimic query (URL) export from `@svgr/webpack`.
+                 *
+                 * Note that the String constructor must be used so that we can set new fields on it in order
+                 * to have both default/named exports because you can't set new fields on string primitives.
+                 * i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
+                 */
+                return {
+                    code: `
+                        module.exports = new String(${srcFileName});
+                    `,
+                };
+            }
+
             /**
-             * Mimic default (URL) and named (React.Component) exports from @svgr.
-             *
-             * Note that the String constructor must be used so we can set new fields on it in order to have both
-             * default/named exports because you can't set new fields on string primitives.
-             * i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
+             * Mimic named and default exports from `@svgr/webpack`.
              */
             return {
                 code: `
                     const React = require('react');
 
                     module.exports = new String(${srcFileName});
-                    module.exports.ReactComponent = React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props }));
+                    module.exports.SvgUrl = '${srcFileName}';
+                    module.exports.ReactComponent = React.memo(React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props })));
                 `,
             };
         }

@@ -73,6 +73,7 @@ const publicEnv = {
 const {
     JavaScript,
     TypeScript,
+    JsAndTs,
     Styles,
     Svg,
     Binaries,
@@ -81,6 +82,8 @@ const {
 } = FileTypeRegexes;
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
+
+const svgDefaultExportReactComponent = false;
 
 
 const javascriptLoaderConfig = {
@@ -182,31 +185,148 @@ const webpackConfig = {
                     },
                 ],
             },
+
             /**
              * Use [Asset Modules]{@link https://webpack.js.org/guides/asset-modules/}
              * instead of (file|url|raw)-loader since those are being deprecated and
              * Asset Modules are built-in with webpack@5
              */
+
             {
                 test: Svg,
-                use: [
+                oneOf: [
                     {
-                        loader: '@svgr/webpack',
-                        options: {
-                            // See: https://react-svgr.com/docs/options/
-                            // outDir: `${Paths.BUILD_OUTPUT.REL}/assets`,
-                            // TODO: Investigate options used in CRA: https://github.com/facebook/create-react-app/blob/5614c87bfbaae0ce52ac15aedd2cd0f91ffd420d/packages/react-scripts/config/webpack.config.js#L391-L398
-                            //  SVGR options: https://react-svgr.com/docs/options
-                            ref: true,
+                        // Non-JS files, e.g. CSS
+                        issuer: {
+                            not: JsAndTs,
                         },
+                        type: 'asset/resource',
                     },
                     {
-                        // Until `svgr` gets its shit together and fixes https://github.com/gregberge/svgr/issues/551
-                        // we're forced to use file-loader even though it's deprecated
-                        loader: 'file-loader',
-                        options: {
-                            name: absPath => getOutputFileName(absPath),
+                        // JS files specifically requesting the SVG file's URL
+                        resourceQuery: /url/,
+                        type: 'asset/resource',
+                    },
+                    {
+                        // JS files wanting to use the SVG as a React component and/or URL
+                        issuer: JsAndTs,
+                        resourceQuery: {
+                            // Only output React component if not querying for the URL, i.e. *.svg?url
+                            not: [ /url/ ],
                         },
+                        use: [
+                            // Parse resulting React components using our Babel config, not theirs, for better code-splitting/bundling
+                            // Note: This has to be done here instead of in `SVGR.options.jsx.babelConfig` because that option disables calling the `template()` function
+                            javascriptLoaderConfig,
+                            {
+                                loader: '@svgr/webpack',
+                                /**
+                                 * @type {import('@svgr/core/dist').Config}
+                                 *
+                                 * @see [SVGR options]{@link https://react-svgr.com/docs/options}
+                                 * @see [Source code]{@link https://github.com/gregberge/svgr}
+                                 */
+                                options: {
+                                    // TODO: Investigate options used in CRA: https://github.com/facebook/create-react-app/blob/67b48688081d8ee3562b8ac1bf6ae6d44112745a/packages/react-scripts/config/webpack.config.js#L391-L398
+                                    babel: false, // Use our own (more optimized) Babel config instead of theirs
+                                    jsxRuntime: 'automatic', // React >= v17 doesn't need `import React from 'react'` so don't inject it
+                                    exportType: 'named', // `export const ReactComponent` instead of `export default ReactComponent`
+                                    ref: true,
+                                    memo: true,
+                                    prettier: false, // No need to minify the React output
+                                    svgo: false, // Don't force-remove SVG fields we care about (see below)
+                                    /**
+                                     * @type {import('@svgr/core/dist').Config.svgoConfig}
+                                     *
+                                     * @see [SVGO config options]{@link https://github.com/svg/svgo#built-in-plugins}
+                                     */
+                                    svgoConfig: {
+                                        // removeDoctype: false, // <DOCTYPE>
+                                        // removeXMLProcInst: false, // <?xml version="1.0" encoding="utf-8"?>
+                                        // removeComments: false,
+                                        removeXMLNS: false, // `xmlns` prop
+                                        removeMetadata: false, // <metadata>
+                                        removeTitle: true, // <title>
+                                        removeDesc: false, // <desc>
+                                        removeUselessDefs: false, // <defs> that don't contain an `id` prop
+                                        removeEditorsNSData: false,
+                                        removeEmptyAttrs: false,
+                                        removeHiddenElems: false,
+                                        removeEmptyText: false,
+                                        removeEmptyContainers: false,
+                                        removeViewBox: false,
+                                    },
+                                    /**
+                                     * Template string for generating React component source code output.
+                                     *
+                                     * Customizing it here allows us to avoid having to use `resourceQuery: /url/` in our Webpack config,
+                                     * meaning that source code won't have to specify `file.svg` to import the React component or `file.svg?url`
+                                     * to import the file's URL. Now, both can be imported in the same statement just like `@svgr/webpack` v5 did.
+                                     *
+                                     * @type {import('@svgr/babel-plugin-transform-svg-component/dist').Template}
+                                     *
+                                     * @see [Default template source code]{@link https://github.com/gregberge/svgr/blob/755bd68f80436130ed65a491c101cf0441d9ac5e/packages/babel-plugin-transform-svg-component/src/defaultTemplate.ts}
+                                     * @see [Working with TypeScript]{@link https://github.com/gregberge/svgr/issues/354}
+                                     */
+                                    template(componentInfo, svgrConfig) {
+                                        const { tpl: babelTemplateBuilder } = svgrConfig;
+
+                                        const svgSrcFilePath = svgrConfig.options.state.filePath;
+                                        const svgSrcImportAliasPath = ImportAliases.getBestImportAliasMatch(svgSrcFilePath);
+
+                                        /**
+                                         * SVGR does its own AST parsing before giving the user access to it. This means:
+                                         *
+                                         * - The `componentInfo` entries are AST objects.
+                                         * - We cannot call the template-builder as a function (with parentheses), it must use
+                                         *   the template-string syntax (template`myTemplate`).
+                                         * - We cannot add imports or exports because SVGR does a validation comparison with its own AST
+                                         *   (technically we could but then we'd be manually editing AST objects, which is always a bad idea).
+                                         *
+                                         * Thus, use a simple, logic-only template string so that it coincides with the AST within SVGR,
+                                         * and then append our own changes to the generated AST array afterwards so that our changes are
+                                         * still parsed and injected into the resulting code.
+                                         *
+                                         * @see [Source code]{@link https://github.com/gregberge/svgr/blob/755bd68f80436130ed65a491c101cf0441d9ac5e/packages/babel-plugin-transform-svg-component/src/index.ts#L30}
+                                         */
+
+                                        // Logic only AST template that uses the React component info content from SVGR.
+                                        const astArray = babelTemplateBuilder`
+                                            ${componentInfo.imports};
+
+                                            ${componentInfo.interfaces};
+
+                                            function ${componentInfo.componentName}(${componentInfo.props}) {
+                                                return (
+                                                    ${componentInfo.jsx}
+                                                );
+                                            }
+
+                                            ${componentInfo.componentName}.displayName = '${componentInfo.componentName}';
+
+                                            ${componentInfo.exports};
+                                            `;
+
+                                        // Our own logic containing custom imports/exports
+                                        const customAstArray = babelTemplateBuilder(`
+                                            import SvgAssetUrl from '${svgSrcImportAliasPath}?url';
+
+                                            // URL of the actual SVG file
+                                            export const SvgUrl = SvgAssetUrl;
+
+                                            // Add default export for ease of use
+                                            export {
+                                                ${svgDefaultExportReactComponent ? componentInfo.componentName : 'SvgUrl'} as default,
+                                            };
+                                        `);
+
+                                        astArray.push(...customAstArray);
+
+                                        return astArray;
+                                    },
+                                },
+                            },
+                        ],
                     },
                 ],
             },

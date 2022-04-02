@@ -1,6 +1,6 @@
 /**
  * Type declaration for SVGs. It's loaded by Webpack using [@svgr/webpack]{@link https://www.npmjs.com/package/@svgr/webpack},
- * which creates both a default export of the `src` path string and a named export of a React SVG component.
+ * which converts SVG files to React components.
  *
  * Note: The imports must be within the module declaration in order to make it global automatically.
  * Otherwise, if there is a top-level import/export, then this file would become a module itself, and would have to be
@@ -15,7 +15,7 @@ declare module '*.svg' {
 
     import type { ReactComponent } from '@/types';
 
-    const SvgSrc: string;
+    export const SvgUrl: string;
     export const ReactComponent: (
         ReactComponent<SVGAttributes<SVGElement | SVGSVGElement>>
         & {
@@ -24,5 +24,13 @@ declare module '*.svg' {
         }
     );
 
-    export default SvgSrc;
+    export {
+        SvgUrl as default,
+    };
+}
+
+declare module '*.svg?url' {
+    const SvgUrl: string;
+
+    export default SvgUrl;
 }

@@ -212,7 +212,7 @@ export function setDocumentScrolling(allowScrolling = true) {
 /**
  * Downloads the specified data with the desired filename and MIME type.
  *
- * @param {unknown} data - Data to download.
+ * @param {(string | Blob)} data - Data to download.
  * @param {string} [fileName] - Filename for the download.
  * @param {string} [mimeType] - MIME type of the download content.
  */
@@ -220,8 +220,8 @@ export function downloadDataAsFile(data, {
     fileName = 'download',
     mimeType = getMimeTypeFromDataUrl(data) || MimeTypes.TEXT,
 } = {}) {
-    const isBase64Data = data?.match?.(/^data(:[^;]*);base64/i);
     let downloadData = data;
+    const isBase64Data = data?.match?.(/^data(:[^;]*);base64/i);
 
     if (!isBase64Data) {
         const dataBlob = new Blob([ data ], { type: mimeType });

@@ -108,6 +108,7 @@ const typescriptLoaderConfig = {
 };
 
 
+// noinspection WebpackConfigHighlighting
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
 const webpackConfig = {
     mode: isProduction ? 'production' : 'development',

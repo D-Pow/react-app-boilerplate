@@ -105,6 +105,29 @@ export function getMimeTypeFromDataUrl(dataUrl = '') {
 
 
 /**
+ * Converts a Blob's data to Base64.
+ *
+ * @param {Blob} blob - Blob whose data to convert.
+ * @returns {Promise<string>} - Base64 string of the data.
+ */
+export async function blobToBase64(blob) {
+    // FileReader uses callbacks, so we must use the basic Promise API
+    return await new Promise((res, rej) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            res(reader.result);
+        };
+        reader.onerror = e => {
+            rej(e);
+        };
+
+        reader.readAsDataURL(blob);
+    });
+}
+
+
+/**
  * Gets a {@code Document} from the passed {@code dataUrl}.
  *
  * Data URLs formatting: `data:MIME_TYPE;base64,BASE_64_STRING`.

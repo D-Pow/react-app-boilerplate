@@ -82,6 +82,29 @@ const {
 
 const hotReloading = false; // process.env.NODE_ENV === 'development';
 
+
+const javascriptLoaderConfig = {
+    loader: 'babel-loader',
+    options: babelConfig,
+};
+const typescriptLoaderConfig = {
+    loader: 'ts-loader',
+    options: {
+        configFile: tsconfigPath,
+        /** @type {import('typescript').CompilerOptions} */
+        compilerOptions: {
+            // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)
+            outDir: null,
+            // Deactivate declaration output if this isn't a library meant to be consumed, e.g. a website to be deployed
+            ...(isLibrary ? {} : {
+                declaration: isLibrary,
+                declarationDir: isLibrary,
+            }),
+        },
+    },
+};
+
+
 /** @type {import('webpack/types').WebpackOptionsNormalized} */
 const webpackConfig = {
     mode: isProduction ? 'production' : 'development',
@@ -111,36 +134,15 @@ const webpackConfig = {
                 test: JavaScript,
                 exclude: /node_modules/,
                 include: new RegExp(Paths.SRC.REL),
-                use: {
-                    loader: 'babel-loader',
-                    options: babelConfig,
-                },
+                use: javascriptLoaderConfig,
             },
             {
                 test: TypeScript,
                 exclude: /node_modules/,
                 include: new RegExp(Paths.SRC.REL),
                 use: [
-                    {
-                        loader: 'babel-loader',
-                        options: babelConfig,
-                    },
-                    {
-                        loader: 'ts-loader',
-                        options: {
-                            configFile: tsconfigPath,
-                            /** @type {import('typescript').CompilerOptions} */
-                            compilerOptions: {
-                                // Ensure tsconfig's `outDir` is unset when using Webpack (output is piped to babel-loader)
-                                outDir: null,
-                                // Deactivate declaration output if this isn't a library meant to be consumed, e.g. a website to be deployed
-                                ...(isLibrary ? {} : {
-                                    declaration: isLibrary,
-                                    declarationDir: isLibrary,
-                                }),
-                            },
-                        },
-                    },
+                    javascriptLoaderConfig,
+                    typescriptLoaderConfig,
                 ],
             },
             {

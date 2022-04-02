@@ -5,7 +5,7 @@ import JestCssModulesTransformer from 'jest-css-modules-transform';
 import { FileTypeRegexes } from '../utils/index.js';
 
 
-/** @type {import('@jest/core/node_modules/@jest/transform/build/types').SyncTransformer} */
+/** @type {import('@jest/transform/build/types').SyncTransformer} */
 const jestAssetTransformer = {
     /**
      * Processes source file contents to be usable in jest tests.

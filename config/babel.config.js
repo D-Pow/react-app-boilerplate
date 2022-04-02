@@ -44,7 +44,7 @@ module.exports = {
         ],
     ],
     plugins: [
-        '@babel/plugin-transform-runtime',
+        '@babel/plugin-transform-runtime', // Defines Babel's injected helper functions globally instead of duplicating them in every file
         [
             '@babel/plugin-proposal-decorators',
             {

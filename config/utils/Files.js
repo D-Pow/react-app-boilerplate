@@ -626,17 +626,19 @@ Object.defineProperties(ImportAliases, {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: ({
+        value: function({
             aliasModifier = alias => alias,
             pathMatchModifier = pathMatch => pathMatch,
-        } = {}) => Object.entries(ImportAliases).reduce((modifiedAliases, [ alias, pathMatch ]) => {
-            const modifiedAlias = aliasModifier(alias);
-            const modifiedPathMatch = pathMatchModifier(pathMatch);
+        } = {}) {
+            return Object.entries(this).reduce((modifiedAliases, [ alias, pathMatch ]) => {
+                const modifiedAlias = aliasModifier(alias);
+                const modifiedPathMatch = pathMatchModifier(pathMatch);
 
-            modifiedAliases[modifiedAlias] = modifiedPathMatch;
+                modifiedAliases[modifiedAlias] = modifiedPathMatch;
 
-            return modifiedAliases;
-        }, {}),
+                return modifiedAliases;
+            }, {});
+        },
     },
     stripTrailingSlash: {
         configurable: false,

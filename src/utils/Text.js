@@ -128,6 +128,42 @@ export async function blobToBase64(blob) {
 
 
 /**
+ * Converts an HTML `<img>` element's data to a Base64 string.
+ *
+ * @example <caption>Convert an SVG to a PNG</caption>
+ * const img = document.querySelector('img[src*="svg"]');
+ * downloadDataAsFile(imageToBase64(img), {
+ *     fileName: 'my-file.png',
+ * });
+ *
+ * @param {HTMLImageElement} img - Image whose data to convert.
+ * @param {Object} [options]
+ * @param {string} [options.mimeType] - Desired MIME type of the resulting Base64 string.
+ * @param {number} [options.compressionQuality] - Compression quality for lossy image algorithms (e.g. JPEG or WEBP).
+ * @returns {string} - Base64 string of the image.
+ *
+ * @see [StackOverflow post on common methods for conversion]{@link https://stackoverflow.com/questions/6150289/how-can-i-convert-an-image-into-base64-string-using-javascript/20285053#20285053}
+ * @see [MDN docs on `canvas.toDataURL()`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL}
+ */
+export function imageToBase64(img, {
+    mimeType = MimeTypes.PNG,
+    compressionQuality = 1,
+} = {}) {
+    // Since the element was never appended to the document, it doesn't require cleanup (garbage collection will handle it)
+    // See: https://stackoverflow.com/questions/1847220/javascript-document-createelement-delete-domelement/1847289#1847289
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx?.drawImage(img, 0, 0);
+
+    return canvas.toDataURL(mimeType, compressionQuality);
+}
+
+
+/**
  * Gets a {@code Document} from the passed {@code dataUrl}.
  *
  * Data URLs formatting: `data:MIME_TYPE;base64,BASE_64_STRING`.

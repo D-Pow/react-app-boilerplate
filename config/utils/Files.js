@@ -650,6 +650,58 @@ Object.defineProperties(ImportAliases, {
         writable: false,
         value: alias => alias.replace(/\/$/, ''),
     },
+    getBestImportAliasMatch: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: function (filePath) {
+            const shortestAliasMatch = [ ...this ]
+                .reduce((bestMatch, [ alias, aliasRelPath ]) => {
+                    // Let `filePath = /path/to/src/folder/file.js`
+
+                    // Get the relative path to the file from root first
+                    // e.g. `src/folder/file.js`
+                    const relPathFromRoot = Paths.getFileRelPath(Paths.ROOT.ABS, filePath);
+                    // Then from the alias
+                    // e.g. `folder/file.js` from the `src` alias
+                    const relPathFromAlias = Paths.getFileRelPath(aliasRelPath, filePath);
+                    // Now find the shortest path length respective to the alias; use the
+                    // alias length instead of root length so the aliases' respective-folder lengths
+                    // don't affect the outcome
+                    const relPathFromAliasLength = relPathFromAlias.length;
+
+                    if (relPathFromAliasLength < bestMatch.length) {
+                        bestMatch = {
+                            length: relPathFromAliasLength,
+                            alias,
+                            relPathFromRoot,
+                            relPathFromAlias,
+                        };
+                    }
+
+                    return bestMatch;
+                }, {
+                    length: Infinity,
+                    alias: '',
+                    relPathFromRoot: '',
+                    relPathFromAlias: '',
+                });
+
+            const { alias, relPathFromAlias } = shortestAliasMatch;
+
+            return `${alias}/${relPathFromAlias}`;
+        },
+    },
+    [Symbol.iterator]: {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        // Note: We can't use `*[Symbol.iterator]` since it's not an actual function.
+        // Thus, use the anonymous function syntax `function*` instead.
+        value: function* () {
+            return yield* Object.entries(this);
+        },
+    },
 });
 
 

@@ -52,6 +52,7 @@ export const MimeTypes = {
     JPEG: 'image/jpeg',
     GIF: 'image/gif',
     WEBP: 'image/webp',
+    ICO: 'image/x-icon',
     // Audio
     MP3: 'audio/mp3',
     WAV: 'audio/wav',

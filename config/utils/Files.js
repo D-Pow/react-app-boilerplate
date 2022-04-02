@@ -282,6 +282,10 @@ function getOutputFileName(
     // so handle all cases to ensure consistent output.
     filenameWithRelativePath = Paths.normalize(filenameWithRelativePath);
 
+    let fileQuery = '';
+
+    ([ filenameWithRelativePath, fileQuery ] = filenameWithRelativePath.split('?'));
+
     const fileNameFull = path.basename(filenameWithRelativePath);
     const fileExtension = treatFileNameDotsAsExtension
         ? fileNameFull.slice(fileNameFull.indexOf('.')) // babel.config.js  -->  .config.js

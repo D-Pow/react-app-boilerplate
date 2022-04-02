@@ -76,3 +76,30 @@ export function isFirefoxBrowser() {
 export function isInStandaloneMode() {
     return !!self?.matchMedia?.('(display-mode: standalone)')?.matches;
 }
+
+
+/**
+ * Gets the user's preferred language.
+ *
+ * Attempts to read from the browser's chosen language, falling back to the installed browser language,
+ * OS' chosen language, and OS' default language.
+ *
+ * @returns {string}
+ *
+ * @see [`navigator.language`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Navigator/language}
+ * @see [`navigator.languages`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Navigator/languages}
+ * @see [StackOverflow post]{@link https://stackoverflow.com/questions/673905/how-to-determine-users-locale-within-browser}
+ */
+export function getLanguage() {
+    const { navigator } = self;
+
+    return (
+        (self.Intl && new Intl.DateTimeFormat()).resolvedOptions?.()?.locale // (en-US) Most accurate b/c it accounts for the user's chosen language, not just the browser's or OS' default one. See SO answer: /57529410#57529410
+        || navigator.language // (en-US) - Most widely supported (in all semi-modern browsers) and still descriptive. See SO answers: /673938#5771107, /674570#5771107
+        || navigator.languages?.[0] // ([ en-US, en ]) - Holds all installed browser languages in decreasing order of priority (languages[0] == language == Intl.locale).
+        || navigator.userLanguage // Browser's selected language; older version of `languages[0]`
+        || navigator.browserLanguage // Browser's selected language; even older version of `languages[0]`
+        || navigator.systemLanguage // OS default language
+        || 'en' // Final fallback
+    );
+}

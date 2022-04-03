@@ -1,6 +1,34 @@
 import { hyphenOrSnakeCaseToCamelCase } from '@/utils/Text';
 
 
+/**
+ * A class that provides basic initialization, getters, setters, and overridden `Object.prototype` methods for better
+ * support/representation of internal fields, both when the class is instantiated and extended.
+ *
+ * Note: Functions (regardless of static or instance) aren't included in `Object.(keys|values|entries)` and object spreads,
+ * meaning the class/object itself can be used directly in spreads/Object functions instead of having to filter out the class' functions.
+ *
+ * i.e. Class (static and instance) functions mimic:
+ * ```
+ * Object.defineProperty(obj, key, {
+ *     configurable: false,
+ *     enumerable: false,
+ *     writable: false,
+ *     value: 'someValue',
+ * });
+ * ```
+ *
+ * @example <caption>Set some entries and get actually-useful results when using `Object` methods.</caption>
+ * const obj = new CustomizableObject({ a: 'A' });
+ * obj.has('a'); // true
+ * obj.set('b', 'B'); // { a: 'A', b: 'B' }
+ * obj.append('b', 'BB'); // { a: 'A', b: [ 'B', 'BB' ] }
+ * obj.append('c', 'C'); // { a: 'A', b: [ 'B', 'BB' ], c: 'C' }
+ * obj.set('b', 'BBB'); // { a: 'A', b: 'BBB', c: 'C' }
+ * obj.(keys|entries|length|map|reduce)(); // Same as `Object.(func)()`
+ * obj.toString(); // [object ${this.constructor.name}]
+ * obj.toJSON([key]); // {...obj}[key] || {...obj}
+ */
 export class CustomizableObject {
     constructor(init = {}) {
         Object.entries(init).forEach(([ key, value ]) => this[key] = value);
@@ -208,6 +236,11 @@ export class CustomizableObject {
      * @see [yield* delegation to other iterables]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/yield*}
      */
     *[Symbol.iterator]() {
+        return yield* Object.entries(this);
+    }
+
+    static *[Symbol.iterator]() {
+        // `this == CustomizableObject` when static and `this == CustomizableObject.prototypeInstance` when not
         return yield* Object.entries(this);
     }
 }

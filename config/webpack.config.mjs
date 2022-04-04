@@ -244,7 +244,7 @@ const webpackConfig = {
                                         // removeComments: false,
                                         removeXMLNS: false, // `xmlns` prop
                                         removeMetadata: false, // <metadata>
-                                        removeTitle: true, // <title>
+                                        removeTitle: false, // <title>
                                         removeDesc: false, // <desc>
                                         removeUselessDefs: false, // <defs> that don't contain an `id` prop
                                         removeEditorsNSData: false,

@@ -110,6 +110,19 @@ export interface DateToStringOptions {
 /**
  * Formats a date in the desired string format.
  *
+ * Options include:
+ *
+ * - `%y` = Year.
+ * - `%M` = Month.
+ * - `%d` = Date (number, not the day of the week).
+ * - `%h` = Hour (use `%H` for hours that are relative to AM/PM, `%h` for 24-hour clock hours); Max of 2.
+ * - `%m` = Minutes; Max of 2.
+ * - `%s` = Seconds; Max of 2.
+ * - `%l` = Milliseconds; Max of 3.
+ * - `%D` = Day format (e.g. Monday, Mon, M); Max of 3.
+ * - `%b` = Month format (e.g. January, Jan, J); Max of 3.
+ * - `%z` = Timezone offset in hours (use `%Z` for full `GMT[+-](number)` string); Max of 3 chars; Positive is behind (later than) UTC; Negative is ahead of (earlier than) UTC.
+ *
  * @param date - Date to format.
  * @param format - The desired format for the date.
  * @param options - Options for formatting.
@@ -136,25 +149,25 @@ export function dateToString(date: Date = new Date(), format?: string, {
     const minuteNumber = date[`get${utc ? 'UTC' : ''}Minutes`]();
     const secondNumber = date[`get${utc ? 'UTC' : ''}Seconds`]();
     const millisecondNumber = date[`get${utc ? 'UTC' : ''}Milliseconds`]();
-    const timezoneOffsetHours = date.getTimezoneOffset() / 60; // Offset is in minutes - Positive is behind (later than) UTC; Negative is ahead of (earlier than) UTC
+    const timezoneOffsetHours = date.getTimezoneOffset() / 60; // Offset is in minutes; See `%z` JSDoc entry
 
     let useAmPm = false;
 
     // It's easier to use a match group to get the exact length of the requested date-time formatter substring
     // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_function_as_a_parameter
     let dateTimeStringFormatted = format
-        .replace(/(y+)/ig, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%y+)/ig, (fullRegexStrMatch, matchGroup) => {
             // return `${yearNumber}`.substr(-1 * `${yearNumber}`.length, matchGroup.length);
             return `${yearNumber}`.substr(-1 * matchGroup.length, `${yearNumber}`.length);
         })
-        .replace(/(M+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%M+)/g, (fullRegexStrMatch, matchGroup) => {
             // Months start at 0 so add 1 to make it a readable month, i.e. January === 0
             return `${monthNumber + 1}`.padStart(matchGroup.length, '0');
         })
-        .replace(/(d+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%d+)/g, (fullRegexStrMatch, matchGroup) => {
             return `${dateNumber}`.padStart(matchGroup.length, '0');
         })
-        .replace(/(h+)/ig, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%h+)/ig, (fullRegexStrMatch, matchGroup) => {
             useAmPm = !!matchGroup.match(/H/);
 
             const hourNumberToUse = (useAmPm && hourNumber > 12)
@@ -163,13 +176,13 @@ export function dateToString(date: Date = new Date(), format?: string, {
 
             return `${hourNumberToUse}`.padStart(matchGroup.length, '0');
         })
-        .replace(/(m+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%m+)/g, (fullRegexStrMatch, matchGroup) => {
             return `${minuteNumber}`.padStart(matchGroup.length, '0');
         })
-        .replace(/(s+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%s+)/g, (fullRegexStrMatch, matchGroup) => {
             return `${secondNumber}`.padStart(matchGroup.length, '0');
         })
-        .replace(/(l+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%l+)/g, (fullRegexStrMatch, matchGroup) => {
             // Milliseconds are always <= 3 digits, so pad the beginning with zeros to make it a proper decimal number
             // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getMilliseconds
             const millisecondsTo3SignificantFigures = `${millisecondNumber}`.padStart(3, '0');
@@ -184,7 +197,7 @@ export function dateToString(date: Date = new Date(), format?: string, {
         })
         // String replacements must go after number replacements and after string replacements using
         // the same letters to avoid conflicts
-        .replace(/(D+)/g, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%D+)/g, (fullRegexStrMatch, matchGroup) => {
             if (dayDisplay) {
                 return DayMonthFormats[dayDisplay].days[dayOfWeekNumber];
             }
@@ -200,7 +213,7 @@ export function dateToString(date: Date = new Date(), format?: string, {
                     return '';
             }
         })
-        .replace(/(b+)/ig, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%b+)/ig, (fullRegexStrMatch, matchGroup) => {
             if (monthDisplay) {
                 return DayMonthFormats[monthDisplay].months[monthNumber];
             }
@@ -216,7 +229,7 @@ export function dateToString(date: Date = new Date(), format?: string, {
                     return '';
             }
         })
-        .replace(/(z+)/ig, (fullRegexStrMatch, matchGroup) => {
+        .replace(/(%z+)/ig, (fullRegexStrMatch, matchGroup) => {
             // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
             const timezoneOffsetHoursPositiveNegativeString = (timezoneOffsetHours < 1)
                 ? '+'

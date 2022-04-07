@@ -669,11 +669,20 @@ Object.defineProperties(ImportAliases, {
                     // alias length instead of root length so the aliases' respective-folder lengths
                     // don't affect the outcome
                     const relPathFromAliasLength = relPathFromAlias.length;
+                    // Fallback to root path
+                    const relPathFromRootLength = relPathFromRoot.length;
 
                     if (relPathFromAliasLength < bestMatch.length) {
                         bestMatch = {
                             length: relPathFromAliasLength,
                             alias,
+                            relPathFromRoot,
+                            relPathFromAlias,
+                        };
+                    } else if (relPathFromRootLength < bestMatch.length) {
+                        bestMatch = {
+                            length: relPathFromRootLength,
+                            alias: '',
                             relPathFromRoot,
                             relPathFromAlias,
                         };
@@ -687,9 +696,19 @@ Object.defineProperties(ImportAliases, {
                     relPathFromAlias: '',
                 });
 
-            const { alias, relPathFromAlias } = shortestAliasMatch;
+            const { alias, relPathFromAlias, relPathFromRoot } = shortestAliasMatch;
 
-            return `${alias}/${relPathFromAlias}`;
+            if (!alias && relPathFromRoot.length > filePath.length) {
+                return filePath;
+            }
+
+            if (!alias) {
+                return relPathFromRoot;
+            }
+
+            // Remove repeating slashes. Only normalize the path instead of resolving it
+            // since some alias characters aren't valid paths.
+            return path.normalize(`${alias}/${relPathFromAlias}`);
         },
     },
     [Symbol.iterator]: {

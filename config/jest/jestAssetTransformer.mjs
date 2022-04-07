@@ -44,10 +44,6 @@ const jestAssetTransformer = {
             if (/url$/.test(srcAbsPath)) {
                 /**
                  * Mimic query (URL) export from `@svgr/webpack`.
-                 *
-                 * Note that the String constructor must be used so that we can set new fields on it in order
-                 * to have both default/named exports because you can't set new fields on string primitives.
-                 * i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
                  */
                 return {
                     code: `
@@ -58,6 +54,10 @@ const jestAssetTransformer = {
 
             /**
              * Mimic named and default exports from `@svgr/webpack`.
+             *
+             * Note that the String constructor must be used so that we can set new fields on it in order
+             * to have both default/named exports because you can't set new fields on string primitives.
+             * i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
              */
             return {
                 code: `

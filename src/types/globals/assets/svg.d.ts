@@ -11,19 +11,32 @@
  * for more details.
  */
 declare module '*.svg' {
-    import type { SVGAttributes } from 'react';
+    import type {
+        Ref,
+        LegacyRef,
+        SVGAttributes,
+        ForwardRefRenderFunction,
+    } from 'react';
 
     import type { ReactComponent } from '@/types';
 
-    export const SvgUrl: string;
-    export const ReactComponent: (
-        ReactComponent<SVGAttributes<SVGElement | SVGSVGElement>>
+
+    export type ReactSvgElement = SVGAttributes<SVGElement | SVGSVGElement>;
+    export type ReactSvgProps = (
+        ReactSvgElement
         & {
             // Additional properties added by SVGR
             title?: string;
         }
     );
+    export type SvgComponent = ReactComponent<ReactSvgProps>;
+    export type SvgReactComponent = ForwardRefRenderFunction<ReactSvgElement, ReactSvgProps>
 
+
+    // React component of the SVG, injected by SVGR
+    export const ReactComponent: SvgReactComponent | ((props: ReactSvgProps, ref: Ref<ReactSvgElement> & LegacyRef<SVGSVGElement>) => SvgComponent);
+    // URL of the actual SVG file
+    export const SvgUrl: string;
     export {
         SvgUrl as default,
     };

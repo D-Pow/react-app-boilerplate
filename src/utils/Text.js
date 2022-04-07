@@ -293,13 +293,42 @@ export function maskBeginningChars(str, numChars, {
  * Converts hyphen-case and snake_case to camelCase.
  *
  * @param {string} str - Hyphen/snake-case string to convert to camelCase.
+ * @param {Object} [options]
+ * @param {boolean} [options.pascalCase] - Uppercase the first letter to make it PascalCase instead of camelCase.
  * @returns {string} - camelCase version of the passed string.
+ *
  * @see [String.replace(regex, func)]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_function_as_a_parameter}
  */
-export function hyphenOrSnakeCaseToCamelCase(str) {
-    return str.replace(/[-_]([^-_])/g, (fullStrMatch, matchGroup) => {
+export function hyphenOrSnakeCaseToCamelCase(str, {
+    pascalCase = false,
+} = {}) {
+    const camelCaseStr = str.replace(/[-_]([^-_])/g, (fullStrMatch, matchGroup) => {
         // One match group: The letter after a hyphen/underscore.
         // Uppercase it and discard the hyphen/underscore.
+        return matchGroup.toUpperCase();
+    });
+
+    if (pascalCase) {
+        return capitalizeFirstLetters(camelCaseStr);
+    }
+
+    return camelCaseStr;
+}
+
+
+/**
+ * Capitalizes the first `numChars` characters of a string.
+ *
+ * @param {string} str - String to capitalize.
+ * @param {Object} [options]
+ * @param {number} [options.numChars] - Number of characters to capitalize.
+ * @returns {string} - The string with the desired number of characters capitalized.
+ */
+export function capitalizeFirstLetters(str, {
+    numChars = 1,
+} = {}) {
+    return str.replace(new RegExp(`^(.{0,${numChars}})`), (fullStrMatch, matchGroup) => {
+        // One match group: The first `numChars` of the string.
         return matchGroup.toUpperCase();
     });
 }

@@ -16,22 +16,24 @@
  * @file
  */
 
-import React from 'react';
-import { render, act, waitFor, prettyDOM } from '@testing-library/react';
+import React, {
+    type ReactElement,
+    type PropsWithChildren,
+    type EffectCallback,
+    type DependencyList,
+} from 'react';
+import {
+    render,
+    act,
+    waitFor,
+    prettyDOM,
+    type RenderResult as RenderedComponent,
+    type RenderOptions,
+} from '@testing-library/react';
 
 import Router, { appRoutes } from '@/components/Router';
 import AppContext from '@/utils/AppContext';
 
-import type {
-    ReactElement,
-    PropsWithChildren,
-    EffectCallback,
-    DependencyList,
-} from 'react';
-import type {
-    RenderResult as RenderedComponent,
-    RenderOptions,
-} from '@testing-library/react';
 import type {
     Fiber,
 } from 'react-reconciler';
@@ -296,7 +298,10 @@ export function getElementMaybe(funcToGetElement: Function, { callNow = false } 
  * @param [options]
  * @param [options.all] - If `querySelectorAll()` should be called instead of `querySelector()`.
  * @returns A Promise that resolves after the element(s) are visible, returning the element(s).
- * @see [React testing library's "query priorities" docs]{@link https://testing-library.com/docs/queries/about/#priority}
+ *
+ * @see [RTL types of queries]{@link https://testing-library.com/docs/queries/about/#types-of-queries}
+ * @see [RTL query priorities]{@link https://testing-library.com/docs/queries/about/#priority}
+ * @see [StackOverflow post on creating custom query selectors]{@link https://stackoverflow.com/questions/53003594/find-element-by-id-in-react-testing-library/53003981#53003981}
  */
 export async function waitForElementVisible<
     T extends O['all'],

@@ -334,6 +334,20 @@ export async function waitForElementVisible(
 
 
 /**
+ * Queries for a given element via `querySelector()` or `querySelectorAll()`.
+ *
+ * This uses the same logic as `waitForElementVisible()`, but explicitly shows how that same function
+ * can be used for simple query statements, not just waiting for when the element is visible.
+ *
+ * @param args - The same args as `waitForElementVisible()`.
+ * @return The elements queried for.
+ */
+export async function querySelector(...args: Parameters<typeof waitForElementVisible>): ReturnType<typeof waitForElementVisible> {
+    return await waitForElementVisible(...args);
+}
+
+
+/**
  * Waits for the page to redirect before continuing onward.
  *
  * The `fireEvent` function must be passed here and not called outside this function

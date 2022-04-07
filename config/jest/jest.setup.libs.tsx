@@ -379,15 +379,15 @@ export async function waitForRedirect(fireEventThatRedirects: () => (any | Promi
  * @returns The DOM element and its associated HTML string.
  */
 export function getDomFromRender(
-    component: RenderedComponent,
+    component: RenderedComponent | Node,
     {
         fromParent = false,
     } = {},
 ): { element: Element | Document, html: string } {
     const element = (
         fromParent
-            ? (component?.baseElement ?? component?.container)
-            : component?.container
+            ? ((component as RenderedComponent)?.baseElement ?? (component as RenderedComponent)?.container)
+            : (component as RenderedComponent)?.container
     ) ?? component;
     const isDomElement = !!(element?.addEventListener ?? null);
 

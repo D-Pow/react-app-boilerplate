@@ -42,9 +42,8 @@ declare module '*.svg' {
     export const ReactComponent: SvgReactComponent;
     // URL of the actual SVG file
     export const SvgUrl: string;
-    export {
-        SvgUrl as default,
-    };
+
+    export default SvgUrl;
 }
 
 declare module '*.svg?url' {

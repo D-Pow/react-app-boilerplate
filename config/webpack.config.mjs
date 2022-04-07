@@ -313,9 +313,7 @@ const webpackConfig = {
                                             export const SvgUrl = SvgAssetUrl;
 
                                             // Add default export for ease of use
-                                            export {
-                                                ${svgDefaultExportReactComponent ? componentInfo.componentName : 'SvgUrl'} as default,
-                                            };
+                                            export default ${svgDefaultExportReactComponent ? componentInfo.componentName : 'SvgUrl'};
                                         `);
 
                                         astArray.push(...customAstArray);

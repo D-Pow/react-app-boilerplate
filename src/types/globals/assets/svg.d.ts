@@ -15,26 +15,31 @@ declare module '*.svg' {
         Ref,
         LegacyRef,
         SVGAttributes,
+        PropsWithChildren,
         ForwardRefRenderFunction,
     } from 'react';
 
-    import type { ReactComponent } from '@/types';
+    import type { ComponentDeclaration } from '@/types';
 
 
-    export type ReactSvgElement = SVGAttributes<SVGElement | SVGSVGElement>;
-    export type ReactSvgProps = (
-        ReactSvgElement
+    export type ReactSvgElement = SVGElement | SVGSVGElement;
+    export type ReactSvgElementProps = (
+        SVGAttributes<ReactSvgElement>
         & {
             // Additional properties added by SVGR
             title?: string;
         }
     );
-    export type SvgComponent = ReactComponent<ReactSvgProps>;
-    export type SvgReactComponent = ForwardRefRenderFunction<ReactSvgElement, ReactSvgProps>
-
+    export type ReactSvgProps = PropsWithChildren<ReactSvgElementProps>;
+    export type SvgComponent = ComponentDeclaration<ReactSvgProps>;
+    export type SvgReactComponent = (
+        SvgComponent
+        | ForwardRefRenderFunction<ReactSvgElement, ReactSvgProps>
+        | ((props: ReactSvgProps, ref: Ref<ReactSvgElement> & LegacyRef<SVGSVGElement>) => SvgComponent)
+    );
 
     // React component of the SVG, injected by SVGR
-    export const ReactComponent: SvgReactComponent | ((props: ReactSvgProps, ref: Ref<ReactSvgElement> & LegacyRef<SVGSVGElement>) => SvgComponent);
+    export const ReactComponent: SvgReactComponent;
     // URL of the actual SVG file
     export const SvgUrl: string;
     export {

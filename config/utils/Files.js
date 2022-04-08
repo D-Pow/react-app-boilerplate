@@ -604,136 +604,130 @@ function stripJsComments(jsStr) {
 
 
 /**
- * Object containing normalized import aliases of the form `{ alias: pathMatch }`.
+ * Object containing a normalized mapping of aliases to their respective path matches,
+ * as well as some util functions.
+ *
+ * Takes the form: `{ alias: pathMatch }`.
  *
  * Both aliases and path matches are normalized to strip leading/trailing path slashes, periods,
- * and glob stars so all files using the aliases can format them as needed.
+ * and glob stars so all files using the aliases can format them as needed (e.g. format to regex,
+ * globs, or keep as strings).
  *
- * Includes some non-enumerable utility functions for individually reformatting the alias/path-match
- * and for stripping a single trailing path slash.
+ * Includes some utility functions for custom reformatting of the alias and/or path-match
+ * strings, stripping a trailing path slash from the path match, finding the best import match for a file
+ * path, etc.
  *
- * @type {Object} - Mapping of aliases to their respective path matchers, as well as some util functions.
+ * Util functions are non-enumerable so array/object spreads of the class will return only the
+ * desired aliases/path matches.
  */
-const ImportAliases = Object.entries(tsconfig.compilerOptions.paths)
-    .reduce((aliasesWithoutGlobs, [ aliasGlob, pathMatchesGlobArray ]) => {
-        const { regexToString, combineRegexes } = FileTypeRegexes;
-        const removeTrailingSlashAsterisk = globStr => globStr.replace(/\/\*$/, '').replace(/^$/, '/'); // add `/` back in if that was all that was in the alias
-        const convertSingleAsteriskToDot = globStr => globStr.replace(/^\*$/, '.');
-        const removeBackslashesEscapingSlashesInPaths = regexStr => regexStr.replace(/\\+/g, '');
+class ImportAliases {
+    static {
+        const aliasToPathMap = Object.entries(tsconfig.compilerOptions.paths)
+            .reduce((aliasesWithoutGlobs, [ aliasGlob, pathMatchesGlobArray ]) => {
+                const { regexToString, combineRegexes } = FileTypeRegexes;
+                const removeTrailingSlashAsterisk = globStr => globStr.replace(/\/\*$/, '').replace(/^$/, '/'); // add `/` back in if that was all that was in the alias
+                const convertSingleAsteriskToDot = globStr => globStr.replace(/^\*$/, '.');
+                const removeBackslashesEscapingSlashesInPaths = regexStr => regexStr.replace(/\\+/g, '');
 
-        const aliasWithoutGlob = removeTrailingSlashAsterisk(aliasGlob);
-        const pathMatchesWithoutGlobs = pathMatchesGlobArray.map(pathGlob => convertSingleAsteriskToDot(removeTrailingSlashAsterisk(pathGlob)));
+                const aliasWithoutGlob = removeTrailingSlashAsterisk(aliasGlob);
+                const pathMatchesWithoutGlobs = pathMatchesGlobArray.map(pathGlob => convertSingleAsteriskToDot(removeTrailingSlashAsterisk(pathGlob)));
 
-        if (pathMatchesWithoutGlobs.length > 1) {
-            const pathMatchesAsRegex = pathMatchesWithoutGlobs.map(pathStr => new RegExp(pathStr));
-            const pathMatchesAsRegexString = removeBackslashesEscapingSlashesInPaths(regexToString(combineRegexes(...pathMatchesAsRegex)));
+                if (pathMatchesWithoutGlobs.length > 1) {
+                    const pathMatchesAsRegex = pathMatchesWithoutGlobs.map(pathStr => new RegExp(pathStr));
+                    const pathMatchesAsRegexString = removeBackslashesEscapingSlashesInPaths(regexToString(combineRegexes(...pathMatchesAsRegex)));
 
-            aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesAsRegexString;
-        } else {
-            aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesWithoutGlobs[0];
+                    aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesAsRegexString;
+                } else {
+                    aliasesWithoutGlobs[aliasWithoutGlob] = pathMatchesWithoutGlobs[0];
+                }
+
+                return aliasesWithoutGlobs;
+            }, {});
+
+        Object.entries(aliasToPathMap).forEach(([ alias, pathMatch ]) => {
+            this[alias] = pathMatch;
+        });
+    }
+
+    static toCustomObject({
+        aliasModifier = alias => alias,
+        pathMatchModifier = pathMatch => pathMatch,
+    } = {}) {
+        return Object.entries(this).reduce((modifiedAliases, [ alias, pathMatch ]) => {
+            const modifiedAlias = aliasModifier(alias);
+            const modifiedPathMatch = pathMatchModifier(pathMatch);
+
+            modifiedAliases[modifiedAlias] = modifiedPathMatch;
+
+            return modifiedAliases;
+        }, {});
+    }
+
+    static stripTrailingSlash(alias) {
+        return alias.replace(/\/$/, '');
+    }
+
+    static getBestImportAliasMatch(filePath) {
+        const shortestAliasMatch = [ ...this ]
+            .reduce((bestMatch, [ alias, aliasRelPath ]) => {
+                // Let `filePath = /path/to/src/folder/file.js`
+
+                // Get the relative path to the file from root first
+                // e.g. `src/folder/file.js`
+                const relPathFromRoot = Paths.getFileRelPath(Paths.ROOT.ABS, filePath);
+                // Then from the alias
+                // e.g. `folder/file.js` from the `src` alias
+                const relPathFromAlias = Paths.getFileRelPath(aliasRelPath, filePath);
+                // Now find the shortest path length respective to the alias; use the
+                // alias length instead of root length so the aliases' respective-folder lengths
+                // don't affect the outcome
+                const relPathFromAliasLength = relPathFromAlias.length;
+                // Fallback to root path
+                const relPathFromRootLength = relPathFromRoot.length;
+
+                if (relPathFromAliasLength < bestMatch.length) {
+                    bestMatch = {
+                        length: relPathFromAliasLength,
+                        alias,
+                        relPathFromRoot,
+                        relPathFromAlias,
+                    };
+                } else if (relPathFromRootLength < bestMatch.length) {
+                    bestMatch = {
+                        length: relPathFromRootLength,
+                        alias: '',
+                        relPathFromRoot,
+                        relPathFromAlias,
+                    };
+                }
+
+                return bestMatch;
+            }, {
+                length: Infinity,
+                alias: '',
+                relPathFromRoot: '',
+                relPathFromAlias: '',
+            });
+
+        const { alias, relPathFromAlias, relPathFromRoot } = shortestAliasMatch;
+
+        if (!alias && relPathFromRoot.length > filePath.length) {
+            return filePath;
         }
 
-        return aliasesWithoutGlobs;
-    }, {});
-// Add utils for ImportAliases, but prevent them from being included in `Object.(keys|values|entries)` and object spreads
-// so that the ImportAliases object can be used directly instead of having to filter out the utils
-Object.defineProperties(ImportAliases, {
-    toCustomObject: {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: function({
-            aliasModifier = alias => alias,
-            pathMatchModifier = pathMatch => pathMatch,
-        } = {}) {
-            return Object.entries(this).reduce((modifiedAliases, [ alias, pathMatch ]) => {
-                const modifiedAlias = aliasModifier(alias);
-                const modifiedPathMatch = pathMatchModifier(pathMatch);
+        if (!alias) {
+            return relPathFromRoot;
+        }
 
-                modifiedAliases[modifiedAlias] = modifiedPathMatch;
+        // Remove repeating slashes. Only normalize the path instead of resolving it
+        // since some alias characters aren't valid paths.
+        return path.normalize(`${alias}/${relPathFromAlias}`);
+    }
 
-                return modifiedAliases;
-            }, {});
-        },
-    },
-    stripTrailingSlash: {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: alias => alias.replace(/\/$/, ''),
-    },
-    getBestImportAliasMatch: {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: function (filePath) {
-            const shortestAliasMatch = [ ...this ]
-                .reduce((bestMatch, [ alias, aliasRelPath ]) => {
-                    // Let `filePath = /path/to/src/folder/file.js`
-
-                    // Get the relative path to the file from root first
-                    // e.g. `src/folder/file.js`
-                    const relPathFromRoot = Paths.getFileRelPath(Paths.ROOT.ABS, filePath);
-                    // Then from the alias
-                    // e.g. `folder/file.js` from the `src` alias
-                    const relPathFromAlias = Paths.getFileRelPath(aliasRelPath, filePath);
-                    // Now find the shortest path length respective to the alias; use the
-                    // alias length instead of root length so the aliases' respective-folder lengths
-                    // don't affect the outcome
-                    const relPathFromAliasLength = relPathFromAlias.length;
-                    // Fallback to root path
-                    const relPathFromRootLength = relPathFromRoot.length;
-
-                    if (relPathFromAliasLength < bestMatch.length) {
-                        bestMatch = {
-                            length: relPathFromAliasLength,
-                            alias,
-                            relPathFromRoot,
-                            relPathFromAlias,
-                        };
-                    } else if (relPathFromRootLength < bestMatch.length) {
-                        bestMatch = {
-                            length: relPathFromRootLength,
-                            alias: '',
-                            relPathFromRoot,
-                            relPathFromAlias,
-                        };
-                    }
-
-                    return bestMatch;
-                }, {
-                    length: Infinity,
-                    alias: '',
-                    relPathFromRoot: '',
-                    relPathFromAlias: '',
-                });
-
-            const { alias, relPathFromAlias, relPathFromRoot } = shortestAliasMatch;
-
-            if (!alias && relPathFromRoot.length > filePath.length) {
-                return filePath;
-            }
-
-            if (!alias) {
-                return relPathFromRoot;
-            }
-
-            // Remove repeating slashes. Only normalize the path instead of resolving it
-            // since some alias characters aren't valid paths.
-            return path.normalize(`${alias}/${relPathFromAlias}`);
-        },
-    },
-    [Symbol.iterator]: {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        // Note: We can't use `*[Symbol.iterator]` since it's not an actual function.
-        // Thus, use the anonymous function syntax `function*` instead.
-        value: function* () {
-            return yield* Object.entries(this);
-        },
-    },
-});
+    static *[Symbol.iterator]() {
+        return yield* Object.entries(this);
+    }
+}
 
 
 module.exports = {

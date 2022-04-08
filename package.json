@@ -25,7 +25,7 @@
     "mock": "cross-env MOCK=true npm start --",
     "mock:allowCorsAccess": "cross-env ALLOW_CORS_ACCESS=true npm run mock --",
     "test": "jest",
-    "lint": "eslint --ignore-path .gitignore --ext $npm_package_config_eslintExtensions",
+    "lint": "eslint --ext $npm_package_config_eslintExtensions",
     "lint:all": "npm run lint -- .",
     "lint:fix": "npm run lint -- --fix",
     "lint:fixAll": "npm run lint:all -- --fix",

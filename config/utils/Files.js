@@ -435,6 +435,8 @@ function openWithDefaultApp(uri) {
  * Returns a list of paths (files and directories) that are ignored by git based on the `.gitignore` file
  * defined by `Paths.ROOT`.
  *
+ * Likewise, all file paths are relative to `Paths.ROOT`.
+ *
  * Optionally, can format the entries in a particular way or append paths to be ignored as well.
  *
  * @param {Object} [options]
@@ -464,32 +466,42 @@ function getGitignorePaths({
          * Git Porcelain shows all files with a special char string for a status.
          * `!! <entry>` == ignored and `?? <entry>` == untracked, so filter out
          * those lines to serve as the git-ignored entries.
-         *
-         * Note: Even if .gitignore specifies `*.fileExt`, it will expand it during
+         * Even if .gitignore specifies `*.fileExt`, it will expand it during
          * this command to be `real/path/name.fileExt`.
          * This is fine b/c it means git already found all the ignored files, so we
          * don't have to.
          *
-         * Alternatives:
+         * Git ls-files shows all files tracked, untracked, and ignored by git.
+         * When paired with the `-o` and `--directory` flags, it becomes a more concise
+         * version of `git status --porcelain`.
+         *
+         * Details:
          * - git ls-files -i -o --directory --exclude-from=/path/to/.gitignore
          *   Basically the same except more complex.
-         *   `-i` = "ignored" - Files that currently exist in the repo.
-         *   `-o` = "others" - Untracked files that currently exist.
+         *   `-i` = "ignored" - Files that currently exist in the repo (not necessary if `-o` is used).
+         *   `-o` = "others" - Untracked (and ignored) files that currently exist.
          *   `--directory` = Show ignored/untracked directories instead of all the files contained within
          *   `--exclude-from` = Include all "ignore" entries from the specified file, regardless of whether or not they currently exist
+         *
+         * Alternatives:
          * - Reading content directly from the file and converting them all to
          *   regex manually, e.g. `.fileExt => ^*.fileExt`, `dir/ => dir/.*`, `dir/** => dir/.*`, etc.
          *   which is error-prone and unreliable.
+         *
+         * @see [git ls-files]{@link https://git-scm.com/docs/git-ls-files}
+         * @see [git status --porcelain]{@link https://git-scm.com/docs/git-status#Documentation/git-status.txt---porcelainltversiongt}
          */
         gitIgnoredFiles = childProcess
-            .execSync('git status --porcelain --ignored')
+            .execSync('git ls-files -o --directory')
             .toString()
             // Split entries by newline
             .split('\n')
-            // Filter out empty lines and all those that aren't ignored files (`!!`)
-            .filter(entry => /^(!!|\?\?) /.test(entry))
-            // Remove the ignored-file prefix and quoted strings (added by the terminal if the path contains spaces)
-            .map(ignoredFilePath => ignoredFilePath.replace(/(^.. )|"/g, ''))
+            /* Only necessary if using `git status --porcelain --ignored`
+             * // Filter out empty lines and all those that aren't ignored files (`!!`)
+             * .filter(entry => onlyUntracked || /^(!!|\?\?) /.test(entry))
+             * // Remove the ignored-file prefix and quoted strings (added by the terminal if the path contains spaces)
+             * .map(ignoredFilePath => ignoredFilePath.replace(/(^.. )|"/g, ''))
+             */
             // Remove blank lines
             .filter(Boolean);
     };

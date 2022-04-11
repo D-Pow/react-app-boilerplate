@@ -12,8 +12,8 @@ import type {
 
 
 export type ComponentInstance = ReactNode | Element | any;
-export type ComponentDeclaration<Props = {}> = ComponentType<Props> | ((...args: unknown[]) => ComponentInstance);
-export type ReactComponent<Props = {}> = ComponentInstance | ComponentDeclaration<Props>;
+export type ComponentDeclaration<Props = Record<string, unknown>> = ComponentType<Props> | ((...args: unknown[]) => ComponentInstance);
+export type ReactComponent<Props = Record<string, unknown>> = ComponentInstance | ComponentDeclaration<Props>;
 
 
 /**

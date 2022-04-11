@@ -27,7 +27,7 @@ registerServiceWorker();
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     console.log('hot reloading active');
     module.hot.accept('components/App', () => {
-        // eslint-disable-next-line no-undef
+        // eslint-disable-next-line no-undef, @typescript-eslint/no-var-requires
         const NextApp = require('components/App').default;
         ReactDOM.render(
             <NextApp />,

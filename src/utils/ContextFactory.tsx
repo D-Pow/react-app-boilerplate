@@ -20,6 +20,7 @@ import { getChildName } from '@/utils/ReactParsing';
 
 import type {
     IndexSignature,
+    ValueOf,
     PartialDeep,
 } from '@/types';
 
@@ -175,7 +176,7 @@ export default function ContextFactory<ContextState>({
 
     const ProviderWithoutState = Context.Provider as ReactProvider<ContextValue<ContextState>>;
 
-    function ProviderWithState(props: PropsWithChildren<any>) {
+    function ProviderWithState(props: PropsWithChildren<unknown>) {
         // @ts-ignore - Initial state value could be a function to generate state, but we don't want that function in the resulting `contextState` typedef
         const [ contextState, setStateForContext ] = useState<ContextState>(initialState);
 
@@ -222,10 +223,12 @@ export default function ContextFactory<ContextState>({
 
     Context.Provider = ProviderWithState as Provider<ContextState>;
 
-    // @ts-ignore - Allow overriding of native `Context` with memoized, state-enhanced Provider
-    return Context;
+    return Context as unknown as Context<ContextValue<ContextState>>;
 }
 
+
+export type ContextSelectorFunction<ContextVal> = ((ctxVal: (IndexSignature | ContextVal)) => Partial<ContextVal> | ValueOf<ContextVal>); // { [K extends ContextVal ? K : never]: ContextVal }
+export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFunction<ContextVal>;
 
 /**
  * HOC that selects only a subset of the fields in `context` , re-rendering only if they have changed.
@@ -251,7 +254,7 @@ export default function ContextFactory<ContextState>({
 export function withContextSelector<ContextVal, ComponentProps = Record<string, unknown>>(
     Component: ComponentType,
     context: Context<ContextVal> | ReactContext<ContextVal>,
-    selector: IndexSignature | ((ctxVal: ContextVal) => Partial<keyof ContextVal>),
+    selector: ContextSelector<ContextVal>,
     arePropsEqual?: Parameters<typeof memo>[1],
 ) {
     const componentName = getChildName(Component);
@@ -287,17 +290,16 @@ export function withContextSelector<ContextVal, ComponentProps = Record<string, 
             && has('setContextState')
             && Object.keys(contextVal).length === 2
         );
-        let filteredContext: ContextVal | ContextValue<ContextVal> = contextVal;
+        let filteredContext: unknown = contextVal;
 
         if (isCreatedFromContextFactory) {
             filteredContext = (contextVal as unknown as ContextValue<ContextVal>).contextState;
         }
 
         if (typeof selector === typeof withContextSelector) {
-            filteredContext = (selector as Function)(filteredContext);
+            filteredContext = (selector as ContextSelectorFunction<ContextVal>)(filteredContext as IndexSignature | ContextVal) as unknown;
         } else {
-            // @ts-ignore - Since the `contextVal` is unknown, it's possible it's undefined and can't be indexed
-            filteredContext = filteredContext?.[(selector as IndexSignature)];
+            filteredContext = (filteredContext as Record<IndexSignature, unknown>)?.[(selector as IndexSignature)];
         }
 
         return (

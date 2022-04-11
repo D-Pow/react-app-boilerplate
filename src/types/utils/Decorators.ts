@@ -154,7 +154,7 @@ function decoratorWithArgs(...decoratorArgs: any[]) {
 
 
 function logArgs(argsAsObj: {[key: string]: any}) {
-    const getArrayToPrint = (obj: Object) => Object
+    const getArrayToPrint = (obj: Record<string, unknown>) => Object
         .entries(obj)
         .filter(([ argName, argVal ]) => argVal)
         .flatMap(([ argName, argVal ]) => ([ `${argName}:`, argVal, '\n' ]));

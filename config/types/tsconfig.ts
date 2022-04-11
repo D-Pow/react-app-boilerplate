@@ -37,4 +37,4 @@ export declare interface TsConfig {
  * @see [GitHub issue on re-exporting namespaces]{@link https://github.com/microsoft/TypeScript/issues/4529#issuecomment-281028204}
  * @see [StackOverflow discussion regarding `Cannot use namespace as a type` error]{@link https://stackoverflow.com/questions/53853815/how-to-fix-cannot-use-namespace-as-a-type-ts2709-in-typescript}
  */
-export declare var TypeScript: typeof TS;
+export declare const TypeScript: typeof TS;

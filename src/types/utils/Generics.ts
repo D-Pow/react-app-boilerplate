@@ -63,7 +63,7 @@ export type IndexSignature = string | number | symbol;
  *
  * @see [StackOverflow post about excluding inherited keys]{@link https://stackoverflow.com/questions/44130410/typescript-keyof-and-indexer-compatibility/44130727#44130727}
  */
-export type OwnKeys<T, P = Array<T> | Object> = {
+export type OwnKeys<T, P = Array<T> | object> = {
     /*
      * Note: We can't use `[key: string | number | symbol]: T[K]` here because that would force
      * all keys to have to be of one type rather than allowing mixing of all three.
@@ -460,6 +460,6 @@ export type ModifyUnion<O1 extends Record<string, any>, O2 extends PartialDeep<O
  * @see [`keyof`]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html}
  * @see [Modifying modifiers]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html#mapping-modifiers}
  */
-export type InferType<T> = T extends Object
+export type InferType<T> = T extends Record<IndexSignature, unknown>
     ? { [ K in keyof T ]: InferType<ValueOf<T, K>> }
     : T;

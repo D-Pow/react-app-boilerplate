@@ -61,7 +61,7 @@ function FunctionalComponent() {
 }
 
 
-class ClassComponent extends Component<{}, {}> {
+class ClassComponent extends Component<any, any> {
     static contextType = MyAppContext;
 
     incrementVal = () => {
@@ -85,7 +85,7 @@ describe('ContextFactory util', () => {
     // Note: Marking `multiple?: false` makes it include `undefined`, thus making it the default signature.
     function getContextValueChangers(rootComponent: RenderedComponent, multiple?: false): Element;
     function getContextValueChangers(rootComponent: RenderedComponent, multiple: true): Element[];
-    function getContextValueChangers(rootComponent: RenderedComponent, multiple: boolean = false): Element | Element[] {
+    function getContextValueChangers(rootComponent: RenderedComponent, multiple = false): Element | Element[] {
         if (!multiple) {
             return rootComponent.getByRole('button');
         }
@@ -95,7 +95,7 @@ describe('ContextFactory util', () => {
 
     async function getContextValueElems(rootComponent: RenderedComponent, multiple?: false): Promise<Node>;
     async function getContextValueElems(rootComponent: RenderedComponent, multiple: true): Promise<NodeList>;
-    async function getContextValueElems(rootComponent: RenderedComponent, multiple: boolean = false) {
+    async function getContextValueElems(rootComponent: RenderedComponent, multiple = false) {
         return await waitForElementVisible(rootComponent, '#context-value', { all: multiple });
     }
 

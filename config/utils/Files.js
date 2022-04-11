@@ -604,17 +604,17 @@ function stripJsComments(jsStr) {
 
 
 /**
- * Object containing a normalized mapping of aliases to their respective path matches,
+ * Object containing a mapping of import aliases to their respective path matches,
  * as well as some util functions.
  *
  * Takes the form: `{ alias: pathMatch }`.
  *
  * Both aliases and path matches are normalized to strip leading/trailing path slashes, periods,
  * and glob stars so all files using the aliases can format them as needed (e.g. format to regex,
- * globs, or keep as strings).
+ * globs, or keep as strings) with no interference with how they were defined initially.
  *
- * Includes some utility functions for custom reformatting of the alias and/or path-match
- * strings, stripping a trailing path slash from the path match, finding the best import match for a file
+ * Includes some utility functions for custom reformatting of the alias and/or path-match as the parent
+ * sees fit, e.g. stripping a trailing path slash from the path match, finding the best import match for a file
  * path, etc.
  *
  * Util functions are non-enumerable so array/object spreads of the class will return only the
@@ -622,7 +622,7 @@ function stripJsComments(jsStr) {
  */
 class ImportAliases {
     static {
-        const aliasToPathMap = Object.entries(tsconfig.compilerOptions.paths)
+        const normalizedAliasesFromTsconfig = Object.entries(tsconfig.compilerOptions.paths)
             .reduce((aliasesWithoutGlobs, [ aliasGlob, pathMatchesGlobArray ]) => {
                 const { regexToString, combineRegexes } = FileTypeRegexes;
                 const removeTrailingSlashAsterisk = globStr => globStr.replace(/\/\*$/, '').replace(/^$/, '/'); // add `/` back in if that was all that was in the alias
@@ -644,7 +644,7 @@ class ImportAliases {
                 return aliasesWithoutGlobs;
             }, {});
 
-        Object.entries(aliasToPathMap).forEach(([ alias, pathMatch ]) => {
+        Object.entries(normalizedAliasesFromTsconfig).forEach(([ alias, pathMatch ]) => {
             this[alias] = pathMatch;
         });
     }
@@ -725,6 +725,8 @@ class ImportAliases {
     }
 
     static *[Symbol.iterator]() {
+        // Note: If this were defined via `defineProperty()`, we'd have to use the anonymous function syntax,
+        // `function*`, instead of the class-only syntax of `*[Symbol.iterator]`
         return yield* Object.entries(this);
     }
 }

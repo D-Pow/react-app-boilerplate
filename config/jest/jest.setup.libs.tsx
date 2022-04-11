@@ -23,6 +23,9 @@ import React, {
     type DependencyList,
 } from 'react';
 import {
+    type RouteProps,
+} from 'react-router';
+import {
     render,
     act,
     waitFor,
@@ -46,7 +49,7 @@ import type {
 // Prevent automatic redirection since tests will want to render their individual components without
 // also rendering components from redirects.
 // e.g. Prevent `/` from redirecting to `/home` so testing `<Home/>` doesn't render two Home components.
-export const appRoutesWithoutRedirect = appRoutes.map(routeProps => {
+export const appRoutesWithoutRedirect: RouteProps[] = appRoutes.map(routeProps => {
     routeProps = { ...routeProps };
 
     if (routeProps.render?.toString().match(/\bRedirect[\s\S]*to[:=]\s*['"][^'"]+/)) {

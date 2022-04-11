@@ -42,6 +42,8 @@
         "outDir": "dist", // Output dir of running `npx tsc`; don't use if using webpack/ts-loader, or override it manually in ts-loader options
         "declaration": true, // Generates typings.d.ts files
         "declarationDir": "dist/types", // Output dir for types
+//        "removeComments": true, // Removes comments from output
+//        "emitDeclarationOnly": true, // Only output `.d.ts` files
 //        "noEmit": true, // don't emit outputs
 //        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
 //        "rootDir": ".", // Parent directory from which all transpiled code will be relative when outputted within `outDir`.

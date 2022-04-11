@@ -240,7 +240,15 @@ export function runAllUseEffectsWithDeps(depsJsTypes?: string[] | string[][]) {
  * @param [options.callNow] - If the return value should be the function (false, default) or if it should be called immediately and return the resulting Promise(true).
  * @returns An async function to fire the get-element check, or its resulting Promise.
  */
-export function getElementMaybe(funcToGetElement: Function, { callNow = false } = {}): (() => Promise<any>) | Promise<any> {
+export function getElementMaybe<
+    T extends HTMLElement | undefined = HTMLElement,
+    QueryRetVal = T | T[] | undefined | Promise<T | T[] | undefined>,
+>(
+    funcToGetElement: (() => QueryRetVal) | (() => Promise<QueryRetVal>),
+    {
+        callNow = false,
+    } = {},
+): (() => Awaited<QueryRetVal>) | Awaited<QueryRetVal> { // See new `Awaited` type docs: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#the-awaited-type-and-promise-improvements
     const getElementMaybeAsync = async () => {
         try {
             return await funcToGetElement();
@@ -248,10 +256,10 @@ export function getElementMaybe(funcToGetElement: Function, { callNow = false } 
     };
 
     if (callNow) {
-        return getElementMaybeAsync();
+        return getElementMaybeAsync() as unknown as Awaited<QueryRetVal>;
     }
 
-    return getElementMaybeAsync;
+    return getElementMaybeAsync as unknown as (() => Awaited<QueryRetVal>);
 }
 
 /**

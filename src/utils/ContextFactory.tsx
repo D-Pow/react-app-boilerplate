@@ -23,6 +23,7 @@ import type {
     ValueOf,
     PartialDeep,
     ComponentDeclaration,
+    ComponentProps,
 } from '@/types';
 
 
@@ -254,9 +255,9 @@ export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFuncti
  */
 export function withContextSelector<
     ContextVal = Record<string, unknown>,
-    ComponentProps = Record<string, unknown>
+    ComponentPropsType = ComponentProps,
 >(
-    Component: ComponentDeclaration,
+    Component: ComponentDeclaration<ComponentPropsType>,
     context: Context<ContextValue<ContextVal>> | ReactContext<ContextVal>,
     selector: ContextSelector<ContextVal | ContextValue<ContextVal>['contextState']>,
     arePropsEqual?: Parameters<typeof memo>[1],

@@ -63,7 +63,7 @@ export type IndexSignature = string | number | symbol;
  *
  * @see [StackOverflow post about excluding inherited keys]{@link https://stackoverflow.com/questions/44130410/typescript-keyof-and-indexer-compatibility/44130727#44130727}
  */
-export type OwnKeys<T, P = Array<T> | object> = {
+export type OwnKeys<T, P = Array<T> | object> = keyof {
     /*
      * Note: We can't use `[key: string | number | symbol]: T[K]` here because that would force
      * all keys to have to be of one type rather than allowing mixing of all three.
@@ -78,7 +78,7 @@ export type OwnKeys<T, P = Array<T> | object> = {
         ? K
         : never
     ]: T[K];
-} & Omit<T, keyof P>;
+} & Exclude<keyof T, keyof P>;
 
 
 /**

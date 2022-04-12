@@ -227,7 +227,7 @@ export default function ContextFactory<ContextState>({
 }
 
 
-export type ContextSelectorFunction<ContextVal> = ((ctxVal: (IndexSignature | ContextVal)) => Partial<ContextVal> | ValueOf<ContextVal>); // { [K extends ContextVal ? K : never]: ContextVal }
+export type ContextSelectorFunction<ContextVal> = (ctxVal: ContextVal) => (Partial<ContextVal> | ValueOf<ContextVal>);
 export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFunction<ContextVal>;
 
 /**

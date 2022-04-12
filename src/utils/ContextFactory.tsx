@@ -23,6 +23,7 @@ import type {
     ValueOf,
     OwnKeys,
     PartialDeep,
+    ModifyUnion,
     ComponentDeclaration,
     ComponentProps,
 } from '@/types';
@@ -230,8 +231,35 @@ export default function ContextFactory<ContextState>({
 }
 
 
+
+/**
+ * `selector()` function passed to `withContextSelector()`.
+ */
 export type ContextSelectorFunction<ContextVal> = (ctxVal: ContextVal) => (Partial<ContextVal> | ValueOf<ContextVal>);
+/**
+ * `selector` value passed to `withContextSelector()` used to extract a key from the context.
+ */
 export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFunction<ContextVal>;
+/**
+ * Util for modifying component props such that the context values from `selector` are added as props.
+ *
+ * Includes the `setContextState()` function if it exists.
+ */
+export type WithContextSelectorProps<
+    ComponentProps,
+    ContextObj extends Context<ContextValue<any>> | ReactContext<any>,
+    ContextKey extends OwnKeys<CtxObjVal>,
+    CtxObjVal = ContextObj extends Context<ContextValue<infer CtxObjVal>> | ReactContext<infer CtxObjVal> ? CtxObjVal : Record<string, unknown>,
+> = (
+    ComponentProps
+    & ModifyUnion<
+        Pick<CtxObjVal, ContextKey>,
+        {
+            contextState: CtxObjVal[ContextKey];
+            setContextState?: ContextObj extends Context<ContextValue<CtxObjVal>> ? ContextValue<CtxObjVal>['setContextState'] : never;
+        }
+    >
+);
 
 /**
  * HOC that selects only a subset of the fields in `context` , re-rendering only if they have changed.

@@ -21,6 +21,7 @@ import { getChildName } from '@/utils/ReactParsing';
 import type {
     IndexSignature,
     ValueOf,
+    OwnKeys,
     PartialDeep,
     ComponentDeclaration,
     ComponentProps,
@@ -285,7 +286,7 @@ export function withContextSelector<
      * The values are spread into props such that if they're equal, then the component doesn't re-render.
      */
 
-    function ComponentWithContextSelector(props: Omit<ComponentPropsType, 'contextState' | 'setContextState'>) {
+    function ComponentWithContextSelector(props: Omit<ComponentPropsType, 'contextState' | 'setContextState' | OwnKeys<ContextVal>>) {
         const contextVal = useContext<ContextVal>(context as Context<ContextVal> | ReactContext<ContextVal>);
         const has = Object.prototype.hasOwnProperty.bind(contextVal);
         const isCreatedFromContextFactory = (

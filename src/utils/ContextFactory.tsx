@@ -22,6 +22,7 @@ import type {
     IndexSignature,
     ValueOf,
     PartialDeep,
+    ComponentDeclaration,
 } from '@/types';
 
 
@@ -251,10 +252,13 @@ export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFuncti
  * @see [React 18's new `useSyncExternalStore()` and `useMutableSource()` alternatives to global state]{@link https://blog.saeloun.com/2021/12/30/react-18-usesyncexternalstore-api}
  * @see [Overview of how Redux works under the hood]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
  */
-export function withContextSelector<ContextVal, ComponentProps = Record<string, unknown>>(
-    Component: ComponentType,
-    context: Context<ContextVal> | ReactContext<ContextVal>,
-    selector: ContextSelector<ContextVal>,
+export function withContextSelector<
+    ContextVal = Record<string, unknown>,
+    ComponentProps = Record<string, unknown>
+>(
+    Component: ComponentDeclaration,
+    context: Context<ContextValue<ContextVal>> | ReactContext<ContextVal>,
+    selector: ContextSelector<ContextVal | ContextValue<ContextVal>['contextState']>,
     arePropsEqual?: Parameters<typeof memo>[1],
 ) {
     const componentName = getChildName(Component);
@@ -283,23 +287,25 @@ export function withContextSelector<ContextVal, ComponentProps = Record<string, 
      */
 
     function ComponentWithContextSelector(props: ComponentProps) {
-        const contextVal = useContext<ContextVal>(context);
+        const contextVal = useContext<ContextVal>(context as Context<ContextVal> | ReactContext<ContextVal>);
         const has = Object.prototype.hasOwnProperty.bind(contextVal);
         const isCreatedFromContextFactory = (
             has('contextState')
             && has('setContextState')
             && Object.keys(contextVal).length === 2
         );
-        let filteredContext: unknown = contextVal;
+
+        type FilteredContext = Partial<ContextVal> | Partial<ContextValue<ContextVal>['contextState']>;
+        let filteredContext: FilteredContext = contextVal;
 
         if (isCreatedFromContextFactory) {
             filteredContext = (contextVal as unknown as ContextValue<ContextVal>).contextState;
         }
 
         if (typeof selector === typeof withContextSelector) {
-            filteredContext = (selector as ContextSelectorFunction<ContextVal>)(filteredContext as IndexSignature | ContextVal) as unknown;
+            filteredContext = (selector as ContextSelectorFunction<FilteredContext>)(filteredContext) as FilteredContext;
         } else {
-            filteredContext = (filteredContext as Record<IndexSignature, unknown>)?.[(selector as IndexSignature)];
+            filteredContext = (filteredContext as Record<IndexSignature, unknown>)?.[(selector as IndexSignature)] as FilteredContext;
         }
 
         return (

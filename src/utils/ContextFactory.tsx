@@ -274,9 +274,7 @@ export function withContextSelector<
      */
 
     const ComponentWithContextInjected = memo(
-        props => (
-            <Component {...props} />
-        ),
+        Component,
         propsAreEqual,
     );
 

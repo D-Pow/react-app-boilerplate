@@ -1,4 +1,5 @@
 import type {
+    PropsWithChildren,
     ComponentType,
     ReactNode,
 } from 'react';
@@ -11,9 +12,10 @@ import type {
 } from '@/types';
 
 
+export type ComponentProps<P = Record<string, unknown>> = P | PropsWithChildren<P>;
 export type ComponentInstance = ReactNode | Element | any;
-export type ComponentDeclaration<Props = Record<string, unknown>> = ComponentType<Props> | ((...args: any[]) => ComponentInstance);
-export type ReactComponent<Props = Record<string, unknown>> = ComponentInstance | ComponentDeclaration<Props>;
+export type ComponentDeclaration<Props = ComponentProps> = ComponentType<Props> | ((...args: any[]) => ComponentInstance);
+export type ReactComponent<Props = ComponentProps> = ComponentInstance | ComponentDeclaration<Props>;
 
 
 /**

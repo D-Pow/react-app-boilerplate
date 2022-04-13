@@ -22,7 +22,9 @@ function Image({
         let imgSrc = src;
 
         if (!isUrl(src, { allowOnlyPathname: true })) {
-            imgSrc = await importAssetAsync(src);
+            try {
+                imgSrc = await importAssetAsync(src);
+            } catch (imgSrcNotInAssetsDirError) {}
         }
 
         setImageSrc(imgSrc);

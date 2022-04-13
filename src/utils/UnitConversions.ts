@@ -32,12 +32,14 @@ export function kilogramsPounds({
         throw new TypeError('Either `kg` or `lbs` must be specified');
     }
 
+    const kgToLbsRatio = 2.20462;
+
     if (lbs) {
-        return lbs * 0.453592;
+        return lbs * (1 / kgToLbsRatio); // ~ 0.453592
     }
 
     if (kg) {
-        return kg * 2.20462;
+        return kg * kgToLbsRatio;
     }
 
     return NaN;
@@ -55,12 +57,14 @@ export function ouncesPounds({
         throw new TypeError('Either `oz` or `lbs` must be specified');
     }
 
+    const ozToLbsRatio = 16;
+
     if (oz) {
-        return oz / 16;
+        return oz * (1 / ozToLbsRatio);
     }
 
     if (lbs) {
-        return lbs * 16;
+        return lbs * ozToLbsRatio;
     }
 
     return NaN;
@@ -78,12 +82,14 @@ export function gramsOunces({
         throw new TypeError('Either `g` or `oz` must be specified');
     }
 
+    const gToOzRatio = 28.3495;
+
     if (g) {
-        return g * 0.035274;
+        return g * (1 / gToOzRatio);
     }
 
     if (oz) {
-        return oz * 28.3495;
+        return oz * gToOzRatio;
     }
 
     return NaN;
@@ -101,12 +107,14 @@ export function ouncesMilliliters({
         throw new TypeError('Either `oz` or `ml` must be specified');
     }
 
+    const mlToOzRatio = 0.033814;
+
     if (oz) {
-        return oz * 29.5735;
+        return oz * (1 / mlToOzRatio);
     }
 
     if (ml) {
-        return ml * 0.033814;
+        return ml * mlToOzRatio;
     }
 
     return NaN;

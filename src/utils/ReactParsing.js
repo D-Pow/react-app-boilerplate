@@ -40,7 +40,7 @@ export function childIsOfType(child, component) {
 /**
  * Determines if a given child is a React.Component vs an HTMLElement
  *
- * @param {Node} child - Child whose type to check
+ * @param {Node|ReactNode} child - Child whose type to check
  * @returns {boolean} - If the child is a React.Component
  */
 export function childIsReactComponent(child) {

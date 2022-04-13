@@ -117,7 +117,7 @@ $container-max-widths: (
      * - `+` = Yes inside a table element, otherwise No.
      */
     .opacity-#{$int} {
-        opacity: $int / 100;
+        opacity: math.div($int, 100);
     }
 }
 

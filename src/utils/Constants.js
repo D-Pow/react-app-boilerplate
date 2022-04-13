@@ -70,6 +70,9 @@ export const LINKS = {
 export const UPDATE_BROADCAST = 'UPDATE';
 
 
+export const SHOW_ELEMENT_SCROLL_THRESHOLD = 3/4;
+
+
 /**
  * The ~148 color names and respective hex values supported across all browsers.
  *

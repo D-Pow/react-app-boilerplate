@@ -2,6 +2,47 @@ import { hyphenOrSnakeCaseToCamelCase } from '@/utils/Text';
 
 
 /**
+ * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
+ *
+ * Particularly useful for converting CLI arg objects created by `yargs-parser`, `minimist`, etc.
+ * from unpredictable object key names to predictable ones.
+ *
+ * @example
+ *   `node my-script.js --arg-a --arg-b=hi`
+ *   // yargs-parser output
+ *   {
+ *       "arg-a": true,
+ *       "arg-b": "hi"
+ *   }
+ *   // this function's output
+ *   {
+ *       argA: true,
+ *       argB: "hi",
+ *       // optional duplication to produce above plus:
+ *       "arg-a": true,
+ *       "arg-b": "hi"
+ *   }
+ *
+ * @param {Object} obj - Object whose keys shall be converted to camelCase.
+ * @param {boolean} [keepPreviousKeys=false] - If the previous hyphen-case/snake_case keys should be kept or not.
+ * @returns {Object} - Object with camelCased keys.
+ */
+export function objKeysToCamelCase(obj, keepPreviousKeys = false) {
+    return Object.entries(obj).reduce((camelCaseObj, [ key, val ]) => {
+        const camelCaseKey = hyphenOrSnakeCaseToCamelCase(key);
+
+        camelCaseObj[camelCaseKey] = val;
+
+        if (keepPreviousKeys) {
+            camelCaseObj[key] = val;
+        }
+
+        return camelCaseObj;
+    }, {});
+}
+
+
+/**
  * A class that provides basic initialization, getters, setters, and overridden `Object.prototype` methods for better
  * support/representation of internal fields, both when the class is instantiated and extended.
  *
@@ -521,47 +562,6 @@ export function augmentObjectsWithUniqueIds({
             },
         },
     });
-}
-
-
-/**
- * Converts all keys of the object from hyphen-case and/or snake_case to camelCase.
- *
- * Particularly useful for converting CLI arg objects created by `yargs-parser`, `minimist`, etc.
- * from unpredictable object key names to predictable ones.
- *
- * @example
- *   `node my-script.js --arg-a --arg-b=hi`
- *   // yargs-parser output
- *   {
- *       "arg-a": true,
- *       "arg-b": "hi"
- *   }
- *   // this function's output
- *   {
- *       argA: true,
- *       argB: "hi",
- *       // optional duplication to produce above plus:
- *       "arg-a": true,
- *       "arg-b": "hi"
- *   }
- *
- * @param {Object} obj - Object whose keys shall be converted to camelCase.
- * @param {boolean} [keepPreviousKeys=false] - If the previous hyphen-case/snake_case keys should be kept or not.
- * @returns {Object} - Object with camelCased keys.
- */
-export function objKeysToCamelCase(obj, keepPreviousKeys = false) {
-    return Object.entries(obj).reduce((camelCaseObj, [ key, val ]) => {
-        const camelCaseKey = hyphenOrSnakeCaseToCamelCase(key);
-
-        camelCaseObj[camelCaseKey] = val;
-
-        if (keepPreviousKeys) {
-            camelCaseObj[key] = val;
-        }
-
-        return camelCaseObj;
-    }, {});
 }
 
 

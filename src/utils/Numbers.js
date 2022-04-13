@@ -122,6 +122,8 @@ export function randomNumber(min, max) {
  * @param {number} end - Max value of range.
  * @param {number} factor - Value between 0 and 1 inclusive.
  * @returns {number} - Value that is {@code factor} percent between {@code start} and {@code end}.
+ *
+ * @see [lerp, normalize, mapRanges, and clamp source]{@link https://www.trysmudford.com/blog/linear-interpolation-functions}
  */
 export function lerp(start, end, factor) {
     return start + (end - start)*factor;

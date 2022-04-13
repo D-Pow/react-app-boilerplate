@@ -77,6 +77,39 @@ export function getGridBreakpoints(parsePxStrToNum = true) {
 
 
 /**
+ * Gets the animation duration time in milliseconds from the CSS className string
+ * containing the `classNamePrefix` followed by the time.
+ *
+ * `classNamePrefix` should be followed by numbers where the number of digits represents the
+ * number of seconds and each decimal place following it, e.g.
+ * - `.duration-5` = 5 seconds.
+ * - `.duration-56` = 5.6 seconds.
+ * - `.duration-567` = 5.67 seconds.
+ * - `.duration-5678` = 5.678 seconds.
+ * - `.duration-0123` = 0.123 seconds.
+ *
+ * @param {string} className - CSS className string to search for the animation-duration class.
+ * @param {Object} [options]
+ * @param {string} [options.classNamePrefix] - Class prefix for animation durations.
+ * @returns {number} - The duration time in ms or null if animation duration not found in `className`.
+ */
+export function getDurationTimeMsFromClassName(className, {
+    classNamePrefix = 'duration-',
+} = {}) {
+    const durationTimeCssClass = new RegExp(`(${classNamePrefix})(\\d+)`);
+    const durationTimeMatch = className.match(durationTimeCssClass);
+
+    if (durationTimeMatch) {
+        const durationTimeString = durationTimeMatch[2];
+        // `.duration-XX` is (XX * 0.1 seconds) so the milliseconds value is XX/10*1000
+        return Number(durationTimeString) / Math.pow(10, durationTimeString.length - 1) * 1000;
+    }
+
+    return null;
+}
+
+
+/**
  * Returns a random color from the `colorList`.
  *
  * Default `colorList` is the ~148 color names supported across all browsers.

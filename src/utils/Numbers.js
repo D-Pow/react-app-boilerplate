@@ -88,6 +88,14 @@ export function median(...nums) {
 }
 
 
+/**
+ * Gets a (cryptographically insecure) random number between [min, max],
+ * or [0, min] if no `max` is specified.
+ *
+ * @param {number} min - The minimum value of the desired range (or maximum if no `max` is specified).
+ * @param {number} max - The maximum value of the desired range.
+ * @returns {number} - A random number between [min, max].
+ */
 export function randomNumber(min, max) {
     if (max == null) {
         max = min;
@@ -96,6 +104,7 @@ export function randomNumber(min, max) {
 
     min = Number(min);
     max = Number(max);
+
     if (isNaN(min) || isNaN(max)) {
         return Math.random();
     }

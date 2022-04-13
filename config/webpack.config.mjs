@@ -450,6 +450,15 @@ const webpackConfig = {
             template: Paths.getFileAbsPath(Paths.SRC.ABS, 'index.html'),
             meta: indexHtmlMetaTagData,
         }),
+        // Adds specific matcher regex(es) for dynamic imports to tell them where to look when string
+        // variables, template strings, and related non-static strings are used as args for dynamic imports.
+        // In this case, allows the `src/assets/` directory to be searched for dynamic imports passed by
+        // filename instead of import path.
+        new webpack.ContextReplacementPlugin(
+            /([./\\]*)|(.*\/src)|(@)\/assets\/.*/i,
+            true,
+        ),
+        // Adds `mock-requests` as an entry file for automatic network mocks from CLI and in tests
         new MockRequestsWebpackPlugin(
             Paths.MOCKS.REL,
             'MockConfig.js',

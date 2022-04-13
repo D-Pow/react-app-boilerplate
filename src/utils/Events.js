@@ -19,6 +19,12 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
     if (assetRelPath != null && assetRelPath !== '') {
         // const pathIsFromAssetsDirRegex = new RegExp(`^${location.origin}/.*/?${process.env.PUBLIC_URL}/assets/`, 'i');
         try {
+            // Alternative: // const module = await import(/* webpackMode: 'lazy-once' */ `@/assets/${assetRelPath}`);
+            // See:
+            // - https://stackoverflow.com/questions/49121053/how-to-use-a-webpack-dynamic-import-with-a-variable-query-string/65298694#65298694
+            // - https://webpack.js.org/api/module-methods/#magic-comments
+            // - https://stackoverflow.com/questions/42908116/webpack-critical-dependency-the-request-of-a-dependency-is-an-expression
+            // - Actual solution: https://webpack.js.org/plugins/context-replacement-plugin/
             const module = await import(`@/assets/${assetRelPath}`);
             const assetSrc = module.default;
 

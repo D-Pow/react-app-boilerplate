@@ -32,17 +32,10 @@ describe('SVG loader', () => {
         const svgElem = await waitForElementVisible(svgRenderer, 'svg');
         const svgElemHtml = getDomFromRender(svgElem).html;
 
-        // The SVG file URL itself
-        // Default imports can cause strange behavior when mocked with Jest, so any of the following should match:
-        // - The original file: `"importedSvg"`
-        // - Stringified version: `"\"importedSvg\""`
-        // - Parsed version: `"importedSvg"`
-        const urlStringImportRegex = new RegExp(`['"]*${importedSvg}['"]*`);
-
         // Default export
-        expect(importedSvg).toMatch(urlStringImportRegex);
+        expect(defaultImportElemText).toEqual(importedSvg);
         // A displayed version of the SVG file URL (since it was name-imported)
-        expect(namedImportElemText).toMatch(urlStringImportRegex);
+        expect(namedImportElemText).toEqual(importedSvg);
         // An SVG of the file itself (mocked in Jest to remove all child contents)
         expect(svgElemHtml.match(/^<svg[\s\S]*?(?!\/)(?:[\s\S]*<?\/(?:svg)?)>$/)?.[0]).toEqual(svgElemHtml);
     });

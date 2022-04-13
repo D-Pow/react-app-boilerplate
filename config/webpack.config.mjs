@@ -209,6 +209,7 @@ const webpackConfig = {
                         use: [
                             // Parse resulting React components using our Babel config, not theirs, for better code-splitting/bundling
                             // Note: This has to be done here instead of in `SVGR.options.jsx.babelConfig` because that option disables calling the `template()` function
+                            // Note: Don't add `javascriptLoaderConfig`, `babel: false`, or `jsxRuntime` if using NextJS.
                             javascriptLoaderConfig,
                             {
                                 loader: '@svgr/webpack',

@@ -63,8 +63,10 @@ const jestAssetTransformer = {
                 code: `
                     const React = require('react');
 
-                    module.exports = new String(${srcFileName});
-                    module.exports.SvgUrl = '${srcFileName}';
+                    const SvgUrl = new String(${srcFileName});
+
+                    module.exports = SvgUrl;
+                    module.exports.SvgUrl = SvgUrl;
                     module.exports.ReactComponent = React.memo(React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props })));
                 `,
             };

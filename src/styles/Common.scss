@@ -85,12 +85,18 @@ $container-max-widths: (
     .w-#{$int}px {
         width: $int + 0px;
     }
+    .w-#{$int}vw {
+        width: $int + 0vw;
+    }
 
     .h-#{$int} {
         height: $int + 0%;
     }
     .h-#{$int}px {
         height: $int + 0px;
+    }
+    .h-#{$int}vh {
+        height: $int + 0vh;
     }
 }
 

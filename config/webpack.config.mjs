@@ -135,13 +135,7 @@ const webpackConfig = {
          */
         rules: [
             {
-                test: JavaScript,
-                exclude: /node_modules/,
-                include: new RegExp(Paths.SRC.REL),
-                use: javascriptLoaderConfig,
-            },
-            {
-                test: TypeScript,
+                test: JsAndTs,
                 exclude: /node_modules/,
                 include: new RegExp(Paths.SRC.REL),
                 use: [

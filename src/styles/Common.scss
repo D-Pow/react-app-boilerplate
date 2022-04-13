@@ -100,6 +100,27 @@ $container-max-widths: (
     }
 }
 
+@for $int from 0 to 100 {
+    /**
+     * Note: Regarding the following properties, the CSS fields below have corresponding effects:
+     *
+     *                      Collapse Events TabOrder
+     * opacity: 0              No     Yes     Yes
+     * visibility: hidden      No     No      No
+     * visibility: collapse   Yes+    No      No
+     * display: none          Yes     No      No
+     *
+     * Where:
+     * - `Collapse` = Collapses the space that the element would normally occupy (i.e. not painted but exists in the layout/element flow).
+     * - `Events` = Responds to events (e.g., click, keypress).
+     * - `TabOrder` = Participates in the taborder.
+     * - `+` = Yes inside a table element, otherwise No.
+     */
+    .opacity-#{$int} {
+        opacity: $int / 100;
+    }
+}
+
 .overflow-hidden {
     overflow: hidden;
 }

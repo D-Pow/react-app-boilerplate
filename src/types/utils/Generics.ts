@@ -52,6 +52,25 @@ export type IndexSignature = string | number | symbol;
 
 
 /**
+ * An object of any index-able type to avoid conflicts between `{}`, `Record`, `object`, etc.
+ *
+ * For example: Sometimes React will throw errors that `{} is not assignable to Record<string, unknown>` errors,
+ * in which case sometimes `Omit<MyType, never>` helps, sometimes using `any` instead of `unknown` helps,
+ * etc. This util type helps to fix those all in one go.
+ *
+ * @see [StackOverflow post 1]{@link https://stackoverflow.com/questions/63132565/type-element-undefined-is-not-assignable-to-type-reactelementany-string}
+ * @see [StackOverflow post 2]{@link https://stackoverflow.com/questions/64526194/type-is-not-assignable-to-type-recordkey-value}
+ * @see [StackOverflow post 3]{@link https://stackoverflow.com/questions/65799316/why-cant-an-interface-be-assigned-to-recordstring-unknown}
+ * @see [Similar issue's fix using `Omit<MyType, never>`]{@link https://github.com/microsoft/TypeScript/issues/15300#issuecomment-913193035}
+ * @see [Related NextJS GitHub issue 1]{@link @link https://github.com/vercel/next.js/issues/36019}
+ * @see [Related NextJS GitHub issue 2]{@link @link https://github.com/vercel/next.js/issues/35986}
+ */
+export type Obj<O extends Record<IndexSignature, unknown> | object> = {
+    [K in keyof O]: O[K];
+} & Omit<O, never>;
+
+
+/**
  * Gets all keys from a type, excluding those of the specified parent, `P`.
  *
  * Valid key types are:

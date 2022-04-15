@@ -456,7 +456,7 @@ function getGitignorePaths({
     const gitIgnoreFilePath = path.resolve(Paths.ROOT.ABS, gitIgnoreFileName);
 
     if (!fs.existsSync(gitIgnoreFilePath)) {
-        throw new Error(`File not found (path: ${gitIgnoreFilePath})`);
+        console.warn(`Warning: .gitignore file not found at path: ${gitIgnoreFilePath}`);
     }
 
     let gitIgnoredFiles = [];
@@ -523,12 +523,12 @@ function getGitignorePaths({
 
     try {
         setGitignoreFilesByProcess();
-    } catch (e) {
-        setGitignoreFilesByManualParsing();
-    }
-
-    if (!gitIgnoredFiles?.length) {
-        setGitignoreFilesByManualParsing();
+    } catch (gitCommandFailedError) {
+        try {
+            setGitignoreFilesByManualParsing();
+        } catch (gitignoreFileDoesntExistError) {
+            gitIgnoredFiles.push('node_modules');
+        }
     }
 
     ignoredFiles = Array.from(new Set([

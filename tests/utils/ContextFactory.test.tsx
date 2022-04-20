@@ -3,17 +3,16 @@ import {
     useContext,
     type PropsWithChildren,
 } from 'react';
-import { fireEvent } from '@testing-library/react';
+import {
+    fireEvent,
+    type RenderResult as RenderedComponent,
+} from '@testing-library/react';
 
 import ContextFactory, {
     type ContextValue,
 } from '@/utils/ContextFactory';
 
 import { renderWithWrappingParent, waitForElementVisible, waitForUpdate } from '~/tests';
-
-import type {
-    RenderResult as RenderedComponent,
-} from '@testing-library/react';
 
 
 interface MyAppContextState {

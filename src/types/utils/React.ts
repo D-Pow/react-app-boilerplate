@@ -2,20 +2,23 @@ import type {
     PropsWithChildren,
     ComponentType,
     ReactNode,
+    ReactElement,
+    JSXElementConstructor,
 } from 'react';
 import type {
     InferProps as PropTypesInferProps,
 } from 'prop-types';
 
 import type {
+    Obj,
     OmitValues,
 } from '@/types';
 
 
-export type ComponentProps<P = Record<string, unknown>> = P | PropsWithChildren<P>;
-export type ComponentInstance = ReactNode | Element | any;
-export type ComponentDeclaration<Props = ComponentProps> = ComponentType<Props> | ((...args: any[]) => ComponentInstance);
-export type ReactComponent<Props = ComponentProps> = ComponentInstance | ComponentDeclaration<Props>;
+export type ComponentProps<Props = Obj<Record<string, unknown>>> = Props | PropsWithChildren<Props>;
+export type ComponentInstance<Props = ComponentProps> = ReactNode | ReactElement<Props>;
+export type ComponentDeclaration<Props = ComponentProps> = ComponentType<Props> | JSXElementConstructor<Props>;
+export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props> | ComponentInstance<Props>;
 
 
 /**

@@ -12,8 +12,6 @@
  */
 declare module '*.svg' {
     import type {
-        Ref,
-        LegacyRef,
         SVGAttributes,
         PropsWithChildren,
         ForwardRefRenderFunction,
@@ -35,7 +33,6 @@ declare module '*.svg' {
     export type SvgReactComponent = (
         SvgComponent
         | ForwardRefRenderFunction<ReactSvgElement, ReactSvgProps>
-        | ((props: ReactSvgProps, ref: Ref<ReactSvgElement> & LegacyRef<SVGSVGElement>) => SvgComponent)
     );
 
     // React component of the SVG, injected by SVGR

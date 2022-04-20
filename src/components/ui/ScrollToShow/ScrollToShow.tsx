@@ -4,6 +4,8 @@ import {
     createRef,
     cloneElement,
     type RefObject,
+    type PropsWithChildren,
+    type ReactElement,
 } from 'react';
 
 import { SHOW_ELEMENT_SCROLL_THRESHOLD } from '@/utils/Constants';
@@ -14,7 +16,7 @@ import { getDurationTimeMsFromClassName } from '@/utils/Scss';
 import type { ReactComponent } from '@/types';
 
 
-export interface ScrollToShowProps {
+export interface ScrollToShowProps extends PropsWithChildren<Record<string, unknown>> {
     /**
      * Class of the `<div/>` wrapper, not affected by scrollingZ.
      */
@@ -65,6 +67,7 @@ type ScrollToShowPropsWithDefaults = ScrollToShowProps & typeof ScrollToShow.def
 export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDefaults, ScrollToShowState> {
     static defaultProps = {
         className: '',
+        children: [],
         distributeClassesBeforeShow: '',
         threshold: SHOW_ELEMENT_SCROLL_THRESHOLD,
     };
@@ -226,8 +229,8 @@ export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDef
             );
         }
 
-        return cloneElement(child as ReactComponent, {
-            className: `${child.props?.className ? child.props.className : ''} ${this.getClassNames(index)}`,
+        return cloneElement(child as ReactElement, {
+            className: `${(child as ReactElement).props?.className ?? ''} ${this.getClassNames(index)}`,
             key: index,
             ref: this.state.childRefs[index],
         });

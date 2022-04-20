@@ -235,7 +235,7 @@ module.exports = {
         // Ensure aliased imports are always used instead of relative paths for imports in the `src/` directory.
         'import-alias/import-alias': [ 'error', {
             relativeDepth: 0, // Only allow imports from same directory (e.g. `import './SubComponent'` as used in `index.js` or parent components)
-            rootDir: path.relative(rootDir, '.'), // Ensure root directory is correct regardless of .eslintrc file location. Requires relative path so `eslint --fix` doesn't inject absolute path in imports.
+            rootDir, // Ensure root directory is correct regardless of .eslintrc file location. Requires relative path so `eslint --fix` doesn't inject absolute path in imports.
             aliases: Object.entries(ImportAliases.toCustomObject({
                 // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots, and
                 // adding '^' to show that import strings must match the pattern only at the beginning

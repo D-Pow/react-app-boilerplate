@@ -70,7 +70,10 @@ module.exports = {
                 alias: ImportAliases.toCustomObject({
                     // Resolve any alias path matches to be relative from the root dir, then remove any double-slashes
                     // e.g. { '@': 'src', '/': '.' } => { '@': './src/', '/': './' }
-                    pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}/`.replace(/\/\//g, '/'),
+                    pathMatchModifier: (pathMatchRegexString, pathMatchesArray) => pathMatchesArray
+                        .map(pathMatch => `./${path.relative('.', pathMatch)}/`
+                            .replace(/\/\//g, '/'),
+                        ),
                 }),
             },
         ],

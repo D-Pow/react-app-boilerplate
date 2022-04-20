@@ -44,7 +44,7 @@ const jestConfig = {
     moduleNameMapper: ImportAliases.toCustomObject({
         // e.g. { '@': 'src' } => { '^@/(.*)$': '<rootDir>/src/$1' }
         aliasModifier: alias => `^${ImportAliases.stripTrailingSlash(alias)}/(.*)$`,
-        pathMatchModifier: pathMatch => `<rootDir>/${pathMatch}/$1`,
+        pathMatchModifier: (pathMatchRegexString, pathMatchesArray) => pathMatchesArray.map(pathMatch => `<rootDir>/${pathMatch}/$1`),
     }),
     modulePathIgnorePatterns: [
         Paths.BUILD_ROOT.ABS,

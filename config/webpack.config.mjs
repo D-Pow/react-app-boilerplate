@@ -390,7 +390,8 @@ const webpackConfig = {
             'node_modules',
         ],
         alias: ImportAliases.toCustomObject({
-            pathMatchModifier: pathMatch => Paths.getFileAbsPath(Paths.ROOT.ABS, pathMatch),
+            pathMatchModifier: (pathMatchRegexString, pathMatchArray) => pathMatchArray
+                .map(pathMatch => Paths.getFileAbsPath(Paths.ROOT.ABS, pathMatch)),
         }),
     },
     entry: {

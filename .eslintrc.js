@@ -76,8 +76,28 @@ module.exports = {
                 map: Object.entries(ImportAliases.toCustomObject({
                     // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots.
                     // e.g. { '@': 'src', '~/': '.' } => [ [ '@', './src' ], [ '~/', './' ] ]
-                    pathMatchModifier: pathMatch => `./${path.relative('.', pathMatch)}`,
-                })),
+                    pathMatchModifier: (pathMatchRegexString, pathMatchArray) => pathMatchArray.map(pathMatch => `./${path.relative('.', pathMatch)}`),
+                }))
+                    /*
+                     * Result from above: [
+                     *     [ '@', [
+                     *         './src',
+                     *         './tests'
+                     *     ]],
+                     *     [ '~', [
+                     *         '.'
+                     *     ],
+                     * ]
+                     * Result from flatMap: [
+                     *     [ '@', './src' ],
+                     *     [ '@', './tests' ],
+                     *     [ '~', '.' ],
+                     * ]
+                     */
+                    .flatMap(([ alias, pathMatches ]) =>
+                        // Duplicate the alias for every path match, i.e. [ ['@', './src'], ['@', './tests'] ]
+                        pathMatches.map(pathMatch => ([ alias, pathMatch ])),
+                    ),
             },
         },
     },
@@ -219,11 +239,11 @@ module.exports = {
             aliases: Object.entries(ImportAliases.toCustomObject({
                 // Make all aliases' path matchers relative to root (root = '.'), removing any trailing slashes/dots, and
                 // adding '^' to show that import strings must match the pattern only at the beginning
-                pathMatchModifier: pathMatch => `^${path.relative('.', pathMatch)}`,
-            })).map(([ alias, pathMatch ]) => ({
+                pathMatchModifier: (pathMatchStr, pathMatchArray) => pathMatchArray.map(pathMatch => `^${path.relative('.', pathMatch)}`),
+            })).flatMap(([ alias, pathMatches ]) => pathMatches.map(pathMatch => ({
                 alias,
                 matcher: pathMatch,
-            })),
+            }))),
         }],
         // Prevent different import lines from importing from the same file (e.g. `import { x } from 'file'; import { y } from 'file'`)
         'import/no-duplicates': [ 'error', {
@@ -247,6 +267,8 @@ module.exports = {
                 // Ensure aliases ending with a slash don't create double slashes, e.g. '/' => '/**' instead of '//**'
                 aliasModifier: alias => `${ImportAliases.stripTrailingSlash(alias)}/**`,
             })).map(([ alias, pathMatch ]) => {
+                pathMatch = `${pathMatch}`; // Ensure we use regex string instead of object if the alias corresponds to multiple paths
+
                 const pathGroup = {
                     pattern: alias,
                     group: 'internal', // Make the rule understand that aliased imports are still internal imports
@@ -256,7 +278,7 @@ module.exports = {
                     },
                 };
 
-                if (pathMatch === 'src') {
+                if (pathMatch.match(/src/)) {
                     // Make any root-level alias for the `src` directory more important than all other internal imports and comes before them
                     pathGroup.group = 'external'; // Ensures it comes before all internal imports, including other aliases
                     pathGroup.position = 'after'; // Ensures it comes after all external imports
@@ -276,7 +298,7 @@ module.exports = {
         'import/no-unresolved': [ 'error', {
             // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
             // which means import aliases aren't being honored by this rule and need to be added in manually.
-            ignore: Object.entries(ImportAliases).flatMap(([ alias ]) => `^${ImportAliases.stripTrailingSlash(alias)}/.*`),
+            ignore: Object.keys(ImportAliases).map(alias => `^${ImportAliases.stripTrailingSlash(alias)}/.*`),
         }],
         // Prevent circular dependencies
         'import/no-cycle': [ 'error', { commonjs: true, amd: true }],

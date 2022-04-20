@@ -224,8 +224,8 @@ const FileTypeRegexes = {
     },
 
     /**
-     * Combines multiple RegExp entries to a single one, OR-ing each
-     * entry.
+     * Combines multiple RegExp entries to a collection of match groups, OR-ing each
+     * match group.
      *
      * e.g. `combineRegexes(/a/, /b/) --> /(a)|(b)/`
      *
@@ -236,6 +236,21 @@ const FileTypeRegexes = {
         const regexStrings = regexes.map(FileTypeRegexes.regexToString);
 
         return new RegExp(`(${regexStrings.join(')|(')})`);
+    },
+
+    /**
+     * Combines multiple RegExp entries to a single match group, OR-ing each
+     * regex.
+     *
+     * e.g. `combineRegexes(/a/, /b/) --> /(a|b)/`
+     *
+     * @param {RegExp[]} regexes
+     * @returns {RegExp}
+     */
+    combineRegexesInSingleMatchGroup(...regexes) {
+        const regexStrings = regexes.map(FileTypeRegexes.regexToString);
+
+        return new RegExp(`(${regexStrings.join('|')})`);
     },
 };
 

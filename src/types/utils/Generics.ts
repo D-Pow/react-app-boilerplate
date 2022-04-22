@@ -70,7 +70,7 @@ export type IndexSignature = string | number | symbol;
  * @see [Respective npm docs]{@link https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides}
  * @see [Forcing dependencies' versions of nested dependencies in yarn via `resolutions` package.json field (less resilient than `overrides`)]{@link https://stackoverflow.com/questions/71791347/npm-package-cannot-be-used-as-a-jsx-component-type-errors/71828113#71828113}
  */
-export type Obj<O extends Record<IndexSignature, unknown> | object> = {
+export type Obj<O extends Record<IndexSignature, unknown> | object = Record<IndexSignature, unknown> | object> = {
     [K in keyof O]: O[K];
 } & Omit<O, never>;
 

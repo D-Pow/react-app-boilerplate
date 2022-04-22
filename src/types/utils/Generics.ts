@@ -65,6 +65,10 @@ export type IndexSignature = string | number | symbol;
  * @see [DefinitivelyTyped GitHub issue]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/27805}
  * @see [Related NextJS GitHub issue 1]{@link @link https://github.com/vercel/next.js/issues/36019}
  * @see [Related NextJS GitHub issue 2]{@link @link https://github.com/vercel/next.js/issues/35986}
+ * @see [`{} is not assignable to ReactNode` error]{@link https://stackoverflow.com/questions/71852153/type-is-not-assignable-to-type-reactnode}
+ * @see [Forcing dependencies' versions of nested dependencies in npm via `overrides` package.json field]{@link https://github.com/facebook/react/issues/24304}
+ * @see [Respective npm docs]{@link https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides}
+ * @see [Forcing dependencies' versions of nested dependencies in yarn via `resolutions` package.json field (less resilient than `overrides`)]{@link https://stackoverflow.com/questions/71791347/npm-package-cannot-be-used-as-a-jsx-component-type-errors/71828113#71828113}
  */
 export type Obj<O extends Record<IndexSignature, unknown> | object> = {
     [K in keyof O]: O[K];

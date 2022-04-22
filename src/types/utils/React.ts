@@ -1,3 +1,11 @@
+/**
+ * TypeScript typedefs for React to encompass more than standard React typedefs allow.
+ *
+ * @see [react-typescript-cheatsheet]{@link https://react-typescript-cheatsheet.netlify.app}
+ * @see [Basarat's TypeScript book]{@link https://basarat.gitbook.io/typescript}
+ */
+
+
 import type {
     PropsWithChildren,
     ComponentType,

@@ -76,6 +76,19 @@ export type Obj<O extends Record<IndexSignature, unknown> | object = Record<Inde
 
 
 /**
+ * Any type that is indexable using `string`, `number`, or `symbol`.
+ *
+ * Serves as a companion to {@link OwnKeys} while maintaining the generalizable usage of {@link Obj}.
+ */
+export type Indexable<ValueTypes = unknown> = (
+    {
+        [K: IndexSignature]: ValueTypes;
+    }
+    | Obj
+);
+
+
+/**
  * Gets all keys from a type, excluding those of the specified parent, `P`.
  *
  * Valid key types are:

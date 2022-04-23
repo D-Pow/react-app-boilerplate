@@ -1,4 +1,7 @@
-import { round } from '@/utils/Numbers';
+import { round, numberToBaseX } from '@/utils/Numbers';
+
+// Note: The `Date` constructor works with both UTC timestamps (seconds & milliseconds) as well
+// as strings; `Date.parse(input)` only works with strings.
 
 const Milliseconds = 1;
 const Seconds = 1000 * Milliseconds;
@@ -79,12 +82,92 @@ export const DayMonthFormats: DayMonthFormatsType = ([ 'long', 'short', 'narrow'
 
 
 
-export function getNumDaysBetween(earlierDateStr: string | number | Date, laterDateStr: string | number | Date, asDate = true) {
-    const earlierDate = new Date(earlierDateStr);
-    const laterDate = new Date(laterDateStr);
+/**
+ * Compares two dates and returns their respective date-time part differences.
+ *
+ * If either date isn't specified, it replaces them with the current date-time value.
+ *
+ * @param [earlier] - Earlier date in the comparison.
+ * @param [later] - Later date in the comparison.
+ * @returns An object describing the difference of `earlier` and `later` respective to each date-time part.
+ *
+ * @see [MDN `Date` docs]{@link https://developer.mozilla.org/en-US/docs/web/javascript/reference/global_objects/date}
+ * @see [SO post 1]{@link https://stackoverflow.com/questions/492994/compare-two-dates-with-javascript}
+ * @see [SO post 2]{@link https://stackoverflow.com/questions/12413243/javascript-date-format-like-iso-but-local}
+ */
+export function diffDateTime(
+    earlier = new Date(),
+    later = new Date(),
+) {
+    let earlierDate = new Date(earlier);
+    let laterDate = new Date(later);
 
-    return (laterDate.valueOf() - earlierDate.valueOf()) / TimeInMillis.Days;
+    if (laterDate.valueOf() < earlierDate.valueOf()) {
+        const earlierDateOrig = earlierDate;
+
+        earlierDate = laterDate;
+        laterDate = earlierDateOrig;
+    }
+
+    // Marked as `Record` for easy modification in the `Object.entries()` call below.
+    // Keep in order from year to milliseconds for more direct use by calling parents.
+    const diffDateObj: Record<string, number> = {
+        years: laterDate.getFullYear() - earlierDate.getFullYear(),
+        months: laterDate.getMonth() - earlierDate.getMonth(),
+        days: laterDate.getDate() - earlierDate.getDate(),
+        hours: laterDate.getHours() - earlierDate.getHours(),
+        minutes: laterDate.getMinutes() - earlierDate.getMinutes(),
+        seconds: laterDate.getSeconds() - earlierDate.getSeconds(),
+        milliseconds: laterDate.getMilliseconds() - earlierDate.getMilliseconds(),
+    };
+
+    Object.entries(diffDateObj).reverse().forEach(([ key, val ], i, entries) => {
+        const nextEntry = entries[i+1];
+
+        if (!nextEntry) {
+            return;
+        }
+
+        const [ nextKey, nextVal ] = nextEntry;
+        const timeConfig = diffDateTime.ordersOfMagnitude[key as keyof typeof diffDateTime.ordersOfMagnitude];
+
+        if (val < 0) {
+            diffDateObj[key] = numberToBaseX(diffDateObj[key], timeConfig.maxValue, { signed: false });
+            diffDateObj[nextKey] = nextVal - 1;
+        }
+    });
+
+    return diffDateObj;
 }
+diffDateTime.ordersOfMagnitude = {
+    milliseconds: {
+        maxValue: 1,
+    },
+    seconds: {
+        maxValue: 60,
+    },
+    minutes: {
+        maxValue: 60,
+    },
+    hours: {
+        maxValue: 24,
+    },
+    days: {
+        maxValue: 7,
+    },
+    weeks: {
+        maxValue: 4,
+    },
+    dates: {
+        maxValue: 31,
+    },
+    months: {
+        maxValue: 12,
+    },
+    years: {
+        maxValue: 1,
+    },
+};
 
 
 

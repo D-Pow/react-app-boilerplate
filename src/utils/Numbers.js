@@ -114,6 +114,65 @@ export function randomNumber(min, max) {
 
 
 /**
+ * Determines the highest order of magnitude of a series of base-10 numbers.
+ * Useful for calculations like finding the greatest common denominator, manually determining if a subtraction should
+ * result in a carry-over digit, converting a negative number to the positive modulo of a different number, etc.
+ *
+ * Operates by finding the largest number of digits of all rounded-down absolute values of the numbers, and then adding
+ * 1 to represent the max value they all could possibly be.
+ *
+ * e.g.
+ * - [ 5, 42 ] => 100  (max number of digits = 2, order of magnitude = 2 == 100).
+ * - [ 0.2, 7 ] => 10  (max number of digits = 1, order of magnitude = 1 = 10).
+ * - [ 0.2, -0.9 ] => 1  (max number of digits = 0, order of magnitude = 0 = 1).
+ *
+ * @param {number[]} nums - Numbers for which to find the highest order of magnitude.
+ */
+export function getMaxOrderOfMagnitudeBase10(...nums) {
+    const numDigitsOfNumbersRoundedDown = nums.map(num => `${Math.floor(Math.abs(num))}`.length);
+    const maxNumDigits = Math.max(...numDigitsOfNumbersRoundedDown);
+    const orderOfMagnitude = maxNumDigits > 0
+        ? maxNumDigits + 1
+        : 0;
+
+    return Math.pow(10, orderOfMagnitude - 1);
+}
+
+
+/**
+ * Converts a number to a "radix" of a non-standard base.
+ * Specifically, rather than using the "real" radix/base-X of the number and converting to an unreadable series of
+ * alphanumeric characters, this will convert a number to have a max (or min, if `signed`) value of the specified
+ * `base` such that a base 10 number can feign having a radix of `base`.
+ *
+ * For example, for counting number of minutes, even though the numbers technically have a radix of 10, they have a
+ * "relative radix" of 60 since that's the max a minute-value could be (past 60 would result in hours being
+ * incremented, not minutes).
+ *
+ * @param {number} num - Number to cast to the desired `base`.
+ * @param {number} base - Max value a number could be.
+ * @param {Object} [options]
+ * @param {boolean} [options.signed] - If the number should remain as a signed (+/-) number vs of coercing to a positive one;
+ *                                     e.g. num = -52, base = 30 => signed = -22, unsigned = 8.
+ * @returns {number} - The value of the number with a "relative" radix of `base`.
+ *
+ * @see [`parseInt()` "radix" MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt#description}
+ */
+export function numberToBaseX(num, base, {
+    signed = true,
+} = {}) {
+    const signedModBase = num % base;
+
+    if (!signed) {
+        // Converts e.g. -52 % 30 => 8 instead of -22
+        return (signedModBase + base) % base;
+    }
+
+    return signedModBase;
+}
+
+
+/**
  * Gets the value that is {@code factor} percent
  * between {@code start} and {@code end} via
  * linear interpolation.

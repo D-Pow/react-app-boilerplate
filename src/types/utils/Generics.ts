@@ -240,6 +240,91 @@ export type PartialDeep<T, NT = never> = {
 export type UnionArrayEntries<Arr extends Array<unknown>> = Arr[number];
 
 
+/**
+ * Properties that only exist in either `T` or `U` but not both (optionally, and by default,
+ * their nested properties as well).
+ *
+ * Makes all properties optional since that's the only way to get a true XOR resulting type;
+ * i.e. because the resulting type is allowed to have properties from both `T` and `U` while
+ * also excluding their intersection, all properties must be made optional.
+ *
+ * Note: TypeScript's `&` and `|` are not "true" set-theory definitions, i.e.
+ *   & = Set-theory intersection (only values that appear in both T and U) + any types from one that aren't included in the other.
+ *   | = One of the two types in full (only values of T or only values of U).
+ * As such, there is no native syntax for a set-theory union (includes all values from both types)
+ * or a shorthand for only-T-not-U syntax (only-T could be achieved with `|` but it doesn't exclude
+ * values of U).
+ *
+ * @see [TS docs on union types (important note at bottom of section)]{@link https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types}
+ * @see [TS docs for simple union usages]{@link https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#unions}
+ * @see [TS docs for mapped types]{@link https://www.typescriptlang.org/docs/handbook/2/mapped-types.html}
+ */
+export type XOR<T, U, DEEP = true> = (
+    T extends Indexable
+        ? U extends Indexable
+            ? (
+                {
+                    // Primary result: `Exclude<keyof T, keyof U>` == exclude all keys from type `U` in type `T`.
+                    // See: https://stackoverflow.com/questions/61983980/typescript-how-to-combine-union-and-intersection-types/62061663#62061663
+                    [K in OwnKeys<T, U>]?: T[K];
+                }
+                & {
+                    [K in OwnKeys<U, T>]?: U[K];
+                }
+                & (DEEP extends true
+                    ? {
+                        [K in (keyof T & keyof U)]?: XOR<T[K], U[K]>
+                    }
+                    : unknown // `Type & unknown == Type`, whereas `Type & any == any`
+                )
+            )
+            : U extends IndexSignature
+                ? Omit<T, U>
+                : (Exclude<T, U> | Exclude<U, T>)
+        : U extends Indexable
+            ? T extends IndexSignature
+                ? Omit<U, T>
+                : (Exclude<T, U> | Exclude<U, T>)
+            : (Exclude<T, U> | Exclude<U, T>)
+);
+
+
+/**
+ * Properties that exist in either `T` or `U` or the intersection of both, merging properties
+ * if they exist in both `T` and `U` (optionally, and by default, their nested properties' values
+ * as well).
+ *
+ * Acts as a full, set-theory compliant, union of `T` and `U` such that any value in `T` or `U`
+ * is acceptable even if they overlap (e.g. `{ a: number }` and `{ a: string }` --> `{ a?: number | string }`).
+ * As such, rather than only all-T or all-U (as TS' `|` operation does), or a shallow-intersection
+ * of T and U (as TS' `&` operation does) while also adding the deep-intersection of T and U.
+ *
+ * Like {@link XOR}, this makes all properties optional since that's the only way to have
+ * a set-theory union.
+ */
+export type Union<T, U, DEEP = true> = (
+    // Indexable types, e.g. objects, arrays, etc.
+    T extends Indexable
+        ? U extends Indexable
+            ? {
+                [K in (OwnKeys<T> | OwnKeys<U>)]?: K extends keyof T
+                    ? K extends keyof U
+                        ? (DEEP extends true
+                            ? Union<T[K], U[K]>
+                            : (T[K] | U[K])
+                        )
+                        : T[K]
+                    : K extends keyof U
+                        ? U[K]
+                        : unknown // Technically unreachable, but necessary to appease the TS compiler
+            }
+    // Non-indexable types, e.g. string, number, boolean, etc.
+            : (T | U)
+        : (U | T)
+    | XOR<T, U, DEEP>
+);
+
+
 
 /*****
  * Helpful type utils and shortcuts for boolean logic.

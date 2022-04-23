@@ -438,7 +438,10 @@ const webpackConfig = {
         },
     },
     plugins: [
-        // makes env available to src
+        // Makes environment variables available to source code through the specified key.
+        // Use `webpack.DefinePlugin.runtimeValue()` to force re-compilation on file change, which
+        // can be very useful for back-end file changes that aren't already in the compilation file-watch
+        // list like source code is; See: https://webpack.js.org/plugins/define-plugin/#runtime-values-via-runtimevalue
         new webpack.DefinePlugin({ 'process.env': JSON.stringify(publicEnv) }),
         // injects tags like <script> into index.html
         new HtmlWebpackPlugin({

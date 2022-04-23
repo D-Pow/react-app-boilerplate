@@ -23,7 +23,7 @@ import type {
     ValueOf,
     OwnKeys,
     PartialDeep,
-    ModifyUnion,
+    Obj,
     ComponentDeclaration,
     ComponentProps,
 } from '@/types';
@@ -252,13 +252,12 @@ export type WithContextSelectorProps<
     CtxObjVal = ContextObj extends Context<ContextValue<infer CtxObjVal>> | ReactContext<infer CtxObjVal> ? CtxObjVal : Record<string, unknown>,
 > = (
     ComponentProps
-    & ModifyUnion<
-        Pick<CtxObjVal, ContextKey>,
-        {
-            contextState: CtxObjVal[ContextKey];
-            setContextState?: ContextObj extends Context<ContextValue<CtxObjVal>> ? ContextValue<CtxObjVal>['setContextState'] : never;
-        }
-    >
+    & Obj<{
+        contextState: CtxObjVal[ContextKey];
+        setContextState: ContextObj extends Context<ContextValue<CtxObjVal>>
+            ? ContextValue<CtxObjVal>['setContextState']
+            : never;
+    }>
 );
 
 /**

@@ -229,14 +229,18 @@ export type PickRequired<T, DEEP extends boolean = false> = {
  * - If `NT` (NewType) is left out, then the original type from `T` remains.
  * - The specified `NT` type.
  */
-export type PartialDeep<T, NT = never> = {
-    // `?:` makes the key optional. Record<string, any> == Object
-    [K in keyof T]?: T[K] extends Record<string, any>
-        ? Nullable<PartialDeep<T[K], NT>>
-        : NT extends never
-            ? Nullable<T[K]>
-            : Nullable<NT>
-};
+export type PartialDeep<T, NT = never> = T extends Obj
+    ? {
+        // `?:` makes the key optional. Record<IndexSignature, any (or unknown)> == Object
+        [K in keyof T]?: T[K] extends Indexable
+            ? Nullable<PartialDeep<T[K], NT>>
+            : NT extends never
+                ? Nullable<T[K]>
+                : Nullable<NT>
+    }
+    : NT extends never
+        ? Nullable<T>
+        : Nullable<NT>;
 
 
 /**

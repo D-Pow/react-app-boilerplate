@@ -31,6 +31,10 @@
  * @file
  */
 
+// TODO Check these out
+//  - https://github.com/sindresorhus/type-fest/blob/main/source/camel-case.d.ts
+//  - https://github.com/sindresorhus/ts-extras/blob/main/source/array-includes.ts
+
 
 /**
  * Valid JSON primitive types.

@@ -251,7 +251,7 @@ export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
  */
 export function useQueryParams() {
     const functionType = typeof (() => {});
-    const [ queryParamsObj, setQueryParamsObj ] = useState(getQueryParams());
+    const [ queryParamsObj, setQueryParamsObj ] = useState(() => getQueryParams());
 
     const setQueryParam = (key, value) => {
         if (typeof key === typeof {}) {

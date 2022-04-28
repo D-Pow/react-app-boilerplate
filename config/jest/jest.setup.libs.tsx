@@ -60,7 +60,7 @@ export const appRoutesWithoutRedirect: RouteProps[] = appRoutes.map(routeProps =
     return routeProps;
 });
 
-export function AppProviderWithRouter({ children }: PropsWithChildren<any>) {
+export function AppProviderWithRouter({ children }: PropsWithChildren<unknown>) {
     return (
         <>
             <AppContext.Provider>

@@ -34,7 +34,7 @@ export default function RadioGroup<ValueType = string>({
     labelProps = {},
 }: RadioGroupProps<ValueType>) {
     const [ checkedRadio, setCheckedRadio ] = useState<ValueType>();
-    const handleRadioClick = useCallback(value => {
+    const handleRadioClick = useCallback((value: ValueType) => {
         return (event: ChangeEvent<HTMLInputElement>) => {
             onChange(value, event);
             setCheckedRadio(value);

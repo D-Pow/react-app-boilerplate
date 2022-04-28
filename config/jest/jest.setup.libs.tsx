@@ -43,6 +43,7 @@ import type {
 
 import type {
     ComponentInstance,
+    ComponentDeclaration,
 } from '@/types';
 
 
@@ -50,10 +51,10 @@ import type {
 // also rendering components from redirects.
 // e.g. Prevent `/` from redirecting to `/home` so testing `<Home/>` doesn't render two Home components.
 export const appRoutesWithoutRedirect: RouteProps[] = appRoutes.map(routeProps => {
-    routeProps = { ...routeProps };
+    const routeElementName = ((routeProps.element as ReactElement)?.type as ComponentDeclaration)?.name || '';
 
-    if (routeProps.render?.toString().match(/\bRedirect[\s\S]*to[:=]\s*['"][^'"]+/)) {
-        routeProps.render = () => <div />;
+    if (routeElementName.match(/Navigate/)) {
+        routeProps.element = <div />;
     }
 
     return routeProps;
@@ -175,7 +176,7 @@ export function runAllUseEffectsWithDeps(depsJsTypes?: string[] | string[][]) {
     const checkDepsTypesMatch = (jsTypes: string[], deps: DependencyList) => jsTypes.every((jsType, i) => (
         new RegExp(`${jsType}\\]?$`, 'i').test((
             // Custom classes and named functions
-            deps[i].name
+            (deps[i] as any).name
             // Everything else
             || Object.prototype.toString.call(deps[i])
         ))
@@ -371,9 +372,10 @@ export async function querySelector(...args: Parameters<typeof waitForElementVis
 export async function waitForRedirect(fireEventThatRedirects: () => (any | Promise<any>)) {
     const currentUrl = location.href;
 
-    await fireEventThatRedirects();
+    await waitForUpdate(async () => {
+        // Must be nested inside `waitForUpdate()` since that function calls `act()`
+        await fireEventThatRedirects();
 
-    await waitForUpdate(() => {
         expect(location.href).not.toEqual(currentUrl);
     });
 

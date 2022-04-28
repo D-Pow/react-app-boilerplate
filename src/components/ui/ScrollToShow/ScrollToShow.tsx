@@ -13,7 +13,7 @@ import { asNumber } from '@/utils/Numbers';
 import { childIsReactComponent } from '@/utils/ReactParsing';
 import { getDurationTimeMsFromClassName } from '@/utils/Scss';
 
-import type { ReactComponent } from '@/types';
+import type { ComponentInstance, ReactComponent } from '@/types';
 
 
 export interface ScrollToShowProps extends PropsWithChildren<Record<string, unknown>> {
@@ -218,6 +218,8 @@ export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDef
      */
     asHtmlElement = (child: ReactComponent, index: number) => {
         if (childIsReactComponent(child)) {
+            child = child as ComponentInstance;
+
             return (
                 <div
                     className={this.getClassNames(index)}

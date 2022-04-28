@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router';
 
 function Home() {
     const [ redirect, setRedirect ] = useState();
 
     if (redirect) {
-        return <Redirect push to={redirect} />;
+        return <Navigate to={redirect} />;
     }
 
     return (

@@ -46,7 +46,7 @@ export type Provider<ContextState> = (ProviderAsComponent<ContextState> | Provid
 
 // Overwrite `Context` to accept `Provider` as a React component.
 // Cannot redeclare `Context` from import b/c it won't take effect throughout the whole app.
-export interface Context<ContextState> extends Omit<ReactContext<ContextState>, 'Provider'> {
+export interface Context<ContextState> extends ReactContext<ContextState> {
     Provider: Provider<ContextState>;
 }
 
@@ -64,6 +64,17 @@ export interface ContextFactoryOptions<ContextState> {
     initialState?: ContextState | (() => ContextState);
     displayName?: string;
 }
+
+export type ContextType = Context<ContextValue<any>> | ReactContext<any>;
+
+export type InferContextValue<ContextObj extends ContextType> = (
+    ContextObj extends (
+        Context<ContextValue<infer CtxObjVal>>
+        | ReactContext<infer CtxObjVal>
+    )
+        ? CtxObjVal
+        : Record<string, unknown>
+);
 
 
 // TODO Add flag for useReducer instead of useState for more complex state.
@@ -241,15 +252,19 @@ export type ContextSelectorFunction<ContextVal> = (ctxVal: ContextVal) => (Parti
  */
 export type ContextSelector<ContextVal> = IndexSignature | ContextSelectorFunction<ContextVal>;
 /**
+ * Resulting extracted key(s) from the `selector`.
+ */
+export type ContextSelected<ContextVal> = OwnKeys<ContextVal>;
+/**
  * Util for modifying component props such that the context values from `selector` are added as props.
  *
  * Includes the `setContextState()` function if it exists.
  */
 export type WithContextSelectorProps<
     ComponentProps,
-    ContextObj extends Context<ContextValue<any>> | ReactContext<any>,
-    ContextKey extends OwnKeys<CtxObjVal>,
-    CtxObjVal = ContextObj extends Context<ContextValue<infer CtxObjVal>> | ReactContext<infer CtxObjVal> ? CtxObjVal : Record<string, unknown>,
+    ContextObj extends ContextType,
+    ContextKey extends ContextSelected<CtxObjVal>,
+    CtxObjVal = InferContextValue<ContextObj>,
 > = (
     ComponentProps
     & Obj<{
@@ -282,10 +297,10 @@ export type WithContextSelectorProps<
  * @see [Overview of how Redux works under the hood]{@link https://medium.com/@fknussel/redux-3cb5aac94a66}
  */
 export function withContextSelector<
-    ContextVal = Record<string, unknown>,
     ComponentPropsType = ComponentProps,
+    ContextVal = Obj,
 >(
-    Component: ComponentDeclaration<ComponentPropsType>,
+    Component: ComponentDeclaration<ComponentPropsType> | ComponentDeclaration<WithContextSelectorProps<ComponentPropsType, typeof context, ContextSelected<ContextVal>>>,
     context: Context<ContextValue<ContextVal>> | ReactContext<ContextVal>,
     selector: ContextSelector<ContextVal | ContextValue<ContextVal>['contextState']>,
     arePropsEqual?: Parameters<typeof memo>[1],
@@ -298,7 +313,7 @@ export function withContextSelector<
     }
 
     /*
-     * First, create a new HOC that's memoized based on prop values.
+     * First, create a new HOC that's memoized based on prop values (which have the context injected).
      */
 
     const ComponentWithContextInjected = memo(
@@ -336,6 +351,7 @@ export function withContextSelector<
         }
 
         return (
+            // @ts-ignore - Modifying the original Component's props can cause TS issues with `ComponentPropsType` not overlapping, yet it's valid code
             <ComponentWithContextInjected
                 {...props}
                 {...(isCreatedFromContextFactory

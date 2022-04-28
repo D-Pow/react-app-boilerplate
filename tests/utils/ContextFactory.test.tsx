@@ -62,6 +62,7 @@ function FunctionalComponent() {
 
 class ClassComponent extends Component<any, any> {
     static contextType = MyAppContext;
+    declare context: React.ContextType<typeof MyAppContext>;
 
     incrementVal = () => {
         this.context.setContextState({ b: this.context.contextState?.b + 1 });

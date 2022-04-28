@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { BrowserRouter, HashRouter, Route, Redirect } from 'react-router-dom';
+import { Routes, Navigate } from 'react-router';
+import { BrowserRouter, HashRouter, Route } from 'react-router-dom';
 
 import SpinnerCircle from '@/components/ui/SpinnerCircle';
 
@@ -27,27 +28,29 @@ const AnimeSearch = React.lazy(() => animeSearchImportPromise);
 
 /** @typedef {import('react-router-dom').RouteProps[]} Routes */
 
-/** @type {Routes} */
+/**
+ * @type {Routes}
+ *
+ * @see [Docs on Route with(out) nested Route children]{@link https://reactrouter.com/docs/en/v6/api#routes-and-route}
+ * @see [react-router v5 docs]{@link https://github.com/remix-run/react-router/tree/v5.3.1/packages/react-router/docs/api}
+ * @see [Upgrading from v5 to v6]{@link https://gist.github.com/mjackson/b5748add2795ce7448a366ae8f8ae3bb}
+ */
 export const appRoutes = [
     {
         path: '/',
-        render: () => <Redirect to="/home" />,
-        exact: true,
+        element: <Navigate to="/home" />,
     },
     {
         path: '/home',
-        component: Home,
-        exact: true,
+        element: <Home />,
     },
     {
         path: '/about',
-        component: About,
-        exact: true,
+        element: <About />,
     },
     {
         path: '/animeSearch',
-        component: AnimeSearch,
-        exact: true,
+        element: <AnimeSearch />,
     },
 ];
 
@@ -77,11 +80,11 @@ function Router({
         <React.Suspense {...suspenseProps}>
             <div {...wrapperProps}>
                 <ReactRouter {...routerProps}>
-                    <>
+                    <Routes>
                         {routes.map(routeProps => (
-                            <Route key={routeProps.path} {...routeProps} />
+                            <Route key={routeProps.path} {...routeProps}  />
                         ))}
-                    </>
+                    </Routes>
                     {children}
                 </ReactRouter>
             </div>

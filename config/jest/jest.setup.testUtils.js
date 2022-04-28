@@ -89,14 +89,13 @@ export function mockObjProperty(
  * a state change wasn't wrapped in `act()` even though it wasn't called from
  * the jest test (e.g. state change within `useEffect()`) (see: https://github.com/enzymejs/enzyme/issues/2073).
  *
- * For cases like that, the message can be added to the ignore list here
- * and then it won't be printed out.
+ * For cases like that, the message can be added to the ignore-list here to prevent it from being printed out.
  *
- * @param {function(...[*]): void} consoleMethod - `console.[method]()` for which to ignore messages.
+ * @param {string} consoleMethod - `console.[method]()` for which to ignore messages.
  * @param {...(string|RegExp)} toIgnoreMatchers - Matchers for messages to ignore.
  * @returns {function(...[*]): void} - A decorated `console.[method]()` which ignores the specified messages.
  */
-function withIgnoredMessages(consoleMethod, ...toIgnoreMatchers) {
+export function withIgnoredMessages(consoleMethod, ...toIgnoreMatchers) {
     const defaultMessagesToAlwaysIgnore = [
         'test was not wrapped in act(...)',
     ];
@@ -105,14 +104,17 @@ function withIgnoredMessages(consoleMethod, ...toIgnoreMatchers) {
         ...toIgnoreMatchers,
     ];
 
-    return (message, ...args) => {
+    const origConsoleMethod = console[consoleMethod];
+    const filteredConsoleMethod = (message, ...args) => {
         const containsIgnoredMessage = consoleMessagesToIgnore.some(toIgnoreMatcher => message?.match(toIgnoreMatcher));
 
         if (!containsIgnoredMessage) {
-            consoleMethod(message, ...args);
+            origConsoleMethod(message, ...args);
         }
     };
+
+    console[consoleMethod] = jest.fn(filteredConsoleMethod);
 }
 
-console.warn = jest.fn(withIgnoredMessages(console.warn));
-console.error = jest.fn(withIgnoredMessages(console.error));
+withIgnoredMessages(console.warn);
+withIgnoredMessages(console.error);

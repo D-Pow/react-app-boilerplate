@@ -81,6 +81,21 @@ const Paths = (() => {
         );
     }
 
+    /*
+     * Fix paths to use the path of the current process' directory if it's within a symlinked path.
+     * Otherwise, IDEs may have trouble with automatic resolutions for ESLint, file paths, etc.
+     *
+     * Short summary:
+     * - process.cwd() == `npm prefix` - Doesn't preserve symlinks
+     * - process.env.PWD == `pwd` - Preserves symlinks
+     * - fs.realpathSync(process.env.PWD) == `realpath $(pwd)` - Doesn't preserve symlinks
+     */
+    const realPath = pathMappings.ROOT.ABS; // Root dir without preserving symlinks
+    const currentProcessPath = process.env.PWD; // Root dir preserving symlinks + current process' path (e.g. if in a nested directory from the root)
+    const currentProcessNestedPath = fs.realpathSync(currentProcessPath).replace(realPath, ''); // Only the nested directory, used for diffing any (non-)symlink-preserving path (nested or not) with the repo root in order to convert PWD to the root dir
+    const rootDirMaintainingSymlinks = currentProcessPath.replace(currentProcessNestedPath, ''); // Root dir preserving symlinks without the nested directory
+    pathMappings.ROOT.ABS = rootDirMaintainingSymlinks;
+
     function setAbsPaths(pathConfig, prevRelPath) {
         if (prevRelPath) {
             pathConfig.REL = `${prevRelPath}/${pathConfig.REL}`;

@@ -438,12 +438,12 @@ module.exports = {
                 '@typescript-eslint/no-empty-interface': 'off', // Allow empty interfaces for ease of use via type/interface aliases
                 '@typescript-eslint/no-namespace': 'off', // Allow declaring/exporting namespaces for e.g. allowing functions/any type to have custom properties
                 '@typescript-eslint/no-explicit-any': 'warn', // Allow explicit `any` usage, but keep the recommendation to use a different type (e.g. `unknown` or `never`)
-                '@typescript-eslint/ban-ts-comment': [ 'error', {
+                '@typescript-eslint/ban-ts-comment': [ 'error', { // Ban `@ts-ignore` comments unless they have a description justifying their use
                     'ts-expect-error': 'allow-with-description',
                     'ts-ignore': 'allow-with-description',
                     'ts-nocheck': 'allow-with-description',
                     'ts-check': 'allow-with-description',
-                }], // Allow declaring/exporting namespaces for e.g. allowing functions/any type to have custom properties
+                }],
             },
         },
         /* Configs, scripts, etc. */

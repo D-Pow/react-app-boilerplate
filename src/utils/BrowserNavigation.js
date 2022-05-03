@@ -203,6 +203,7 @@ export function pushQueryParamOnHistory(key, value) {
  *      pathname: string,
  *      queryParamHashString: string,
  *      queryParamMap: Object<string, string>,
+ *      queryString: string,
  *      hash: string
  * }} - URL segments.
  */
@@ -287,6 +288,7 @@ export function getUrlSegments(url = '') {
         pathname,
         queryParamHashString,
         queryParamMap,
+        queryString,
         hash,
     };
 }

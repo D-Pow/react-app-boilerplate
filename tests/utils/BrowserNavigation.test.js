@@ -27,6 +27,9 @@ describe('BrowserNavigation utils', () => {
             pathname: '/static/assets',
             queryParamHashString: '',
             queryParamMap: {},
+            get queryString() {
+                return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+            },
             hash: '',
         },
         ipPortPathQuery: {
@@ -40,6 +43,9 @@ describe('BrowserNavigation utils', () => {
             pathname: '',
             queryParamHashString: '?a=A&b=B',
             queryParamMap: { a: 'A', b: 'B' },
+            get queryString() {
+                return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+            },
             hash: '',
         },
         ipPortPathQueryHash: {
@@ -53,6 +59,9 @@ describe('BrowserNavigation utils', () => {
             pathname: '',
             queryParamHashString: '?a=A&b=B#/home',
             queryParamMap: { a: 'A', b: 'B', '#': '/home' },
+            get queryString() {
+                return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+            },
             hash: '/home',
         },
         multivalueEncodedQueryParamsHash: {
@@ -74,6 +83,9 @@ describe('BrowserNavigation utils', () => {
                 + '#' + 'myHash'
             ),
             queryParamMap: { a: 'A', b: [ 'Cc=Dd', 'hello world' ], f: 'g=h', h: '!@ $%^*()_=asdf', '#': 'myHash' },
+            get queryString() {
+                return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+            },
             hash: 'myHash',
         },
         noneButHash: {
@@ -87,6 +99,9 @@ describe('BrowserNavigation utils', () => {
             pathname: '',
             queryParamHashString: '#myHash',
             queryParamMap: { '#': 'myHash' },
+            get queryString() {
+                return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+            },
             hash: 'myHash',
         },
     };
@@ -101,6 +116,9 @@ describe('BrowserNavigation utils', () => {
         pathname: '',
         queryParamHashString: '?a=x%2Cy%2Cz&b=hello%20world#myHash',
         queryParamMap: { a: [ 'x', 'y', 'z' ], b: 'hello world', '#': 'myHash' },
+        get queryString() {
+            return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+        },
         hash: 'myHash',
     };
     const queryWithObject = {
@@ -114,6 +132,9 @@ describe('BrowserNavigation utils', () => {
         pathname: '',
         queryParamHashString: '?a=%7B%22x%22%3A%22X%22%2C%22y%22%3A%5B%22Y%22%2C3%5D%7D&b=hello%20world#myHash',
         queryParamMap: { a: { x: 'X', y: [ 'Y', 3 ]}, b: 'hello world', '#': 'myHash' },
+        get queryString() {
+            return this.queryParamHashString.replace(/(\?)|(#.*)/g, '');
+        },
         hash: 'myHash',
     };
 

@@ -176,7 +176,7 @@ export function getQueryParams(
  * @param url - URL to parse for query parameters
  * @returns URL segments.
  */
-export function getUrlSegments(url = '') {
+export function getUrlSegments(url: string = self.location.href) {
     let fullUrl = url;
     let protocol = '';
     let domain = '';

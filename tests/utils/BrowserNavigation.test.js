@@ -136,6 +136,12 @@ describe('BrowserNavigation utils', () => {
             expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
         });
 
+        it('should parse query params with 2D matrix input', () => {
+            const { queryParamHashString, queryParamMap } = queryWithObject;
+
+            expect(getQueryParams(Object.entries(queryParamMap))).toEqual(queryParamMap);
+        });
+
         it('should allow custom delimiters for query params', () => {
             const { fullUrl, queryParamHashString, queryParamMap } = querySeparatedByCommas;
 

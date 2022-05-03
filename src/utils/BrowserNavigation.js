@@ -3,24 +3,26 @@
  * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
  *
  * Defaults to getting the query parameters from the current page's URL as an object.
- * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
  * An attempt will be made to parse/stringify query values to handle objects, arrays, etc.
  *
- * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
- *                                                                  an object to convert to a search+hash string.
+ * @param {(string|Object|Array<Array>)} [input=location.search+location.hash] - URL search/hash string or 2D matrix to convert to an object
+ *                                                                               or an object to convert to a search+hash string.
  * @param {Object} [options]
- * @param {string} [delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
- * @returns {(Object|string)} - All query param key-value pairs, including the hash entry (if input is a string) or URL search+hash string (if input is an object).
+ * @param {string} [options.delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
+ * @returns {(Object|string)} - All query param key-value pairs, including the hash entry (if input is a string or array) or URL search+hash string (if input is an object).
  */
 export function getQueryParams(input = self.location.search + self.location.hash, {
     delimiter,
 } = {}) {
-    let fromUrl;
+    let fromString;
     let fromObj;
+    let from2dMatrix;
 
     if (typeof input === typeof '') {
-        fromUrl = input;
+        fromString = input;
+    } else if (Array.isArray(input)) {
+        from2dMatrix = input;
     } else if (typeof input === typeof {}) {
         fromObj = input;
     } else {
@@ -68,13 +70,29 @@ export function getQueryParams(input = self.location.search + self.location.hash
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    const queryParamHashString = fromUrl.match(/([?#].*$)/i)?.[0] ?? '';
-    const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
-
     const queryParamsObj = {};
+    let urlSearchParamsEntries;
 
-    if (hash) {
-        queryParamsObj['#'] = hash;
+    if (from2dMatrix) {
+        const stringifiedMatrixValues = from2dMatrix.map(([ key, value ]) => {
+            if (value && (typeof value === typeof {})) {
+                // Arrays are objects so only one `typeof` check is needed
+                value = JSON.stringify(value);
+            }
+
+            return [ key, value ];
+        });
+
+        urlSearchParamsEntries = [ ...new URLSearchParams(stringifiedMatrixValues).entries() ];
+    } else {
+        const queryParamHashString = fromString.match(/([?#].*$)/i)?.[0] ?? '';
+        const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
+
+        if (hash) {
+            queryParamsObj['#'] = hash;
+        }
+
+        urlSearchParamsEntries = [ ...new URLSearchParams(urlSearchQuery).entries() ];
     }
 
     const attemptParseJson = str => {
@@ -85,7 +103,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
         return str;
     };
 
-    return [ ...new URLSearchParams(urlSearchQuery).entries() ]
+    return urlSearchParamsEntries
         .reduce((queryParams, nextQueryParam) => {
             let [ key, value ] = nextQueryParam;
 

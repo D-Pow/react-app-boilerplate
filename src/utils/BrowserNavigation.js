@@ -128,11 +128,22 @@ export function getQueryParams(input = self.location.search + self.location.hash
                     value = [ value ]; // cast to array for easier boolean logic below
                 }
 
+                // Remove duplicate entries using a Set, which maintains insertion order in JS
+                let newValuesSet;
+
                 if (Array.isArray(queryParams[key])) {
-                    queryParams[key].push(...value);
+                    newValuesSet = new Set([
+                        ...queryParams[key],
+                        ...value,
+                    ]);
                 } else {
-                    queryParams[key] = [ queryParams[key], ...value ];
+                    newValuesSet = new Set([
+                        queryParams[key],
+                        ...value,
+                    ]);
                 }
+
+                queryParams[key] = [ ...newValuesSet ]; // Cast back to an array
             } else {
                 queryParams[key] = value;
             }

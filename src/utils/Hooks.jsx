@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/utils/Events';
-import { getQueryParams, pushQueryParamOnHistory } from '@/utils/BrowserNavigation';
+import { getQueryParams, modifyQueryParams } from '@/utils/BrowserNavigation';
 import { objEquals } from '@/utils/Objects';
 
 
@@ -254,16 +254,6 @@ export function useQueryParams() {
     const [ queryParamsObj, setQueryParamsObj ] = useState(() => getQueryParams());
 
     const setQueryParam = (key, value) => {
-        if (typeof key === typeof {}) {
-            const newQueryParams = { ...key };
-
-            setQueryParamsObj(newQueryParams);
-            pushQueryParamOnHistory(newQueryParams);
-
-            return;
-        }
-
-        const newQueryParams = { ...queryParamsObj };
         let valueToStore = value;
 
         if (typeof value === functionType) {
@@ -271,9 +261,12 @@ export function useQueryParams() {
             valueToStore = value(queryParamsObj[key]);
         }
 
-        newQueryParams[key] = valueToStore;
-        setQueryParamsObj(newQueryParams);
-        pushQueryParamOnHistory(key, valueToStore);
+        const newQueryParamsObj = modifyQueryParams(key, valueToStore, {
+            overwriteQueryParams: true,
+            pushOnHistory: true,
+        });
+
+        setQueryParamsObj(newQueryParamsObj);
     };
 
     useEffect(() => {

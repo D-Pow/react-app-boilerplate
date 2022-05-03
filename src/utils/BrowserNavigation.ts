@@ -263,39 +263,80 @@ export function getUrlSegments(url = '') {
 
 
 /**
- * Pushes a URL query parameter key-value pair to the URL bar.
- * Does not refresh the page, rather it just adds the new URL to the {@code history}.
+ * Modifies the URL's query parameter(s), optionally changing the current page's location.
+ * Changing the location doesn't refresh the page, rather it pushes the new URL to the {@link history}.
  *
- * If only a key (string) is specified without a value, then it deletes that query param.
+ * If only a key (as a string) is specified without a value, then it deletes that query param.
  *
- * @param key - Query param key, or object of all key-value pairs to be in the URL bar.
+ * @param key - Query param key, or object of query parameter key-value pairs.
  * @param [value] - Query param value to be assigned to the key (if key is a string).
+ * @param [options]
+ * @param [options.url] - URL to modify instead of the current page's URL.
+ * @param [options.overwriteQueryParams] - Overwrites all query params with those specified
  * @returns - All resulting query param key-value pairs, including the URL hash entry (if present).
  */
-export function pushQueryParamOnHistory(key: string | Indexable, value?: string) {
-    const { origin, pathname } = self.location;
+export function modifyQueryParams<ReturnUrl extends boolean = false>(
+    key: string | Indexable,
+    value?: unknown,
+    options?: {
+        url?: string;
+        overwriteQueryParams?: boolean;
+        pushOnHistory?: boolean;
+        returnUrl?: ReturnUrl;
+    },
+): ReturnUrl extends true
+    ? string
+    : Indexable;
+export function modifyQueryParams(key: string | Indexable, value?: unknown, {
+    url,
+    overwriteQueryParams,
+    pushOnHistory,
+    returnUrl,
+}: Parameters<typeof modifyQueryParams>[2] = {}) {
+    const { origin, pathname } = getUrlSegments(url);
     let queryParams = getQueryParams();
 
     if (typeof key === typeof {}) {
-        queryParams = key as Indexable;
-    } else if (typeof key === typeof '') {
-        if (value) {
-            queryParams[key as string] = value;
+        const newQueryParamsObj = key as Indexable;
+
+        if (overwriteQueryParams) {
+            queryParams = newQueryParamsObj;
         } else {
-            delete queryParams[key as string];
+            queryParams = {
+                ...queryParams,
+                ...newQueryParamsObj,
+            };
+        }
+    } else if (typeof key === typeof '') {
+        const queryParamKey = key as string;
+
+        if (value) {
+            if (overwriteQueryParams) {
+                queryParams = {
+                    [queryParamKey]: value,
+                };
+            } else {
+                queryParams[queryParamKey] = value;
+            }
+        } else {
+            delete queryParams[queryParamKey];
         }
     }
 
+    // Convert any URL-unsafe characters to safe ones
     const queryParamsString = getQueryParams(queryParams);
+    // Resulting URL with the same origin/pathname and new query params
     const newUrl = origin + pathname + queryParamsString;
 
-    history.pushState(
-        null,
-        '',
-        newUrl,
-    );
+    if (pushOnHistory) {
+        history.pushState(
+            null,
+            '',
+            newUrl,
+        );
+    }
 
-    return getQueryParams();
+    return returnUrl ? newUrl : getQueryParams();
 }
 
 

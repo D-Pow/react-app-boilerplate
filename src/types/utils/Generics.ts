@@ -50,6 +50,18 @@ export type JsonPrimitive = (
 
 
 /**
+ * TypeScript primitives.
+ *
+ * @see [TS docs]{@link https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#the-primitives-string-number-and-boolean}
+ */
+export type TypeScriptPrimitive = (
+    string
+    | number
+    | boolean
+);
+
+
+/**
  * Types that can be used to index native JavaScript types, (Object, Array, etc.).
  */
 export type IndexSignature = string | number | symbol;

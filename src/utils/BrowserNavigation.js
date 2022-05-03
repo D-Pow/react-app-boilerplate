@@ -190,8 +190,8 @@ export function pushQueryParamOnHistory(key, value) {
 }
 
 /**
- * Parses a URL's segments and reformats query parameters/hash into an object.
- * Also normalizes resulting strings to never contain a trailing slash.
+ * Extracts the different segments from a URL segments and adds automatic parsing of query parameters/hash
+ * into an object. Also normalizes resulting strings to never contain a trailing slash.
  *
  * @param {string} url - URL to parse for query parameters
  * @returns {{
@@ -276,29 +276,7 @@ export function getUrlSegments(url = '') {
     queryString = queryString.substring(1);
     hash = hash.substring(1);
 
-    const queryParamMap = queryString.length === 0 ? {} : queryString.split('&').reduce((queryParamObj, query) => {
-        let [ key, ...vals ] = query.split('=');
-
-        // decode to make strings easier to use in the rest of the app
-        key = decodeURIComponent(key);
-        const val = decodeURIComponent(vals.join('='));
-
-        if (key in queryParamObj) {
-            if (Array.isArray(queryParamObj[key])) {
-                queryParamObj[key].push(val);
-            } else {
-                queryParamObj[key] = [ queryParamObj[key], val ];
-            }
-        } else {
-            queryParamObj[key] = val;
-        }
-
-        return queryParamObj;
-    }, {});
-
-    if (hash) {
-        queryParamMap['#'] = hash;
-    }
+    const queryParamMap = getQueryParams(queryParamHashString);
 
     return {
         fullUrl,

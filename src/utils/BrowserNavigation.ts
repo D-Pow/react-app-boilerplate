@@ -25,11 +25,12 @@ export function getQueryParams<Input extends string | Indexable | Array<Array<st
 ): Input extends string | null | undefined | never
     ? Indexable
     : string;
-export function getQueryParams(input: string | Indexable | Array<Array<string>> = self.location.search + self.location.hash, {
-    delimiter,
-}: {
-    delimiter?: string;
-} = {}) {
+export function getQueryParams(
+    input: Parameters<typeof getQueryParams>[0] = self.location.search + self.location.hash,
+    {
+        delimiter,
+    }: Parameters<typeof getQueryParams>[1] = {},
+) {
     let fromString!: string;
     let fromObj!: Indexable;
     let from2dMatrix!: Array<Array<string>>;

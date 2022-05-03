@@ -1,3 +1,8 @@
+import type {
+    Indexable,
+} from '@/types';
+
+
 /**
  * Gets URL query parameter entries as either key-value pairs in an object
  * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
@@ -6,25 +11,35 @@
  *
  * An attempt will be made to parse/stringify query values to handle objects, arrays, etc.
  *
- * @param {(string|Object|Array<Array>)} [input=location.search+location.hash] - URL search/hash string or 2D matrix to convert to an object
- *                                                                               or an object to convert to a search+hash string.
- * @param {Object} [options]
- * @param {string} [options.delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
- * @returns {(Object|string)} - All query param key-value pairs, including the hash entry (if input is a string or array) or URL search+hash string (if input is an object).
+ * @param [input=location.search+location.hash] - URL search/hash string or 2D matrix to convert to an object,
+ *                                                or an object to convert to a search+hash string.
+ * @param [options]
+ * @param [options.delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
+ * @returns All query param key-value pairs, including the hash entry (if input is a string or array) or URL search+hash string (if input is an object).
  */
-export function getQueryParams(input = self.location.search + self.location.hash, {
+export function getQueryParams<Input extends string | Indexable | Array<Array<string>> = string>(
+    input?: Input,
+    options?: {
+        delimiter?: string;
+    },
+): Input extends string | null | undefined | never
+    ? Indexable
+    : string;
+export function getQueryParams(input: string | Indexable | Array<Array<string>> = self.location.search + self.location.hash, {
     delimiter,
+}: {
+    delimiter?: string;
 } = {}) {
-    let fromString;
-    let fromObj;
-    let from2dMatrix;
+    let fromString!: string;
+    let fromObj!: Indexable;
+    let from2dMatrix!: Array<Array<string>>;
 
     if (typeof input === typeof '') {
-        fromString = input;
+        fromString = input as string;
     } else if (Array.isArray(input)) {
         from2dMatrix = input;
     } else if (typeof input === typeof {}) {
-        fromObj = input;
+        fromObj = input as Indexable;
     } else {
         throw new TypeError(`Type "${typeof input}" is not supported. Please use a string or object.`);
     }
@@ -36,7 +51,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
         delete fromObj['#'];
 
-        const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
+        const getEncodedKeyValStr = (key: string, val: string) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
 
         const queryParamEntries = Object.entries(fromObj);
         const queryString = queryParamEntries.length > 0
@@ -61,7 +76,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
                             return getEncodedKeyValStr(queryKey, JSON.stringify(queryValue));
                         }
 
-                        return getEncodedKeyValStr(queryKey, queryValue);
+                        return getEncodedKeyValStr(queryKey, queryValue as string);
                     })
                     .join('&')
             }`
@@ -70,7 +85,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    const queryParamsObj = {};
+    const queryParamsObj: Indexable = {};
     let urlSearchParamsEntries;
 
     if (from2dMatrix) {
@@ -95,7 +110,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
         urlSearchParamsEntries = [ ...new URLSearchParams(urlSearchQuery).entries() ];
     }
 
-    const attemptParseJson = str => {
+    const attemptParseJson = (str: string) => {
         try {
             return JSON.parse(str);
         } catch (e) {}
@@ -105,7 +120,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
     return urlSearchParamsEntries
         .reduce((queryParams, nextQueryParam) => {
-            let [ key, value ] = nextQueryParam;
+            let [ key, value ]: [ string, string | string[] ] = nextQueryParam;
 
             if (delimiter != null) {
                 value = value.split(delimiter);
@@ -118,9 +133,9 @@ export function getQueryParams(input = self.location.search + self.location.hash
             }
 
             if (Array.isArray(value)) {
-                value = value.map(attemptParseJson);
+                value = value.map(val => attemptParseJson(val)) as string[];
             } else {
-                value = attemptParseJson(value);
+                value = attemptParseJson(value) as string;
             }
 
             if (key in queryParams) {
@@ -133,7 +148,7 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
                 if (Array.isArray(queryParams[key])) {
                     newValuesSet = new Set([
-                        ...queryParams[key],
+                        ...(queryParams[key] as unknown[]),
                         ...value,
                     ]);
                 } else {
@@ -154,58 +169,11 @@ export function getQueryParams(input = self.location.search + self.location.hash
 
 
 /**
- * Pushes a URL query parameter key-value pair to the URL bar.
- * Does not refresh the page, rather it just adds the new URL to the {@code history}.
- *
- * If only a key (string) is specified without a value, then it deletes that query param.
- *
- * @param {(string|Object)} key - Query param key, or object of all key-value pairs to be in the URL bar.
- * @param {string} [value] - Query param value to be assigned to the key (if key is a string).
- * @returns {Object} - All resulting query param key-value pairs, including the URL hash entry (if present).
- */
-export function pushQueryParamOnHistory(key, value) {
-    const { origin, pathname } = self.location;
-    let queryParams = getQueryParams();
-
-    if (typeof key === typeof {}) {
-        queryParams = key;
-    } else if (typeof key === typeof '') {
-        if (value) {
-            queryParams[key] = value;
-        } else {
-            delete queryParams[key];
-        }
-    }
-
-    const queryParamsString = getQueryParams(queryParams);
-    const newUrl = origin + pathname + queryParamsString;
-
-    history.pushState(
-        null,
-        null,
-        newUrl,
-    );
-
-    return getQueryParams();
-}
-
-/**
  * Extracts the different segments from a URL segments and adds automatic parsing of query parameters/hash
  * into an object. Also normalizes resulting strings to never contain a trailing slash.
  *
- * @param {string} url - URL to parse for query parameters
- * @returns {{
- *      fullUrl: string,
- *      protocol: string,
- *      domain: string,
- *      port: string,
- *      origin: string,
- *      pathname: string,
- *      queryParamHashString: string,
- *      queryParamMap: Object<string, string>,
- *      queryString: string,
- *      hash: string
- * }} - URL segments.
+ * @param url - URL to parse for query parameters
+ * @returns URL segments.
  */
 export function getUrlSegments(url = '') {
     let fullUrl = url;
@@ -262,7 +230,7 @@ export function getUrlSegments(url = '') {
             pathname,
             queryString,
             hash,
-        ] = urlPiecesRegex.exec(url);
+        ] = (urlPiecesRegex.exec(url) as string[]);
         origin = protocol + domain + (port ? `:${port}` : '');
     }
 
@@ -293,18 +261,59 @@ export function getUrlSegments(url = '') {
     };
 }
 
+
+/**
+ * Pushes a URL query parameter key-value pair to the URL bar.
+ * Does not refresh the page, rather it just adds the new URL to the {@code history}.
+ *
+ * If only a key (string) is specified without a value, then it deletes that query param.
+ *
+ * @param key - Query param key, or object of all key-value pairs to be in the URL bar.
+ * @param [value] - Query param value to be assigned to the key (if key is a string).
+ * @returns - All resulting query param key-value pairs, including the URL hash entry (if present).
+ */
+export function pushQueryParamOnHistory(key: string | Indexable, value?: string) {
+    const { origin, pathname } = self.location;
+    let queryParams = getQueryParams();
+
+    if (typeof key === typeof {}) {
+        queryParams = key as Indexable;
+    } else if (typeof key === typeof '') {
+        if (value) {
+            queryParams[key as string] = value;
+        } else {
+            delete queryParams[key as string];
+        }
+    }
+
+    const queryParamsString = getQueryParams(queryParams);
+    const newUrl = origin + pathname + queryParamsString;
+
+    history.pushState(
+        null,
+        '',
+        newUrl,
+    );
+
+    return getQueryParams();
+}
+
+
 /**
  * Determines if a URL is an IP address vs a domain name.
  *
  * Optionally, determines whether or not the IP address in the URL is associated with `localhost`.
  *
- * @param {string} url - URL to test.
- * @param {Object} [options]
- * @param {boolean} [options.onlyLocalhost=false] - If only localhost IP addresses should be checked.
- * @param {boolean} [options.includeLocalhostDomain=true] - If `https?://localhost` should be included in `onlyLocalhost` check.
- * @returns {boolean} - If the URL is an IP address (and if it's an IP address for localhost if desired).
+ * @param url - URL to test.
+ * @param [options]
+ * @param [options.onlyLocalhost=false] - If only localhost IP addresses should be checked.
+ * @param [options.includeLocalhostDomain=true] - If `https?://localhost` should be included in `onlyLocalhost` check.
+ * @returns - If the URL is an IP address (and if it's an IP address for localhost if desired).
  */
-export function isIpAddress(url, { onlyLocalhost = false, includeLocalhostDomain = true } = {}) {
+export function isIpAddress(url: string, {
+    onlyLocalhost = false,
+    includeLocalhostDomain = true,
+} = {}) {
     if (onlyLocalhost) {
         const { domain } = getUrlSegments(url);
 
@@ -322,15 +331,18 @@ export function isIpAddress(url, { onlyLocalhost = false, includeLocalhostDomain
     return !!url.match(/^([^/]*:\/\/)?(\d{1,3}\.){3}(\d{1,3}(?!\.))/);
 }
 
+
 /**
  * Determines if the passed URL string is a valid URL.
  *
- * @param {string} url - URL to test.
- * @param {Object} [options]
- * @param {boolean} [options.allowOnlyPathname=true] - If a relative pathname-based URL will be considered as valid.
- * @returns {boolean} - If the URL is valid.
+ * @param url - URL to test.
+ * @param [options]
+ * @param [options.allowOnlyPathname=true] - If a relative pathname-based URL will be considered as valid.
+ * @returns - If the URL is valid.
  */
-export function isUrl(url, { allowOnlyPathname = true } = {}) {
+export function isUrl(url: string, {
+    allowOnlyPathname = true,
+} = {}) {
     try {
         new URL(url);
         return true;
@@ -343,6 +355,7 @@ export function isUrl(url, { allowOnlyPathname = true } = {}) {
     return false;
 }
 
+
 /**
  * Extracts the final pathname segment from a URL, indicated by everything between
  * the last slash and query params/hash entry.
@@ -351,8 +364,8 @@ export function isUrl(url, { allowOnlyPathname = true } = {}) {
  *
  * Will return an empty string if the URL ends with a slash
  *
- * @param {string} url - URL string from which to extract the final pathname segment.
- * @returns {string} - The final pathname segment or empty string.
+ * @param url - URL string from which to extract the final pathname segment.
+ * @returns - The final pathname segment or empty string.
  */
 export function extractFinalPathnameSegmentFromUrl(url = '') {
     return url.replace(/.*\/([^/?#]*)(?:$|\?|#).*/, '$1');

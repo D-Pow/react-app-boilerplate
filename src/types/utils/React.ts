@@ -23,7 +23,7 @@ import type {
 } from '@/types';
 
 
-export type ComponentProps<Props = Obj<Record<string, unknown>>> = Props | PropsWithChildren<Props>;
+export type ComponentProps<Props = Obj> = Props | PropsWithChildren<Props>;
 export type ComponentInstance<Props = ComponentProps> = ReactNode | ReactElement<Props>;
 export type ComponentDeclaration<Props = ComponentProps> = ComponentType<Props> | JSXElementConstructor<Props>;
 export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props> | ComponentInstance<Props>;

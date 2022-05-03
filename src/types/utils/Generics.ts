@@ -221,7 +221,7 @@ export type PickOptional<T, DEEP extends boolean = false> = { // `DEEP` must be 
         : never
     ]: DEEP extends false
         ? T[K]
-        : T[K] extends Optional<Record<string, unknown>> // Like above, we must include `undefined` so we can recurse through both keys in `{ o?: object, ro: object }`
+        : T[K] extends Optional<Indexable> // Like above, we must include `undefined` so we can recurse through both nested keys in `{ myKey?: { optionalKey?: object, requiredKey: object }}`
             ? PickOptional<T[K], DEEP>
             : T[K];
 };
@@ -235,7 +235,7 @@ export type PickRequired<T, DEEP extends boolean = false> = {
     [K in keyof T as K extends keyof PickOptional<T, DEEP>
         ? never
         : K
-    ]: T[K] extends Record<string, unknown>
+    ]: T[K] extends Indexable
         ? PickRequired<T[K], DEEP>
         : T[K];
 };
@@ -249,7 +249,7 @@ export type PickRequired<T, DEEP extends boolean = false> = {
  * - If `NT` (NewType) is left out, then the original type from `T` remains.
  * - The specified `NT` type.
  */
-export type PartialDeep<T, NT = never> = T extends Obj
+export type PartialDeep<T, NT = never> = T extends Indexable
     ? {
         // `?:` makes the key optional. Record<IndexSignature, any (or unknown)> == Object
         [K in keyof T]?: T[K] extends Indexable

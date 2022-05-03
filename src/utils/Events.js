@@ -176,7 +176,7 @@ export function getClickPath(event) {
 export function elementIsInClickPath({ attribute, value }, clickPath) {
     let elementIsInPath = false;
 
-    for (let element of clickPath) {
+    for (const element of clickPath) {
         if (element instanceof HTMLElement) {
             const elemAttr = element.getAttribute(attribute);
 

@@ -947,7 +947,7 @@ export function deepCopy(obj) {
     if (obj instanceof Error) {
         const copy = new obj.constructor(obj.message);
 
-        for (let key of [ 'stack', 'code', 'errno', 'syscall' ]) {
+        for (const key of [ 'stack', 'code', 'errno', 'syscall' ]) {
             if (obj[key]) {
                 copy[key] = obj[key];
             }
@@ -1030,7 +1030,7 @@ export function deepCopy(obj) {
 
     objKeys.forEach(key => {
         const origKeyProperties = Object.getOwnPropertyDescriptor(obj, key);
-        let copiedVal = deepCopy(origKeyProperties.value, circularReferenceMap);
+        const copiedVal = deepCopy(origKeyProperties.value, circularReferenceMap);
 
         if (typeof copiedVal === typeof deepCopy) {
             if (obj.constructor === Object) {

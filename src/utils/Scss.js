@@ -30,7 +30,7 @@ export function parseScssVar(scssStr) {
 
     // Lists and maps are surrounded by single quotes, e.g. "'[ \"string in list\", 5, \"5px\" ]'"
     // Remove them if they exist so they can be parsed correctly.
-    let jsValue = scssStr.replace(/(^['"])|(['"]$)/g, '');
+    const jsValue = scssStr.replace(/(^['"])|(['"]$)/g, '');
 
     try {
         // JSON-formatted string from within SCSS file

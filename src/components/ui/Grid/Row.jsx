@@ -21,7 +21,7 @@ class Row extends React.Component {
 
 Row.propTypes = {
     children: props => {
-        for (let child of React.Children.toArray(props.children)) {
+        for (const child of React.Children.toArray(props.children)) {
             if (!childIsOfType(child, Column)) {
                 return new Error(`Invalid child ${getChildName(child)} passed to Row. Expected Column.`);
             }

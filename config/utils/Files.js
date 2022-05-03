@@ -372,7 +372,7 @@ function findFile(
         return findFile.foundFiles.get(filename);
     }
 
-    let currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
+    const currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
     let ignoredFilesRegex;
 
     // Short-circuit recursive calls by only checking if `ignoredFiles` is a list, not a Set.
@@ -394,7 +394,7 @@ function findFile(
     // `stat()` follows symbolic links
     // `lstat()` doesn't
     // `fstat()` is the same as `stat()` except takes in a file descriptor instead of path
-    for (let fileName of fs.readdirSync(currentDir)) {
+    for (const fileName of fs.readdirSync(currentDir)) {
         // fileName is basename, so get the absolute path to it from current directory
         const filePath = path.resolve(currentDir, fileName);
         const fileExists = fs.existsSync(filePath);

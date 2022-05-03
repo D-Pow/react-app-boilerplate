@@ -55,7 +55,7 @@ class Grid extends React.Component {
 
 Grid.propTypes = {
     children: props => {
-        for (let child of React.Children.toArray(props.children)) {
+        for (const child of React.Children.toArray(props.children)) {
             if (!childIsOfType(child, Row)) {
                 return new Error(`Invalid child ${getChildName(child)} passed to Grid. Expected Row.`);
             }

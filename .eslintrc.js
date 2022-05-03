@@ -138,6 +138,10 @@ module.exports = {
         'quote-props': [ 'error', 'as-needed' ], // Prevent quotes around object keys except for when it's absolutely necessary (e.g. hyphens, language reserved keywords, etc.)
         'no-prototype-builtins': 'off', // Allow `myObj.hasOwnProperty()` instead of `Object.prototype.hasOwnProperty.call(myObj)`
         'no-control-regex': 'off', // Allow regexes with unicode strings and other control sequences (e.g. colors for console output: `\x1B[36mHELLO\x1B[39mWORLD`
+        'prefer-const': [ 'error', { // Prefer `const` over `let` if the variables never change
+            destructuring: 'all', // Allow using `let` if in an object/array destructuring assignment as long as one value changes
+            ignoreReadBeforeAssign: true, // Allow splitting `let` declarations and assignments with functions that use those variables
+        }],
         'prefer-regex-literals': 'error', // Force using `/regex/` instead of `new RegExp()` when possible
         'no-unused-vars': [ 'warn', {
             /*

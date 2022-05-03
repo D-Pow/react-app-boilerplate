@@ -253,7 +253,7 @@ export type PartialDeep<T, NT = never> = T extends Indexable
     ? {
         // `?:` makes the key optional. Record<IndexSignature, any (or unknown)> == Object
         [K in keyof T]?: T[K] extends Indexable
-            ? Nullable<PartialDeep<T[K], NT>>
+            ? PartialDeep<T[K], NT>
             : NT extends never
                 ? Nullable<T[K]>
                 : Nullable<NT>

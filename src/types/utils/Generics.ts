@@ -145,6 +145,14 @@ export type OwnKeys<T, P = Array<T> | object> = keyof {
 } & Exclude<keyof T, keyof P>;
 
 
+export type OwnEntries<T, ParentToExclude = Array<T> | object> = {
+    [K in keyof T as K extends OwnKeys<T, ParentToExclude>
+        ? K
+        : never
+    ]: T[K];
+};
+
+
 /**
  * Same as Nullable except without `null`.
  */

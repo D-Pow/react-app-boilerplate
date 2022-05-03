@@ -68,6 +68,17 @@ export type IndexSignature = string | number | symbol;
 
 
 /**
+ * Any type that is indexable using `string`, `number`, or `symbol`.
+ * e.g. objects, arrays, classes, etc.
+ */
+export type Indexable<ValueTypes = unknown> = Record<IndexSignature, ValueTypes>;
+
+
+/**
+ * Companion to {@link OwnKeys} and relatively equivalent to the generalizable usage of {@link Indexable}
+ * except for reducing the allowed keys to only those the specific object has (i.e. not including `.map()`
+ * in arrays).
+ *
  * An object of any index-able type to avoid conflicts between `{}`, `Record`, `object`, etc.
  *
  * For example: Sometimes React will throw errors that `{} is not assignable to Record<string, unknown>` errors,
@@ -86,28 +97,21 @@ export type IndexSignature = string | number | symbol;
  * @see [Respective npm docs]{@link https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides}
  * @see [Forcing dependencies' versions of nested dependencies in yarn via `resolutions` package.json field (less resilient than `overrides`)]{@link https://stackoverflow.com/questions/71791347/npm-package-cannot-be-used-as-a-jsx-component-type-errors/71828113#71828113}
  */
-export type Obj<O extends Record<IndexSignature, unknown> | object = Record<IndexSignature, unknown> | object> = {
-    [K in keyof O as K extends never
-        ? never
-        : K
-    ]: K extends never
-        ? never
-        : O[K] extends never
-            ? never
-            : O[K];
-} & Omit<O, never>;
-
-
-/**
- * Any type that is indexable using `string`, `number`, or `symbol`.
- *
- * Serves as a companion to {@link OwnKeys} while maintaining the generalizable usage of {@link Obj}.
- */
-export type Indexable<ValueTypes = unknown> = (
-    {
-        [K: IndexSignature]: ValueTypes;
-    }
-    | Obj
+export type Obj<O extends Indexable | object = Indexable | object> = (
+    (
+        {
+            [K in keyof O as K extends never
+                ? never
+                : K
+            ]: K extends never
+                ? never
+                : O[K] extends never
+                    ? never
+                    : O[K];
+        }
+        & Omit<O, never>
+    )
+    | Indexable
 );
 
 

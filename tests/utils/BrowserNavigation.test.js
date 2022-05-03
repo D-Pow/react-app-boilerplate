@@ -149,10 +149,9 @@ describe('BrowserNavigation utils', () => {
             });
         });
 
-        it('should parse query params with object values', () => {
-            const { fullUrl, queryParamHashString, queryParamMap } = queryWithObject;
+        it('should parse query params with object input', () => {
+            const { queryParamHashString, queryParamMap } = queryWithObject;
 
-            expect(getQueryParams(fullUrl)).toEqual(queryParamMap);
             expect(getQueryParams(queryParamHashString)).toEqual(queryParamMap);
             expect(getQueryParams(queryParamMap)).toEqual(queryParamHashString);
         });

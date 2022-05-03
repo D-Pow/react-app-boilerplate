@@ -5,9 +5,6 @@ import type {
 } from '@/types';
 
 
-export type HashAlgos = ValueOf<typeof hash.ALGOS>;
-
-
 /**
  * Hashes a string using the specified algorithm.
  *
@@ -22,7 +19,7 @@ export type HashAlgos = ValueOf<typeof hash.ALGOS>;
 export async function hash(str: string, {
     algo = hash.ALGOS.Sha256,
 }: {
-    algo?: HashAlgos,
+    algo?: ValueOf<typeof hash.ALGOS>,
 } = {}) {
     const validAlgorithms = new Set(Object.values(hash.ALGOS));
 
@@ -45,6 +42,3 @@ hash.ALGOS = {
     Sha384: 'SHA-384',
     Sha512: 'SHA-512',
 };
-export namespace hash { // Define custom field on function
-    export let ALGOS: Record<string, string>;
-}

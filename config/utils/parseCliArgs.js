@@ -49,6 +49,8 @@ function normalizeCliOptionsConfig(cliOptionsConfigs) {
     Object.entries(cliOptionsConfigs).forEach(([ primaryFlag, flagConfig ]) => {
         const {
             type = (
+                flagConfig.type
+                ||
                 (flagConfig.numArgs > 1 && (
                     (flagConfig.defaultValue?.length > 0 && `${typeof flagConfig.defaultValue[0]}[]`)
                     ||

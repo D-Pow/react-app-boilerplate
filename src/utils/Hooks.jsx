@@ -410,16 +410,19 @@ export function useWindowResize() {
     const [ windowSizeState, setWindowSizeState ] = useWindowEvent('resize', {
         initialEventState: initialState,
         handleEvent: handleResize,
+        addEventListenerOptions: {
+            passive: true, // Disallows `event.preventDefault()` but improves performance due to the event not being cancellable, so renders aren't blocked. Only needed for IE and the new IE (Safari). See: https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#improving_scrolling_performance_with_passive_listeners
+        },
     });
 
-    function resetWasSized() {
+    const resetWasResized = useCallback(() => {
         setWindowSizeState(prevState => ({
             ...prevState,
             wasResized: false,
         }));
-    }
+    }, [ setWindowSizeState ]);
 
-    return { windowSizeState, setWindowSizeState, resetWasSized };
+    return { windowSizeState, setWindowSizeState, resetWasResized };
 }
 
 

@@ -1,5 +1,6 @@
 import { COLORS } from '@/utils/Constants';
 import { asNumber, randomNumber } from '@/utils/Numbers';
+import { camelCaseToHyphenOrSnakeCase } from '@/utils/Text';
 
 import CommonStyles from '@/styles/Common.scss';
 
@@ -53,6 +54,39 @@ export function parseScssVar(scssStr) {
             return jsValue;
         }
     }
+}
+
+
+/**
+ * Gets a vanilla CSS variable or property of the element.
+ *
+ * Defaults to the root element (`document.documentElement`, i.e. `html`) since most
+ * CSS variables are set on that element.
+ *
+ * @param {string} cssVar - Variable or property to get.
+ * @param {Object} [options]
+ * @param {HTMLElement} [options.element] - Element from which to get the property.
+ * @returns {(string|number)} - The property value (empty string if non-existent).
+ */
+export function getCssVar(cssVar, {
+    element = document.documentElement,
+    castNumbers = false,
+} = {}) {
+    // Must use `getComputedStyle()` instead of `.styles` since the latter doesn't include CSS variables
+    const elementStyles = getComputedStyle(element);
+
+    const cssVal = (
+        elementStyles.getPropertyValue(cssVar)
+        || elementStyles.getPropertyValue(camelCaseToHyphenOrSnakeCase(cssVar))
+        || elementStyles.getPropertyValue(`--${cssVar}`)
+        || elementStyles.getPropertyValue(`--${camelCaseToHyphenOrSnakeCase(cssVar)}`)
+    ).trim(); // Resulting value often has a leading space, so remove it
+
+    if (castNumbers && cssVal) {
+        return Number(cssVal.replace(/\D/g, ''));
+    }
+
+    return cssVal;
 }
 
 

@@ -317,6 +317,23 @@ export function hyphenOrSnakeCaseToCamelCase(str, {
 
 
 /**
+ * Converts string from camelCase to hyphen-case or snake_case.
+ *
+ * @param {string} str - camelCase string to convert.
+ * @param {Object} [options]
+ * @param {boolean} [options.snakeCase] - Convert to snake_case instead of hyphen-case.
+ * @returns {string} - Converted string.
+ */
+export function camelCaseToHyphenOrSnakeCase(str, {
+    snakeCase = false,
+} = {}) {
+    return str.replace(/(?<=[a-z])([A-Z])/g, matchGroup => {
+        return (snakeCase ? '_' : '-') + matchGroup.toLowerCase();
+    });
+}
+
+
+/**
  * Capitalizes the first `numChars` characters of a string.
  *
  * @param {string} str - String to capitalize.

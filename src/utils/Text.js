@@ -302,7 +302,7 @@ export function maskBeginningChars(str, numChars, {
 export function hyphenOrSnakeCaseToCamelCase(str, {
     pascalCase = false,
 } = {}) {
-    const camelCaseStr = str.replace(/[-_]([^-_])/g, (fullStrMatch, matchGroup) => {
+    const camelCaseStr = str.replace(/[-_]+([^-_])/g, (fullStrMatch, matchGroup) => {
         // One match group: The letter after a hyphen/underscore.
         // Uppercase it and discard the hyphen/underscore.
         return matchGroup.toUpperCase();

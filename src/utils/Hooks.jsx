@@ -299,6 +299,7 @@ export function useQueryParams() {
  * @param {*} [initialEventState=null] - Initial state to use in event listener
  * @param {handleWindowEvent} [handleEvent=null] - Custom event handler to use instead of standard setEventState
  * @param {Array<*>} [useEffectInputs=[]] - useEffect optimization inputs: `useEffect(func, useEffectInputs)`
+ * @param {Parameters<addEventListener>[2]} [addEventListenerOptions] - Options for `self.addEventListener()`.
  * @returns {[ *, function ]} - event state and respective setState function
  */
 export function useWindowEvent(
@@ -308,6 +309,7 @@ export function useWindowEvent(
         initialEventState = null,
         handleEvent = null,
         useEffectInputs = [],
+        addEventListenerOptions,
     } = {},
 ) {
     const [ eventState, setEventState ] = useState(initialEventState);
@@ -324,7 +326,7 @@ export function useWindowEvent(
     }
 
     useEffect(() => {
-        self.addEventListener(eventType, eventListener);
+        self.addEventListener(eventType, eventListener, addEventListenerOptions);
 
         return () => {
             self.removeEventListener(eventType, eventListener);

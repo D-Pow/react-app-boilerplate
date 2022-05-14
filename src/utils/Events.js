@@ -192,6 +192,170 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
 
 
 /**
+ * Gets an element's dimensions, either as displayed (e.g. what's shown with `overflow: hidden`) or the
+ * true/actual dimensions (e.g. what's shown + not shown with `overflow: hidden`).
+ *
+ * @param {HTMLElement} element - Element for which dimensions should be obtained.
+ * @param {Object} [options]
+ * @param {boolean} [options.displayed] - Include the displayed dimensions of the element.
+ * @param {boolean} [options.actual] - Include the actual dimensions of the element.
+ * @param {boolean} [options.ensureElementSizeIncludesSizeOfChildren] - Make inline elements with children larger than they are take the size of the children (e.g. make anchors with images as children take the size of the image, `<a><img></a>`).
+ * @returns {
+ *      {
+ *          displayed: { x: number, width: number, y: number, height: number },
+ *          actual: { x: number, width: number, y: number, height: number },
+ *      }
+ *      | { x: number, width: number, y: number, height: number }
+ * } - The dimensions of the element (either displayed/actual or both).
+ */
+export function getElementDimensions(element, {
+    displayed = true,
+    actual = true,
+    ensureElementSizeIncludesSizeOfChildren = true,
+} = {}) {
+    const cssStyles = getComputedStyle(element);
+    const origDisplay = element.style.display;
+    const actualDisplay = cssStyles.display;
+    const elementDoesntAccuratelyReflectSizeOfChildren = actualDisplay === 'inline';
+    const hackStylesToGetTrueSize = elementDoesntAccuratelyReflectSizeOfChildren && ensureElementSizeIncludesSizeOfChildren;
+
+    if (hackStylesToGetTrueSize) {
+        /*
+         * `display: inline` doesn't make the element take the full width/height
+         * of its children, so the max width/height calculations will be thrown off
+         * by this.
+         * To fix it, it must be anything other than inline (flex, block, etc.) but in
+         * an attempt to make the forced-altered style as accurate as possible to the
+         * original, make it `inline-block`
+         */
+        element.style.display = 'inline-block';
+    }
+
+    /*
+     * `window.page_Offset` is how many pixels the current viewport is from (0,0),
+     * i.e. how much the user has scrolled down/right.
+     *
+     * `element.getBoundingClientRect()` gets the pixels of each of its 4 corners (top-left, bottom-right, etc.)
+     * as well as its width and height, but only for what is displayed/visible, not including overflow/scroll content.
+     */
+    const { x, y, width, height } = element.getBoundingClientRect();
+    const absoluteXCoordinateOnPage = window.pageXOffset + x;
+    const absoluteYCoordinateOnPage = window.pageYOffset + y;
+
+    /*
+     * "Real" width/height, including all content not visible due to overflow
+     * and/or the max size allowed by the browser window viewport.
+     *
+     * Offset includes all the currently visible content, including scrollbars.
+     * Scroll includes size of content not visible due to overflow (i.e. when you have to scroll inside the element to see all of it).
+     *
+     * If element content < screen size, then scroll > offset.
+     * See: https://stackoverflow.com/questions/22675126/what-is-offsetheight-clientheight-scrollheight/22675563#22675563
+     *
+     * Add in display width/height as safety check for inline elements that have block children; if the `display: inline`
+     * style is maintained, then both scroll/offset width/height will be 0.
+     */
+    const maxWidth = Math.max(element.scrollWidth, element.offsetWidth, width);
+    const maxHeight = Math.max(element.scrollHeight, element.offsetHeight, height);
+
+    if (hackStylesToGetTrueSize) {
+        // Return element's display to its original value
+        element.style.display = origDisplay;
+    }
+
+    const elementDimensions = {
+        actual: {
+            x: absoluteXCoordinateOnPage,
+            y: absoluteYCoordinateOnPage,
+            width: maxWidth,
+            height: maxHeight,
+        },
+        displayed: {
+            x,
+            y,
+            width,
+            height,
+        },
+    };
+
+    if (!actual && displayed) {
+        return elementDimensions.displayed;
+    }
+
+    if (!displayed && actual) {
+        return elementDimensions.actual;
+    }
+
+    return elementDimensions;
+}
+
+
+/**
+ * Determines whether or not an element is visible.
+ *
+ * The check is incomplete in that there are many things that could hide an element.
+ * This only checks:
+ * - If the `visibility` CSS property is not `hidden`.
+ * - If the `display` CSS property is not `none`.
+ * - If the `opacity` CSS property is not `0`.
+ *
+ * Optionally, and by default, also checks if the element is hidden behind another element,
+ * e.g. a modal or underneath a nav-bar.
+ *
+ * @param {HTMLElement} element - Element to check.
+ * @param [options]
+ * @param [options.includeBehindOtherElements] - If the visibility check should be `false` when the element is obscured from the view by another one.
+ * @returns {boolean}
+ *
+ * @see [Determining if an element is behind another]{@link https://stackoverflow.com/questions/49751396/determine-if-element-is-behind-another/49833666#49833666}
+ */
+export function isElementVisible(element, {
+    includeBehindOtherElements = true,
+} = {}) {
+    function isElementVisibleByStyles(element) {
+        const styles = window.getComputedStyle(element);
+
+        return (
+            styles.visibility !== 'hidden'
+            && styles.display !== 'none'
+            && styles.opacity !== '0'
+        );
+    }
+
+    function isBehindOtherElement(element) {
+        // We can use `getBoundingClientRect()` directly since `elementFromPoint()`
+        // returns null if not in the viewport
+        const boundingRect = element.getBoundingClientRect();
+
+        /*
+         * Shrink coordinates to represent the inside of the element.
+         * Otherwise, it's possible the element is hidden but its
+         * border aligns with the element covering it, resulting in
+         * a false positive.
+         */
+        boundingRect.left++;
+        boundingRect.right--;
+        boundingRect.top++;
+        boundingRect.bottom--;
+
+        return (
+            document.elementFromPoint(boundingRect.left, boundingRect.top) !== element
+            && document.elementFromPoint(boundingRect.right, boundingRect.top) !== element
+            && document.elementFromPoint(boundingRect.left, boundingRect.bottom) !== element
+            && document.elementFromPoint(boundingRect.right, boundingRect.bottom) !== element
+        );
+    }
+
+    const elementIsStyledVisibly = isElementVisibleByStyles(element);
+    const elementIsVisibleOnScreen = includeBehindOtherElements
+        ? !isBehindOtherElement(element)
+        : true;
+
+    return elementIsStyledVisibly && elementIsVisibleOnScreen;
+}
+
+
+/**
  * Resets the window scroll location to the top of the screen
  */
 export function scrollWindowToTop() {

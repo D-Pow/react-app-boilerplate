@@ -191,11 +191,11 @@ export function getXmlDocFromDataUrl(dataUrl) {
  * // Output: 'AABBCC'
  *
  * @example <caption>Add spaces between hex entries for easy reading</caption>
- * byteArrayToHexString(myData, { hexSeparator: ' ' });
+ * byteArrayToHexString(myData, { hexDelimiter: ' ' });
  * // Output: 'AA BB CC'
  *
  * @example <caption>Prepend hex entries with your preferred </caption>
- * byteArrayToHexString(myData, { hexPrefix: '0x', hexSeparator: ' ' });
+ * byteArrayToHexString(myData, { hexPrefix: '0x', hexDelimiter: ' ' });
  * // Output: '0xAA 0xBB 0xCC'
  *
  * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
@@ -206,7 +206,7 @@ export function getXmlDocFromDataUrl(dataUrl) {
  */
 export function byteArrayToHexString(uint8Array, {
     hexPrefix = '',
-    hexSeparator = '',
+    hexDelimiter = '',
     asArray = false,
 } = {}) {
     // TODO Support types of ArrayBuffers other than Uint8Array
@@ -219,7 +219,7 @@ export function byteArrayToHexString(uint8Array, {
         return hexStringsWithPrefixes;
     }
 
-    return hexStringsWithPrefixes.join(hexSeparator);
+    return hexStringsWithPrefixes.join(hexDelimiter);
 }
 
 

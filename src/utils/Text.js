@@ -199,6 +199,10 @@ export function getXmlDocFromDataUrl(dataUrl) {
  * // Output: '0xAA 0xBB 0xCC'
  *
  * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
+ * @param {Object} [options]
+ * @param {string} [options.hexPrefix] - Prefix to add to each hex entry (e.g. `0x`, `%00`, etc.).
+ * @param {string} [options.hexDelimiter] - Delimiter to use when joining all hex entries as a string (is not prepended to the first hex entry).
+ * @param {boolean} [options.asArray] - Return an array of hex strings instead of one joined string.
  * @returns {string} - The hex representation of the buffer.
  *
  * @see [StackOverflow post about encoding emojis/symbols to UTF-8 strings]{@link https://stackoverflow.com/questions/48419167/how-to-convert-one-emoji-character-to-unicode-codepoint-number-in-javascript}

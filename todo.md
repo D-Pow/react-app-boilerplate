@@ -19,6 +19,26 @@
             * See the [preset-env bugfixes](https://babeljs.io/docs/en/babel-preset-env#bugfixes) option for more details.
     - Investigate Babel preset-env [bugfixes](https://babeljs.io/docs/en/babel-preset-env#bugfixes)
         + Might help with browser ESM.
+    - Customize package.json [`exports` field](https://nodejs.org/docs/latest-v16.x/api/packages.html#package-entry-points)
+        + Allows exporting multiple files (e.g. `.mjs` and `.js`) when publishing libraries.
+        + File chosen depends on the consuming project's import statement. For example:
+            ```javascript
+            // package.json
+            {
+                "exports": {
+                    // Will choose the correct file based on import-statement keyword
+                    ".": {
+                        "import": "dist/index.mjs",
+                        "require": "dist/index.js",
+                    },
+                    // Will select a file based on import query
+                    "./Button": "dist/components/Button.js", // Tree-shaking example
+                    "./components/*.js": "dist/components/*.js", // Tree-shaking with globs (** isn't necessary)
+                    "./internal/": null // Hide files you don't want consumers to import
+                }
+            }
+            ```
+        + Example: [postcss-js](https://github.com/postcss/postcss-js/blob/main/package.json#L24)
 * Allow `type: module` in package.json without webpack crashing on src/ imports without extensions.
     - Starter: https://developpaper.com/browser-module-main-field-priority-you-dont-know-about-in-package-json/
 * Add preview/start image in `manifest.json` for when the installed PWA is opening before the page content is actually loaded and the spinner shows.

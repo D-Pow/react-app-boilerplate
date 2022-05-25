@@ -183,6 +183,41 @@ export type UppercaseOrLowercase<Str extends string> = Str | Lowercase<Str> | Up
 
 
 /**
+ * A string which starts with the given `Prefix`.
+ *
+ * Optionally, only includes keys from `Obj`.
+ */
+export type StartsWith<Prefix extends string, Obj extends Indexable = never> = string & (
+    Obj extends never
+        ? `${Prefix}${string}`
+        : keyof Obj & `${Prefix}${string}`
+);
+
+
+/**
+ * A string which ends with the given `Suffix`.
+ *
+ * Optionally, only includes keys from `Obj`.
+ */
+export type EndsWith<Suffix extends string, Obj extends Indexable = never> = string & (
+    Obj extends never
+        ? `${string}${Suffix}`
+        : keyof Obj & `${string}${Suffix}`
+);
+
+
+/**
+ * A string which starts with the given `Prefix` and ends with the given `Suffix`.
+ *
+ * Optionally, only includes keys from `Obj`.
+ */
+export type StartsEndsWith<Prefix extends string, Suffix extends string, Obj extends Indexable = never> = (
+    StartsWith<Prefix, Obj>
+    & EndsWith<Suffix, Obj>
+);
+
+
+/**
  * Companion to built-in `Omit` except for omitting all value types of an Object
  * instead of keys.
  *

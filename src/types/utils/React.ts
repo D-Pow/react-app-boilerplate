@@ -9,6 +9,8 @@
 import type {
     PropsWithChildren,
     ComponentType,
+    ComponentClass,
+    FunctionComponent,
     ReactNode,
     ReactElement,
     JSXElementConstructor,
@@ -30,6 +32,19 @@ export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props>
 
 
 /**
+ * Extracts the types of any class/functional component's props.
+ *
+ * Useful for HOCs and related components that wish to forward child props to the parent.
+ */
+export type InferProps<C extends ComponentType<any>> = (
+    C extends ComponentClass | (new (props: any, context?: any) => ComponentInstance)
+        ? ConstructorParameters<C>[0]
+        : C extends FunctionComponent | ((props: any, context?: any) => ComponentInstance)
+            ? Parameters<C>[0]
+            : ComponentProps
+);
+
+/**
  * Extracts types of JSX component props defined using PropTypes.
  *
  * `PropTypes.InferProps` has a bug where they inject `null` as a possible type for
@@ -42,7 +57,7 @@ export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props>
  *
  * @see [PropTypes.InferProps bug]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45094}
  */
-export type InferProps<O> = OmitValues<PropTypesInferProps<O>, null>;
+export type InferPropTypes<O extends object> = OmitValues<PropTypesInferProps<O>, null>;
 
 
 /**

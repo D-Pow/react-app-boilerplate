@@ -392,11 +392,43 @@ export function useRootClose(acceptableElement, closeElement) {
 }
 
 
+/**
+ * Hook to get the size of the window after the user has resized it.
+ *
+ * Use the `(width|height)IgnoringScrollbar` to ignore the presence/absence of a
+ * scrollbar for cases when the scrollbar (dis-)appears depending on if the user is
+ * scrolling, e.g. scrollbars often hide after a period of time of not scrolling on
+ * mobile devices, Safari, etc.
+ *
+ * Call `resetWasSized()` to set `windowSizeState.wasResized` to false for logic that
+ * needs to check if the window was resized since the component was last rendered.
+ *
+ * @returns {{
+ *      windowSizeState: {
+ *          wasResized: boolean;
+ *          width: number;
+ *          height: number;
+ *          widthIgnoringScrollbar: number;
+ *          heightIgnoringScrollbar: number;
+ *      };
+ *      setWindowSizeState: HookSetStateFunction;
+ *      resetWasResized: function(): void;
+ * }}
+ */
 export function useWindowResize() {
     const initialState = {
         wasResized: false,
         width: self.innerWidth,
         height: self.innerHeight,
+        /**
+         * Use `clientWidth` instead of `innerWidth` to exclude/ignore window size differences
+         * depending on if a scrollbar is present.
+         * This helps avoid issues when the scrollbar (dis-)appears at different times.
+         *
+         * @see [clientWidth MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth}
+         */
+        widthIgnoringScrollbar: document.documentElement.clientWidth,
+        heightIgnoringScrollbar: document.documentElement.clientHeight,
     };
 
     function handleResize(prevState, setState) {
@@ -404,6 +436,8 @@ export function useWindowResize() {
             wasResized: true,
             width: self.innerWidth,
             height: self.innerHeight,
+            widthIgnoringScrollbar: document.documentElement.clientWidth,
+            heightIgnoringScrollbar: document.documentElement.clientHeight,
         });
     }
 

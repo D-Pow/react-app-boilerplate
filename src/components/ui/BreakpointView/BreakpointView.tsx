@@ -17,17 +17,19 @@ export default function BreakpointView({
     minWidth = 0,
     maxWidth = Infinity,
 }: BreakpointViewProps) {
-    const { windowSizeState: { wasResized }, resetWasResized } = useWindowResize();
+    const {
+        windowSizeState: {
+            wasResized,
+            widthIgnoringScrollbar: windowWidth,
+        },
+        resetWasResized,
+    } = useWindowResize();
 
     useEffect(() => {
         if (wasResized) {
             resetWasResized();
         }
     }, [ wasResized, resetWasResized ]);
-
-    // Use `clientWidth` instead of `innerWidth` to exclude any scrollbar if present.
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/Element/clientWidth
-    const windowWidth = document.documentElement.clientWidth;
 
     if (windowWidth < minWidth || windowWidth > maxWidth) {
         return null;

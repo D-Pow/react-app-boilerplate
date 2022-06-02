@@ -19,13 +19,13 @@ import { objEquals } from '@/utils/Objects';
  * Can either be the new state value or a function that takes in the previous
  * state's value and returns the new state value.
  *
- * @typedef {(JsonPrimitive | function(prevState:JsonPrimitive):JsonPrimitive)} HookSetStateParam
+ * @typedef {(JsonPrimitive | function(prevState:JsonPrimitive): JsonPrimitive)} HookSetStateParam
  */
 /**
  * A hook's setState() function, which receives a {@link HookSetStateParam} that
  * is either the new state value or a function that returns the new state value.
  *
- * @typedef {function(value:HookSetStateParam): void} HookSetStateFunction
+ * @typedef {function(value: HookSetStateParam): void} HookSetStateFunction
  */
 
 /**

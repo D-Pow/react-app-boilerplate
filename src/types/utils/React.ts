@@ -58,7 +58,7 @@ export type InferProps<C extends ComponentType<any>> = (
  *
  * @see [PropTypes.InferProps bug]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45094}
  */
-export type InferPropTypes<O extends object> = OmitValues<PropTypesInferProps<O>, null>;
+export type InferPropTypes<O extends Record<string, unknown>> = OmitValues<PropTypesInferProps<O>, null>;
 
 
 /**

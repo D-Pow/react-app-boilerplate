@@ -359,7 +359,7 @@ function getOutputFileName(
 function findFile(
     filename,
     {
-        startDirectory = '',
+        startDirectory = Paths.ROOT.ABS,
         ignoredFiles = [],
         dfs = false,
     } = {},
@@ -372,7 +372,7 @@ function findFile(
         return findFile.foundFiles.get(filename);
     }
 
-    const currentDir = path.resolve(startDirectory || Paths.ROOT.ABS);
+    const currentDir = path.resolve(startDirectory);
     let ignoredFilesRegex;
 
     // Short-circuit recursive calls by only checking if `ignoredFiles` is a list, not a Set.

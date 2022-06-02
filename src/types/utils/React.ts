@@ -21,6 +21,7 @@ import type {
 } from 'prop-types';
 
 import type {
+    Indexable,
     Obj,
     OmitValues,
 } from '@/types';
@@ -34,21 +35,12 @@ export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props>
 
 /**
  * Extracts the types of any class/functional component's props.
- *
  * Useful for HOCs and related components that wish to forward child props to the parent.
- */
-export type InferProps<C extends ComponentType<any>> = (
-    C extends ComponentClass | (new (props: any, context?: any) => ComponentInstance)
-        ? ConstructorParameters<C>[0]
-        : C extends FunctionComponent | ((props: any, context?: any) => ComponentInstance)
-            ? Parameters<C>[0]
-            : ReactComponentProps<C> // See: https://stackoverflow.com/questions/43230765/typescript-react-access-component-property-types/55005902#55005902
-);
-
-/**
- * Extracts types of JSX component props defined using PropTypes.
  *
- * `PropTypes.InferProps` has a bug where they inject `null` as a possible type for
+ * Alternatively, a JSX component's `MyComponent.propTypes` object defined using PropTypes
+ * can be passed to get the types.
+ *
+ * Note: `PropTypes.InferProps` has a bug where they inject `null` as a possible type for
  * JSX `propTypes` (e.g. `type | null | undefined`) but non-required types can only
  * be `type | undefined`.
  *
@@ -58,7 +50,17 @@ export type InferProps<C extends ComponentType<any>> = (
  *
  * @see [PropTypes.InferProps bug]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45094}
  */
-export type InferPropTypes<O extends Record<string, unknown>> = OmitValues<PropTypesInferProps<O>, null>;
+export type InferProps<C extends ComponentType<any> | Indexable> = (
+    C extends Record<string, unknown>
+        ? OmitValues<PropTypesInferProps<C>, null>
+        : C extends ComponentClass | (new (props: any, context?: any) => ComponentInstance)
+            ? ConstructorParameters<C>[0]
+            : C extends FunctionComponent | ((props: any, context?: any) => ComponentInstance)
+                ? Parameters<C>[0]
+                : C extends ComponentType
+                    ? ReactComponentProps<C> // See: https://stackoverflow.com/questions/43230765/typescript-react-access-component-property-types/55005902#55005902
+                    : unknown
+);
 
 
 /**

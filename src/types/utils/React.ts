@@ -11,6 +11,7 @@ import type {
     ComponentType,
     ComponentClass,
     FunctionComponent,
+    ComponentProps as ReactComponentProps,
     ReactNode,
     ReactElement,
     JSXElementConstructor,
@@ -41,7 +42,7 @@ export type InferProps<C extends ComponentType<any>> = (
         ? ConstructorParameters<C>[0]
         : C extends FunctionComponent | ((props: any, context?: any) => ComponentInstance)
             ? Parameters<C>[0]
-            : ComponentProps
+            : ReactComponentProps<C> // See: https://stackoverflow.com/questions/43230765/typescript-react-access-component-property-types/55005902#55005902
 );
 
 /**

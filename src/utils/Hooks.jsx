@@ -313,25 +313,40 @@ export function useWindowEvent(
     } = {},
 ) {
     const [ eventState, setEventState ] = useState(initialEventState);
+
+    const prevEventListenerOptionsRef = useRef(addEventListenerOptions);
+    const prevEventListenerOptions = prevEventListenerOptionsRef.current;
+    const eventListenerOptionsChanged = Object.keys({ ...prevEventListenerOptions, ...addEventListenerOptions })
+        .reduce((didChange, key) => (
+            didChange
+            || (prevEventListenerOptions?.[key] !== addEventListenerOptions?.[key])
+        ), false);
+
     const isUsingOwnEventHandler = typeof handleEvent === typeof (() => {});
 
-    function eventListener(event) {
-        const newEventState = nestedEventField ? event[nestedEventField] : event;
-
-        if (isUsingOwnEventHandler) {
-            handleEvent(eventState, setEventState, newEventState);
-        } else {
-            setEventState(newEventState);
-        }
-    }
-
     useEffect(() => {
+        function eventListener(event) {
+            const newEventState = nestedEventField ? event[nestedEventField] : event;
+
+            if (isUsingOwnEventHandler) {
+                handleEvent(eventState, setEventState, newEventState);
+            } else {
+                setEventState(newEventState);
+            }
+        }
+
         self.addEventListener(eventType, eventListener, addEventListenerOptions);
 
         return () => {
             self.removeEventListener(eventType, eventListener);
         };
-    }, [ eventType, ...useEffectInputs ]);
+    }, [ // eslint-disable-line react-hooks/exhaustive-deps
+        eventType,
+        nestedEventField,
+        eventListenerOptionsChanged,
+        isUsingOwnEventHandler,
+        ...useEffectInputs, // eslint-disable-line react-hooks/exhaustive-deps
+    ]);
 
     return [ eventState, setEventState ];
 }

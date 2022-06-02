@@ -64,7 +64,7 @@ export type TypeScriptPrimitive = (
 /**
  * Types that can be used to index native JavaScript types, (Object, Array, etc.).
  */
-export type IndexSignature = string | number | symbol;
+export type IndexSignature = PropertyKey; // string | number | symbol
 
 
 /**

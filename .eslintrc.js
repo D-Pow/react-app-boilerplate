@@ -425,7 +425,7 @@ module.exports = {
                  */
                 'no-redeclare': 'off',
                 'no-dupe-class-members': 'off',
-                'no-unused-vars': [ 'warn', {
+                'no-unused-vars': [ 'warn', { // Allow unused variables in function definition typedefs
                     args: 'none',
                 }],
                 'space-before-function-paren': [ 'error', {

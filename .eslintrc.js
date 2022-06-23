@@ -432,8 +432,10 @@ module.exports = {
                     named: 'ignore', // Allow typedefs using functions, e.g. `<Func extends () => {}>`
                 }],
                 'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
-                'no-use-before-define': 'off', // Disable JS ESLint's checks for TS files since they fail to pick up on namespace imports (e.g. `import React from 'react'`)
-                '@typescript-eslint/no-use-before-define': 'error', // Error if something is used before being referenced, allowing namespace imports (e.g. `import React from 'react'`)
+
+                // If using TypeScript with React <= v16, where you still need to use `import React from 'react'`
+                // 'no-use-before-define': 'off', // Disable JS ESLint's checks for TS files since they fail to pick up on namespace imports
+                // '@typescript-eslint/no-use-before-define': 'error', // Error if something is used before being referenced, allowing namespace imports
 
                 // Rules: https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/README.md#supported-rules
                 '@typescript-eslint/consistent-type-imports': [ 'error', { // Enforce type-import syntax using `import type { T }` and/or `import { type T }` instead of `import { T }`

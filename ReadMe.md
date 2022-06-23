@@ -21,7 +21,7 @@ than create-react-app in that:
 Usage Notes
 
 * If using WebStorm
-    - It doesn't properly interpret the `webpack.config.mjs` file because it's not in the root directory. So, to point to the correct files, update your settings via;
+    - It doesn't always properly interpret the `webpack.config.mjs` file because it's not in the root directory. So, to point to the correct files, update your settings via:
         + **WebStorm Settings | Languages & Frameworks**
             * **| JavaScript | Webpack**:
               `config/webpack.config.mjs`

@@ -101,8 +101,8 @@ export const DayMonthFormats: DayMonthFormatsType = ([ 'long', 'short', 'narrow'
  * @see [SO post 2]{@link https://stackoverflow.com/questions/12413243/javascript-date-format-like-iso-but-local}
  */
 export function diffDateTime(
-    earlier = new Date(),
-    later = new Date(),
+    earlier: Date | ConstructorParameters<typeof Date>[0] = new Date(),
+    later: Date | ConstructorParameters<typeof Date>[0] = new Date(),
 ) {
     let earlierDate = new Date(earlier);
     let laterDate = new Date(later);

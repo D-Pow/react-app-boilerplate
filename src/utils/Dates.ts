@@ -119,7 +119,7 @@ export function diffDateTime(
     const diffDateObj: Record<string, number> = {
         years: laterDate.getFullYear() - earlierDate.getFullYear(),
         months: laterDate.getMonth() - earlierDate.getMonth(),
-        days: laterDate.getDate() - earlierDate.getDate(),
+        dates: laterDate.getDate() - earlierDate.getDate(),
         hours: laterDate.getHours() - earlierDate.getHours(),
         minutes: laterDate.getMinutes() - earlierDate.getMinutes(),
         seconds: laterDate.getSeconds() - earlierDate.getSeconds(),
@@ -141,6 +141,10 @@ export function diffDateTime(
             diffDateObj[nextKey] = nextVal - 1;
         }
     });
+
+    // Make the `dates` field more readable by renaming to `days`
+    diffDateObj.days = diffDateObj.dates;
+    delete diffDateObj.dates;
 
     return diffDateObj;
 }

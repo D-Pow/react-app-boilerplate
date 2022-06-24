@@ -127,9 +127,12 @@ export function diffDateTime(
     };
 
     Object.entries(diffDateObj).reverse().forEach(([ key, val ], i, entries) => {
-        const nextEntry = entries[i+1];
+        const nextEntry = entries[i + 1];
 
         if (!nextEntry) {
+            // We can safely return from the object iteration when `years` is reached
+            // due to the safety net of ensuring `earlierDate < laterDate` and no value
+            // of any other date-time part can surpass years (i.e. `years` is always >= 0)
             return;
         }
 

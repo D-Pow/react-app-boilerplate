@@ -39,7 +39,7 @@ const useHttps = false;
 const isLibrary = false;
 const sourceMap = !isProduction; // allows for passing `sourceMap` directly by name to loaders/plugins options
 
-const indexHtmlTitle = 'React App Boilerplate';
+const indexHtmlTitle = manifestJson.short_name;
 // TODO See if index.html <link> entries can be moved here
 const indexHtmlMetaTagData = {
     description: packageJson.description,

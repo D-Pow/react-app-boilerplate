@@ -3,6 +3,9 @@
 A simplified boilerplate app for websites that's better organized
 than create-react-app in that:
 
+
+## Features
+
 * Dependencies not required for the build are moved to `devDependencies`
 * npm scripts are more clearly defined
 * webpack config is exposed and configurable
@@ -18,7 +21,8 @@ than create-react-app in that:
 * All configurations are moved to the `config/` folder for cleaner root directory and purpose distinction
 * Uses ESM (`.mjs`) for Node scripts/configs while still allowing your source code to drop file extensions for `.js`/`.ts` files.
 
-Usage Notes
+
+## Usage Notes
 
 * If using WebStorm
     - It doesn't always properly interpret the `webpack.config.mjs` file because it's not in the root directory. So, to point to the correct files, update your settings via:

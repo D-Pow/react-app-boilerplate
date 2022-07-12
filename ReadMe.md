@@ -32,3 +32,17 @@ than create-react-app in that:
 
     - Since `@/` and `/` import aliases are used instead of relative imports (e.g. `../../File.js`), WebStorm doesn't always correctly mark `src/` as the root for imports. <br/>
     If this occurs, it can be resolved by right-clicking on `src/` -> `Mark Directory as` -> `Resource Root`.
+
+
+## Diagrams
+
+UML diagrams for classes, DBs, etc. can be made and embedded into ReadMe files using:
+
+* [Mermaid](https://github.com/mermaid-js/mermaid) - [Playground](https://mermaid.live/)
+    - Officially supported in GitHub, but possibly other providers as well.
+    - See the related [blog post](https://github.blog/2022-02-14-include-diagrams-markdown-files-mermaid/) for more details.
+* [DrawIO](https://drawio-app.com) - [Playground](https://app.diagrams.net)
+    - Give permission to GitHub, Google Drive, OneDrive, etc.
+    - Export as an SVG file to your repo.
+    - Display the SVG in ReadMe files via `![Display text](./MyUml.svg)`.
+    - Each edit can be saved by exporting the new diagram to the same SVG via a commit.

@@ -121,6 +121,7 @@ module.exports = {
         'block-scoped-var': 'error', // Prevent relying on `var` hoisting to allow usage outside its scope, e.g. error: `if (foo) { var x = 'X'; } return x + 1;`
         'brace-style': 'error', // Enforce all function/statement curly braces to be on same line as declaration; else(if) statements on same line as closing curly brace. Defaults to '1tbs' - one-true-brace-style. See: https://eslint.org/docs/rules/brace-style#1tbs
         'comma-dangle': [ 'error', 'always-multiline' ], // Enforce commas after array/object/import/export/function parameters, but only if they're on multiple lines
+        'comma-style': [ 'error', 'last' ], // Force commas to be at the ends of lines rather than the beginning
         'no-else-return': [ 'error', { // Prevent return statements in else-statements if a return exists in the if-statement, e.g. error: `if (x) { return 1; } else { return 2; }`
             allowElseIf: false, // Also prevent else-if, e.g. error: `if (x) { return 1; } else if (y) { return 2; }`
         }],

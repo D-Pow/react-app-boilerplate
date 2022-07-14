@@ -119,3 +119,28 @@ export function ouncesMilliliters({
 
     return NaN;
 }
+
+
+export function inchesMillimeters({
+    inches,
+    mm,
+}: {
+    inches?: number;
+    mm?: number;
+} = {}) {
+    if (!inches && !mm) {
+        throw new TypeError('Either `inches` or `mm` must be specified');
+    }
+
+    const inchesToMmRatio = 25.4;
+
+    if (mm) {
+        return mm / inchesToMmRatio; /* 1 inch = 25.4 mm */
+    }
+
+    if (inches) {
+        return inches * inchesToMmRatio; /* 1 mm = 0.0393701 in */
+    }
+
+    return NaN;
+}

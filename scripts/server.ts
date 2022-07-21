@@ -531,7 +531,7 @@ async function runWebpackServer() {
     type WebpackDevServerClass = typeof import('webpack-dev-server');
     type WebpackDevServerConfig = import('webpack-dev-server').Configuration;
     type WebpackDevServerProxy = WebpackDevServerConfig['proxy'];
-    type ProxyConfig = import('webpack-dev-server').ProxyConfigArray;
+    type ProxyConfig = import('webpack-dev-server').ProxyConfigArrayItem;
     type ProxyConfigArray = ProxyConfig[];
     type ProxyConfigMap = import('webpack-dev-server').ProxyConfigMap;
 
@@ -570,7 +570,7 @@ async function runWebpackServer() {
                 ...baseConfig,
                 context: proxyApis,
             },
-        ] as ProxyConfigArray;
+        ];
     }
 
     const devServerOptions: WebpackDevServerConfig = {

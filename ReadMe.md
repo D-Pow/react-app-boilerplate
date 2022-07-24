@@ -22,7 +22,23 @@ than create-react-app in that:
 * Uses ESM (`.mjs`) for Node scripts/configs while still allowing your source code to drop file extensions for `.js`/`.ts` files.
 
 
-## Usage Notes
+## Installation
+
+* `git clone <repo-url> [optional-custom-directory-name]`
+* `npm install`
+
+
+## Usage
+
+* View all available commands: `npm run`
+* Examples:
+    - Start the local development server: `npm [run] start`
+    - Start the local dev-server, mocking endpoint/API requests: `npm run mock`
+    - Run unit tests: `npm [run] test`
+    - Build the app: `npm run build`
+
+
+## IDE Notes
 
 * If using WebStorm
     - It doesn't always properly interpret the `webpack.config.mjs` file because it's not in the root directory. So, to point to the correct files, update your settings via:

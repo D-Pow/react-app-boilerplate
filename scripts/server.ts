@@ -531,9 +531,10 @@ async function runWebpackServer() {
     type WebpackDevServerClass = typeof import('webpack-dev-server');
     type WebpackDevServerConfig = import('webpack-dev-server').Configuration;
     type WebpackDevServerProxy = WebpackDevServerConfig['proxy'];
-    type ProxyConfig = import('webpack-dev-server').ProxyConfigArrayItem;
-    type ProxyConfigArray = ProxyConfig[];
+    type ProxyConfigEntry = import('webpack-dev-server').ProxyConfigArray;
     type ProxyConfigMap = import('webpack-dev-server').ProxyConfigMap;
+    type ProxyConfigArray = ProxyConfigEntry[];
+    type ProxyConfig = ProxyConfigEntry | ProxyConfigArray | ProxyConfigMap;
 
     const Webpack: WebpackFactory = (await import('webpack')).default;
     const WebpackDevServer: WebpackDevServerClass = (await import('webpack-dev-server')).default;
@@ -541,10 +542,7 @@ async function runWebpackServer() {
 
     const corsProxyUrl = new URL(proxyServerUrl!);
 
-    function getCliProxyConfig(): ProxyConfigArray;
-    function getCliProxyConfig(routes: string[]): ProxyConfigMap;
-    function getCliProxyConfig(routes?: string[]): WebpackDevServerProxy;
-    function getCliProxyConfig(routes?: string[]): WebpackDevServerProxy {
+    function getCliProxyConfig(routes?: string[]): ProxyConfig {
         const baseConfig: Partial<ProxyConfig> = {
             target: proxyServerUrl,
             secure: false,
@@ -558,7 +556,7 @@ async function runWebpackServer() {
         };
 
         if (routes?.length) {
-            return routes.reduce((obj, route: string) => {
+            return routes.reduce((obj, route) => {
                 obj[route] = baseConfig;
 
                 return obj;
@@ -570,7 +568,7 @@ async function runWebpackServer() {
                 ...baseConfig,
                 context: proxyApis,
             },
-        ];
+        ] as ProxyConfig;
     }
 
     const devServerOptions: WebpackDevServerConfig = {
@@ -583,7 +581,7 @@ async function runWebpackServer() {
             : Array.isArray(webpackConfig.devServer.proxy)
                 ? [
                     ...webpackConfig.devServer.proxy,
-                    ...getCliProxyConfig(),
+                    ...(getCliProxyConfig() as ProxyConfigArray),
                 ]
                 : {
                     ...webpackConfig.devServer.proxy,

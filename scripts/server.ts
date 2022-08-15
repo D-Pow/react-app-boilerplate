@@ -540,7 +540,6 @@ async function runWebpackServer() {
     type ProxyConfigEntry = import('webpack-dev-server').ProxyConfigArray;
     type ProxyConfigMap = import('webpack-dev-server').ProxyConfigMap;
     type ProxyConfigArray = ProxyConfigEntry[];
-    type ProxyConfig = ProxyConfigEntry | ProxyConfigArray | ProxyConfigMap;
 
     const Webpack: WebpackFactory = (await import('webpack')).default;
     const WebpackDevServer: WebpackDevServerClass = (await import('webpack-dev-server')).default;
@@ -548,8 +547,8 @@ async function runWebpackServer() {
 
     const corsProxyUrl = new URL(proxyServerUrl!);
 
-    function getCliProxyConfig(routes?: string[]): ProxyConfig {
-        const baseConfig: Partial<ProxyConfig> = {
+    function getCliProxyConfig(routes?: string[]): WebpackDevServerProxy {
+        const baseConfig: Partial<WebpackDevServerProxy> = {
             target: proxyServerUrl,
             secure: false,
             changeOrigin: true,
@@ -566,7 +565,7 @@ async function runWebpackServer() {
                 obj[route] = baseConfig;
 
                 return obj;
-            }, {} as ProxyConfigMap);
+            }, {} as ProxyConfigMap) as WebpackDevServerProxy;
         }
 
         return [
@@ -574,7 +573,7 @@ async function runWebpackServer() {
                 ...baseConfig,
                 context: proxyApis,
             },
-        ] as ProxyConfig;
+        ] as unknown as WebpackDevServerProxy;
     }
 
     const devServerOptions: WebpackDevServerConfig = {
@@ -588,7 +587,7 @@ async function runWebpackServer() {
                 ? [
                     ...webpackConfig.devServer.proxy,
                     ...(getCliProxyConfig() as ProxyConfigArray),
-                ]
+                ] as WebpackDevServerProxy
                 : {
                     ...webpackConfig.devServer.proxy,
                     ...getCliProxyConfig(proxyApis),

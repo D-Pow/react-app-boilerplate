@@ -32,7 +32,14 @@ export function isMobileBrowser({ includeTablets = false, onlyXsScreenSizes = fa
 
 
 export function isSafariBrowser() {
-    return self.safari != null || navigator.vendor.toLocaleLowerCase().includes('apple');
+    return (
+        self.safari != null
+        || navigator.vendor?.match?.(/apple/i)
+        || (
+            navigator.userAgent.match(/Safari/i)
+            && !navigator.userAgent.match(/Chrome/i)
+        )
+    );
 }
 
 

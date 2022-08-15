@@ -3,7 +3,7 @@ const os = require('os');
 const devServerPort = process.env.PORT || 3000;
 
 
-function getOsHostnameAndLanIP(protocolVersion = 4) {
+function getLanIpAddress(protocolVersion = 4) {
     const allNetworkInterfaces = os.networkInterfaces();
     const localLanIp = Object.entries(allNetworkInterfaces)
         .reduce((localLan, [ networkInterface, addresses ]) => {
@@ -29,8 +29,8 @@ function getOsHostnameAndLanIP(protocolVersion = 4) {
 const LocalLanHostIpAddresses = {
     hostname: os.hostname(),
     port: devServerPort,
-    IPv4: getOsHostnameAndLanIP(),
-    IPv6: getOsHostnameAndLanIP(6),
+    IPv4: getLanIpAddress(),
+    IPv6: getLanIpAddress(6),
     getPublicPath: (exposeOnLan, protocol = 'http://') => exposeOnLan
         ? `${protocol || ''}${LocalLanHostIpAddresses.IPv4}:${LocalLanHostIpAddresses.port}`
         : '',
@@ -38,6 +38,6 @@ const LocalLanHostIpAddresses = {
 
 
 module.exports = {
-    getOsHostnameAndLanIP,
+    getLanIpAddress,
     LocalLanHostIpAddresses,
 };

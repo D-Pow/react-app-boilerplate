@@ -49,6 +49,7 @@ interface ServerOptions {
     openBrowserOnBoot: boolean;
     proxyApis?: string[];
     proxyServerUrl?: string;
+    mock?: boolean;
     certLifetime: number;
     certRefresh?: boolean;
     protocol: string;
@@ -87,6 +88,10 @@ function configureServer({
                 type: 'string',
                 numArgs: 1,
                 aliases: [ 'server' ],
+            },
+            mock: {
+                description: 'Mocks (specified or default=all) endpoints from the `mocks/` dir.',
+                type: 'array',
             },
             protocol: {
                 description: 'Protocol to use for the dev-server.',
@@ -131,6 +136,7 @@ function configureServer({
         openBrowserOnBoot,
         proxyApis,
         proxyServerUrl,
+        mock,
         certLifetime,
         certRefresh,
         protocol,
@@ -145,6 +151,7 @@ function configureServer({
         openBrowserOnBoot,
         proxyApis,
         proxyServerUrl,
+        mock,
         certLifetime,
         certRefresh,
         protocol,
@@ -164,6 +171,7 @@ const {
     openBrowserOnBoot,
     proxyApis,
     proxyServerUrl,
+    mock,
     certLifetime,
     certRefresh,
     protocol,
@@ -647,6 +655,14 @@ async function runNextJsServer() {
 
     if (proxyApis?.length) {
         NextConfig.rewrites = getNextJsApiProxyConfig;
+    }
+
+    if (mock) {
+        (process.env as Record<string, unknown>).MOCK = true;
+        NextConfig.env.MOCK = true;
+
+        (process.env as Record<string, unknown>).MOCK_URLS = mock;
+        NextConfig.env.MOCK_URLS = mock;
     }
 
     const nextJsServer = createNextServer({

@@ -579,7 +579,10 @@ async function runWebpackServer() {
     const devServerOptions: WebpackDevServerConfig = {
         ...webpackConfig.devServer,
         host: domain,
-        https: httpsOptions,
+        server: {
+            type: protocol,
+            options: isHttps ? httpsOptions : undefined,
+        },
         open: openBrowserOnBoot,
         proxy: !webpackConfig?.devServer?.proxy
             ? getCliProxyConfig()

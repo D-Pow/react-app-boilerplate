@@ -355,6 +355,36 @@ export function capitalizeFirstLetters(str, {
 }
 
 
+/**
+ * Replaces the specified match group with the desired string.
+ *
+ * @example <caption>Change TypeScript file extensions to JavaScript</caption>
+ * replaceStringsContent(
+ *     [ 'a.ts', 'b.ts.ext', 'c.tsx', 'd.tsx.ext' ],
+ *     /\.(t)s(?:$|x?|\.)/,
+ *     'j',
+ * )
+ * // Results in a string array of the form `(.*).js(x)?(.ext)?`
+ * // [ 'a.js', 'b.js.ext', 'c.jsx', 'd.jsx.ext' ]
+ *
+ * @param {(string|string[])} stringsToModify - Strings in which to execute the replacement.
+ * @param {Parameters<string['replace']>[0]} toReplaceMatcher - Regex with match group to replace.
+ * @param {Parameters<string['replace']>[1]} replacement - Text with which the match group should be replaced.
+ * @returns {*}
+ */
+export function replaceStringsContent(stringsToModify, toReplaceMatcher, replacement) {
+    const modifyString = str => str.replace(toReplaceMatcher, (fullMatch, matchGroupToReplace, matchGroupNumber, fullStr) =>
+        fullMatch.replace(matchGroupToReplace, replacement),
+    );
+
+    if (typeof stringsToModify === typeof '') {
+        return modifyString(stringsToModify);
+    }
+
+    return stringsToModify.map(modifyString);
+}
+
+
 /*
  * Useful description of RegExp flags: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags
  * d - Generate indices for substring matches. (RegExp.prototype.hasIndices)

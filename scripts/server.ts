@@ -190,14 +190,12 @@ let httpsOptions: Awaited<ReturnType<typeof getServerHttpsCredentials>>;
 
 async function setCreateServerFunctionFromProtocol() {
     if (isHttps) {
-        httpsOptions = await getServerHttpsCredentials(
-            {
+        httpsOptions = await getServerHttpsCredentials({
+            certOptions: {
                 validityDays: certLifetime,
             },
-            {
-                force: certRefresh,
-            },
-        );
+            force: certRefresh,
+        });
 
         createServer = createHttpsServer.bind(null, httpsOptions);
         get = httpsGet;

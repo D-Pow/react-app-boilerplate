@@ -319,18 +319,19 @@ function isCachedCertValid(): boolean {
  *
  * @returns The CA's cert, server's cert, and server's private key.
  */
-export async function getServerHttpsCredentials(
+export async function getServerHttpsCredentials({
     /**
      * Details for the generated certificate.
      */
-    certOptions: SelfSignedCertOptions = {},
-    {
-        /**
-         * Force creating/caching a new cert even if the cached one is still valid.
-         */
-        force = false,
-    } = {},
-): Promise<DevServerSelfSignedCert> {
+    certOptions = {},
+    /**
+     * Force creating/caching a new cert even if the cached one is still valid.
+     */
+    force = false,
+}: {
+    certOptions?: SelfSignedCertOptions;
+    force?: boolean;
+} = {}): Promise<DevServerSelfSignedCert> {
     if (isCachedCertValid() && !force) {
         const certInfo = getCachedCert()!;
 

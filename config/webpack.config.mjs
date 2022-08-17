@@ -535,6 +535,8 @@ const webpackConfig = {
         splitChunks: {
             chunks: 'all',
             cacheGroups: {
+                // TODO - Might want to add a max chunk size and/or split individual vendor modules out
+                //  See: https://stackoverflow.com/a/70627948/5771107
                 vendor: { // split node_modules (as vendor) from src (as client)
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendor',
@@ -544,6 +546,7 @@ const webpackConfig = {
                     test: Styles,
                     name: 'styles',
                     chunks: 'all',
+                    // TODO - Find an actual solution for this
                     enforce: true, // collect all CSS into a single file since the separated CSS files contained only duplicate code
                 },
             },

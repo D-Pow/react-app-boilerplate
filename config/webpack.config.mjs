@@ -7,7 +7,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin.js';
 
-import AlterFilePostBuildPlugin from './AlterFilePostBuildPlugin.mjs';
+import AlterFilePostBuildPlugin from './webpack/AlterFilePostBuildPlugin.mjs';
 import {
     Paths,
     tsconfigPath,

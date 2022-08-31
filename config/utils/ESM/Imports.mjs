@@ -1,6 +1,6 @@
-import { createRequire } from 'module';
-import path from 'path';
-import { pathToFileURL } from 'url';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 /**
  * There are a couple ways to import CJS files:

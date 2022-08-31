@@ -1,4 +1,4 @@
-const os = require('os');
+const os = require('node:os');
 
 const devServerPort = process.env.PORT || 3000;
 

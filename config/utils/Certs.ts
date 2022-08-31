@@ -15,7 +15,7 @@
  * @file
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 import mkcert from 'mkcert';
 

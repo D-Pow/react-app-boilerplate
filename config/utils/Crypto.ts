@@ -2,7 +2,7 @@ import {
     createHash,
     type BinaryLike,
     type BinaryToTextEncoding,
-} from 'crypto';
+} from 'node:crypto';
 
 import type {
     UppercaseOrLowercase,

@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+const { NormalModule } = await import('webpack');
+
 
 /** @typedef {import('webpack/types').WebpackPluginInstance} WebpackPluginInstance */
 /** @typedef {import('webpack/types').Compiler} Compiler */
-/** @typedef {import('webpack/types').NormalModule} NormalModule */
 
 
 /**

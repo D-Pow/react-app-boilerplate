@@ -334,7 +334,7 @@ export function withContextSelector<
         const isCreatedFromContextFactory = (
             has('contextState')
             && has('setContextState')
-            && Object.keys(contextVal).length === 2
+            && Object.keys(contextVal as Obj).length === 2
         );
 
         type FilteredContext = Partial<ContextVal> | Partial<ContextValue<ContextVal>['contextState']>;

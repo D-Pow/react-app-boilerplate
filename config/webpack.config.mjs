@@ -677,6 +677,6 @@ function getWebpackConfig(webpackArgs) {
             // }],
         },
     };
-};
+}
 
 export default getWebpackConfig;

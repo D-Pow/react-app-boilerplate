@@ -1,4 +1,7 @@
 const os = require('node:os');
+const fs = require('node:fs/promises');
+
+require('isomorphic-fetch');
 
 const devServerPort = process.env.PORT || 3000;
 
@@ -37,7 +40,18 @@ const LocalLanHostIpAddresses = {
 };
 
 
+async function downloadFile(url, destPath) {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const stream = await blob.stream();
+
+    await fs.writeFile(destPath, stream);
+    await fs.chmod(destPath, 0o777);
+}
+
+
 module.exports = {
     getLanIpAddress,
     LocalLanHostIpAddresses,
+    downloadFile,
 };

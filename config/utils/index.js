@@ -25,6 +25,7 @@ const {
 const {
     getOsHostnameAndLanIP,
     LocalLanHostIpAddresses,
+    downloadFile,
 } = require('./Network');
 
 
@@ -58,4 +59,5 @@ module.exports = {
     ImportAliases,
     getOsHostnameAndLanIP,
     LocalLanHostIpAddresses,
+    downloadFile,
 };

@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
-// These still need `await import()` because they're types, not actual classes, so it won't work in .js
-const { WebpackPluginInstance, Compiler, NormalModule } = await import('webpack');
+
+
+/** @typedef {import('webpack/types').WebpackPluginInstance} WebpackPluginInstance */
+/** @typedef {import('webpack/types').Compiler} Compiler */
+/** @typedef {import('webpack/types').NormalModule} NormalModule */
+
 
 /**
  * @extends WebpackPluginInstance

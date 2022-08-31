@@ -7,6 +7,8 @@ const { ImportAliases } = require('./utils');
 /**
  * @type {import('@types/babel__core').TransformOptions}
  *
+ * Ordering goes last to first.
+ *
  * @see [Babel config options]{@link https://babeljs.io/docs/en/options}
  * @see [Older yet more accurate `@types/babel__core` package]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/277df65eb7/types/babel__core/index.d.ts}
  * @see [Newer yet less accurate `@types/babel-core` package]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/babel-core/index.d.ts}

@@ -617,7 +617,9 @@ function getWebpackConfig(webpackArgs) {
             hot: hotReloading, // for `module.hot` hot-reloading block in index.js
             historyApiFallback: true, // Fall back to index.html upon 404
             /** @type {import('https').ServerOptions} */
-            server: useHttps, // use HTTPS instead of HTTP
+            server: { // HTTPS configs if not using HTTP
+                type: useHttps ? 'https' : 'http',
+            },
             devMiddleware: {
                 stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output
             },

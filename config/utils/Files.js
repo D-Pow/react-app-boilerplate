@@ -127,6 +127,66 @@ const Paths = (() => {
 })();
 
 
+function getMain() {
+    if (typeof __filename !== typeof undefined) {
+        const { argv } = process;
+        const cwd = typeof process.cwd === typeof '' ? process.cwd : process.cwd();
+
+        const cliIndexOfFirstJsFileCalled = argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/)); // `process.argv[process.argv.length - 1]` doesn't work if accepting args
+        const cliIndexOfRunningScript = argv.findIndex(cliArg => cliArg?.match(/^.*(?!\.\w{2,}$)/));
+        const cliFirstJsFileCalled = path.resolve(argv[cliIndexOfFirstJsFileCalled] || '');
+        const cliFirstScriptCalled = path.resolve(argv[cliIndexOfRunningScript] || '');
+
+        // TODO - This doesn't work for `node my-js-script --some-arg some-file.js` esp if `my-js-script` has no extension
+        const firstJsScript = cliIndexOfRunningScript < cliIndexOfFirstJsFileCalled ? cliFirstJsFileCalled : cliFirstScriptCalled;
+
+        const relativePathToFirstJsFileCalled = firstJsScript;
+        const absolutePathToFirstJsFileCalled = Paths.normalize(path.resolve(cwd || '.', relativePathToFirstJsFileCalled || ''));
+
+        // console.log({
+        //     cwd,
+        //     argv: process.argv,
+        //     cliFirstJsFileCalled,
+        //     cliFirstScriptCalled,
+        //     firstJsScript,
+        //     __filename,
+        //     absolutePathToFirstJsFileCalled,
+        //     module,
+        //     requireMain: require.main,
+        // });
+
+        return absolutePathToFirstJsFileCalled;
+
+        // TODO
+        // return module;
+        // return module.filename;
+        // return this.filename;
+        // return module.parent;
+        // return require.main;
+        // return require.main.children;
+        // return require('util').inspect(require.main);
+        // return (function () { return __filename; })();
+    }
+
+    /**
+     * For ESM/.mjs but doesn't work in `.(c)js` since `import` is a reserved word and can't be handled even with `typeof`
+     *
+     * @example
+     * import { fileURLToPath } from 'node:url';
+     * return fileURLToPath(parentFilePathOrUrl);
+     *
+     * @see [`__dirname` equivalent for MJS]{@link https://stackoverflow.com/questions/46745014/alternative-for-dirname-in-node-js-when-using-es6-modules/50052194#50052194}
+     */
+    // if (typeof import?.meta?.url !== typeof undefined) {
+    //     return Url.fileURLToPath(import.meta.url);
+    // }
+}
+
+function isMain(filePath = require.main.filename) {
+    return getMain() === filePath;
+}
+
+
 const gitignoreFiles = getGitignorePaths();
 const gitignoreFilesRegex = convertPathsToRegex(gitignoreFiles);
 const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
@@ -802,6 +862,8 @@ class ImportAliases {
 module.exports = {
     Paths,
     FileTypeRegexes,
+    getMain,
+    isMain,
     getOutputFileName,
     findFile,
     openWithDefaultApp,

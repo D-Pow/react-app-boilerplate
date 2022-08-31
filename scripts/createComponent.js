@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { parseCliArgs } = require('../config/utils');
+const { parseCliArgs, isMain } = require('../config/utils');
 
 
 function getPropTypesText(indentForClassStaticVar, typescript) {
@@ -208,9 +208,7 @@ Note - The format for using the script changes slightly based on how it's called
     );
 }
 
-const isMain = !!process.argv?.[1].match(new RegExp(`${__filename}$`));
-
-if (isMain) {
+if (isMain(__filename)) {
     createComponent();
 }
 

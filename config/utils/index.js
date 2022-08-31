@@ -5,6 +5,8 @@ const {
 const {
     Paths,
     FileTypeRegexes,
+    getMain,
+    isMain,
     getOutputFileName,
     findFile,
     openWithDefaultApp,
@@ -42,6 +44,8 @@ module.exports = {
     parseCliArgs,
     Paths,
     FileTypeRegexes,
+    getMain,
+    isMain,
     getOutputFileName,
     findFile,
     openWithDefaultApp,

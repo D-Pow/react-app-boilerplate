@@ -39,6 +39,7 @@ jobs:
         # working-directory: ./client
         working-directory: ./
 
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -46,7 +47,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Verify and Build - Client
+        # Import pipeline logic via `uses`
         uses: ./.github/workflows/actions/client
+
+      - name: CI - Cache build output
+        # Allow using the output in subsequent steps/jobs
+        uses: actions/upload-artifact@v3
+        with:
+          name: ci-build-output
+          path: |
+            dist
 
 
   ci-build:

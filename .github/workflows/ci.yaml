@@ -39,7 +39,6 @@ jobs:
         # working-directory: ./client
         working-directory: ./
 
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -49,22 +48,47 @@ jobs:
       - name: Verify and Build - Client
         # Import pipeline logic via `uses`
         uses: ./.github/workflows/actions/client
+      - name: Client Build
+        id: client-build
+        shell: bash
+        working-directory: ./
+        run: |
+          npm run build
+          ls
 
-      - name: CI - Cache build output
-        # Allow using the output in subsequent steps/jobs
+  ci-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    needs: [ ci-verify-and-build-client ]
+    # outputs:
+    #   ci-build-output:
+    #     description: "CI - Cache build output"
+    #     # value:
+    steps:
+      - name: CI Build
         uses: actions/upload-artifact@v3
         with:
           name: ci-build-output
           path: |
             dist
 
+      # - name: CI - Cache build output
+      #   # Allow using the output in subsequent steps/jobs
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ci-build-output
+      #     path: |
+      #       dist
 
-  ci-build:
-    runs-on: ubuntu-latest
-    needs: [ ci-verify-and-build-client ]
-    steps:
-      - name: CI Build
-        run: echo
+
+  # ci-build:
+  #   runs-on: ubuntu-latest
+  #   needs: [ ci-verify-and-build-client ]
+  #   steps:
+  #     - name: CI Build
+  #       run: echo
 
 
   # Job 2. Handles everything related to the server/ folder

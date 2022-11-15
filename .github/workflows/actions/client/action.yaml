@@ -59,10 +59,3 @@ runs:
       working-directory: ./
       run: |
         npm run verify
-
-    - name: Client Build
-      id: client-build
-      shell: bash
-      working-directory: ./
-      run: |
-        npm run build

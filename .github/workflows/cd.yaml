@@ -61,26 +61,53 @@ jobs:
       # TODO This will fail - relative paths only work when using actions
       - uses: ./.github/workflows/ci.yaml
 
-  predeploy:
+  # predeploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [ cd-build ]
+  #   steps:
+  #     - name: Checkout repository branch
+  #       uses: actions/checkout@v2
+  #
+  #     - name: CD - Download CI output
+  #       needs: [ cd-build ]
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: ci-build
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [ predeploy ]
+  #   # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
+  #   if: ${{ github.event.pull_request.merged && github.ref == 'refs/heads/master' }}
+  #   steps:
+  #     - name: Deploy application
+  #       needs: [ cd-build ]
+  #       run: |
+  #         ls -FlAh
+  #         tree .
+  #         npm run deploy
+
+  deploy:
     runs-on: ubuntu-latest
     needs: [ cd-build ]
+    # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
+    if: ${{ github.event.pull_request.merged || github.ref == 'refs/heads/master' }}
     steps:
       - name: Checkout repository branch
         uses: actions/checkout@v2
 
       - name: CD - Download CI output
+        id: cd-download-artifacts
         needs: [ cd-build ]
         uses: actions/download-artifact@v3
         with:
-          name: ci-build-output
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [ predeploy ]
-    # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
-    if: ${{ github.event.pull_request.merged && github.ref == 'refs/heads/master' }}
-    steps:
-      - name: Deploy application
-        needs: [ cd-build ]
+          name: ci-build
         run: |
+          ls
+
+      - name: Deploy application
+        needs: [ cd-download-artifacts ]
+        run: |
+          ls -FlAh
+          tree .
           npm run deploy

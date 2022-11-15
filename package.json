@@ -40,7 +40,7 @@
     "tsBuild": "tsc",
     "createComponent": "node scripts/createComponent.js --",
     "changeName": "node scripts/change-name.mjs --",
-    "deploy": "gh-pages -d \"$(pwd)/$npm_package_config_buildOutputDir\"",
+    "deploy": "gh-pages -d $npm_package_config_buildOutputDir",
     "predeploy": "npm run build --"
   },
   "jest": {

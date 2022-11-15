@@ -18,6 +18,7 @@
             "type": "image/png"
         }
     ],
+    "iconUrl": "/favicon.png",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

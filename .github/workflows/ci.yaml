@@ -49,17 +49,25 @@ jobs:
         uses: ./.github/workflows/actions/client
 
 
+  ci-build:
+    runs-on: ubuntu-latest
+    needs: [ ci-verify-and-build-client ]
+    steps:
+      - name: CI Build
+        run: echo
+
+
   # Job 2. Handles everything related to the server/ folder
   # ci-verify-and-build-server:
   #   runs-on: ubuntu-latest
-
+  #
   #   defaults:
   #     run:
   #       working-directory: ./server
-
+  #
   #   steps:
   #     - name: Checkout repository branch
   #       uses: actions/checkout@v2
-
+  #
   #     - name: Verify and Build - Server
   #       uses: ./.github/workflows/actions/server

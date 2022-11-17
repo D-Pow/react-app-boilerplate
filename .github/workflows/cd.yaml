@@ -53,61 +53,34 @@ defaults:
 
 
 jobs:
-  cd-build:
+  cd-client-build:
     runs-on: ubuntu-latest
-    needs: [ ci-build ]
+    needs: [ ci-build-and-upload-artifacts ]
     steps:
       - uses: actions/checkout@v2
-      # TODO This will fail - relative paths only work when using actions
+      # TODO - Relative paths are finicky/often only work when using actions.
+      # When making this file an official GitHub Workflow, update this block.
       - uses: ./.github/workflows/ci.yaml
 
-  # predeploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [ cd-build ]
-  #   steps:
-  #     - name: Checkout repository branch
-  #       uses: actions/checkout@v2
-  #
-  #     - name: CD - Download CI output
-  #       needs: [ cd-build ]
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: ci-build
-
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [ predeploy ]
-  #   # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
-  #   if: ${{ github.event.pull_request.merged && github.ref == 'refs/heads/master' }}
-  #   steps:
-  #     - name: Deploy application
-  #       needs: [ cd-build ]
-  #       run: |
-  #         ls -FlAh
-  #         tree .
-  #         npm run deploy
-
-  deploy:
+  cd-deploy:
     runs-on: ubuntu-latest
-    needs: [ cd-build ]
+    needs: [ cd-client-build ]
     # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
     if: ${{ github.event.pull_request.merged || github.ref == 'refs/heads/master' }}
     steps:
       - name: Checkout repository branch
         uses: actions/checkout@v2
 
-      - name: CD - Download CI output
+      - name: Client CD - Download CI output
         id: cd-download-artifacts
-        needs: [ cd-build ]
+        needs: [ cd-client-build ]
         uses: actions/download-artifact@v3
         with:
-          name: ci-build
+          name: ci-build-and-upload-artifacts
         run: |
-          ls
+          :
 
       - name: Deploy application
         needs: [ cd-download-artifacts ]
         run: |
-          ls -FlAh
-          tree .
           npm run deploy

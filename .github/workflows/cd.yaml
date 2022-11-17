@@ -77,8 +77,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ci-build-and-upload-artifacts
-        run: |
-          :
+          path: |
+            dist
 
       - name: Deploy application
         needs: [ cd-download-artifacts ]

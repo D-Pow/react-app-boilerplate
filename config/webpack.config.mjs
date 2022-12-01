@@ -7,6 +7,10 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin.js';
 
+import {
+    publicEnv,
+    broadcastChannel,
+} from './env.js';
 import AlterFilePostBuildPlugin from './webpack/AlterFilePostBuildPlugin.mjs';
 import {
     Paths,
@@ -48,27 +52,7 @@ const indexHtmlMetaTagData = {
     viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
 };
 
-const broadcastChannel = packageJson.name;
 const fileUrlsNotToCacheInPwa = [];
-
-const env = dotenv.config({
-    path: Paths.getFileAbsPath(Paths.ROOT.ABS, '.env'),
-}).parsed;
-
-process.env = {
-    ...process.env,
-    ...env,
-    NODE_ENV: process.env.NODE_ENV || 'development',
-    PUBLIC_URL: Paths.BUILD_OUTPUT.REL,
-};
-
-const publicEnv = {
-    NODE_ENV: process.env.NODE_ENV,
-    PUBLIC_URL: process.env.PUBLIC_URL,
-    BROADCAST_CHANNEL: broadcastChannel,
-    MOCK: process.env.MOCK,
-    SUPPORT_IE: !!process?.env?.npm_package_config_supportIe,
-};
 
 const {
     JavaScript,

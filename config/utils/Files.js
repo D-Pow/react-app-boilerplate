@@ -506,6 +506,46 @@ function findFile(
 
 
 /**
+ * Autocompletes a file name/path, mimicking pressing <Tab> in the terminal.
+ *
+ * @param {...string} pathSegments - Path segments to join (in order).
+ * @returns {(string|string[])} - An array of matching files/directories or a single match if only one present.
+ */
+function autocompleteFilePath(...pathSegments) {
+    let pathToComplete = path.resolve(...pathSegments);
+    const filePrefix = path.basename(pathToComplete);
+    let directoryContents = [];
+
+    // Use try-catch to both simplify and harden the logic to list a directory's contents
+    try {
+        if (fs.existsSync(pathToComplete)) {
+            directoryContents = fs.readdirSync(pathToComplete);
+        } else if (fs.existsSync(path.dirname(pathToComplete))) {
+            pathToComplete = path.dirname(pathToComplete);
+            directoryContents = fs.readdirSync(pathToComplete);
+        } else if (fs.existsSync(pathToComplete.replace(Paths.ROOT.ABS, `${Paths.ROOT.ABS}/node_modules`))) {
+            directoryContents = fs.readdirSync(pathToComplete);
+        } else if (fs.existsSync(path.dirname(pathToComplete.replace(Paths.ROOT.ABS, `${Paths.ROOT.ABS}/node_modules`)))) {
+            pathToComplete = path.dirname(pathToComplete.replace(Paths.ROOT.ABS, `${Paths.ROOT.ABS}/node_modules`));
+            directoryContents = fs.readdirSync(pathToComplete);
+        }
+    } catch (pathNotADirectoryError) {
+
+    }
+
+    const matchingFiles = directoryContents
+        .filter(filename => filename.match(new RegExp(`^${filePrefix}`)))
+        .map(filename => path.join(pathToComplete, filename));
+
+    if (matchingFiles.length === 1) {
+        return matchingFiles[0];
+    }
+
+    return matchingFiles;
+}
+
+
+/**
  * Opens the given URI (file path, URL, etc.) with the OS' default app for that URI.
  *
  * @param {string} uri - Identifier to open.
@@ -849,6 +889,25 @@ class ImportAliases {
         // Remove repeating slashes. Only normalize the path instead of resolving it
         // since some alias characters aren't valid paths.
         return path.normalize(`${alias}/${relPathFromAlias}`);
+    }
+
+    static getFilePathFromAlias(aliasedFilePath, excludePathToProject = false) {
+        let fullFilePath = aliasedFilePath;
+        const allImportAliasPrefixesRegex = `^(${Object.keys(this).join('|')})[/$]`;
+
+        if (aliasedFilePath.match(new RegExp(allImportAliasPrefixesRegex))) {
+            const getImportAliasPrefixRegex = alias => new RegExp(`^${alias}[/$]`);
+            const importAliasPrefix = Object.keys(this).find(alias => aliasedFilePath.match(getImportAliasPrefixRegex(alias)));
+            const importAliasPathFromRoot = this[importAliasPrefix];
+            const parentDir = path.join(
+                (excludePathToProject ? '' : Paths.ROOT.ABS),
+                importAliasPathFromRoot,
+            );
+
+            fullFilePath = aliasedFilePath.replace(new RegExp(`^${importAliasPrefix}`), `${parentDir}/`);
+        }
+
+        return path.normalize(fullFilePath);
     }
 
     static *[Symbol.iterator]() {

@@ -32,7 +32,7 @@
     "lint:verify": "npm run lint:all -- --quiet",
     "typecheck": "tsc --noEmit",
     "typecheck:file-list": "npm run --silent typecheck | grep -Eio '^[a-zA-Z/_@\\.-]+' | sort -u",
-    "verify": "npm run lint:verify && npm run typecheck && npm run test",
+    "verify": "set -m; declare exitCode=0; ( npm run lint:verify ) & ( npm run typecheck ) & ( npm run test ) & for bgPid in $(jobs -p); do wait $bgPid; (( exitCode += $? )); done; exit $exitCode",
     "clean": "npx shx rm -rf $npm_package_config_buildOutputDir coverage",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
     "prebuild": "npm run clean --",

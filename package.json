@@ -34,6 +34,7 @@
     "typecheck:file-list": "npm run --silent typecheck | grep -Eio '^[a-zA-Z/_@\\.-]+' | sort -u",
     "verify": "set -m; declare exitCode=0; ( npm run lint:verify ) & ( npm run typecheck ) & ( npm run test ) & for bgPid in $(jobs -p); do wait $bgPid; (( exitCode += $? )); done; exit $exitCode",
     "clean": "npx shx rm -rf $npm_package_config_buildOutputDir coverage",
+    "clean:node_modules": "npm run clean; mv node_modules znode_modules; ( rm -rf znode_modules & );",
     "build": "cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs",
     "prebuild": "npm run clean --",
     "pretsBuild": "npm run clean --",

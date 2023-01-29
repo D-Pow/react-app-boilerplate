@@ -219,7 +219,17 @@ try {
 
         tsconfig = JSON.parse(tsconfigExpandedValue);
     } catch (spawnDidntWork) {
-        tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
+        try {
+            tsconfig = JSON.parse(stripJsComments(fs.readFileSync(tsconfigPath).toString()));
+        } catch (manualCommentParsingDidntWork) {
+            // Must resort to forcing parsing as JS instead of JSON.
+            // Only possible with `eval()` since `require()`/`import` function in a specific
+            // manner with JSON modules.
+            //
+            // See:
+            //  - https://stackoverflow.com/questions/38594912/js-how-to-convert-a-string-to-js-object-not-to-json/38594964#38594964
+            tsconfig = eval(`(${fs.readFileSync(tsconfigPath)})`);
+        }
     }
 }
 

@@ -540,6 +540,13 @@ function getWebpackConfig(webpackArgs) {
                 name: 'runtime',
             },
         },
+        /**
+         * @see [Cache]{@link https://webpack.js.org/configuration/cache/}
+         */
+        cache: {
+            type: 'filesystem',
+            compression: 'gzip',
+        },
         performance: {
             hints: false, // disable "entrypoint size limit" warning
         },

@@ -1,7 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Routes, Navigate } from 'react-router';
-import { BrowserRouter, HashRouter, Route } from 'react-router-dom';
+import {
+    BrowserRouter,
+    HashRouter,
+    Routes,
+    Route,
+    Navigate,
+} from 'react-router-dom';
 
 import SpinnerCircle from '@/components/ui/SpinnerCircle';
 
@@ -62,6 +67,7 @@ export const appRoutes = [
  * @param {Routes} props.routes - Props used to create `<Route>` entries; Allows child components to specify nested routes themselves (e.g. REST URLs).
  * @param {React.ComponentType} [props.ReactRouter=Router.Types.SLASH] - Type of router to use.
  * @param {Object} [props.routerProps] - Props for the selected `ReactRouter`.
+ * @param {React.ComponentType} [props.RouterWrapper=div] - Container to wrap the first child of {@code <React.Suspense />} in before rendering {@code <Router />}.
  * @param {Object} [props.wrapperProps] - Props to pass to the `<div>` inside `<React.Suspense>` that wraps the router.
  * @param {Object} [props.suspenseProps={fallback: Spinner}] - Fallback used in `<React.Suspense>`.
  * @returns {JSX.Element} - React.Suspense > div > Router > Route[].
@@ -70,6 +76,7 @@ function Router({
     routes,
     ReactRouter = Router.Types.SLASH,
     routerProps = {},
+    RouterWrapper = 'div',
     wrapperProps = {},
     suspenseProps = {
         fallback: (<SpinnerCircle show />),
@@ -78,7 +85,7 @@ function Router({
 }) {
     return (
         <React.Suspense {...suspenseProps}>
-            <div {...wrapperProps}>
+            <RouterWrapper {...wrapperProps}>
                 <ReactRouter {...routerProps}>
                     <Routes>
                         {routes.map(routeProps => (
@@ -87,7 +94,7 @@ function Router({
                     </Routes>
                     {children}
                 </ReactRouter>
-            </div>
+            </RouterWrapper>
         </React.Suspense>
     );
 }
@@ -99,10 +106,11 @@ Router.Types = {
 
 Router.propTypes = {
     routes: PropTypes.arrayOf(PropTypes.object).isRequired,
-    ReactRouter: PropTypes.oneOf(Object.values(Router.Types)),
+    ReactRouter: PropTypes.elementType,
     routerProps: PropTypes.object,
-    suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
+    RouterWrapper: PropTypes.elementType,
     wrapperProps: PropTypes.object,
+    suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
     children: PropTypes.node,
 };
 

@@ -71,6 +71,11 @@ jobs:
       - name: Checkout repository branch
         uses: actions/checkout@v2
 
+      - name: Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - name: Client CD - Download CI output
         id: cd-download-artifacts
         needs: [ cd-client-build ]

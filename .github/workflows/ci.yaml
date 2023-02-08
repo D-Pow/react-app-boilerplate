@@ -45,6 +45,11 @@ jobs:
       - name: Checkout repository branch
         uses: actions/checkout@v2
 
+      - name: Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - name: Client Verify
         # Import pipeline logic via `uses`
         uses: ./.github/workflows/actions/client
@@ -68,6 +73,11 @@ jobs:
     #     description: "CI - Cache build output"
     #     # value:
     steps:
+      - name: Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - name: Client Build Output
         uses: actions/upload-artifact@v3
         with:

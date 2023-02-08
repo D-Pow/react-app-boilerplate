@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-import dotenv from 'dotenv';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import TerserJSPlugin from 'terser-webpack-plugin';

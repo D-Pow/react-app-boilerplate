@@ -85,6 +85,14 @@ jobs:
           path: |
             dist
 
+      # Only necessary if running npm scripts in CD, which we are for `deploy`
+      - name: Client CD - Install
+        id: cd-client-install
+        shell: bash
+        working-directory: ./
+        run: |
+          npm install
+
       - name: Deploy application
         needs: [ cd-download-artifacts ]
         run: |

@@ -39,6 +39,11 @@ jobs:
         # working-directory: ./client
         working-directory: ./
 
+    # outputs:
+    #   ci-build-output:
+    #     description: "CI - Cache build output"
+    #     # value:
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -54,29 +59,13 @@ jobs:
         # Import pipeline logic via `uses`
         uses: ./.github/workflows/actions/client
 
-      # Force this step to use separate job in the same `jobs` block via
+      # Separate this step from `verify` to ensure linting, type-checking, etc. pass before using resources for building the app
       - name: Client Build
         id: client-build
         shell: bash
         working-directory: ./
         run: |
           npm run build
-
-  ci-build-and-upload-artifacts:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./
-    needs: [ ci-client-verify ]
-    # outputs:
-    #   ci-build-output:
-    #     description: "CI - Cache build output"
-    #     # value:
-    steps:
-      - name: Set NodeJS version
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
 
       - name: Client Build Output
         uses: actions/upload-artifact@v3

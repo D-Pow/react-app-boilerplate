@@ -33,7 +33,7 @@ on:
   # 1. Publish your release in GitHub and have your pipeline
   # react to deploy the package
   release:
-    types: [published]
+    types: [ published ]
 
   # 2. Run the pipeline on merge to `master` and do the release/deploy then.
   # pull_request:

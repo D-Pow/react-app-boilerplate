@@ -337,6 +337,7 @@ module.exports = {
         'react/display-name': 'off', // Don't error on arrow-function components
         'react-hooks/rules-of-hooks': 'error', // Enforce proper usage of hooks
         'react-hooks/exhaustive-deps': 'warn', // Suggest adding all fields within hook dependencies, e.g. `useEffect(func, [ dep1 ])` errors if `dep2` left out
+        'react/no-unescaped-entities': 'warn', // Don't worry about potential accidents with unescaped `>`, `'`, etc. chars since if they're passed as children, it'll be intentional
         'react/jsx-uses-react': 'off', // Disable preventing `React` from being marked as unused in files with JSX (React v17 no longer requires React to be imported)
         'react/react-in-jsx-scope': 'off', // Don't error if `import React from 'react'` isn't in files with JSX (React v17 allows JSX without importing 'react')
     },

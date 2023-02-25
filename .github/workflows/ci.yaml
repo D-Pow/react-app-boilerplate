@@ -23,10 +23,24 @@ defaults:
     shell: bash
 
 
+# Set GitHub user info for ease of use of `gh` CLI commands.
+#
+# See:
+#   - https://docs.npmjs.com/cli/v9/commands/npm-run-script#ignore-scripts
+#   - https://stackoverflow.com/questions/59471962/how-does-npm-behave-differently-with-ignore-scripts-set-to-true
+#   - https://github.com/tschaub/gh-pages#optionsuser
+#     - https://github.com/actions/checkout/issues/13
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  gitUserName: ${{ github.actor }}
+  gitUserEmail: ${{ github.actor }}@users.noreply.github.com
+  nodeVersion: 16
+
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # Job 1. Handles everything related to the client/ folder
-  ci-client-verify:
+  ci-build-and-upload-artifacts:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -53,23 +67,64 @@ jobs:
       - name: Set NodeJS version
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: ${{ env.nodeVersion }}
+
+      # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+      - name: Client CI - Download cache
+        uses: actions/cache/restore@v3
+        env:
+          cache-name: ci-cache
+        with:
+          path: |
+            node_modules
+            dist
+            package.json
+            package-lock.json
+          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
 
       - name: Client Verify
-        # Import pipeline logic via `uses`
+        # Import reusable GitHub Action logic via `uses`
         uses: ./.github/workflows/actions/client
 
-      # Separate this step from `verify` to ensure linting, type-checking, etc. pass before using resources for building the app
-      - name: Client Build
-        id: client-build
-        shell: bash
-        working-directory: ./
+      # Ensure old cache is deleted so that the build step's cache request isn't ignored
+      #
+      # See:
+      #   - https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions/64819132#64819132
+      - name: Client CI - Clear caches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+          CACHE_NAME: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         run: |
+          CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
+          cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CACHE_NAME }}\")) | .id"))
+          echo "Deleting cache IDs: ${cacheIds[@]}..."
+          ( for cacheId in ${cacheIds[@]}; do gh api --method DELETE "${CACHES_API_URL}/$cacheId"; done; )
+
+      # Separate this step from `verify` to ensure linting, type-checking, etc. pass before using resources for building the app.
+      - name: Client CI - Build and increment app version
+        id: client-build
+        # We need to either cache the build output after the version is incremented, or re-run
+        # `npm run build` so the version is injected into the code where needed.
+        run: |
+          git pull
+          git config --global user.name ${{ env.gitUserName }}
+          git config --global user.email ${{ env.gitUserEmail }}
+          npm version --no-git-tag-version patch
           npm run build
 
-      - name: Client Build Output
-        uses: actions/upload-artifact@v3
+      - name: Client cache build and install artifacts
+        id: ci-cache
+        uses: actions/cache@v3
+        env:
+          cache-name: ci-cache
         with:
-          name: ci-build-output
           path: |
+            node_modules
             dist
+            package.json
+            package-lock.json
+          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          restore-keys: |
+            ${{ env.cache-name }}-${{ runner.os }}-
+            ${{ env.cache-name }}-

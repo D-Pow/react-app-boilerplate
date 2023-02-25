@@ -6,6 +6,9 @@
 # Preventing concurrent workflows (e.g. multiple merges to master at once)
 # https://github.blog/changelog/2021-04-19-github-actions-limit-workflow-run-or-job-concurrency/
 # From: https://github.community/t/how-to-limit-concurrent-workflow-runs/16844/
+#
+# Further split sub-directories' actions/workflows for more granular control.
+#   - https://stackoverflow.com/questions/64009546/how-to-run-multiple-github-actions-workflows-from-sub-directories
 
 
 # If we decide to use Docker - Using local Dockerfile in pipeline:
@@ -29,44 +32,88 @@ name: CD
 
 # Multiple ways to do this, including:
 on:
+  # 1. Manual trigger in web GUI
   workflow_dispatch:
-  # 1. Publish your release in GitHub and have your pipeline
+  # 2. Publish your release in GitHub and have your pipeline
   # react to deploy the package
   release:
     types: [ published ]
 
-  # 2. Run the pipeline on merge to `master` and do the release/deploy then.
+  # 3. Run the pipeline on merge to `master` and do the release/deploy then.
   # pull_request:
   #   types: [ closed ]
   #   branches: [ master ]
 
-  # 3. Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
+  # 4. Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
   # workflow_run:
-  #   branches: [ master ]
   #   workflows: [ 'CI' ]
   #   types: [ completed ]
+  #   branches: [ master ]
+  workflow_run:
+    workflows: [ 'CI' ]
+    types: [ completed ]
+    branches: [ master ]
 
 
 defaults:
   run:
     shell: bash
+    working-directory: ./
+
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  gitUserName: ${{ github.actor }}
+  gitUserEmail: ${{ github.actor }}@users.noreply.github.com
 
 
 jobs:
+  # cd-init:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository branch
+  #       uses: actions/checkout@v2
+  #
+  #     - name: CD Client build
+  #       # Workflows require at least one job that has no dependencies.
+  #       # However, we can still use the `uses` block for "reusable workflows"
+  #       #
+  #       # See:
+  #       #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
+  #       uses: ./.github/workflows/ci.yaml
+  #
+  # cd-init:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository branch
+  #       uses: actions/checkout@v2
+  #
+  # cd-client-build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Client CD - Download CI output
+  #       id: cd-download-artifacts
+  #       needs: [ cd-init ]
+  #     # Workflows require at least one job that has no dependencies.
+  #     # However, we can still use the `uses` block for "reusable workflows"
+  #     #
+  #     # See:
+  #     #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
+  #       #  uses: ./.github/workflows/ci.yaml
+  #       #  uses: actions/download-artifact@v3
+  #       with:
+  #         name: ci-build-output
+  #         path: |
+  #           dist
+
   cd-client-build:
     runs-on: ubuntu-latest
-    needs: [ ci-build-and-upload-artifacts ]
-    steps:
-      - uses: actions/checkout@v2
-      # TODO - Relative paths are finicky/often only work when using actions.
-      # When making this file an official GitHub Workflow, update this block.
-      - uses: ./.github/workflows/ci.yaml
-
-  cd-deploy:
-    runs-on: ubuntu-latest
-    needs: [ cd-client-build ]
-    # Only run on merge to master: https://github.community/t/depend-on-another-workflow/16311/3
-    if: ${{ github.event.pull_request.merged || github.ref == 'refs/heads/master' }}
+    # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
+    #
+    # See:
+    #   - https://github.community/t/depend-on-another-workflow/16311/3
+    #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
+    if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
     steps:
       - name: Checkout repository branch
         uses: actions/checkout@v2
@@ -74,26 +121,171 @@ jobs:
       - name: Set NodeJS version
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: ${{ env.nodeVersion }}
 
-      - name: Client CD - Download CI output
-        id: cd-download-artifacts
-        needs: [ cd-client-build ]
-        uses: actions/download-artifact@v3
+      # Native GitHub `actions/download-artifact@v3` doesn't allow sharing between workflows.
+      #   - Issue: https://github.com/actions/toolkit/issues/501
+      # Once it does, we can use:
+      #
+      # - name: Client CD - Download CI output
+      #   id: cd-download-artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: ci-build-output
+      #     path: |
+      #       dist
+      #
+      # Note that simply adding a `needs`/`uses` block for my-workflow.yaml file doesn't suffice until this is fixed;
+      # adding said block for my-action.yaml would (since it's an action and actions are reusable while workflows aren't
+      # despite what GitHub claims) but only if that action covers all your needs.
+      #
+      # We can work around this via:
+      #
+      # 1.
+      # Use a third-party download-artifact action.
+      #   - Good example: https://stackoverflow.com/questions/60355925/share-artifacts-between-workflows-github-actions/65049722#65049722
+      #
+      # - name: Client CD - Download CI output
+      #   id: cd-download-artifacts
+      #   # needs: [ ci-build-output ]
+      #   # needs: [ ci-build-and-upload-artifacts ]
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     name: ci-build-output-artifacts
+      #     branch: master
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     if_no_artifact_found: fail
+      #     workflow_conclusion: success
+      #
+      # 2. Use our own custom CLI action to manually download the artifact files.
+      #    This is the only reliable option at the moment for sharing artifacts between workflow files
+      #    without uploading them in Release files.
+      #    Do so via:
+      #     - Get latest CI workflow ID via:
+      #       gh run list --limit 1 --workflow CI | tail -n +1 | awk '{ print $(NF - 2) }'
+      #     - Download all files from that workflow into an arbitrary dir (`ci-workflow-artifact-output` in this case).
+      #     - Create the dir we actually want to use (`dist` in this case).
+      #     - Copy all nested files/directories from the downloaded dir to the desired dir.
+      #     - Delete the original temp dir.
+      #    Notes:
+      #     - `github.run_id` == Current workflow run ID, not the ID of the run we want (previous workflow run).
+      #     - GitHub CLI docs: https://cli.github.com/manual/gh_help_reference
+      #     - GitHub workflows - Storing artifacts: https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+      #     - GitHub workflows - Using `gh` CLI: https://docs.github.com/en/actions/using-workflows/using-github-cli-in-workflows
+      #     - GitHub workflows - `github` context vars available: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
+      #
+      # TODO: Try the cache instead of storing artifacts manually:
+      #   - Related - Cache: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+      # - name: Client CD - Download CI artifacts
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     WORKFLOW_RUN_ID: ${{ github.run_id }}
+      #   run: |
+      #     gh run download --dir ci-workflow-artifact-output --pattern '*' $(gh run list --limit 1 --workflow CI | tail -n +1 | awk '{ print $(NF - 2) }')
+      #     mkdir dist
+      #     cp -R ci-workflow-artifact-output/*/* dist
+      #     rm -rf ci-workflow-artifact-output
+      #
+      # # Only necessary if running npm scripts in CD, which we are for `deploy`
+      # - name: Client CD - Install
+      #   id: cd-client-install
+      #   shell: bash
+      #   working-directory: ./
+      #   run: |
+      #     npm install
+
+      - name: Client CD Build - Download CI cache
+        uses: actions/cache/restore@v3
+        env:
+          cache-name: ci-cache
         with:
-          name: ci-build-and-upload-artifacts
           path: |
+            node_modules
             dist
+            package.json
+            package-lock.json
+          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        continue-on-error: false
 
-      # Only necessary if running npm scripts in CD, which we are for `deploy`
-      - name: Client CD - Install
-        id: cd-client-install
-        shell: bash
-        working-directory: ./
+      # See:
+      #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
+      #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
+      # Only run next step if cache-hit failed.
+      # For some reason, the recommended logic from the docs doesn't work:
+      # - if: ${{ steps.ci-cache.outputs.cache-hit != 'true' }}
+      # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
+      - if: ${{ failure() }}
+        # continue-on-error: false
+        name: Client CD - Generate CI artifacts
         run: |
           npm install
+          # npm version --no-git-tag-version patch
+          npm run build
 
-      - name: Deploy application
-        needs: [ cd-download-artifacts ]
-        run: |
-          npm run deploy
+
+  cd-deploy:
+    runs-on: ubuntu-latest
+    needs: [ cd-client-build ]
+    permissions:
+      pages: write      # Grant write permissions to deploy to the `gh-pages` (or whatever is specified in "Settings") branch
+      id-token: write   # to verify the deployment originates from an appropriate source
+      deployments: write
+      packages: write
+      actions: write
+      contents: write
+    steps:
+      - name: Checkout repository branch
+        uses: actions/checkout@v2
+
+      - name: Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.nodeVersion }}
+
+      - name: Client CD Deploy - Download CI cache
+        uses: actions/cache/restore@v3
+        env:
+          cache-name: ci-cache
+        with:
+          path: |
+            node_modules
+            dist
+            package.json
+            package-lock.json
+          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        continue-on-error: false
+
+      # - name: Client CD Deploy - Upgrade app version
+      #   # Not necessarily required since `npm version` returns the version string (with "v" in it), but for reference:
+      #   #   - Normal: npm version patch; git commit --amend -m "Patch to v$(jq -r '.version' package.json)"
+      #   #   - Without git commit or tag: newAppVersion=$(npm version --no-git-tag-version patch); git commit -am "Patch to ${newAppVersion}"
+      #   #
+      #   # run:
+      #   #   newAppVersion=$(npm version --no-git-tag-version patch)
+      #   #   git commit -am "Patch to ${newAppVersion}"
+      #   run: |
+      #     git config --global user.name ${{ env.gitUserName }}
+      #     git config --global user.email ${{ env.gitUserEmail }}
+      #     newAppVersion="$(jq -r '.version' package.json)"
+      #     git commit -am "Patch to ${newAppVersion}"
+      #     git push
+      #
+      # # Ignore pre-/post- npm scripts via `npm run --ignore-scripts <my-script>`.
+      # # This could be useful for, e.g. scripts like `deploy` since `predeploy` (`npm run build`)
+      # # was already run in CI.
+      # #
+      # # Set `user.name` and `user.email` for ~/.gitconfig inline via the `--user` flag for `gh-pages`:
+      # #   npm run --ignore-scripts deploy -- --user "${{ env.gitUserName }} <${{ env.gitUserEmail }}>"
+      # - name: CD - Deploy application
+      #   # We need to either cache the build output after the version is incremented, or re-run
+      #   # `npm run build` so the version is injected into the code where needed.
+      #   run: |
+      #     git pull
+      #     newAppVersion="$(jq -r '.version' package.json)"
+      #     git checkout gh-pages
+      #     ( for path in $(ls --ignore=dist --ignore=.git); do rm -rf "$path"; done; )
+      #     cp -R dist/* .
+      #     ( for path in dist/*; do git add "$(echo "$path" | sed -E 's/dist/./')"; done; )
+      #     rm -rf dist
+      #     git commit -am "Patch to v${newAppVersion}"
+      #     git push

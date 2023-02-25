@@ -35,6 +35,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
+  # increment-version: 'TODO'
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -82,49 +83,18 @@ jobs:
             package-lock.json
           key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
 
-      - name: Client Verify
+      - name: Client CI - Run all
         # Import reusable GitHub Action logic via `uses`
         uses: ./.github/workflows/actions/client
-
-      # Ensure old cache is deleted so that the build step's cache request isn't ignored
-      #
-      # See:
-      #   - https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions/64819132#64819132
-      - name: Client CI - Clear caches
+        # Set env vars for all nested actions
+        # See:
+        #   - https://github.com/orgs/community/discussions/27088
+        #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
+        #   - https://stackoverflow.com/questions/63663436/what-is-difference-between-with-and-env
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WORKFLOW_RUN_ID: ${{ github.run_id }}
-          CACHE_NAME: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
-        run: |
-          CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
-          cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CACHE_NAME }}\")) | .id"))
-          echo "Deleting cache IDs: ${cacheIds[@]}..."
-          ( for cacheId in ${cacheIds[@]}; do gh api --method DELETE "${CACHES_API_URL}/$cacheId"; done; )
-
-      # Separate this step from `verify` to ensure linting, type-checking, etc. pass before using resources for building the app.
-      - name: Client CI - Build and increment app version
-        id: client-build
-        # We need to either cache the build output after the version is incremented, or re-run
-        # `npm run build` so the version is injected into the code where needed.
-        run: |
-          git pull
-          git config --global user.name ${{ env.gitUserName }}
-          git config --global user.email ${{ env.gitUserEmail }}
-          npm version --no-git-tag-version patch
-          npm run build
-
-      - name: Client cache build and install artifacts
-        id: ci-cache
-        uses: actions/cache@v3
-        env:
-          cache-name: ci-cache
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          gitUserName: ${{ env.gitUserName }}
+          gitUserEmail: ${{ env.gitUserEmail }}
+          nodeVersion: ${{ env.nodeVersion }}
         with:
-          path: |
-            node_modules
-            dist
-            package.json
-            package-lock.json
-          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
-          restore-keys: |
-            ${{ env.cache-name }}-${{ runner.os }}-
-            ${{ env.cache-name }}-
+          incrementVersion: ${{ env.increment-version }}

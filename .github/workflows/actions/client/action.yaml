@@ -29,10 +29,26 @@ description: Installs, tests, and builds the front-end
 #     description: Shell in which to run step.run commands
 #     required: false
 #     default: bash
+inputs:
+  githubToken:
+    description: GitHub token required for acting on repo within pipelines.
+    required: true
+  incrementVersion:
+    description: "Increments client app version"
+    required: false
+    default: false
+
+
+defaults:
+  run:
+    shell: bash
 
 
 runs:
-  # Allows the YAML file to be run from other workflows/actions. See: https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runsusing-1
+  # Allows the YAML file to be run from other workflows/actions.
+  # See:
+  #   - https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runsusing-1
+  #   - Alternative (reusable workflows): https://docs.github.com/en/actions/using-workflows/reusing-workflows#creating-a-reusable-workflow
   using: composite
 
   # Steps represent a sequence of tasks that will be executed as part of the job
@@ -46,16 +62,17 @@ runs:
       with:
         node-version: ${{ env.nodeVersion }}
 
-    - name: Client Install
-      id: client-install
-      shell: bash
-      working-directory: ./
-      run: |
-        npm install
+    - name: Client Init
+      uses: ./.github/workflows/actions/client/init
 
-    - name: Client Verify
-      id: client-verify
-      shell: bash
-      working-directory: ./
-      run: |
-        npm run verify
+    # TODO - Uncomment after done testing `build` CI step
+    # - name: Client Verify
+    #   uses: ./.github/workflows/actions/client/verify
+
+    # Separate this step from `verify` to ensure linting, type-checking, etc. pass before
+    # using resources for building the app.
+    - name: Client Build
+      uses: ./.github/workflows/actions/client/build
+      # Forward inputs down to sub-action call
+      with:
+        incrementVersion: ${{ inputs.incrementVersion }}

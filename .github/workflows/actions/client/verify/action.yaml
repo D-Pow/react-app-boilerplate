@@ -1,0 +1,33 @@
+name: Client - Verify
+description: Runs verification checks for the front-end
+
+
+defaults:
+  run:
+    shell: bash
+
+
+runs:
+  using: composite
+  steps:
+    - name: Client - Download cache
+      uses: actions/cache/restore@v3
+      env:
+        cache-name: client-cache
+      with:
+        path: |
+          node_modules
+          dist
+          package.json
+          package-lock.json
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+
+    - if: ${{ failure() }}
+      name: Client - Re-init
+      uses: ./.github/workflows/actions/client/init
+
+    - name: Client Verify
+      id: client-verify
+      shell: bash
+      run: |
+        npm run verify

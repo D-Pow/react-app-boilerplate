@@ -1,0 +1,32 @@
+name: Client - Initialize
+description: Initializes the front-end
+
+
+defaults:
+  run:
+    shell: bash
+
+
+runs:
+  using: composite
+  steps:
+    - name: Client Install
+      id: client-install
+      shell: bash
+      run: |
+        npm install
+
+    - name: Client - Cache init artifacts
+      id: client-init-cache
+      uses: actions/cache/save@v3
+      env:
+        cache-name: client-cache
+      with:
+        path: |
+          node_modules
+          package.json
+          package-lock.json
+        key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        # restore-keys: |
+        #   ${{ env.cache-name }}-${{ runner.os }}-
+        #   ${{ env.cache-name }}-

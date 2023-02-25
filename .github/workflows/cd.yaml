@@ -197,7 +197,7 @@ jobs:
       - name: Client CD Build - Download CI cache
         uses: actions/cache/restore@v3
         env:
-          cache-name: ci-cache
+          cache-name: client-cache
         with:
           path: |
             node_modules
@@ -212,7 +212,7 @@ jobs:
       #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
       # Only run next step if cache-hit failed.
       # For some reason, the recommended logic from the docs doesn't work:
-      # - if: ${{ steps.ci-cache.outputs.cache-hit != 'true' }}
+      # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
       # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
       - if: ${{ failure() }}
         # continue-on-error: false
@@ -245,7 +245,7 @@ jobs:
       - name: Client CD Deploy - Download CI cache
         uses: actions/cache/restore@v3
         env:
-          cache-name: ci-cache
+          cache-name: client-cache
         with:
           path: |
             node_modules

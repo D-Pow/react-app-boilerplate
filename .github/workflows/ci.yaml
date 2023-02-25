@@ -74,7 +74,7 @@ jobs:
       - name: Client CI - Download cache
         uses: actions/cache/restore@v3
         env:
-          cache-name: ci-cache
+          cache-name: client-cache
         with:
           path: |
             node_modules

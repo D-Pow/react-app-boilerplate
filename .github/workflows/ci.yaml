@@ -36,6 +36,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
+  client-cache-name: client-cache
   # increment-version: 'TODO'
 
 
@@ -75,15 +76,13 @@ jobs:
       # Downloads previous runs' cache of content like node_modules/ for faster re-runs
       - name: Client CI - Download cache
         uses: actions/cache/restore@v3
-        env:
-          cache-name: client-cache
         with:
           path: |
             node_modules
             dist
             package.json
             package-lock.json
-          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
 
       - name: Client CI - Run all
         # Import reusable GitHub Action logic via `uses`

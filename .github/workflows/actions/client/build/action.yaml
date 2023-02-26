@@ -17,20 +17,22 @@ defaults:
     shell: bash
 
 
+env:
+  client-cache-name: client-cache
+
+
 runs:
   using: composite
   steps:
     # Downloads previous runs' cache of content like node_modules/ for faster re-runs
     - name: Client - Download cache
       uses: actions/cache/restore@v3
-      env:
-        cache-name: client-cache
       with:
         path: |
           node_modules
           package.json
           package-lock.json
-        key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
 
     # See:
     #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
@@ -55,7 +57,7 @@ runs:
         #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         WORKFLOW_RUN_ID: ${{ github.run_id }}
-        CACHE_NAME: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        CACHE_NAME: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
       run: |
         CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
         cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CACHE_NAME }}\")) | .id"))
@@ -71,7 +73,7 @@ runs:
       #   #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
       #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
       #   WORKFLOW_RUN_ID: ${{ github.run_id }}
-      #   CACHE_NAME: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+      #   CACHE_NAME: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
       #   incrementVersion: ${{ inputs.incrementVersion }}
 
       # We need to either cache the build output after the version is incremented, or re-run
@@ -116,12 +118,10 @@ runs:
     - name: Client - Cache build artifacts
       id: client-build-cache
       uses: actions/cache/save@v3
-      env:
-        cache-name: client-cache
       with:
         path: |
           node_modules
           dist
           package.json
           package-lock.json
-        key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}

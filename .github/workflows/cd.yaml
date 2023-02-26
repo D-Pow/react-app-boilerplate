@@ -65,6 +65,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
+  client-cache-name: client-cache
   # nodeVersion: 16
   # increment-version: 'TODO'
 
@@ -147,15 +148,13 @@ jobs:
 
       - name: Client CD Build - Download CI cache
         uses: actions/cache/restore@v3
-        env:
-          cache-name: client-cache
         with:
           path: |
             node_modules
             dist
             package.json
             package-lock.json
-          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         continue-on-error: false
 
       # See:
@@ -199,15 +198,13 @@ jobs:
 
       - name: Client CD Deploy - Download CI cache
         uses: actions/cache/restore@v3
-        env:
-          cache-name: client-cache
         with:
           path: |
             node_modules
             dist
             package.json
             package-lock.json
-          key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         continue-on-error: false
 
       - if: ${{ env.increment-version == true }}

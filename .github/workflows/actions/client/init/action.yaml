@@ -7,6 +7,10 @@ defaults:
     shell: bash
 
 
+env:
+  client-cache-name: client-cache
+
+
 runs:
   using: composite
   steps:
@@ -19,14 +23,12 @@ runs:
     - name: Client - Cache init artifacts
       id: client-init-cache
       uses: actions/cache/save@v3
-      env:
-        cache-name: client-cache
       with:
         path: |
           node_modules
           package.json
           package-lock.json
-        key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         # restore-keys: |
-        #   ${{ env.cache-name }}-${{ runner.os }}-
-        #   ${{ env.cache-name }}-
+        #   ${{ env.client-cache-name }}-${{ runner.os }}-
+        #   ${{ env.client-cache-name }}-

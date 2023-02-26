@@ -69,7 +69,7 @@ jobs:
       # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup
       # logic in with the actual job logic.
       - name: CI:Client - Checkout repository branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: CI:Client - Set NodeJS version
         uses: actions/setup-node@v2
@@ -128,7 +128,7 @@ jobs:
       # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup
       # logic in with the actual job logic.
       - name: CI:Server - Checkout repository branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: CI:Server - Set NodeJS version
         uses: actions/setup-node@v2

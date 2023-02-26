@@ -14,7 +14,7 @@
 # If we decide to use Docker - Using local Dockerfile in pipeline:
 #   steps:
 #   - name: Check out code
-#     uses: actions/checkout@v2
+#     uses: actions/checkout@v3
 #   - name: Build docker images
 #     run: docker build -t local < .devcontainer/Dockerfile # .devcontainer is the local path
 #   - name: Run tests
@@ -77,7 +77,7 @@ jobs:
     if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
     steps:
       - name: CD:Client - Checkout repository branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Temp - Check cache name
         id: cache-name-cd
@@ -128,7 +128,7 @@ jobs:
       contents: write
     steps:
       - name: CD:Client - Checkout repository branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2

@@ -81,7 +81,7 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
           GH_USER_EMAIL: ${{secrets.GH_USER_EMAIL}}
         steps:
           - name: Checkout Repository
-            uses: actions/checkout@v2
+            uses: actions/checkout@v3
           - name: Setup Environment
             uses: actions/setup-node@v2
             with:

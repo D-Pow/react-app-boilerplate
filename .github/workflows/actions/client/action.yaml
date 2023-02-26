@@ -65,7 +65,7 @@ runs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout repository branch
       id: client-git-checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set NodeJS version
       id: client-set-nodejs-version

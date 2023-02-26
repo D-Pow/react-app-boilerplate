@@ -65,9 +65,8 @@ runs:
     - name: Client Init
       uses: ./.github/workflows/actions/client/init
 
-    # TODO - Uncomment after done testing `build` CI step
-    # - name: Client Verify
-    #   uses: ./.github/workflows/actions/client/verify
+    - name: Client Verify
+      uses: ./.github/workflows/actions/client/verify
 
     # Separate this step from `verify` to ensure linting, type-checking, etc. pass before
     # using resources for building the app.

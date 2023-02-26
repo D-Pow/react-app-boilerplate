@@ -59,7 +59,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
-  # nodeVersion: 16
+  nodeVersion: 16
   # increment-version: 'TODO'
 
 

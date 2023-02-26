@@ -66,7 +66,7 @@ env:
 jobs:
   cd-client:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     # env:
     #   CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
 

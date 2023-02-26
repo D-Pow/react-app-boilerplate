@@ -135,7 +135,7 @@ jobs:
             package.json
             package-lock.json
           key: ${{ env.CLIENT_CACHE_ID }}
-        continue-on-error: false
+        continue-on-error: true
 
       - name: Client CD - Build and generate CI artifacts
         if: ${{ failure() || steps.cd-client-build-download-cache.outputs.cache-hit != 'true' }}

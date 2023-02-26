@@ -57,6 +57,7 @@ runs:
 
     - name: Client init - Cache install artifacts
       id: client-init-cache
+      if: ${{ steps.client-init-download-cache.outputs.cache-hit != 'true' }}
       uses: actions/cache/save@v3
       with:
         path: |

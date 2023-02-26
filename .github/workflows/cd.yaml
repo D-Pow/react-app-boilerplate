@@ -83,6 +83,11 @@ jobs:
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 
+      - name: CD:Client - Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.nodeVersion }}
+
       - name: Temp - Check cache name
         id: cd-check-cache-name
           # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
@@ -93,10 +98,22 @@ jobs:
           echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
           node -v
 
-      - name: CD:Client - Set NodeJS version
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.nodeVersion }}
+      # It seems strangely difficult to link different workflows together without re-running them.
+      # As such, we can't just arbitrarily add a dependency on CI without making sure this CD run uses the
+      # correct respective CI run.
+      #
+      # Thus, rather than use the `gh` API or similar to get the previous CI run, simply re-init the front-end.
+      # This ensures the code used in this workflow is the correct version.
+      # i.e. We might have multiple CI/CD pipelines running at once, each with a different version of the code,
+      # so don't get the most up-to-date version of the code, rather get the version associated with this specific
+      # run (via the `CLIENT_CACHE_ID`).
+      - name: CD:Client CD - Init
+        uses: ./.github/workflows/actions/client/init
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          gitUserName: ${{ env.gitUserName }}
+          gitUserEmail: ${{ env.gitUserEmail }}
+          nodeVersion: ${{ env.nodeVersion }}
 
       - name: CD:Client - Build - Download CI cache
         id: cd-client-build-download-cache

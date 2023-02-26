@@ -213,37 +213,42 @@ jobs:
           key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         continue-on-error: false
 
-      # - name: Client CD Deploy - Upgrade app version
-      #   # Not necessarily required since `npm version` returns the version string (with "v" in it), but for reference:
-      #   #   - Normal: npm version patch; git commit --amend -m "Patch to v$(jq -r '.version' package.json)"
-      #   #   - Without git commit or tag: newAppVersion=$(npm version --no-git-tag-version patch); git commit -am "Patch to ${newAppVersion}"
-      #   #
-      #   # run:
-      #   #   newAppVersion=$(npm version --no-git-tag-version patch)
-      #   #   git commit -am "Patch to ${newAppVersion}"
-      #   run: |
-      #     git config --global user.name ${{ env.gitUserName }}
-      #     git config --global user.email ${{ env.gitUserEmail }}
-      #     newAppVersion="$(jq -r '.version' package.json)"
-      #     git commit -am "Patch to ${newAppVersion}"
-      #     git push
+      - if: ${{ env.increment-version == true }}
+        name: Client CD Deploy - Upgrade app version
+        # Not necessarily required since `npm version` returns the version string (with "v" in it), but for reference:
+        #   - Normal: npm version patch; git commit --amend -m "Patch to v$(jq -r '.version' package.json)"
+        #   - Without git commit or tag: newAppVersion=$(npm version --no-git-tag-version patch); git commit -am "Patch to ${newAppVersion}"
+        # Note that the git branch is defined here (unlike in composite actions) so we can run normal `git` CLI commands
+        run: |
+          git pull
+
+          git config --global user.name ${{ env.gitUserName }}
+          git config --global user.email ${{ env.gitUserEmail }}
+
+          # New version is actually incremented and set within the client/build/ action
+          # so we only need to push the change to the git repo here
+          newAppVersion="$(jq -r '.version' package.json)"
+
+          git commit -am "Patch to ${newAppVersion}"
+          git push
+
+      # Ignore pre-/post- npm scripts via `npm run --ignore-scripts <my-script>`.
+      # This could be useful for, e.g. scripts like `deploy` since `predeploy` (`npm run build`)
+      # was already run in CI.
       #
-      # # Ignore pre-/post- npm scripts via `npm run --ignore-scripts <my-script>`.
-      # # This could be useful for, e.g. scripts like `deploy` since `predeploy` (`npm run build`)
-      # # was already run in CI.
-      # #
-      # # Set `user.name` and `user.email` for ~/.gitconfig inline via the `--user` flag for `gh-pages`:
-      # #   npm run --ignore-scripts deploy -- --user "${{ env.gitUserName }} <${{ env.gitUserEmail }}>"
-      # - name: CD - Deploy application
-      #   # We need to either cache the build output after the version is incremented, or re-run
-      #   # `npm run build` so the version is injected into the code where needed.
-      #   run: |
-      #     git pull
-      #     newAppVersion="$(jq -r '.version' package.json)"
-      #     git checkout gh-pages
-      #     ( for path in $(ls --ignore=dist --ignore=.git); do rm -rf "$path"; done; )
-      #     cp -R dist/* .
-      #     ( for path in dist/*; do git add "$(echo "$path" | sed -E 's/dist/./')"; done; )
-      #     rm -rf dist
-      #     git commit -am "Patch to v${newAppVersion}"
-      #     git push
+      # Set `user.name` and `user.email` for ~/.gitconfig inline via the `--user` flag for `gh-pages`:
+      #   npm run --ignore-scripts deploy -- --user "${{ env.gitUserName }} <${{ env.gitUserEmail }}>"
+      - name: CD - Deploy application to gh-pages
+        # We need to either cache the build output after the version is incremented, or re-run
+        # `npm run build` so the version is injected into the code where needed.
+        run: |
+          git pull
+          git checkout gh-pages
+
+          ( for path in $(ls --ignore=dist --ignore=.git); do rm -rf "$path"; done; )
+
+          cp -R dist/* .
+
+          ( for path in dist/*; do git add "$(echo "$path" | sed -E 's/dist/./')"; done; )
+
+          rm -rf dist

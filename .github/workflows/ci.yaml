@@ -84,6 +84,12 @@ jobs:
             package-lock.json
           key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
 
+      - name: Client CI - Check cache name before
+        id: cache-name-before
+        run: |
+          echo "${{ steps.client-init-cache.outputs }}"
+          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+
       - name: Client CI - Run all
         # Import reusable GitHub Action logic via `uses`
         uses: ./.github/workflows/actions/client
@@ -99,3 +105,30 @@ jobs:
           nodeVersion: ${{ env.nodeVersion }}
         with:
           incrementVersion: ${{ env.increment-version }}
+
+      - name: Client CI - Check cache name after
+        id: cache-name-after
+        run: |
+          echo "${{ steps.client-init-cache.outputs }}"
+          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+
+  ci-post-verify-build-check:
+    runs-on: ubuntu-latest
+    needs: [ ci-verify-build ]
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it.
+      # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup
+      # logic in with the actual job logic.
+      - name: Checkout repository branch
+        uses: actions/checkout@v2
+
+      - name: Set NodeJS version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.nodeVersion }}
+
+      - name: Client CI - Check cache name separate job
+        id: cache-name-separate-job
+        run: |
+          echo "${{ steps.client-init-cache.outputs }}"
+          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"

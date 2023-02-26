@@ -13,7 +13,15 @@ env:
 
 runs:
   using: composite
+  defaults:
+    run:
+      shell: bash
   steps:
+    - name: Client set cache ID
+      id: client-init-set-cache-id
+      run: |
+        echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './test/**', './tests/**', './config/**', './mocks/**') }}" >> $GITHUB_ENV
+
     - name: Client Install
       id: client-install
       shell: bash
@@ -26,9 +34,16 @@ runs:
       with:
         path: |
           node_modules
+          dist
           package.json
           package-lock.json
+        # key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './tests/**', './mocks/**', './config/**', './scripts/**', './.github/**') }}
         key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
         # restore-keys: |
         #   ${{ env.client-cache-name }}-${{ runner.os }}-
         #   ${{ env.client-cache-name }}-
+
+    - name: Read client cache ID
+      run: |
+        echo "${{ steps.client-init-cache.outputs }}"
+        echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"

@@ -61,13 +61,14 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
-  CLIENT_CACHE_ID: ${{ jobs.ci-client.outputs.CLIENT_CACHE_ID }}
   # nodeVersion: 16
   # increment-version: 'TODO'
 
 
 jobs:
   cd-client:
+    env:
+      CLIENT_CACHE_ID: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}
     runs-on: ubuntu-latest
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
@@ -80,13 +81,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Temp - Check cache name
-        id: cache-name-cd
+        id: cd-check-cache-name
         run: |
           echo "\$CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
           echo "\${{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
           echo "\${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}"
           echo "\${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"
-          echo "\${{ jobs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-client.outputs.CLIENT_CACHE_ID }}"
 
       - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2

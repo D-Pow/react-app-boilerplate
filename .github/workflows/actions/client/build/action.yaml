@@ -80,8 +80,8 @@ runs:
       # Example:
       #   base_ref: master
       #   head_ref: feature/cicd-add-caching-and-deployments
-      #   ref: refs/pull/7/merge
-      #   ref_name: 7/merge
+      #   ref: refs/pull/7/merge  or  refs/head/<branch-name>
+      #   ref_name: 7/merge  or  <branch-name>
       #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
 
       # Conditionals:
@@ -92,13 +92,12 @@ runs:
         if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             gitBranch="${{ github.head_ref }}"
         else
-            gitBranch="${{ github.ref }}"
+            gitBranch="${{ github.ref_name }}"
         fi
 
         git config --global user.name ${{ env.gitUserName }}
         git config --global user.email ${{ env.gitUserEmail }}
-        # HEAD is in detached state at `pull/<PR-number>/merge` for some reason
-        # TODO Find out why this happens in composite actions but not root-level workflows
+        # HEAD is in detached state at `pull/<PR-number>/merge` in pull-requests,
         # git pull origin $gitBranch
 
         if [[ "${{ env.incrementVersion }}" == true ]]; then

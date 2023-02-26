@@ -60,26 +60,22 @@ runs:
 
     - name: Set NodeJS version
       id: client-set-nodejs-version
-      needs: [ client-git-checkout ]
       uses: actions/setup-node@v2
       with:
         node-version: ${{ env.nodeVersion }}
 
     - name: Client Init
       id: client-init
-      needs: [ client-set-nodejs-version ]
       uses: ./.github/workflows/actions/client/init
 
     - name: Client Verify
       id: client-verify
-      needs: [ client-init ]
       uses: ./.github/workflows/actions/client/verify
 
     # Separate this step from `verify` to ensure linting, type-checking, etc. pass before
     # using resources for building the app.
     - name: Client Build
       id: client-build
-      needs: [ client-verify ]
       uses: ./.github/workflows/actions/client/build
       # Forward inputs down to sub-action call
       with:

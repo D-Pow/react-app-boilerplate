@@ -41,14 +41,12 @@ on:
   #   branches: [ master ]
   #
   # Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
-  # workflow_run:
-  #   workflows: [ 'CI' ]
-  #   types: [ completed ]
-  #   branches: [ master ]
   workflow_run:
     workflows: [ 'CI' ]
     types: [ completed ]
-    branches: [ master ]
+    branches: [ master, feature/** ]
+    # branches: [ master ]
+  # pull_request:
 
 
 defaults:
@@ -67,15 +65,18 @@ env:
 
 jobs:
   cd-client:
-    env:
-      CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: [ ci-complete ]
+    # env:
+    #   CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
+
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
     # See:
     #   - https://github.community/t/depend-on-another-workflow/16311/3
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
-    if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
+    # if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
     steps:
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3

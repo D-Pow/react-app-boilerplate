@@ -60,7 +60,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
-  increment-version: ""
+  clientVersion: "" # TODO - Get from env, workflow_dispatch.inputs, or release.tag
 
 
 jobs:
@@ -125,7 +125,7 @@ jobs:
         continue-on-error: true
 
       - name: CD:Client - Build - Generate CI artifacts
-        if: ${{ failure() || (steps.cd-client-build-download-cache.outputs.cache-hit != 'true') || (env.increment-version == 'true') }}
+        if: ${{ failure() || (steps.cd-client-build-download-cache.outputs.cache-hit != 'true') || (env.clientVersion != '') }}
         uses: ./.github/workflows/actions/client/build
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
           gitUserEmail: ${{ env.gitUserEmail }}
           nodeVersion: ${{ env.nodeVersion }}
         with:
-          incrementVersion: ${{ env.increment-version }}
+          clientVersion: ${{ env.clientVersion }}
 
 
   cd-deploy:
@@ -168,23 +168,23 @@ jobs:
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
-      # - if: ${{ env.increment-version == true }}
-      #   name: Client CD Deploy - Upgrade app version
+      # - name: CD:Client - Deploy - Upgrade app version
+      #   if: ${{ (env.clientVersion != '') }}
       #   # Not necessarily required since `npm version` returns the version string (with "v" in it), but for reference:
       #   #   - Normal: npm version patch; git commit --amend -m "Patch to v$(jq -r '.version' package.json)"
       #   #   - Without git commit or tag: newAppVersion=$(npm version --no-git-tag-version patch); git commit -am "Patch to ${newAppVersion}"
       #   # Note that the git branch is defined here (unlike in composite actions) so we can run normal `git` CLI commands
       #   run: |
-      #     git pull
-      #
       #     git config --global user.name ${{ env.gitUserName }}
       #     git config --global user.email ${{ env.gitUserEmail }}
+      #
+      #     git pull
       #
       #     # New version is actually incremented and set within the client/build/ action
       #     # so we only need to push the change to the git repo here
       #     newAppVersion="$(jq -r '.version' package.json)"
       #
-      #     git commit -am "Patch to ${newAppVersion}"
+      #     git commit -am "Upgrade client version to ${newAppVersion}"
       #     git push
       #
       # # Ignore pre-/post- npm scripts via `npm run --ignore-scripts <my-script>`.
@@ -193,7 +193,7 @@ jobs:
       # #
       # # Set `user.name` and `user.email` for ~/.gitconfig inline via the `--user` flag for `gh-pages`:
       # #   npm run --ignore-scripts deploy -- --user "${{ env.gitUserName }} <${{ env.gitUserEmail }}>"
-      # - name: CD - Deploy application to gh-pages
+      # - name: CD:Client - Deploy application to gh-pages
       #   # We need to either cache the build output after the version is incremented, or re-run
       #   # `npm run build` so the version is injected into the code where needed.
       #   run: |

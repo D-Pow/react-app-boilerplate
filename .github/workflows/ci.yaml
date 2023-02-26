@@ -36,7 +36,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
-  # increment-version: 'TODO'
+  clientVersion: ""
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -92,7 +92,7 @@ jobs:
           gitUserEmail: ${{ env.gitUserEmail }}
           nodeVersion: ${{ env.nodeVersion }}
         with:
-          incrementVersion: ${{ env.increment-version }}
+          clientVersion: ${{ env.clientVersion }}
 
       # Env vars are always accessible between jobs of the same workflow.
       #   - $CLIENT_CACHE_ID

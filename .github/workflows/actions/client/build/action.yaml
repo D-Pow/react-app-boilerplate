@@ -6,8 +6,8 @@ inputs:
   GITHUB_TOKEN:
     description: GitHub token required for pushing code with incremented app version.
     required: true
-  incrementVersion:
-    description: Increments client app version.
+  clientVersion:
+    description: "Sets (or increments if 'true') client app version"
     required: false
     default: false
 
@@ -66,7 +66,7 @@ runs:
       #   #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
       #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
       #   WORKFLOW_RUN_ID: ${{ github.run_id }}
-      #   incrementVersion: ${{ inputs.incrementVersion }}
+      #   clientVersion: ${{ inputs.clientVersion }}
 
       # We need to either cache the build output after the version is incremented, or re-run
       # `npm run build` so the version is injected into the code where needed.
@@ -100,8 +100,12 @@ runs:
         # HEAD is in detached state at `pull/<PR-number>/merge` in pull-requests,
         # git pull origin $gitBranch
 
-        if [[ "${{ env.incrementVersion }}" == true ]]; then
-            npm version --no-git-tag-version patch
+        if [[ "${{ env.clientVersion }}" == 'false' ]] || [[ -z "${{ env.clientVersion }}" ]]; then
+            :  # Don't change the version
+        elif [[ "${{ env.clientVersion }}" == 'true' ]]; then
+            npm version --no-git-tag-version patch -m "Patch to %s"
+        else
+            npm version --no-git-tag-version "${{ env.clientVersion }}" -m "Upgrade client version to %s"
         fi
 
         npm run build

@@ -98,9 +98,7 @@ runs:
         git config --global user.name ${{ env.gitUserName }}
         git config --global user.email ${{ env.gitUserEmail }}
         # HEAD is in detached state at `pull/<PR-number>/merge` in pull-requests,
-        git fetch
-        git status
-        git pull origin $gitBranch
+        # git pull origin $gitBranch
 
         if [[ "${{ env.incrementVersion }}" == true ]]; then
             npm version --no-git-tag-version patch

@@ -113,6 +113,17 @@ jobs:
   ci-post-verify-build-check:
     runs-on: ubuntu-latest
     needs: [ ci-verify-build ]
+    env:
+      # Env vars set from previous jobs are lost once that job ends.
+      # Re-declaring it here means we can use the shorthand `$CLIENT_CACHE_ID` or `${{ env.CLIENT_CACHE_ID }}`
+      # instead of referencing the job name each time it's used in this job's steps.
+      #
+      # Must use `needs` rather than `jobs` since `jobs` is only available in reusable workflows.
+      #
+      # See:
+      #   - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-defining-outputs-for-a-job
+      #   - https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
+      CLIENT_CACHE_ID: ${{ needs.ci-verify-build.outputs.CLIENT_CACHE_ID }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it.
       # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup

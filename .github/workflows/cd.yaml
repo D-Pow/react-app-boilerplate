@@ -66,12 +66,10 @@ env:
 jobs:
   cd-client:
     runs-on: ubuntu-latest
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    # env:
-    #   CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
 
     outputs:
       CLIENT_CACHE_ID: ${{ env.CLIENT_CACHE_ID }}
+      temp: ${{ github.event.workflow_run.conclusion }}
 
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
@@ -81,12 +79,12 @@ jobs:
     # See:
     #   - https://github.community/t/depend-on-another-workflow/16311/3
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
-    if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && (github.event.pull_request.merged || github.event.workflow_run.conclusion == 'success') }}
+    # if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && (github.event.pull_request.merged || github.event.workflow_run.conclusion == 'success') }}
     steps:
       - name: Temp status check-1
         id: cd-temp-status-check-1
         run: |
-          echo ${{ github.event.workflow_run.conclusion }}
+          echo "$temp -- ${{ env.temp }} -- ${{ github.event.workflow_run.conclusion }}"
 
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3

@@ -113,11 +113,10 @@ jobs:
         with:
           incrementVersion: ${{ env.increment-version }}
 
-      - name: Client CI - Check cache name after-1
-        id: cache-name-after-1
+      - name: Client CI - Output cache ID
+        id: ci-client-output-cache-id
         run: |
-          echo "${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }} -- $CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
-          echo "${{ steps.client-init-set-cache-id.outputs }}"
+          echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
 
   ci-post-verify-build-check:

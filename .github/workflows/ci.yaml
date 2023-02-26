@@ -111,6 +111,11 @@ jobs:
         with:
           incrementVersion: ${{ env.increment-version }}
 
+      - name: Client CI - Check cache name after-1
+        id: cache-name-after-1
+        run: |
+          echo "${{ steps.ci-client-all.outputs }} -- $CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+
       # Env var is already set within action, we just need to forward the output along
       - name: Client CI - Output cache ID for subsequent jobs
         id: ci-client-set-cache-id

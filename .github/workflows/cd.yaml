@@ -65,18 +65,13 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
+  # nodeVersion: 16
+  # increment-version: 'TODO'
 
 
 jobs:
-
-  cd-client-build:
+  cd-init:
     runs-on: ubuntu-latest
-    # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
-    #
-    # See:
-    #   - https://github.community/t/depend-on-another-workflow/16311/3
-    #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
-    if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
     steps:
       - name: Checkout repository branch
         uses: actions/checkout@v2
@@ -86,6 +81,16 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
+  cd-client-build:
+    runs-on: ubuntu-latest
+    needs: [ cd-init ]
+    # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
+    #
+    # See:
+    #   - https://github.community/t/depend-on-another-workflow/16311/3
+    #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
+    if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
+    steps:
       # Native GitHub `actions/download-artifact@v3` doesn't allow sharing between workflows.
       #   - Issue: https://github.com/actions/toolkit/issues/501
       # Once it does, we can use:

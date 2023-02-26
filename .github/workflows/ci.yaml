@@ -46,8 +46,7 @@ env:
 # See:
 #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
 jobs:
-  # Job 1. Handles everything related to the client/ folder
-  ci-build-and-upload-artifacts:
+  ci-init:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -71,6 +70,10 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
+
+  ci-build-and-upload-artifacts:
+    runs-on: ubuntu-latest
+    steps:
       # Downloads previous runs' cache of content like node_modules/ for faster re-runs
       - name: Client CI - Download cache
         uses: actions/cache/restore@v3

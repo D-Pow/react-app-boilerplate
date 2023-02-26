@@ -36,7 +36,7 @@ inputs:
   clientVersion:
     description: "Sets (or increments if 'true') client app version"
     required: false
-    default: false
+    default: ""
 
 
 # Use the below if you want to forward this aggregator composite action's child/nested composite actions' outputs

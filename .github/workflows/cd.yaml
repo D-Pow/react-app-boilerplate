@@ -191,6 +191,9 @@ jobs:
       # TODO
       #   - Find out proper way to npm-login for publishing npm package to GitHub registry
       #   - Update .npmrc and these job steps accordingly
+      # Alternative for gh-pages: A custom action provided by GitHub
+      #   - https://github.com/actions/upload-pages-artifact
+      #   - From: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#creating-a-custom-github-actions-workflow-to-publish-your-site
 
       # - name: CD:Client - Deploy - Upgrade app version
       #   if: ${{ (env.clientVersion != '') }}

@@ -2,11 +2,6 @@ name: Client - Initialize
 description: Initializes the front-end
 
 
-defaults:
-  run:
-    shell: bash
-
-
 # `env` can only be declared in individual steps, not at the root-level
 # nor `runs`-level of a composite action.
 # DRY up config code by setting it as an input variable.
@@ -25,10 +20,13 @@ outputs:
 
 runs:
   using: composite
+  # `defaults` can't be delcared at the root-level of a composite action
+  defaults:
+    run:
+      shell: bash
   steps:
     - name: Client - Set cache ID
       id: client-init-set-cache-id
-      shell: bash
       run: |
         echo "CLIENT_CACHE_ID=${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
@@ -56,7 +54,6 @@ runs:
     - name: Client init - Install
       id: client-install
       if: ${{ failure() || steps.client-init-download-cache.outputs.cache-hit != 'true' }}
-      shell: bash
       run: |
         npm install
 

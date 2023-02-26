@@ -7,8 +7,14 @@ defaults:
     shell: bash
 
 
-env:
-  client-cache-name: client-cache
+# `env` can only be declared in individual steps, not at the root-level
+# nor `runs`-level of a composite action.
+# DRY up config code by setting it as an input variable.
+inputs:
+  client-cache-name-prefix:
+    description: Prefix to use for client cache.
+    required: false
+    default: client-cache
 
 
 outputs:
@@ -24,7 +30,7 @@ runs:
       id: client-init-set-cache-id
       shell: bash
       run: |
-        echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
+        echo "CLIENT_CACHE_ID=${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
     # Downloads previous runs' cache of content like node_modules/ for faster re-runs
@@ -66,5 +72,5 @@ runs:
         key: ${{ env.CLIENT_CACHE_ID }}
         # Optional cache-restore keys that are more lenient if the hash doesn't match.
         # restore-keys: |
-        #   ${{ env.client-cache-name }}-${{ runner.os }}-
-        #   ${{ env.client-cache-name }}-
+        #   ${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-
+        #   ${{ inputs.client-cache-name-prefix }}-

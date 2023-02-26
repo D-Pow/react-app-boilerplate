@@ -64,7 +64,7 @@ runs:
 
     - name: Set NodeJS version
       id: client-set-nodejs-version
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ env.nodeVersion }}
 

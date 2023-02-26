@@ -83,7 +83,7 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
           - name: Checkout Repository
             uses: actions/checkout@v3
           - name: Setup Environment
-            uses: actions/setup-node@v2
+            uses: actions/setup-node@v3
             with:
               node-version: 16
               # Only needed if you're not setting the `publishConfig` package.json field yourself

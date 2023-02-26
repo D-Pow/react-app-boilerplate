@@ -60,7 +60,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
-  increment-version: false
+  increment-version: ""
 
 
 jobs:
@@ -151,7 +151,7 @@ jobs:
         continue-on-error: true
 
       - name: Client CD - Build and generate CI artifacts
-        if: ${{ failure() || steps.cd-client-build-download-cache.outputs.cache-hit != 'true' }}
+        if: ${{ failure() || (steps.cd-client-build-download-cache.outputs.cache-hit != 'true') || (${{ env.increment-version }} == 'true') }}
         uses: ./.github/workflows/actions/client/build
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

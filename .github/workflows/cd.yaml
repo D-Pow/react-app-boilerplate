@@ -61,6 +61,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
+  CLIENT_CACHE_ID: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}
   # nodeVersion: 16
   # increment-version: 'TODO'
 
@@ -77,6 +78,15 @@ jobs:
     steps:
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v2
+
+      - name: Temp - Check cache name
+        id: cache-name-cd
+        run: |
+          echo "\$CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
+          echo "\${{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
+          echo "\${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}"
+          echo "\${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          echo "\${{ jobs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-client.outputs.CLIENT_CACHE_ID }}"
 
       - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2
@@ -135,12 +145,6 @@ jobs:
             package-lock.json
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
-
-      - name: Client CD - Check cache name cd
-        id: cache-name-cd
-        run: |
-          echo "${{ steps.client-init-cache.outputs }}"
-          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
 
       # - if: ${{ env.increment-version == true }}
       #   name: Client CD Deploy - Upgrade app version

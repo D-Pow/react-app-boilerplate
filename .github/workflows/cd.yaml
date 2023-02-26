@@ -60,7 +60,7 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
-  # increment-version: 'TODO'
+  increment-version: false
 
 
 jobs:
@@ -134,6 +134,9 @@ jobs:
           echo "{{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
           echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
           node -v
+          echo "{{ env.increment-version }}: ${{ env.increment-version }}"
+          [[ $increment-version == 'false' ]] && echo 'FALSE' || echo 'TRUE'
+          [[ ${{ env.increment-version }} == 'false' ]] && echo 'FFFALSE' || echo 'TTTRUE'
 
       - name: CD:Client - Build - Download CI cache
         id: cd-client-build-download-cache

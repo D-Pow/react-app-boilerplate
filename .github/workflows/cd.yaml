@@ -68,43 +68,6 @@ env:
 
 
 jobs:
-  # cd-init:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository branch
-  #       uses: actions/checkout@v2
-  #
-  #     - name: CD Client build
-  #       # Workflows require at least one job that has no dependencies.
-  #       # However, we can still use the `uses` block for "reusable workflows"
-  #       #
-  #       # See:
-  #       #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
-  #       uses: ./.github/workflows/ci.yaml
-  #
-  # cd-init:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository branch
-  #       uses: actions/checkout@v2
-  #
-  # cd-client-build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Client CD - Download CI output
-  #       id: cd-download-artifacts
-  #       needs: [ cd-init ]
-  #     # Workflows require at least one job that has no dependencies.
-  #     # However, we can still use the `uses` block for "reusable workflows"
-  #     #
-  #     # See:
-  #     #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
-  #       #  uses: ./.github/workflows/ci.yaml
-  #       #  uses: actions/download-artifact@v3
-  #       with:
-  #         name: ci-build-output
-  #         path: |
-  #           dist
 
   cd-client-build:
     runs-on: ubuntu-latest
@@ -141,10 +104,8 @@ jobs:
       #
       # We can work around this via:
       #
-      # 1.
-      # Use a third-party download-artifact action.
-      #   - Good example: https://stackoverflow.com/questions/60355925/share-artifacts-between-workflows-github-actions/65049722#65049722
-      #
+      # 1. Use a third-party download-artifact action.
+      #    Good example: https://stackoverflow.com/questions/60355925/share-artifacts-between-workflows-github-actions/65049722#65049722
       # - name: Client CD - Download CI output
       #   id: cd-download-artifacts
       #   # needs: [ ci-build-output ]
@@ -157,9 +118,8 @@ jobs:
       #     if_no_artifact_found: fail
       #     workflow_conclusion: success
       #
-      # 2. Use our own custom CLI action to manually download the artifact files.
-      #    This is the only reliable option at the moment for sharing artifacts between workflow files
-      #    without uploading them in Release files.
+      # 2. Use a CLI action to manually download artifact files, allowing for more customized artifact selection
+      #    without needing to upload files as a release.
       #    Do so via:
       #     - Get latest CI workflow ID via:
       #       gh run list --limit 1 --workflow CI | tail -n +1 | awk '{ print $(NF - 2) }'
@@ -170,12 +130,9 @@ jobs:
       #    Notes:
       #     - `github.run_id` == Current workflow run ID, not the ID of the run we want (previous workflow run).
       #     - GitHub CLI docs: https://cli.github.com/manual/gh_help_reference
-      #     - GitHub workflows - Storing artifacts: https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
-      #     - GitHub workflows - Using `gh` CLI: https://docs.github.com/en/actions/using-workflows/using-github-cli-in-workflows
-      #     - GitHub workflows - `github` context vars available: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
-      #
-      # TODO: Try the cache instead of storing artifacts manually:
-      #   - Related - Cache: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
+      #     - Storing artifacts: https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts
+      #     - Using `gh` CLI: https://docs.github.com/en/actions/using-workflows/using-github-cli-in-workflows
+      #     - `github` context vars available: https://docs.github.com/en/actions/learn-github-actions/contexts#github-context
       # - name: Client CD - Download CI artifacts
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -185,14 +142,6 @@ jobs:
       #     mkdir dist
       #     cp -R ci-workflow-artifact-output/*/* dist
       #     rm -rf ci-workflow-artifact-output
-      #
-      # # Only necessary if running npm scripts in CD, which we are for `deploy`
-      # - name: Client CD - Install
-      #   id: cd-client-install
-      #   shell: bash
-      #   working-directory: ./
-      #   run: |
-      #     npm install
 
       - name: Client CD Build - Download CI cache
         uses: actions/cache/restore@v3

@@ -39,25 +39,25 @@ env:
 
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# Workflows require at least one job that has no dependencies.
+# However, we can still use the `uses` block for "reusable workflows"
+#
+# See:
+#   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
 jobs:
   # Job 1. Handles everything related to the client/ folder
   ci-build-and-upload-artifacts:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Specify defaults for all runs/steps.
-    defaults:
-      run:
-        # Specify directory in which to run all subsequent steps/commands
-        #
-        # If using a monolith with `./client/` and `./server/` directories:
-        # working-directory: ./client
-        working-directory: ./
-
-    # outputs:
-    #   ci-build-output:
-    #     description: "CI - Cache build output"
-    #     # value:
+    # Specify defaults for all steps that override top-level `defaults`
+    # defaults:
+    #   run:
+    #     # Specify directory in which to run all subsequent steps/commands
+    #     #
+    #     # e.g. If using a monolith with `./client/` and `./server/` directories, then set:
+    #     # `working-directory: ./client`
+    #     working-directory: ./
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:

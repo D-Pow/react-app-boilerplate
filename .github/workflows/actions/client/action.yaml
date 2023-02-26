@@ -39,6 +39,15 @@ inputs:
     default: false
 
 
+# Use the below if you want to forward this aggregator composite action's child/nested composite actions' outputs
+# to the parent job as an output rather than relying solely on env vars
+outputs:
+  CLIENT_CACHE_ID:
+    description: Client cache ID to use for all workflows/actions.
+    # Forward nested composite action output through this aggregator composite action's output for the parent jobs
+    value: ${{ steps.client-init.outputs.CLIENT_CACHE_ID }}
+
+
 defaults:
   run:
     shell: bash

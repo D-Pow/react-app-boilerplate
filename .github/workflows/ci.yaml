@@ -37,6 +37,7 @@ env:
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
   client-cache-name: client-cache
+  CLIENT_CACHE_ID: ""
   # increment-version: 'TODO'
 
 
@@ -111,6 +112,7 @@ jobs:
         run: |
           echo "${{ steps.client-init-cache.outputs }}"
           echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+          echo "$CLIENT_CACHE_ID=$CLIENT_CACHE_ID" >> $GITHUB_ENV
 
   ci-post-verify-build-check:
     runs-on: ubuntu-latest

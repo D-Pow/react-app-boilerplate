@@ -115,14 +115,14 @@ jobs:
       - name: Client CI - Output cache ID for subsequent jobs
         id: ci-client-set-cache-id
         run: |
-          echo "CLIENT_CACHE_ID=${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
+          echo "CLIENT_CACHE_ID=${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
+          echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
       - name: Client CI - Check cache name after
         id: cache-name-after
         run: |
           echo "${{ steps.client-init-set-cache-id.outputs }}"
           echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
-          echo "$CLIENT_CACHE_ID=$CLIENT_CACHE_ID" >> $GITHUB_ENV
 
   ci-post-verify-build-check:
     runs-on: ubuntu-latest

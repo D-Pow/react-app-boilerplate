@@ -13,12 +13,10 @@ env:
 
 runs:
   using: composite
-  defaults:
-    run:
-      shell: bash
   steps:
     - name: Client set cache ID
       id: client-init-set-cache-id
+      shell: bash
       run: |
         echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './test/**', './tests/**', './config/**', './mocks/**') }}" >> $GITHUB_ENV
 
@@ -44,6 +42,7 @@ runs:
         #   ${{ env.client-cache-name }}-
 
     - name: Read client cache ID
+      shell: bash
       run: |
         echo "${{ steps.client-init-cache.outputs }}"
         echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"

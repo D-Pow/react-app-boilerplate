@@ -93,6 +93,23 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
+      # Consolidate any source of the new client version into one place, `env.clientVersion`, for ease of use
+      # throughout all other workflows/jobs/actions/steps.
+      #
+      # Since the only `release` event we listen to is `publish`, we can safely assume the ref-name is the tag name.
+      #
+      # See:
+      #   - "Release" event and object info: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
+      - name: CD:Client - Set version number
+        run: |
+          if [[ -n "${{ env.clientVersion }}" ]] || [[ -n "${{ inputs.clientVersion }}" ]] || [[ "$GITHUB_EVENT_NAME" == 'release' ]]; then
+              if [[ "$GITHUB_EVENT_NAME" == 'release' ]]; then
+                  echo "clientVersion=$GITHUB_REF_NAME" >> $GITHUB_ENV
+              elif [[ -n "${{ inputs.clientVersion }}" ]]; then
+                  echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
+              fi
+          fi
+
       # It seems strangely difficult to link different workflows together without re-running them.
       # As such, we can't just arbitrarily add a dependency on CI without making sure this CD run uses the
       # correct respective CI run.

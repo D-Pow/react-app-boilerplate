@@ -24,7 +24,7 @@ runs:
       id: client-init-set-cache-id
       shell: bash
       run: |
-        echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './test/**', './tests/**', './config/**', './mocks/**') }}" >> $GITHUB_ENV
+        echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
     - name: Client - Download cache
@@ -61,8 +61,7 @@ runs:
           dist
           package.json
           package-lock.json
-        # key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './tests/**', './mocks/**', './config/**', './scripts/**', './.github/**') }}
-        key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        key: ${{ env.CLIENT_CACHE_ID }}
         # restore-keys: |
         #   ${{ env.client-cache-name }}-${{ runner.os }}-
         #   ${{ env.client-cache-name }}-

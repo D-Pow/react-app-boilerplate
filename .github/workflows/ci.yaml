@@ -98,7 +98,9 @@ jobs:
         id: ci-client-all
         # Import reusable GitHub Action logic via `uses`
         uses: ./.github/workflows/actions/client
-        # Set env vars for all nested actions
+        # Set env vars for all nested composite actions.
+        # Any env vars set within composite actions apply to the parent job.
+        #
         # See:
         #   - https://github.com/orgs/community/discussions/27088
         #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
@@ -114,20 +116,9 @@ jobs:
       - name: Client CI - Check cache name after-1
         id: cache-name-after-1
         run: |
-          echo "${{ steps.ci-client-all.outputs }} -- $CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
-
-      # Env var is already set within action, we just need to forward the output along
-      - name: Client CI - Output cache ID for subsequent jobs
-        id: ci-client-set-cache-id
-        run: |
-          echo "CLIENT_CACHE_ID=${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
-          echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
-
-      - name: Client CI - Check cache name after
-        id: cache-name-after
-        run: |
+          echo "${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }} -- $CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
           echo "${{ steps.client-init-set-cache-id.outputs }}"
-          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+
 
   ci-post-verify-build-check:
     runs-on: ubuntu-latest

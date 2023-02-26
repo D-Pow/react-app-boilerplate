@@ -62,7 +62,7 @@ jobs:
     #     working-directory: ./
 
     outputs:
-      CLIENT_CACHE_ID: ${{ steps.ci-client-all.outputs.CLIENT_CACHE_ID }}
+      CLIENT_CACHE_ID: ${{ env.CLIENT_CACHE_ID }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -130,3 +130,4 @@ jobs:
           echo "${{ steps.ci-client-set-cache-id.outputs.CLIENT_CACHE_ID }}"
           echo "${{ needs.ci-verify-build.outputs.CLIENT_CACHE_ID }}"
           echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
+          echo "${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"

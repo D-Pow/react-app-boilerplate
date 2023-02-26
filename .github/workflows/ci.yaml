@@ -72,13 +72,6 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Test client dir
-        id: test-client-dir
-        run: |
-          ls -FlAh
-          ls -FlAh ..
-          ls -FlAh ../..
-
       # Downloads previous runs' cache of content like node_modules/ for faster re-runs
       - name: Client CI - Download cache
         uses: actions/cache/restore@v3
@@ -91,13 +84,6 @@ jobs:
             package.json
             package-lock.json
           key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
-
-      - name: Test client dir
-        id: test-client-dir-2
-        run: |
-          ls -FlAh
-          ls -FlAh ..
-          ls -FlAh ../..
 
       - name: Client CI - Run all
         # Import reusable GitHub Action logic via `uses`

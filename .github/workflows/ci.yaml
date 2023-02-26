@@ -70,6 +70,13 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
+      - name: Test client dir
+        id: test-client-dir
+        run: |
+          ls -FlAh
+          ls -FlAh ..
+          ls -FlAh ../..
+
 
   ci-build-and-upload-artifacts:
     runs-on: ubuntu-latest
@@ -87,6 +94,13 @@ jobs:
             package.json
             package-lock.json
           key: ${{ env.cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+
+      - name: Test client dir
+        id: test-client-dir
+        run: |
+          ls -FlAh
+          ls -FlAh ..
+          ls -FlAh ../..
 
       - name: Client CI - Run all
         # Import reusable GitHub Action logic via `uses`

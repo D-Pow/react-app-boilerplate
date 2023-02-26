@@ -190,6 +190,10 @@ jobs:
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
+      # TODO
+      #   - Find out proper way to npm-login for publishing npm package to GitHub registry
+      #   - Update .npmrc and these job steps accordingly
+
       # - name: CD:Client - Deploy - Upgrade app version
       #   if: ${{ (env.clientVersion != '') }}
       #   # Not necessarily required since `npm version` returns the version string (with "v" in it), but for reference:
@@ -229,3 +233,8 @@ jobs:
       #     ( for path in dist/*; do git add "$(echo "$path" | sed -E 's/dist/./')"; done; )
       #
       #     rm -rf dist
+      #
+      #     newAppVersion="$(jq -r '.version' package.json)"
+      #
+      #     git commit -am "Upgrade client version to ${newAppVersion}"
+      #     git push

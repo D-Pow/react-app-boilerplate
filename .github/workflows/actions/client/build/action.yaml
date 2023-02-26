@@ -84,9 +84,10 @@ runs:
       #   ref_name: 7/merge  or  <branch-name>
       #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
 
-      # Conditionals:
-      #   - https://docs.github.com/en/actions/learn-github-actions/expressions
-      #   - https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if
+      # See:
+      #   - Conditionals docs: https://docs.github.com/en/actions/learn-github-actions/expressions
+      #   - Conditionals example: https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if
+      #   - `npm version` docs: https://docs.npmjs.com/cli/v8/commands/npm-version#description
       run: |
         gitBranch=
         if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then

@@ -115,6 +115,16 @@ jobs:
           gitUserEmail: ${{ env.gitUserEmail }}
           nodeVersion: ${{ env.nodeVersion }}
 
+      - name: Temp - Check cache name-2
+        id: cd-check-cache-name-2
+          # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
+        run: |
+          echo "CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
+          echo "{{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
+          echo "{{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
+          echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          node -v
+
       - name: CD:Client - Build - Download CI cache
         id: cd-client-build-download-cache
         uses: actions/cache/restore@v3

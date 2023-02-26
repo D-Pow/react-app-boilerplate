@@ -48,7 +48,7 @@ env:
 # See:
 #   - Reusable workflows `uses`: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_iduses
 jobs:
-  ci-verify-build:
+  ci-client:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -69,15 +69,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it.
       # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup
       # logic in with the actual job logic.
-      - name: Checkout repository branch
+      - name: CI:Client - Checkout repository branch
         uses: actions/checkout@v2
 
-      - name: Set NodeJS version
+      - name: CI:Client - Set NodeJS version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Client CI - Run all
+      - name: CI:Client - Run all
         id: ci-client-all
         # Import reusable GitHub Action logic via `uses`
         uses: ./.github/workflows/actions/client
@@ -104,15 +104,15 @@ jobs:
       # If a nested composite action forwards its child/(doubly-)nested composite action's outputs in its own
       # root-level `outputs` block, then we can also reference the job's specific step in subsequent jobs:
       #   - ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}
-      - name: Client CI - Output cache ID
+      - name: CI:Client - Output cache ID
         id: ci-client-output-cache-id
         run: |
           echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
 
-  ci-post-verify-build-check:
+  ci-server:
     runs-on: ubuntu-latest
-    needs: [ ci-verify-build ]
+    needs: [ ci-client ]
     env:
       # Env vars set from previous jobs are lost once that job ends.
       # Re-declaring it here means we can use the shorthand `$CLIENT_CACHE_ID` or `${{ env.CLIENT_CACHE_ID }}`
@@ -123,24 +123,20 @@ jobs:
       # See:
       #   - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-defining-outputs-for-a-job
       #   - https://docs.github.com/en/actions/learn-github-actions/contexts#jobs-context
-      CLIENT_CACHE_ID: ${{ needs.ci-verify-build.outputs.CLIENT_CACHE_ID }}
+      CLIENT_CACHE_ID: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it.
       # Note: Files don't carry over between separate jobs so merge the git-checkout/env-setup
       # logic in with the actual job logic.
-      - name: Checkout repository branch
+      - name: CI:Server - Checkout repository branch
         uses: actions/checkout@v2
 
-      - name: Set NodeJS version
+      - name: CI:Server - Set NodeJS version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Client CI - Check cache name separate job
-        id: cache-name-separate-job
+      - name: CI:Server - TODO
+        id: ci-server-todo
         run: |
-          echo "${{ steps.client-init-set-cache-id.outputs.CLIENT_CACHE_ID }}"
-          echo "${{ steps.ci-client-set-cache-id.outputs.CLIENT_CACHE_ID }}"
-          echo "${{ needs.ci-verify-build.outputs.CLIENT_CACHE_ID }}"
-          echo "$CLIENT_CACHE_ID -- ${{ env.CLIENT_CACHE_ID }}"
-          echo "${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          echo "TODO - Server logic"

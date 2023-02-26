@@ -81,11 +81,11 @@ The [tutorial linked above](https://andreybleme.com/2020-05-31/hosting-private-n
           GH_USER_EMAIL: ${{secrets.GH_USER_EMAIL}}
         steps:
           - name: Checkout Repository
-            uses: actions/checkout@v2
+            uses: actions/checkout@v3
           - name: Setup Environment
             uses: actions/setup-node@v2
             with:
-              node-version: 14
+              node-version: 16
               # Only needed if you're not setting the `publishConfig` package.json field yourself
               registry-url: https://npm.pkg.github.com  # might be better to put this in ${{ env.registry_url }}
               scope: "@myorg" # might be better to put this in ${{ env.registry_scope }}

@@ -67,11 +67,13 @@ jobs:
   cd-client:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    needs: [ ci-complete ]
     # env:
     #   CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
 
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
+    #
+    # Note: At least one job in each workflow must have no dependencies, i.e. no `needs` block.
+    # However, we can get around that using a conditional expression, i.e. `if` block.
     #
     # See:
     #   - https://github.community/t/depend-on-another-workflow/16311/3

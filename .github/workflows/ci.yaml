@@ -36,7 +36,6 @@ env:
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
   nodeVersion: 16
-  client-cache-name: client-cache
   CLIENT_CACHE_ID: ""
   # increment-version: 'TODO'
 

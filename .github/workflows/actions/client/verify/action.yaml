@@ -7,10 +7,6 @@ defaults:
     shell: bash
 
 
-env:
-  client-cache-name: client-cache
-
-
 runs:
   using: composite
   steps:
@@ -22,7 +18,7 @@ runs:
           dist
           package.json
           package-lock.json
-        key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+        key: ${{ env.CLIENT_CACHE_ID }}
 
     - if: ${{ failure() }}
       name: Client - Re-init

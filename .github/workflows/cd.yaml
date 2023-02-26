@@ -61,7 +61,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
-  client-cache-name: client-cache
   # nodeVersion: 16
   # increment-version: 'TODO'
 
@@ -149,7 +148,7 @@ jobs:
             dist
             package.json
             package-lock.json
-          key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
       # See:
@@ -199,7 +198,7 @@ jobs:
             dist
             package.json
             package-lock.json
-          key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}
+          key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
       - name: Client CD - Check cache name cd

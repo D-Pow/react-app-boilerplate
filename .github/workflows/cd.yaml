@@ -170,11 +170,15 @@ jobs:
       # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
       - if: ${{ failure() }}
         # continue-on-error: false
-        name: Client CD - Generate CI artifacts
-        run: |
-          npm install
-          # npm version --no-git-tag-version patch
-          npm run build
+        name: Client CD - Build and generate CI artifacts
+        uses: ./.github/workflows/actions/client/build
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          gitUserName: ${{ env.gitUserName }}
+          gitUserEmail: ${{ env.gitUserEmail }}
+          nodeVersion: ${{ env.nodeVersion }}
+        with:
+          incrementVersion: ${{ env.increment-version }}
 
 
   cd-deploy:

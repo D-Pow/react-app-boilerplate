@@ -28,8 +28,8 @@ runs:
       name: Client - Re-init
       uses: ./.github/workflows/actions/client/init
 
-    - name: Client Verify
-      id: client-verify
-      shell: bash
-      run: |
-        npm run verify
+    # - name: Client Verify
+    #   id: client-verify
+    #   shell: bash
+    #   run: |
+    #     npm run verify

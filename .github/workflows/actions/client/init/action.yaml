@@ -20,14 +20,33 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Client set cache ID
+    - name: Client - Set cache ID
       id: client-init-set-cache-id
       shell: bash
       run: |
         echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './test/**', './tests/**', './config/**', './mocks/**') }}" >> $GITHUB_ENV
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
-    - name: Client Install
+    - name: Client - Download cache
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          node_modules
+          dist
+          package.json
+          package-lock.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+      continue-on-error: true
+
+    # See:
+    #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
+    #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
+    # Only run next step if cache-hit failed.
+    # For some reason, the recommended logic from the docs doesn't work:
+    # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
+    # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
+    - if: ${{ failure() }}
+      name: Client Install
       id: client-install
       shell: bash
       run: |

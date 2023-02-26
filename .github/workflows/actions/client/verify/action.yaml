@@ -2,11 +2,6 @@ name: Client - Verify
 description: Runs verification checks for the front-end
 
 
-defaults:
-  run:
-    shell: bash
-
-
 runs:
   using: composite
   steps:

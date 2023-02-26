@@ -48,11 +48,6 @@ outputs:
     value: ${{ steps.client-init.outputs.CLIENT_CACHE_ID }}
 
 
-defaults:
-  run:
-    shell: bash
-
-
 runs:
   # Allows the YAML file to be run from other workflows/actions.
   # See:

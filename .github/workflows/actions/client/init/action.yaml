@@ -2,11 +2,6 @@ name: Client - Initialize
 description: Initializes the front-end
 
 
-defaults:
-  run:
-    shell: bash
-
-
 # `env` can only be declared in individual steps, not at the root-level
 # nor `runs`-level of a composite action.
 # DRY up config code by setting it as an input variable.

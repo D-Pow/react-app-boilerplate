@@ -30,6 +30,7 @@ runs:
       with:
         path: |
           node_modules
+          dist
           package.json
           package-lock.json
         key: ${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./src/**', './test/**', './tests/**', './config/**', './mocks/**') }}

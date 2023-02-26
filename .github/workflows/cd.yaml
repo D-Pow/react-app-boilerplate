@@ -83,6 +83,11 @@ jobs:
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
     # if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && (github.event.pull_request.merged || github.event.workflow_run.conclusion == 'success') }}
     steps:
+      - name: Temp status check-1
+        id: cd-temp-status-check-1
+        run: |
+          echo ${{ github.event.workflow_run.conclusion }}
+
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 
@@ -127,7 +132,7 @@ jobs:
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: true
 
-      - name: Client CD - Build and generate CI artifacts
+      - name: CD:Client - Build - Generate CI artifacts
         if: ${{ failure() || (steps.cd-client-build-download-cache.outputs.cache-hit != 'true') || (${{ env.increment-version }} == 'true') }}
         uses: ./.github/workflows/actions/client/build
         env:
@@ -152,6 +157,11 @@ jobs:
       actions: write
       contents: write
     steps:
+      - name: Temp status check
+        id: cd-temp-status-check
+        run: |
+          echo ${{ needs.cd-client.result }}
+
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 

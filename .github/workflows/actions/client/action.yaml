@@ -42,6 +42,7 @@ inputs:
 outputs:
   CLIENT_CACHE_ID:
     description: Client cache ID to use for all workflows/actions.
+    # Forward nested composite action output through this aggregator composite action's output for the parent jobs
     value: ${{ steps.client-init.outputs.CLIENT_CACHE_ID }}
 
 

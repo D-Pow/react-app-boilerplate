@@ -69,7 +69,6 @@ jobs:
 
     outputs:
       CLIENT_CACHE_ID: ${{ env.CLIENT_CACHE_ID }}
-      temp: ${{ github.event.workflow_run.conclusion }}
 
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
@@ -81,11 +80,6 @@ jobs:
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
     # if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && (github.event.pull_request.merged || github.event.workflow_run.conclusion == 'success') }}
     steps:
-      - name: Temp status check-1
-        id: cd-temp-status-check-1
-        run: |
-          echo "$temp -- ${{ env.temp }} -- ${{ github.event.workflow_run.conclusion }}"
-
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 
@@ -144,7 +138,7 @@ jobs:
 
   cd-deploy:
     runs-on: ubuntu-latest
-    needs: [ cd-client ]
+    needs: [ cd-client ]  # This automatically checks if `${{ needs.cd-client.result == 'success' }}` so job won't run if prev job was skipped or failed
     env:
       CLIENT_CACHE_ID: ${{ needs.cd-client.outputs.CLIENT_CACHE_ID }}
     permissions:
@@ -155,11 +149,6 @@ jobs:
       actions: write
       contents: write
     steps:
-      - name: Temp status check
-        id: cd-temp-status-check
-        run: |
-          echo ${{ needs.cd-client.result }}
-
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 

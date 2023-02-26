@@ -30,21 +30,17 @@
 name: CD
 
 
-# Multiple ways to do this, including:
 on:
-  # 1. Manual trigger in web GUI
   workflow_dispatch:
-  # 2. Publish your release in GitHub and have your pipeline
-  # react to deploy the package
+  # Publish your release in GitHub and have your pipeline react to deploy the package
   release:
     types: [ published ]
-
-  # 3. Run the pipeline on merge to `master` and do the release/deploy then.
+  # Run the pipeline on merge to `master` and do the release/deploy then.
   # pull_request:
   #   types: [ closed ]
   #   branches: [ master ]
-
-  # 4. Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
+  #
+  # Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
   # workflow_run:
   #   workflows: [ 'CI' ]
   #   types: [ completed ]

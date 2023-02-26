@@ -70,6 +70,9 @@ jobs:
     # env:
     #   CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
 
+    outputs:
+      CLIENT_CACHE_ID: ${{ env.CLIENT_CACHE_ID }}
+
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
     # Note: At least one job in each workflow must have no dependencies, i.e. no `needs` block.
@@ -115,6 +118,11 @@ jobs:
           gitUserEmail: ${{ env.gitUserEmail }}
           nodeVersion: ${{ env.nodeVersion }}
 
+      - name: CD:Client - Output cache ID
+        id: cd-client-output-cache-id
+        run: |
+          echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
+
       - name: Temp - Check cache name-2
         id: cd-check-cache-name-2
           # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
@@ -152,6 +160,8 @@ jobs:
   cd-deploy:
     runs-on: ubuntu-latest
     needs: [ cd-client ]
+    env:
+      CLIENT_CACHE_ID: ${{ needs.cd-client.outputs.CLIENT_CACHE_ID }}
     permissions:
       pages: write      # Grant write permissions to deploy to the `gh-pages` (or whatever is specified in "Settings") branch
       id-token: write   # to verify the deployment originates from an appropriate source

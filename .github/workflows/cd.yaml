@@ -110,6 +110,8 @@ jobs:
       # i.e. We might have multiple CI/CD pipelines running at once, each with a different version of the code,
       # so don't get the most up-to-date version of the code, rather get the version associated with this specific
       # run (via the `CLIENT_CACHE_ID`).
+      #
+      # Note that we can't use the `needs` object here since this job needs to remain dependency-free.
       - name: CD:Client CD - Init
         uses: ./.github/workflows/actions/client/init
         env:

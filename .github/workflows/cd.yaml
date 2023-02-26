@@ -66,7 +66,7 @@ env:
 
 
 jobs:
-  cd-client-build:
+  cd-client:
     runs-on: ubuntu-latest
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
@@ -75,15 +75,15 @@ jobs:
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
     if: ${{ github.event_name != 'pull_request' && (github.event.pull_request.merged || github.ref == 'refs/heads/master') }}
     steps:
-      - name: Checkout repository branch
+      - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v2
 
-      - name: Set NodeJS version
+      - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Client CD Build - Download CI cache
+      - name: CD:Client - Build - Download CI cache
         uses: actions/cache/restore@v3
         with:
           path: |
@@ -108,7 +108,7 @@ jobs:
 
   cd-deploy:
     runs-on: ubuntu-latest
-    needs: [ cd-client-build ]
+    needs: [ cd-client ]
     permissions:
       pages: write      # Grant write permissions to deploy to the `gh-pages` (or whatever is specified in "Settings") branch
       id-token: write   # to verify the deployment originates from an appropriate source
@@ -117,15 +117,15 @@ jobs:
       actions: write
       contents: write
     steps:
-      - name: Checkout repository branch
+      - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v2
 
-      - name: Set NodeJS version
+      - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Client CD Deploy - Download CI cache
+      - name: CD:Client - Deploy - Download CI cache
         uses: actions/cache/restore@v3
         with:
           path: |

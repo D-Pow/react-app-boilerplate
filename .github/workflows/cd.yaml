@@ -85,11 +85,13 @@ jobs:
 
       - name: Temp - Check cache name
         id: cd-check-cache-name
+          # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
         run: |
-          echo "\$CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
-          echo "\${{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          echo "CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
+          echo "{{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
+          echo "{{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
+          echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          node -v
 
       - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2

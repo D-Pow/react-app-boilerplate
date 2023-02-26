@@ -11,6 +11,12 @@ env:
   client-cache-name: client-cache
 
 
+outputs:
+  CLIENT_CACHE_ID:
+    description: Client cache ID to use for all workflows/actions.
+    value: ${{ steps.client-init-set-cache-id.outputs.CLIENT_CACHE_ID }}
+
+
 runs:
   using: composite
   steps:
@@ -19,6 +25,7 @@ runs:
       shell: bash
       run: |
         echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './test/**', './tests/**', './config/**', './mocks/**') }}" >> $GITHUB_ENV
+        echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
     - name: Client Install
       id: client-install

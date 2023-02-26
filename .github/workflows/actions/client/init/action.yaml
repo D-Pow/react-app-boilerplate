@@ -27,7 +27,8 @@ runs:
         echo "CLIENT_CACHE_ID=${{ env.client-cache-name }}-${{ runner.os }}-${{ hashFiles('./package.json', './src/**', './tests/**', './mocks/**', './config/**', './scripts/**') }}" >> $GITHUB_ENV
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
-    - name: Client - Download cache
+    # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+    - name: Client init - Download cache
       uses: actions/cache/restore@v3
       with:
         path: |
@@ -46,13 +47,13 @@ runs:
     # - if: ${{ steps.client-cache.outputs.cache-hit != 'true' }}
     # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
     - if: ${{ failure() }}
-      name: Client Install
+      name: Client init - Install
       id: client-install
       shell: bash
       run: |
         npm install
 
-    - name: Client - Cache init artifacts
+    - name: Client init - Cache install artifacts
       id: client-init-cache
       uses: actions/cache/save@v3
       with:
@@ -67,6 +68,7 @@ runs:
         #   ${{ env.client-cache-name }}-
 
     - name: Read client cache ID
+      id: read-client-cache-id
       shell: bash
       run: |
         echo "${{ steps.client-init-cache.outputs }}"

@@ -462,6 +462,13 @@ function getWebpackConfig(webpackArgs) {
                         from: `${Paths.SRC.REL}/ServiceWorker.js`,
                         to: '[name].[ext]',
                     },
+                    {
+                        // Ensures CNAME is copied to the build-output dir for gh-pages and similar deployments
+                        // CopyWebpackPlugin uses globs, so make CNAME optional via `?(filename)`
+                        from: `${Paths.ROOT.ABS}/CNAME`,
+                        to: '[name].[ext]',
+                        noErrorOnMissing: true,
+                    },
                 ],
             }),
             new AlterFilePostBuildPlugin(

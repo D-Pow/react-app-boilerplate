@@ -67,6 +67,7 @@ runs:
     #     cp -R ci-workflow-artifact-output/*/* dist
     #     rm -rf ci-workflow-artifact-output
     - name: Client - Download cache
+      id: client-verify-download-cache
       uses: actions/cache/restore@v3
       with:
         path: |
@@ -76,8 +77,8 @@ runs:
           package-lock.json
         key: ${{ env.CLIENT_CACHE_ID }}
 
-    - if: ${{ failure() }}
-      name: Client - Re-init
+    - name: Client - Re-init
+      if: ${{ failure() || steps.client-verify-download-cache.outputs.cache-hit != 'true' }}
       uses: ./.github/workflows/actions/client/init
 
     # - name: Client Verify

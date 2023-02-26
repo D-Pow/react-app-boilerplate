@@ -94,6 +94,7 @@ jobs:
           node-version: ${{ env.nodeVersion }}
 
       - name: CD:Client - Build - Download CI cache
+        id: cd-client-build-download-cache
         uses: actions/cache/restore@v3
         with:
           path: |
@@ -104,8 +105,8 @@ jobs:
           key: ${{ env.CLIENT_CACHE_ID }}
         continue-on-error: false
 
-      - if: ${{ failure() }}
-        name: Client CD - Build and generate CI artifacts
+      - name: Client CD - Build and generate CI artifacts
+        if: ${{ failure() || steps.cd-client-build-download-cache.outputs.cache-hit != 'true' }}
         uses: ./.github/workflows/actions/client/build
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}

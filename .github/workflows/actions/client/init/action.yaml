@@ -47,9 +47,9 @@ runs:
     # See:
     #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action
     #   - Cache-restore between workflows: https://github.com/actions/cache#example-cache-workflow
-    - if: ${{ failure() }}
-      name: Client init - Install
+    - name: Client init - Install
       id: client-install
+      if: ${{ failure() || steps.client-init-download-cache.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
         npm install

@@ -68,7 +68,7 @@ env:
 jobs:
   cd-client:
     env:
-      CLIENT_CACHE_ID: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}
+      CLIENT_CACHE_ID: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}
     runs-on: ubuntu-latest
     # Only run on merge to master, but not on PR to master since PRs are just drafts, not officially prod-ready code.
     #
@@ -85,8 +85,8 @@ jobs:
         run: |
           echo "\$CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
           echo "\${{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"
+          echo "\${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
+          echo "\${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
 
       - name: CD:Client - Set NodeJS version
         uses: actions/setup-node@v2

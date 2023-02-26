@@ -96,6 +96,12 @@ jobs:
         with:
           incrementVersion: ${{ env.increment-version }}
 
+      # Env vars are always accessible between jobs of the same workflow.
+      #   - $CLIENT_CACHE_ID
+      #   - ${{ env.CLIENT_CACHE_ID }}
+      # Adding an output var means all the following will work in subsequent jobs as well:
+      #   - Referencing the job ID:  ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}
+      #   - Referencing the job's specific step:  ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}
       - name: Client CI - Output cache ID
         id: ci-client-output-cache-id
         run: |

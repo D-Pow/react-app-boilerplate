@@ -21,6 +21,7 @@ on:
 defaults:
   run:
     shell: bash
+    working-directory: ./
 
 
 # Set GitHub user info for ease of use of `gh` CLI commands.

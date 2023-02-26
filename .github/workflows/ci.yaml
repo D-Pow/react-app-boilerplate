@@ -139,14 +139,6 @@ jobs:
         run: |
           echo "TODO - Server logic"
 
-      - name: Temp - Check cache name
-        id: ci-check-cache-name
-        run: |
-          echo "\$CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
-          echo "\${{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client.outputs.CLIENT_CACHE_ID }}"
-          echo "\${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-client-output-cache-id.outputs.CLIENT_CACHE_ID }}"
-
 
   ci-complete:
     runs-on: ubuntu-latest

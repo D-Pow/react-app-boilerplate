@@ -91,16 +91,6 @@ jobs:
         with:
           node-version: ${{ env.nodeVersion }}
 
-      - name: Temp - Check cache name
-        id: cd-check-cache-name
-          # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
-        run: |
-          echo "CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
-          echo "{{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
-          echo "{{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
-          echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
-          node -v
-
       # It seems strangely difficult to link different workflows together without re-running them.
       # As such, we can't just arbitrarily add a dependency on CI without making sure this CD run uses the
       # correct respective CI run.
@@ -124,19 +114,6 @@ jobs:
         id: cd-client-output-cache-id
         run: |
           echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
-
-      - name: Temp - Check cache name-2
-        id: cd-check-cache-name-2
-          # echo "{{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ jobs.ci-complete.outputs.CLIENT_CACHE_ID }}"
-        run: |
-          echo "CLIENT_CACHE_ID: $CLIENT_CACHE_ID"
-          echo "{{ env.CLIENT_CACHE_ID }}: ${{ env.CLIENT_CACHE_ID }}"
-          echo "{{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete.outputs.CLIENT_CACHE_ID }}"
-          echo "{{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}: ${{ needs.ci-complete-output-cache-id.outputs.CLIENT_CACHE_ID }}"
-          node -v
-          echo "{{ env.increment-version }}: ${{ env.increment-version }}"
-          [[ $increment-version == 'false' ]] && echo 'FALSE' || echo 'TRUE'
-          [[ ${{ env.increment-version }} == 'false' ]] && echo 'FFFALSE' || echo 'TTTRUE'
 
       - name: CD:Client - Build - Download CI cache
         id: cd-client-build-download-cache

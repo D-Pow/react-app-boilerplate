@@ -1,3 +1,5 @@
+const fs = require('node:fs');
+
 const YargsParser = require('yargs-parser');
 
 const { Paths } = require('./Files');
@@ -349,6 +351,57 @@ function printHelpMessageAndExit({
 }
 
 
+/**
+ * Reads STDIN, splitting on newlines.
+ *
+ * TODO - Verify this works as expected with many inputs.
+ *
+ * @param {Object} [options]
+ * @param {Boolean} [options.returnArray] - If an array should be returned instead of the default string with entries separated by newlines.
+ * @param {Boolean} [options.trimExcessLineWhitespace] - If leading/trailing whitespace on each line should be removed.
+ * @return {(string|string[])} - The parsed STDIN as newline-separated entries in a string or an array of entries.
+ *
+ * @see [StackOverflow]{@link https://stackoverflow.com/questions/20086849/how-to-read-from-stdin-line-by-line-in-node}
+ */
+async function readStdin({
+    returnArray = false,
+    trimExcessLineWhitespace = true,
+} = {}) {
+    const stdinArray = [];
+    const formatStdinOutput = (stdinArray = []) => {
+        let stdinOutput = stdinArray.flatMap(stdinLine => stdinLine.split('\n'));
+
+        if (trimExcessLineWhitespace) {
+            stdinOutput = stdinOutput
+                .map(stdinLine => stdinLine?.trim?.())
+                .filter(Boolean);
+        }
+
+        if (!returnArray) {
+            stdinOutput = stdinOutput.join('\n');
+        }
+
+        return stdinOutput;
+    };
+
+    try {
+        const stdinLine = fs.readFileSync(0).toString().trim();
+
+        stdinArray.push(stdinLine);
+
+        // Reading from STDIN file descriptor creates an array with a single string entry
+        formatStdinOutput(stdinArray);
+    } catch (errorReadingFd0) {
+        process.stdin.on('data', stdinLine => {
+            stdinArray.push(stdinLine?.toString?.());
+        });
+    }
+
+    process.stdin.on('end', () => formatStdinOutput(stdinArray));
+}
+
+
 module.exports = {
     parseCliArgs,
+    readStdin,
 };

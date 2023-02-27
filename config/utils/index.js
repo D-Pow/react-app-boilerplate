@@ -1,5 +1,6 @@
 const {
     parseCliArgs,
+    readStdin,
 } = require('./parseCliArgs');
 
 const {
@@ -42,6 +43,7 @@ const {
  */
 module.exports = {
     parseCliArgs,
+    readStdin,
     Paths,
     FileTypeRegexes,
     getMain,

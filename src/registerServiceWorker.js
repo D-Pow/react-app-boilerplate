@@ -102,11 +102,7 @@ function checkValidServiceWorker(swUrl) {
                 response.headers.get('content-type').indexOf('javascript') === -1
             ) {
                 // No service worker found. Probably a different app. Reload the page.
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.unregister().then(() => {
-                        self.location.reload();
-                    });
-                });
+                unregister();
             } else {
                 // Service worker found. Proceed as normal.
             }
@@ -116,10 +112,14 @@ function checkValidServiceWorker(swUrl) {
         });
 }
 
-export function unregister() {
+export function unregister(reloadPage = true) {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
-            registration.unregister();
+            registration.unregister().then(() => {
+                if (reloadPage) {
+                    self.location.reload();
+                }
+            });
         });
     }
 }

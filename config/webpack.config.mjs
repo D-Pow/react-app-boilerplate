@@ -409,7 +409,7 @@ function getWebpackConfig(webpackArgs) {
              * @see [output.assetModuleFilename]{@link https://webpack.js.org/configuration/output/#outputassetmodulefilename}
              */
             assetModuleFilename: `${Paths.BUILD_OUTPUT.REL}/assets/[name].[contenthash:8][ext]`,
-            sourceMapFilename: '[base].map',
+            sourceMapFilename: '[file].map',
             environment: {
                 // toggle options for output JS target browsers; to target ES5, set all to false
                 arrowFunction: false,

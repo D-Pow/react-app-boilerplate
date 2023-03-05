@@ -455,6 +455,10 @@ function getWebpackConfig(webpackArgs) {
             new CopyWebpackPlugin({
                 patterns: [
                     {
+                        from: `${Paths.ROOT.ABS}/package.json`,
+                        to: '[name].[ext]',
+                    },
+                    {
                         from: `${Paths.SRC.REL}/manifest.json`,
                         to: '[name].[ext]',
                     },

@@ -481,7 +481,11 @@ function getWebpackConfig(webpackArgs) {
                 relativeEmittedFilePaths => {
                     const pathsWithoutServiceWorkerOrFonts = relativeEmittedFilePaths
                         .filter(path => !path.includes('ServiceWorker.js') && !path.includes('fonts'));
-                    const fileUrlsToCache = pathsWithoutServiceWorkerOrFonts.map(path => `"./${path}"`); // ServiceWorker exists at root level
+                    // CNAME (and similar files) aren't accessible via URL, and `cache.addAll(urls)` will fail if any
+                    // of the URLs isn't available, so remove them from the build output file list
+                    const pathsWithoutConfigOrLicenseFiles = pathsWithoutServiceWorkerOrFonts
+                        .filter(url => !url.match(/CNAME|LICENSE/));
+                    const fileUrlsToCache = pathsWithoutConfigOrLicenseFiles.map(path => `"./${path}"`); // ServiceWorker exists at root level
 
                     // `/` isn't a file but is routed to /index.html automatically.
                     // Add it manually so the URL can be mapped to a file.

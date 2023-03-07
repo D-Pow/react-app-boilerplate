@@ -267,6 +267,35 @@ function getWebpackConfig(webpackArgs) {
                                              * @see [Source code]{@link https://github.com/gregberge/svgr/blob/755bd68f80436130ed65a491c101cf0441d9ac5e/packages/babel-plugin-transform-svg-component/src/index.ts#L30}
                                              */
 
+                                            /*
+                                             * Add the ability to pass `children` through to the generated React component.
+                                             * `@svgr/webpack` doesn't allow this by default, so we must add it ourselves.
+                                             * However, since it uses a JSX AST tree, we can't just add it as a normal string
+                                             * like we did for the double export of both asset URL and React component after
+                                             * the SVG component's AST tree generation.
+                                             *
+                                             * After many attempts, I've found:
+                                             *  - Babel will add a semicolon to the end of this specific expression no matter
+                                             *    what. This is fine if done *outside* the generated code string injected
+                                             *    because SVG DOM elements won't render it.
+                                             *  - We can't pass in '{props.children}' as a plain string, otherwise the
+                                             *    semicolon is added inside the curly braces, creating invalid JSX syntax.
+                                             *  - We can't use `{componentInfo.props.children}` because that AST content is
+                                             *    generated from the .svg file itself, so it won't read dynamically added
+                                             *    children from usage in src code.
+                                             *  - We can't use Babel's standard `%%foo%%` substitution pattern because
+                                             *    `@svgr/webpack` disables it and can't process it even with using our own
+                                             *    Babel AST template builder.
+                                             *  - We possibly might be able to use a function but that's no better than
+                                             *    this plain string.
+                                             *  - The rules above apply to `<>{my-code}</>` as well. We choose not to use
+                                             *    React.Fragment since it isn't required and for simpler usage in parent
+                                             *    component logic that uses SVG React components from this loader.
+                                             */
+                                            componentInfo.jsx.children.push(babelTemplateBuilder`
+                                                ${'{props.children}'}
+                                            `);
+
                                             // Logic only AST template that uses the React component info content from SVGR.
                                             const astArray = babelTemplateBuilder`
                                                 ${componentInfo.imports};

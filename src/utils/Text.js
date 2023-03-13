@@ -183,6 +183,30 @@ export function getXmlDocFromDataUrl(dataUrl) {
 
 
 /**
+ * Stringifies an {@link XMLDocument} since {@code .toString()} just returns {@code [object XMLDocument]}.
+ *
+ * @param {Document} xmlDoc - XML Document to stringify.
+ * @param {Object} [options]
+ * @param {boolean} [options.removeHtmlAndBodyTags] - Remove {@code <html><body>[content]</body></html>} tags automatically injected by JS API.
+ * @returns {string} - Stringified XML document.
+ */
+export function xmlToString(xmlDoc, {
+    removeHtmlAndBodyTags = true,
+} = {}) {
+    let xmlString = new XMLSerializer().serializeToString(xmlDoc)
+        .replace(/xmlns=""( )?/g, '')  /* Remove superfluous empty namespace attributes */
+        .replace(/(?<=[/?]>)(?=<\w+ )/g, '\n    ');  /* Add newlines and indentation between elements */
+
+    if (removeHtmlAndBodyTags) {
+        /* Remove HTML-specific tags since this is XML */
+        xmlString = xmlString.replace(/<\/?(html|body)[^>]*>/g, '');
+    }
+
+    return xmlString;
+}
+
+
+/**
  * Converts an extension of `ArrayBuffer` (e.g. `Uint8Array`) to a hexadecimal string representation.
  *
  * @example <caption>Get the UTF-8 string of an emoji</caption>

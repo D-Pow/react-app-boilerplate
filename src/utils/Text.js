@@ -207,6 +207,90 @@ export function xmlToString(xmlDoc, {
 
 
 /**
+ * Creates an {@link XMLDocument} from a set of properties in a JSON object/array.
+ *
+ * @param {(Object|Array<Object>)} json - Collection of properties to convert to elements in the XML document.
+ * @param {Object} [xmlDeclarationProperties] - XML document {@link ProcessingInstruction} options for the root {@code <?xml ?>} comment.
+ * @returns {(Document|string)} - Converted XML document object/string.
+ */
+export function createXmlFromJson(json, xmlDeclarationProperties = {}) {
+    if (!xmlDeclarationProperties.standalone) {
+        xmlDeclarationProperties.standalone = 'yes';
+    }
+
+    /**
+     * Alternative:
+     *  - {@code xml.createProcessingInstruction('xml', `version="1.0" encoding="UTF-8" standalone="yes"`)}
+     *
+     * @see [SO answer on {@code ProcessingInstruction}]{@link https://stackoverflow.com/questions/68801002/add-xml-declaration-to-xml-document-programmatically/68801446#68801446}
+     */
+    const xml = new DOMParser().parseFromString(
+        `<?xml version="1.0" encoding="UTF-8" ${
+            Object.entries(xmlDeclarationProperties).map(([ propName, propVal ]) => `${propName}="${propVal}"`).join(' ')
+        } ?>`,
+        'application/xml',
+    );
+
+    xml.body.replaceChildren();  /* Remove <parseerror/> element if present */
+
+    function createXmlChild({
+        elemType = 'div',
+        parent = xml,
+        ...props
+    } = {}) {
+        const elem = xml.createElement(elemType);
+
+        Object.entries(props).forEach(([ propName, propVal ]) => {
+            if (propName === 'children') {
+                if (Array.isArray(propVal)) {
+                    propVal.forEach(nestedChild => {
+                        createXmlChild({
+                            parent: elem,
+                            ...nestedChild,
+                        });
+                    });
+                } else {
+                    Object.entries(propVal).forEach(([ childElemType, childProps ]) => {
+                        createXmlChild({
+                            parent: elem,
+                            elemType: childElemType,
+                            ...childProps,
+                        });
+                    });
+                }
+            } else {
+                elem.setAttribute(propName, propVal);
+            }
+        });
+
+        // Append to either the top-level <body/> elem or the specified non-body element.
+        // noinspection BadExpressionStatementJS - Using nullish coalescing operator as function call confuses some IDEs.
+        parent.body?.appendChild?.(elem) ?? parent.appendChild(elem);
+
+        return elem;
+    }
+
+    Object.entries(json).map(([ key, val ]) => {
+        let xmlChild;
+
+        if (isNaN(Number(key))) {
+            // If not an array, use the key as the element type
+            xmlChild = createXmlChild({
+                elemType: key,
+                ...val,
+            });
+        } else {
+            xmlChild = createXmlChild(val);
+        }
+
+        return xmlChild;
+    });
+
+    return xml;
+}
+
+
+/**
  * Converts an extension of `ArrayBuffer` (e.g. `Uint8Array`) to a hexadecimal string representation.
  *
  * @example <caption>Get the UTF-8 string of an emoji</caption>

@@ -17,7 +17,12 @@ import { getMimeTypeFromDataUrl } from '@/utils/Text';
  */
 export async function importAssetAsync(assetRelPath, base64 = false) {
     if (assetRelPath != null && assetRelPath !== '') {
-        // const pathIsFromAssetsDirRegex = new RegExp(`^${location.origin}/.*/?${process.env.PUBLIC_URL}/assets/`, 'i');
+        const pathIsFromAssetsDirRegex = new RegExp(`^${location.origin}/.*/?${process.env.PUBLIC_URL}/assets/`, 'i');
+
+        if (pathIsFromAssetsDirRegex) {
+            assetRelPath = assetRelPath.replace(pathIsFromAssetsDirRegex, '');
+        }
+
         try {
             // Alternative: // const module = await import(/* webpackMode: 'lazy-once' */ `@/assets/${assetRelPath}`);
             // See:
@@ -34,7 +39,15 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
 
             return assetSrc;
         } catch (error) {
-            // default return below handles error case
+            const assetRelPathWithoutHash = assetRelPath.replace(/[.-]\w+(\.\w+)$/, '$1');
+
+            if (assetRelPathWithoutHash !== assetRelPath) {
+                // Attempt removing hashes injected to filenames since they only work with direct URL references but not imports.
+                // Only attempt if the hash was found to prevent infinite loops.
+                return await importAssetAsync(assetRelPathWithoutHash, base64);
+            }
+
+            // Default return below handles error case
         }
     }
 

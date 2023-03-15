@@ -147,7 +147,13 @@ function getWebpackConfig(webpackArgs) {
                             options: {
                                 postcssOptions: {
                                     plugins: [
-                                        'postcss-preset-env',
+                                        [ 'postcss-preset-env', {
+                                            stage: 0,
+                                            browsers: babelConfig.presets
+                                                .find(preset => preset[0]?.match(/babel\/preset-env/i))?.[1]
+                                                .targets
+                                                .browsers,
+                                        }],
                                     ],
                                 },
                                 sourceMap,

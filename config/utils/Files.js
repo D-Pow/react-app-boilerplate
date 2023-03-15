@@ -396,7 +396,7 @@ function getOutputFileName(
 
     const outputFileName = [
         fileNameWithoutExtension,
-        hashLength ? `-[contenthash:${hashLength}]` : '',
+        hashLength ? `.[contenthash:${hashLength}]` : '',
         fileExtension,
     ];
     const outputFilePath = [

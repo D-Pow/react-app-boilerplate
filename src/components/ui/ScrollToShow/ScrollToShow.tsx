@@ -178,11 +178,11 @@ export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDef
 
         newShownChildren[index] = true;
 
-        this.setState({
-            shownChildren: newShownChildren,
-        });
-
-        this.cleanupEventListener();
+        if (this.state.shownChildren[index] !== newShownChildren[index]) {
+            this.setState({
+                shownChildren: newShownChildren,
+            });
+        }
     };
 
 

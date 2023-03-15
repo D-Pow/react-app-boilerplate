@@ -1,0 +1,66 @@
+@use "sass:map";
+
+@use "browsers";
+
+
+$primary: rgb(56, 0, 255);
+$secondary: rgb(40, 0, 176);
+$tertiary: rgb(25, 0, 97);
+$light: rgb(225, 224, 224);
+$lighter: rgb(237, 236, 236);
+$lightest: rgb(241, 240, 240);
+$dark: rgb(40, 40, 40);
+$grey: rgb(232, 232, 232);
+$danger: rgb(220, 53, 69);
+$info: rgb(23, 162, 184);
+
+$theme-colors: (
+    "primary": $primary,
+    "secondary": $secondary,
+    "tertiary": $tertiary,
+    "light": $light,
+    "lighter": $lighter,
+    "lightest": $lightest,
+    "dark": $dark,
+    "grey": $grey,
+    "danger": $danger,
+    "info": $info,
+);
+
+$body-bg: map.get($theme-colors, "lightest");
+
+
+// Copy Bootstrap's grid breakpoints and max-widths here in order
+// to add an extra .container `xxl` breakpoint for very large monitors
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1550px
+);
+$container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1440px
+);
+
+
+$sample-var: 100%;
+$sample-var-safari-is-the-new-ie-fix: 50%;
+
+:root {
+    // Variables and styles changing based on browser aren't available in SCSS.
+    // Thus, we have to set a CSS variable (both default value and value based on
+    // browser being used) and then use that in the desired style blocks.
+    --css-var-for-dynamic-browser-behavior: #{$sample-var};
+}
+
+@include browsers.safari {
+    :root {
+        --css-var-for-dynamic-browser-behavior: #{$sample-var-safari-is-the-new-ie-fix};
+    }
+}

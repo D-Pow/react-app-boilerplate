@@ -1,51 +1,10 @@
+@use "sass:map";
 @use "sass:math";
-@use "utils/json";
 
-$primary: rgb(56, 0, 255);
-$secondary: rgb(40, 0, 176);
-$tertiary: rgb(25, 0, 97);
-$light: rgb(225, 224, 224);
-$lighter: rgb(237, 236, 236);
-$lightest: rgb(241, 240, 240);
-$dark: rgb(40, 40, 40);
-$grey: rgb(232, 232, 232);
-$danger: rgb(220, 53, 69);
-$info: rgb(23, 162, 184);
+@use "utils";
 
-$theme-colors: (
-    "primary": $primary,
-    "secondary": $secondary,
-    "tertiary": $tertiary,
-    "light": $light,
-    "lighter": $lighter,
-    "lightest": $lightest,
-    "dark": $dark,
-    "grey": $grey,
-    "danger": $danger,
-    "info": $info,
-);
 
-$body-bg: $lightest;
-
-// Copy Bootstrap's grid breakpoints and max-widths here in order
-// to add an extra .container `xxl` breakpoint for very large monitors
-$grid-breakpoints: (
-    xs: 0,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1200px,
-    xxl: 1550px
-);
-$container-max-widths: (
-    sm: 540px,
-    md: 720px,
-    lg: 960px,
-    xl: 1140px,
-    xxl: 1440px
-);
-
-@each $color, $rgb in $theme-colors {
+@each $color, $rgb in utils.$theme-colors {
     .bg-#{$color} {
         background: $rgb;
     }
@@ -56,16 +15,16 @@ $container-max-widths: (
 }
 
 .nav-link {
-    color: $light;
+    color: map.get(utils.$theme-colors, "light");
     transition: color 0.5s;
 }
 
 .nav-link:hover {
-    color: $danger;
+    color: map.get(utils.$theme-colors, "danger");
 }
 
 .nav-link.active {
-    color: $info;
+    color: map.get(utils.$theme-colors, "info");
 }
 
 @for $pix from 0 through 100 {
@@ -235,20 +194,22 @@ $margin-units: (
     text-decoration: underline;
 
     &-extra-space {
+        // `@extend` is needed when `&` is used to define a selector name.
+        // However, using `& <selector>` or `<selector> &` doesn't since that nested style requires both selectors.
         @extend .underline;
         text-underline-position: under;
     }
 }
 
 .segment-bar {
-    background: $primary;
+    background: utils.$primary;
     height: 5px;
 }
 
 .border.border-medium {
     border-width: 0.2rem !important;
 
-    @each $colorName, $color in $theme-colors {
+    @each $colorName, $color in utils.$theme-colors {
         @for $opacity from 0 through 9 {
             $opacityVal: math.div($opacity, 10);
             &.border-#{$colorName}-opacity-#{$opacity} {
@@ -270,6 +231,6 @@ input.text-white::placeholder, textarea.text-white::placeholder {
 
 
 :export {
-    themeColors: json.json-stringify($theme-colors);
-    gridBreakpoints: json.json-stringify($grid-breakpoints);
+    themeColors: utils.json-stringify(utils.$theme-colors);
+    gridBreakpoints: utils.json-stringify(utils.$grid-breakpoints);
 }

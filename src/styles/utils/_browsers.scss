@@ -1,0 +1,58 @@
+/**
+ * Mixins for applying styles only to certain browsers.
+ *
+ * Usage:
+ *  .my-class {
+ *      @include chromium {
+ *          color: red;
+ *      }
+ *  }
+ *
+ * See:
+ *  - https://www.browserstack.com/guide/create-browser-specific-css
+ *  - https://www.ryadel.com/en/css3-media-query-target-only-ie-ie6-ie11-firefox-chrome-safari-edge
+ */
+
+
+@mixin chromium {
+    @media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: 0.001dpcm) {
+        @content;
+    }
+}
+
+@mixin firefox {
+    @-moz-document url-prefix() {
+        @content;
+    }
+}
+
+@mixin safari {
+    @media (min-resolution: 0.001dpcm) {
+        @supports (-webkit-appearance:none) and (stroke-color: transparent) {
+            @content;
+        }
+    }
+}
+
+/*
+ * Only works for Edge versions < 79.
+ * Since then, they started using Blink so it behaves exactly like Chrome.
+ *
+ * See:
+ *  - https://stackoverflow.com/questions/32940965/how-to-target-microsoft-edge-with-css/32942177#32942177
+ */
+@mixin edge {
+    @supports (-ms-ime-align: auto) {
+        @content;
+    }
+}
+
+@mixin ie {
+    _:-ms-fullscreen {
+        @content;
+    }
+
+    @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+        @content;
+    }
+}

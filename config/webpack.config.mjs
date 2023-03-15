@@ -600,7 +600,13 @@ function getWebpackConfig(webpackArgs) {
         performance: {
             hints: false, // disable "entrypoint size limit" warning
         },
-        stats: { modules: false, children: false }, // clean up npm output
+        stats: {
+            // Clean up npm output
+            modules: false,
+            children: false,
+            // Allow SCSS debugging output
+            loggingDebug: [ 'sass-loader' ],
+        },
         devtool: sourceMap ? 'source-map' : false,
         /** @type {import('@types/webpack-dev-server').Configuration} */
         devServer: {

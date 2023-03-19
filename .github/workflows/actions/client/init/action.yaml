@@ -29,6 +29,8 @@ runs:
         echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
     # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+    # Run locally via:
+    #   gh run download "$(gh run list | egrep -i 'in_progress' | awk '{ print $(NF - 2) }')"
     - name: Client init - Download cache
       id: client-init-download-cache
       uses: actions/cache/restore@v3

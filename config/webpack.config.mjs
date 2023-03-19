@@ -610,6 +610,9 @@ function getWebpackConfig(webpackArgs) {
             },
         },
         /**
+         * Cache builds on the filesystem.
+         * Dramatically speeds up builds, but not necessarily dev-server compilations.
+         *
          * @see [Cache]{@link https://webpack.js.org/configuration/cache/}
          */
         cache: {

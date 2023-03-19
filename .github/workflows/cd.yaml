@@ -234,7 +234,7 @@ jobs:
       #     git pull
       #     git checkout gh-pages
       #
-      #     ( for path in $(ls --ignore=dist --ignore=.git); do rm -rf "$path"; done; )
+      #     ( for path in $(ls --ignore=dist --ignore=.git --ignore=package.json); do rm -rf "$path"; done; )
       #
       #     cp -R dist/* .
       #

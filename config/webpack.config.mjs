@@ -71,7 +71,10 @@ const svgDefaultExportReactComponent = false;
 
 const javascriptLoaderConfig = {
     loader: 'babel-loader',
-    options: babelConfig,
+    options: {
+        ...babelConfig,
+        cacheDirectory: true,
+    },
 };
 const typescriptLoaderConfig = {
     loader: 'ts-loader',

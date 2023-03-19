@@ -90,6 +90,110 @@ export function getCssVar(cssVar, {
 }
 
 
+/**
+ * Gets a CSS rule or variable as a {@link CSSRule} rather than just a string.
+ *
+ * CSS variables (e.g. `:root { --my-var: 5px }`) can sometimes be obtained through normal means,
+ * i.e. `getComputedStyle().getPropertyValue()` or `element.style.getPropertyValue()` or `element.style[key]`,
+ * but it's relatively unreliable.
+ *
+ * Regardless, this searches through all `document.styleSheets` for the desired rule/variable rather than just one
+ * element's rules.
+ *
+ * @param {(RegExp|string)} cssSelectorOrRuleNameRegex - Rule or variable search query.
+ * @returns {(CSSRule|CSSRule[])} - Matching rule or rules.
+ *
+ * @see [CSSRule docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/CSSRule}
+ * @see [CSSKeyframesRule docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/CSSKeyframesRule}
+ * @see [SO post 1]{@link https://stackoverflow.com/questions/65258237/get-list-of-keyframes-available-using-javascript}
+ * @see [SO post 2]{@link https://stackoverflow.com/questions/18481550/how-to-dynamically-create-keyframe-css-animations}
+ */
+export function getCssRule(cssSelectorOrRuleNameRegex) {
+    const matchingCssRules = Object.values(document.styleSheets)
+        .flatMap(styleSheet => Object.values(styleSheet.cssRules)
+            .filter(cssRule => (cssRule?.name ?? cssRule?.selectorText)?.match?.(cssSelectorOrRuleNameRegex)),
+        );
+
+    if (matchingCssRules?.length === 1) {
+        return matchingCssRules[0];
+    }
+
+    return matchingCssRules;
+}
+
+
+/**
+ * Gets all CSS properties of an element (or root node if none specified).
+ * Doesn't include CSS variables since those often have to be accessed by name.
+ *
+ * Note:
+ *  - Use {@link getCssRule()} to get the full rule, not just the key-value string pairs.
+ *  - Use either {@link getCssVar()} or {@link getCssRule()} for CSS variables.
+ *
+ * @param {Node} [element] - The element from which to extract all CSS properties.
+ * @returns {Object} - All CSS properties in a more manageable format than the oddly-formatted {@link CSSStyleDeclaration} object.
+ */
+export function getAllCssProperties(element = document.documentElement) {
+    /**
+     * Oddly formed object of the shape: Object<number, string>
+     * e.g. { 1: 'align-items' }
+     * but accessing the CSS property uses a getter to get the actual property
+     * e.g. cssStyleDeclaration['display'] // === 'block'
+     *
+     * Thus it requires iteration over the keys to get the values themselves.
+     *
+     * @type {CSSStyleDeclaration}
+     */
+    const cssStyleDeclaration = getComputedStyle(element);
+
+    return Object.entries(cssStyleDeclaration).reduce((cssStyles, [ styleKey, styleEntry ]) => {
+        // styleKey == number || camelCaseProperty
+        // styleEntry == hyphen-case property (if key == number) || string (if key == camelCaseProperty)
+        if (!isNaN(Number(styleKey))) {
+            // Use hyphen-case property name if CSSStyleDeclaration key is a number (styleEntry == "real" property name in CSS)
+            styleKey = styleEntry;
+        }
+
+        const styleValue = cssStyleDeclaration.getPropertyValue(styleKey) || cssStyleDeclaration[styleKey];
+
+        if (styleValue) {
+            // Style is definitely defined, so remove excess whitespace that so often appears and set it to the simplified object
+            cssStyles[styleKey.trim()] = styleValue.trim();
+        }
+
+        return cssStyles;
+    }, {});
+}
+
+
+export function getCssVariable(varName, {
+    element = document.documentElement,
+} = {}) {
+    return getComputedStyle(element).getPropertyValue(varName);
+}
+
+
+/**
+ * Sets a CSS property on an element (or root element if none specified).
+ * Returns the resulting string.
+ *
+ * @param {string} key - Property key.
+ * @param {string} val - Property value.
+ * @param {Object} [options]
+ * @param {HTMLElement} [options.element] - Element to modify (defaults to the root element).
+ * @returns {string} - Resulting property value as told by `element.getPropertyValue()`.
+ */
+export function setCssProperty(key, val, {
+    element = document.documentElement,
+} = {}) {
+    element.style.setProperty(key, val);
+
+    return getCssVar(key, {
+        element,
+    });
+}
+
+
 export function getThemeColors() {
     return parseScssVar(themeColors);
 }

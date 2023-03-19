@@ -437,6 +437,12 @@ function getWebpackConfig(webpackArgs) {
             ],
         },
         output: {
+            // library: {
+            //     name: indexHtmlTitle.replace(/\s/g, ''),
+            //     type: 'umd',
+            //     umdNamedDefine: true, // Names the library for AMD modules
+            //     export: [ 'default' ],
+            // },
             path: Paths.BUILD_ROOT.ABS, // output path for webpack build on machine, not relative paths for index.html
             filename: `${Paths.BUILD_OUTPUT.REL}/js/[name].[contenthash:8].bundle.js`,
             chunkFilename: `${Paths.BUILD_OUTPUT.REL}/js/[name].[contenthash:8].chunk.js`,

@@ -556,6 +556,7 @@ function getWebpackConfig(webpackArgs) {
         optimization: {
             moduleIds: 'deterministic', // Prevent arbitrary moduleId incrementing, i.e. if the content hasn't changed, don't change the file's hash due to moduleId++. See: https://webpack.js.org/guides/caching/#module-identifiers
             minimize: isProduction,
+            usedExports: true, // Tree-shaking of unused exports based on Terser's ability to parse exported functions and their usage. True by default in 'production' mode.
             minimizer: [
                 new TerserJSPlugin(),
                 new CssMinimizerPlugin({

@@ -208,6 +208,9 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
  * Gets an element's dimensions, either as displayed (e.g. what's shown with `overflow: hidden`) or the
  * true/actual dimensions (e.g. what's shown + not shown with `overflow: hidden`).
  *
+ * Will attempt to add intrinsic (i.e. "real" file dimensions) of elements that support `natural(Width|Height)`,
+ * namely `<img/>` elements and some others.
+ *
  * @param {HTMLElement} element - Element for which dimensions should be obtained.
  * @param {Object} [options]
  * @param {boolean} [options.displayed] - Include the displayed dimensions of the element.
@@ -256,6 +259,12 @@ export function getElementDimensions(element, {
     const absoluteYCoordinateOnPage = window.pageYOffset + y;
 
     /*
+     * "Real" dimensions of the element if supported (e.g. native dimensions of an image).
+     */
+    const intrinsicWidth = element.naturalWidth;
+    const intrinsicHeight = element.naturalHeight;
+
+    /*
      * "Real" width/height, including all content not visible due to overflow
      * and/or the max size allowed by the browser window viewport.
      *
@@ -290,6 +299,13 @@ export function getElementDimensions(element, {
             height,
         },
     };
+
+    if (intrinsicHeight && intrinsicWidth) {
+        elementDimensions.intrinsic = {
+            width: intrinsicWidth,
+            height: intrinsicHeight,
+        };
+    }
 
     if (!actual && displayed) {
         return elementDimensions.displayed;

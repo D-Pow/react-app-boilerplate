@@ -569,20 +569,38 @@ function getWebpackConfig(webpackArgs) {
             ],
             splitChunks: {
                 chunks: 'all',
+                // maxSize: 700000,  // Max file size of any chunk unless overridden below -- NOTE: Test multiple values since sometimes setting this can ironically bloat the output file sizes
                 cacheGroups: {
-                    // TODO - Might want to add a max chunk size and/or split individual vendor modules out
-                    //  See: https://stackoverflow.com/a/70627948/5771107
-                    vendor: { // split node_modules (as vendor) from src (as client)
+                    /*
+                     * Splits node_modules packages (as 'vendor') from src (as 'client').
+                     * Without `splitChunks[cacheGroups[i]]?.maxSize`, this would merge all dependency packages into one
+                     * single `vendor.js` file. `maxSize` keeps the file from getting too big.
+                     *
+                     * See:
+                     *  - https://stackoverflow.com/questions/65858859/how-to-code-split-webpacks-vendor-chunk/70627948#70627948
+                     */
+                    vendor: {
                         test: /[\\/]node_modules[\\/]/,
                         name: 'vendor',
                         chunks: 'all',
+                        // Set smaller max file size for dependencies since they change less frequently.
+                        // This way, upon change to >= 1, the unchanged ones are more likely to be served from cache rather
+                        // than being re-built.
+                        maxSize: 200000,
                     },
+                    // Split up stylesheets
                     styles: {
                         test: Styles,
+                        type: 'css/mini-extract', // Suggested by the docs, though `type` technically only has value within individual plugins' use of the string. See: https://github.com/webpack-contrib/mini-css-extract-plugin#extracting-css-based-on-entry
                         name: 'styles',
                         chunks: 'all',
-                        // TODO - Find an actual solution for this
-                        enforce: true, // collect all CSS into a single file since the separated CSS files contained only duplicate code
+                        // Collect all CSS into a single file since the separated CSS files contained only duplicate code.
+                        // This is either a bug or was originally caused by the old format of using `@import` in SCSS files
+                        // instead of `@use`, where the latter supposedly prevents output CSS from being copy-pasted into
+                        // each file that uses it.
+                        // Requires more testing to find out.
+                        // See bug: https://github.com/webpack-contrib/mini-css-extract-plugin/issues/52
+                        enforce: true,
                     },
                 },
             },

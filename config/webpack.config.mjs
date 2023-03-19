@@ -618,11 +618,21 @@ function getWebpackConfig(webpackArgs) {
         performance: {
             hints: false, // disable "entrypoint size limit" warning
         },
+        /**
+         * @see [Stats structure]{@link https://webpack.js.org/api/stats}
+         * @see [Stats configuration]{@link https://webpack.js.org/configuration/stats}
+         */
         stats: {
-            // Clean up npm output
-            modules: false,
-            children: false,
-            // Allow SCSS debugging output
+            builtAt: true, // Show final time build completed
+            assets: true, // Show assets generated/output from other plugins, e.g. HtmlWebpackPlugin, CopyWebpackPlugin, etc.
+            modules: true, // Show generated modules by runtime, orphan, path, etc., e.g. node_modules/, src/, src/path/to/MyStyles.scss, etc.
+            children: false, // Not completely sure what this is exactly, but appears to be sub-compilers like HtmlWebpackPlugin
+            nestedModules: true, // Show nested modules in addition to top-level modules
+            moduleAssets: true, // Show assets inside of modules
+            entrypoints: true, // Show entrypoint name, size, num assets included, and similar information
+            groupAssetsByChunk: true, // Group assets by the parent chunk file
+
+            // Allow SCSS debugging output: https://webpack.js.org/loaders/sass-loader/#how-to-enable-debug-output
             loggingDebug: [ 'sass-loader' ],
         },
         devtool: sourceMap ? 'source-map' : false,
@@ -686,7 +696,11 @@ function getWebpackConfig(webpackArgs) {
                 type: useHttps ? 'https' : 'http',
             },
             devMiddleware: {
-                stats: 'minimal', // silence superfluous webpack-dev-server "emitted" output
+                // Specify Webpack output only for the dev-server "emitted" output
+                stats: {
+                    preset: 'minimal', // Greatly reduce output info by extending 'minimal' preset, overwriting options in root-level `stats`
+                    builtAt: true,
+                },
             },
             client: {
                 overlay: true, // show full-screen display of compiler errors

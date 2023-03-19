@@ -45,6 +45,13 @@ on:
   #   types: [ closed ]
   #   branches: [ master ]
   #
+  # To run upon merge in general, apparently, there is no `merge` event, only `merge_group` which specifies merging
+  # when certain checks are required. Thus, mark "all checks" via `checks_requested`.
+  # See:
+  #   - https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#merge_group
+  # merge_group:
+  #   branches: [ checks_requested ]
+  #
   # Run on CI completion (the `if:` in the `deploy` job below would need updating accordingly)
   workflow_run:
     workflows: [ 'CI' ]

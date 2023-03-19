@@ -485,7 +485,7 @@ function getWebpackConfig(webpackArgs) {
             // splits CSS out from the rest of the code
             new MiniCssExtractPlugin({
                 filename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].css`,
-                chunkFilename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].chunk.js`,
+                chunkFilename: `${Paths.BUILD_OUTPUT.REL}/css/[name].[contenthash:8].chunk.css`,
             }),
             // manually copies files from src to dest
             new CopyWebpackPlugin({

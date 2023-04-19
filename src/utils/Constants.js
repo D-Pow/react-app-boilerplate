@@ -60,7 +60,7 @@ export const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-z
 
 
 export const LINKS = {
-    GitHub: 'https://github.com/',
+    GitHub: 'https://github.com',
     EmbeddedFileViewerGoogle: 'https://docs.google.com/viewer?embedded=true&url=',
     EmbeddedFileViewerMicrosoft: 'http://view.officeapps.live.com/op/view.aspx?src=',
     BadgeShieldGenerator: 'https://img.shields.io/badge',

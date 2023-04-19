@@ -1,9 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {
+    memo,
+    type Ref,
+} from 'react';
 
 import Anchor from '@/components/ui/Anchor';
 import { isIpAddress } from '@/utils/BrowserNavigation';
 import { MimeTypes, LINKS } from '@/utils/Constants';
+
+import type { ComponentProps } from '@/types';
+
 
 /**
  * Embedding .pdf (and similar .doc, .docx, etc.) files is slightly more complicated
@@ -45,14 +50,24 @@ import { MimeTypes, LINKS } from '@/utils/Constants';
 const googleViewerMimeTypes = new Set([ MimeTypes.PDF ]);
 const microsoftViewerMimeTypes = new Set([ MimeTypes.DOC, MimeTypes.DOCX, MimeTypes.ODT, MimeTypes.XLS, MimeTypes.XLSX, MimeTypes.PPT, MimeTypes.PPTX ]);
 
+export interface ResourceViewerProps {
+    src: string;
+    altLinkText: string;
+    mimeType?: string;
+    includeNestedEmbedTag?: boolean;
+    objectRef?: Ref<HTMLObjectElement>;
+    [propKey: string]: unknown;
+}
+
 function ResourceViewer({
     src = '',
     altLinkText = '',
     mimeType = MimeTypes.PDF,
     includeNestedEmbedTag = false,
     objectRef,
+    children,
     ...props
-}) {
+}: ComponentProps<ResourceViewerProps>) {
     if (!src || !altLinkText) {
         return null;
     }
@@ -67,6 +82,7 @@ function ResourceViewer({
     const embeddedViewerSrc = isHttpUrl ? externalViewerSrc : src;
 
     return (
+        // @ts-ignore - <object> can have children, they're just used as a fallback if the `object.props.data` field fails
         <object
             data={embeddedViewerSrc}
             type={mimeType}
@@ -82,22 +98,9 @@ function ResourceViewer({
                     type={mimeType}
                 />
             )}
+            {children}
         </object>
     );
 }
 
-ResourceViewer.propTypes = {
-    src: PropTypes.string.isRequired,
-    altLinkText: PropTypes.string.isRequired,
-    mimeType: PropTypes.string,
-    includeNestedEmbedTag: PropTypes.bool,
-    objectRef: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.shape({
-            current: PropTypes.instanceOf(PropTypes.element),
-        }),
-    ]),
-};
-
-// TODO Stop from re-rendering if parent re-renders
-export default React.memo(ResourceViewer);
+export default memo(ResourceViewer);

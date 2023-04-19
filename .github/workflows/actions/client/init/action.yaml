@@ -21,6 +21,9 @@ outputs:
 runs:
   using: composite
   steps:
+    # Can't use `working-directory` here because paths in `hashFiles()` are always relative to root.
+    # See:
+    #   - https://docs.github.com/en/actions/learn-github-actions/expressions#hashfiles
     - name: Client - Set cache ID
       id: client-init-set-cache-id
       shell: bash

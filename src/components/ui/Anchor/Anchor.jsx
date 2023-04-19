@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 
 function Anchor(props) {
@@ -15,7 +16,14 @@ function Anchor(props) {
     }
 
     return (
-        <a className={cls.join(' ')} href={props.href} target={props.target} rel={rel.join(' ')} {...props.aria}>
+        <a
+            className={cls.join(' ')}
+            href={props.href}
+            target={props.target}
+            rel={rel.join(' ')}
+            onClick={props.onClick}
+            {...props.aria}
+        >
             {props.children}
         </a>
     );
@@ -38,6 +46,7 @@ Anchor.propTypes = {
         PropTypes.arrayOf(PropTypes.string),
     ]),
     target: PropTypes.string,
+    onClick: PropTypes.func,
     aria: PropTypes.object,
 };
 
@@ -51,4 +60,4 @@ Anchor.defaultProps = {
     aria: {},
 };
 
-export default Anchor;
+export default memo(Anchor);

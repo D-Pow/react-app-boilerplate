@@ -30,7 +30,7 @@ export async function hash(str: string, {
     // Encode to (UTF-8) Uint8Array
     const utf8IntArray = new TextEncoder().encode(str);
     // Hash the string
-    const hashBuffer = await self.crypto.subtle.digest(algo, utf8IntArray);
+    const hashBuffer = await self?.crypto?.subtle?.digest?.(algo, utf8IntArray);
     // Get hex string from buffer/byte array
     const hashAsciiHex = byteArrayToHexString(new Uint8Array(hashBuffer));
 
@@ -42,3 +42,11 @@ hash.ALGOS = {
     Sha384: 'SHA-384',
     Sha512: 'SHA-512',
 };
+
+
+/**
+ * Generates a random UUID.
+ */
+export function uuid() {
+    return self?.crypto?.randomUUID?.();
+}

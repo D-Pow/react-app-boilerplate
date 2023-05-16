@@ -18,18 +18,22 @@ function removeOldCaches() {
         });
 }
 
-function clearCache(cache, exceptUrls) {
-    if (typeof exceptUrls === typeof '') {
-        exceptUrls = [ exceptUrls ];
-    } else if (exceptUrls == null) {
-        exceptUrls = [];
+function clearCache(cache, onlyUrls) {
+    if (typeof onlyUrls === typeof '') {
+        onlyUrls = [ onlyUrls ];
+    } else if (onlyUrls == null) {
+        onlyUrls = [];
     }
 
     function clearCacheEntries(cacheObj) {
         return cacheObj.keys().then(function(requests) {
             return Promise.all(
                 requests.filter(function(request) {
-                    return !exceptUrls.includes(request.url);
+                    if (onlyUrls.length) {
+                        return onlyUrls.includes(request.url);
+                    }
+
+                    return request;
                 }).map(function(request) {
                     return cacheObj.delete(request);
                 }),

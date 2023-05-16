@@ -18,38 +18,47 @@ const isLocalhost = Boolean(
 );
 
 export default function registerServiceWorker() {
-    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
-        // The URL constructor is available in all browsers that support SW.
-        const publicUrl = new URL(process.env.PUBLIC_URL, self.location);
-        if (publicUrl.origin !== self.location.origin) {
-            // Our service worker won't work if PUBLIC_URL is on a different origin
-            // from what our page is served on. This might happen if a CDN is used to
-            // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
-            return;
-        }
-
-        self.addEventListener('load', () => {
-            const swUrl = `./ServiceWorker.js`;
-
-            if (isLocalhost) {
-                // This is running on localhost. Lets check if a service worker still exists or not.
-                checkValidServiceWorker(swUrl);
-                registerValidSW(swUrl);
-
-                // Add some additional logging to localhost, pointing developers to the
-                // service worker/PWA documentation.
-                navigator.serviceWorker.ready.then(() => {
-                    console.log(
-                        'This web app is being served cache-first by a service ' +
-                        'worker. To learn more, visit https://goo.gl/SC7cgQ',
-                    );
-                });
-            } else {
-                // Is not local host. Just register service worker
-                registerValidSW(swUrl);
-            }
-        });
+    if (
+        (process.env.NODE_ENV !== 'production')
+        || !('serviceWorker' in navigator)
+    ) {
+        return;
     }
+
+    // The URL constructor is available in all browsers that support SW.
+    // This generates a URL using the directory within the output directory (e.g. 'static' from
+    // 'dist/static/') and prepends the base URL of `self.location` before said directory,
+    // resulting in e.g. 'https://my-website.com/static'.
+    const publicUrl = new URL(process.env.PUBLIC_URL, self.location);
+
+    if (publicUrl.origin !== self.location.origin) {
+        // Our service worker won't work if PUBLIC_URL is on a different origin
+        // from what our page is served on. This might happen if a CDN is used to
+        // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
+        return;
+    }
+
+    self.addEventListener('load', () => {
+        const swUrl = `./ServiceWorker.js`;
+
+        if (isLocalhost) {
+            // This is running on localhost. Lets check if a service worker still exists or not.
+            checkValidServiceWorker(swUrl);
+            registerValidSW(swUrl);
+
+            // Add some additional logging to localhost, pointing developers to the
+            // service worker/PWA documentation.
+            navigator.serviceWorker.ready.then(() => {
+                console.log(
+                    'This web app is being served cache-first by a service ' +
+                    'worker. To learn more, visit https://goo.gl/SC7cgQ',
+                );
+            });
+        } else {
+            // Is not local host. Just register service worker
+            registerValidSW(swUrl);
+        }
+    });
 }
 
 function broadcastMessage(message) {

@@ -94,7 +94,11 @@ const Paths = (() => {
     const currentProcessPath = process.env.PWD; // Root dir preserving symlinks + current process' path (e.g. if in a nested directory from the root)
     const currentProcessNestedPath = fs.realpathSync(currentProcessPath).replace(realPath, ''); // Only the nested directory, used for diffing any (non-)symlink-preserving path (nested or not) with the repo root in order to convert PWD to the root dir
     const rootDirMaintainingSymlinks = currentProcessPath.replace(currentProcessNestedPath, ''); // Root dir preserving symlinks without the nested directory
+
     pathMappings.ROOT.ABS = rootDirMaintainingSymlinks;
+    pathMappings.normalize = normalizePathWithForwardSlashes;
+    pathMappings.getFileAbsPath = (...pathSegments) => pathMappings.normalize(path.resolve(...pathSegments));
+    pathMappings.getFileRelPath = (...pathSegments) => pathMappings.normalize(path.relative(...pathSegments));
 
     function setAbsPaths(pathConfig, prevRelPath) {
         if (prevRelPath) {
@@ -103,12 +107,12 @@ const Paths = (() => {
 
         // Only set absolute path if not already defined
         if (!pathConfig.ABS) {
-            pathConfig.ABS = path.resolve(pathMappings.ROOT.ABS, pathConfig.REL);
+            pathConfig.ABS = pathMappings.getFileAbsPath(pathMappings.ROOT.ABS, pathConfig.REL);
         }
 
         if (/\\/.test(pathConfig.ABS + pathConfig.REL)) {
-            pathConfig.ABS = normalizePathWithForwardSlashes(pathConfig.ABS);
-            pathConfig.REL = normalizePathWithForwardSlashes(pathConfig.REL);
+            pathConfig.ABS = pathMappings.normalize(pathConfig.ABS);
+            pathConfig.REL = pathMappings.normalize(pathConfig.REL);
         }
 
         // Recurse if nested path config present
@@ -117,11 +121,9 @@ const Paths = (() => {
             .forEach(nestedPathConfig => setAbsPaths(nestedPathConfig, pathConfig.REL));
     }
 
-    Object.values(pathMappings).forEach(pathConfig => setAbsPaths(pathConfig));
-
-    pathMappings.normalize = normalizePathWithForwardSlashes;
-    pathMappings.getFileAbsPath = (...pathSegments) => pathMappings.normalize(path.resolve(...pathSegments));
-    pathMappings.getFileRelPath = (...pathSegments) => pathMappings.normalize(path.relative(...pathSegments));
+    Object.values(pathMappings)
+        .filter(configVal => !(configVal instanceof Function))
+        .forEach(pathConfig => setAbsPaths(pathConfig));
 
     return pathMappings;
 })();
@@ -898,7 +900,7 @@ class ImportAliases {
 
         // Remove repeating slashes. Only normalize the path instead of resolving it
         // since some alias characters aren't valid paths.
-        return path.normalize(`${alias}/${relPathFromAlias}`);
+        return Paths.normalize(`${alias}/${relPathFromAlias}`);
     }
 
     static getFilePathFromAlias(aliasedFilePath, excludePathToProject = false) {

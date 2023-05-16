@@ -99,11 +99,14 @@ self.addEventListener('fetch', event => {
             return cache.match(event.request).then(function(response) {
                 var url = event.request.url;
                 var fileRequested = url.split('/').pop();
+                var responseContentType = String(response && response.headers.get('content-type') || '');  // Cast to string, but prevent casting null/undefined to 'null'/'undefined' via ''
+                var responseIsHtmlFile = Boolean(responseContentType && responseContentType.match(/(text|application)\/html/i));
                 var isIndexHtml = (
                     (
                         url[url.length-1] === '/'
                         || fileRequested === 'index.html'
                         || (new URL(location.href).origin === url)
+                        || responseIsHtmlFile
                     )
                     && (new URL(url)).pathname.split('/').length <= 2
                 );

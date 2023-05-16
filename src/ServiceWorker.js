@@ -150,22 +150,27 @@ self.addEventListener('fetch', event => {
                                      *
                                      * Also, clear cache first, then add the new index.html content to the
                                      * new cache so that it's already cached for the next page reload.
+                                     *
+                                     * Run this in a timeout so the previous version of the website still
+                                     * loads before the cache is cleared when the user visits the site.
                                      */
-                                    clearCache(cache, url)
-                                        .then(function() {
-                                            return cache
-                                                .put(event.request, newIndexHtmlResponse.clone())
-                                                .catch(function(cacheError) {
-                                                    console.log('Could not cache url:', event.request.url, 'Failed with error:', cacheError);
+                                    setTimeout(() => {
+                                        clearCache(cache, url)
+                                            .then(function () {
+                                                return newIndexHtmlResponse.then(function (newIndexHtmlResponseObject) {
+                                                    return cache
+                                                        .put(event.request, newIndexHtmlResponseObject.clone())
+                                                        .catch(function (cacheError) {
+                                                            console.log('Could not cache url:', event.request.url, 'Failed with error:', cacheError);
+                                                        });
                                                 });
-                                        })
-                                        .then(function() {
-                                            setTimeout(function() {
+                                            })
+                                            .then(function () {
                                                 postMessageToClient(UPDATE_BROADCAST);
-                                            }, 5000);
 
-                                            console.log('New website version is available, deleting old cache content');
-                                        });
+                                                console.log('New website version is available, deleting old cache content');
+                                            });
+                                    }, 5000);
                                 }
                             });
                     }

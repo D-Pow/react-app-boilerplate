@@ -133,7 +133,7 @@ self.addEventListener('fetch', event => {
                          */
                         var newIndexHtmlResponse = fetchAndCache(event, cache);
                         var newIndexHtmlBody = newIndexHtmlResponse.then(function(res) {
-                            return res.text();
+                            return res.clone().text();
                         });
                         var oldIndexHtmlBody = response.clone().text();
 

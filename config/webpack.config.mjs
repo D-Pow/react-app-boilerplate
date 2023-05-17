@@ -38,7 +38,8 @@ import manifestJson from '../src/manifest.json' assert { type: 'json' };
 
 const isProduction = process.env.NODE_ENV === 'production';
 const allowAccessFromAllOrigins = Boolean(process.env.ALLOW_CORS_ACCESS);
-const useHttps = false;
+const useHttps = Boolean(process.env.HTTPS) || process.argv.includes('--https');
+const useCustomHttpsCert = Boolean(process.env.CUSTOM_CERT);
 // If this app is a library to be consumed by other apps instead of a standalone website
 // TODO Update output configs to consider this option
 const isLibrary = false;
@@ -52,6 +53,17 @@ const indexHtmlMetaTagData = {
     'theme-color': manifestJson.theme_color,
     viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
 };
+
+
+let certConfig = {};
+if (useHttps && useCustomHttpsCert) {
+    // import selfSignedCert from '../.env.cert.json' assert { type: 'json' };
+    const { importFile } = await import('./utils/ESM/index.mjs');
+    /** @type {typeof import('./utils/Certs')} */
+    const certs = await importFile('./config/utils/Certs.ts');
+
+    certConfig = await certs.getServerHttpsCredentials();
+}
 
 const fileUrlsNotToCacheInPwa = [];
 
@@ -709,6 +721,9 @@ function getWebpackConfig(webpackArgs) {
             /** @type {import('https').ServerOptions} */
             server: { // HTTPS configs if not using HTTP
                 type: useHttps ? 'https' : 'http',
+                options: {
+                    ...certConfig,
+                },
             },
             devMiddleware: {
                 // Specify Webpack output only for the dev-server "emitted" output

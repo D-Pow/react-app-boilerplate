@@ -23,7 +23,7 @@ import { Paths } from '../Files.js';
  * @param {string} [baseDir]
  * @returns {any} - Content of that file. JS files will be treated as normal and JSON files will be objects.
  */
-function requireFile(fileName, baseDir = '') {
+export function requireFile(fileName, baseDir = '') {
     const require = createRequire(baseDir || import.meta.url);
 
     return require(fileName);
@@ -143,7 +143,7 @@ export function importFile(fileName, {
     onlyFilePath = false,
     onlyFileUrl = false,
 } = {}) {
-    const resolvedFilePath = path.resolve(baseDir, fileName);
+    const resolvedFilePath = Paths.getFileAbsPath(baseDir, fileName);
 
     if (onlyFilePath) {
         return resolvedFilePath;
@@ -166,7 +166,11 @@ export function importFile(fileName, {
         try {
             return requireFile(baseDir);
         } catch (e) {
-            return requireFile(import.meta.url);
+            try {
+                return requireFile(import.meta.url);
+            } catch (e2) {
+                // Either the file can't be imported via `require()` or `import.meta.url` isn't defined
+            }
         }
     }
 

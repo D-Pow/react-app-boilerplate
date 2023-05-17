@@ -41,6 +41,6 @@ describe('<Home/>', () => {
         expect(element.querySelector(`div.${About.defaultProps.className}`)).toBeDefined();
         expect(location.href).toEqual(newUrl);
         expect(location.href).not.toEqual(originalUrl);
-        expect(location.pathname).toEqual('/about');
+        expect(location.href.match(/\/about$/)?.length).toBeGreaterThanOrEqual(1);
     });
 });

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_app_boilerplate=self.webpackChunkreact_app_boilerplate||[]).push([[835],{1835:function(e,t,p){e.exports=p.p+"static/assets/fonts/BrushScript.eot"}}]);

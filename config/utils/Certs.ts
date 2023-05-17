@@ -90,7 +90,7 @@ export type DevServerSelfSignedCert = DevServerSelfSignedCertSimple | SecureCont
 
 
 const defaultCertOptions: SelfSignedCertOptions = {
-    validityDays: 1,
+    validityDays: 7,
     organization: 'Localhost Org',
     state: 'New York',
     locality: 'New York City',

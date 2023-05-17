@@ -6,6 +6,17 @@ inputs:
   GITHUB_TOKEN:
     description: GitHub token required for acting on repo within pipelines (modifying branches, publishing artifacts, etc.).
     required: true
+  gitUserName:
+    description: Username for git commands.
+    required: false
+    default: ${{ github.actor }}
+  gitUserEmail:
+    description: Email for git commands.
+    required: false
+    default: ${{ github.actor }}@users.noreply.github.com
+  nodeVersion:
+    description: NodeJS version.
+    required: false
   clientVersion:
     description: Sets (or increments if 'true') client app version.
     required: false
@@ -27,6 +38,17 @@ runs:
           package.json
           package-lock.json
         key: ${{ env.CLIENT_CACHE_ID }}
+
+    - name: Client Build - Set env vars
+      shell: bash
+      # Only set env vars if they were specified in `inputs`.
+      # This lets us fallback to vars already present in `env`.
+      run: |
+        [[ -n "${{ inputs.GITHUB_TOKEN }}" ]] && echo "GITHUB_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> $GITHUB_ENV
+        [[ -n "${{ inputs.gitUserName }}" ]] && echo "gitUserName=${{ inputs.gitUserName }}" >> $GITHUB_ENV
+        [[ -n "${{ inputs.gitUserEmail }}" ]] && echo "gitUserEmail=${{ inputs.gitUserEmail }}" >> $GITHUB_ENV
+        [[ -n "${{ inputs.nodeVersion }}" ]] && echo "nodeVersion=${{ inputs.nodeVersion }}" >> $GITHUB_ENV
+        [[ -n "${{ inputs.clientVersion }}" ]] && echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
 
     # See:
     #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action

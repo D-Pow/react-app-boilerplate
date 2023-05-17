@@ -219,7 +219,7 @@ function parseCliArgs({
     );
 
 
-    if (parsedArgs?.help) {
+    function handleHelp() {
         parsedArgs.helpMessageFormattedContent = printHelpMessageAndExit({
             filename: argv?.[1],
             helpMessage,
@@ -227,12 +227,28 @@ function parseCliArgs({
             optionsConfigs,
             booleanFlagNegationPrefix,
         });
+
+        return parsedArgs.helpMessageFormattedContent;
+    }
+
+    if (parsedArgs?.help) {
+        handleHelp();
     }
 
 
     if (clearArgvAfterProcessing) {
         argv.splice(0, argv.length);
     }
+
+
+    Object.entries(optionsConfigs)
+        .filter(([ optionName, optionConfig ]) => optionConfig.hasOwnProperty('allowedValues'))
+        .map(([ optionName, optionConfig ]) => {
+            if (parsedArgs[optionName] && !optionConfig.allowedValues.includes(parsedArgs[optionName])) {
+                console.error(`Invalid value "${parsedArgs[optionName]}" passed to "${optionName}" option. Valid values: [${optionConfig.allowedValues}].`);
+                handleHelp();
+            }
+        });
 
 
     return parsedArgs;

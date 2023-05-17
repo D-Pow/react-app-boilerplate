@@ -25,6 +25,8 @@ import {
 } from '~/config/utils';
 
 
+type ValueOf<O, K extends keyof O = keyof O> = O[K];
+
 type CreateServer = (
     typeof createHttpServer
     | typeof createHttpsServer
@@ -37,6 +39,11 @@ type Get = (
     | typeof httpsGet
 );
 
+const ServerTypes = {
+    Webpack: 'webpack',
+    NodeJS: 'nodejs',
+    NextJS: 'nextjs',
+};
 
 interface ServerConfigs {
     /**
@@ -57,6 +64,7 @@ interface ServerOptions {
     domain: string;
     hostname: string;
     isHttps: boolean;
+    serverType?: ValueOf<typeof ServerTypes>;
     production: boolean;
     dev: boolean;
     args?: unknown[];
@@ -110,6 +118,13 @@ function configureServer({
                 defaultValue: process.env.DOMAIN || 'localhost',
                 aliases: [ 'd' ],
             },
+            serverType: {
+                description: 'Type of server to use (i.e. desired library/framework).',
+                numArgs: 1,
+                defaultValue: 'webpack',
+                aliases: [ 'type' ],
+                allowedValues: Object.values(ServerTypes),
+            },
             certLifetime: {
                 description: 'How many days the HTTPS certificate should be valid (default: 1 year).',
                 numArgs: 1,
@@ -142,6 +157,7 @@ function configureServer({
         protocol,
         port,
         domain,
+        serverType,
         _: args, // Positional args without flags
         ...unknownOptions // Unknown options/flags
     } = parsedArgs;
@@ -160,6 +176,7 @@ function configureServer({
         hostname: process.env.HOSTNAME || `${protocol}://${domain}${port ? `:${port}` : ''}`,
         isHttps: protocol.match(/https/i),
         dev: !production,
+        serverType,
         args,
         unknownOptions,
     };
@@ -177,6 +194,7 @@ const {
     protocol,
     port,
     domain,
+    serverType,
     hostname,
     isHttps,
     dev,
@@ -716,9 +734,18 @@ async function runNextJsServer() {
 (async (verifyServerStarted = false) => {
     await setCreateServerFunctionFromProtocol();
 
-    await runVanillaNodeServer();
-    // await runWebpackServer();
-    // await runNextJsServer();
+    switch (serverType) {
+        case ServerTypes.NodeJS:
+            await runVanillaNodeServer();
+            break;
+        case ServerTypes.NextJS:
+            await runNextJsServer();
+            break;
+        case ServerTypes.Webpack:
+        default:
+            await runWebpackServer();
+            break;
+    }
 
     if (verifyServerStarted) {
         await verifyServerIsRunning();

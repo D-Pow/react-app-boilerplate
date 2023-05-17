@@ -1,0 +1,163 @@
+name: Client - Deploy
+description: Deploys the front-end and publishes the package artifact
+
+
+inputs:
+  GITHUB_TOKEN:
+    description: GitHub token required for acting on repo within pipelines (modifying branches, publishing artifacts, etc.).
+    required: true
+  gitUserName:
+    description: Username for git commands.
+    required: false
+    default: ${{ github.actor }}
+  gitUserEmail:
+    description: Email for git commands.
+    required: false
+    default: ${{ github.actor }}@users.noreply.github.com
+  nodeVersion:
+    description: NodeJS version.
+    required: false
+    default: latest
+  clientVersion:
+    description: Sets (or increments if 'true') client app version.
+    required: false
+    default: ""
+  publishPackage:
+    description: Publishes npm package in addition to deploying the website.
+    required: false
+    default: false
+  client-registry-url:
+    description: Registry URL for hosting published client npm package artifact.
+    required: false
+    default: ''
+  client-registry-scope:
+    description: Scope for published npm package.
+    required: false
+    default: ''
+
+
+runs:
+  using: composite
+  steps:
+    - name: Client Deploy - Checkout repository branch
+      uses: actions/checkout@v3
+
+    - name: Client Deploy - Cache names
+      id: client-deploy-cache-names
+      uses: ./.github/workflows/actions/client/init
+
+    - name: Client Deploy - Set env vars
+      shell: bash
+      run: |
+        echo "GITHUB_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> $GITHUB_ENV
+        echo "gitUserName=${{ inputs.gitUserName }}" >> $GITHUB_ENV
+        echo "gitUserEmail=${{ inputs.gitUserEmail }}" >> $GITHUB_ENV
+        echo "nodeVersion=${{ inputs.nodeVersion }}" >> $GITHUB_ENV
+        echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
+        echo "publishPackage=${{ inputs.publishPackage }}" >> $GITHUB_ENV
+        echo "clientRegistryUrl=${{ inputs.client-registry-url }}" >> $GITHUB_ENV
+        echo "clientRegistryScope=${{ inputs.client-registry-scope }}" >> $GITHUB_ENV
+
+        [[ -z "${{ env.CLIENT_CACHE_ID }}" ]] && echo "CLIENT_CACHE_ID=${{ needs.client-deploy-cache-names.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
+
+    - name: Client Deploy - Set NodeJS version
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.nodeVersion }}
+        registry-url: ${{ env.clientRegistryUrl || ''}}
+        scope: ${{ env.clientRegistryScope || '' }}
+
+    - name: Client Deploy - Update branch with any git changes made during CI
+      id: client-deploy-update-branch
+      shell: bash
+      # Ensure branch is up-to-date with any commits made in CI/CD jobs.
+      # We need to either cache the build output after the version is incremented, or re-run
+      # `npm run build` so the version is injected into the code where needed.
+      #
+      # Run `git config user.<info>` and `git pull` so we can push to a branch other than the
+      # one cloned via `actions/checkout`, e.g. cloning `master` and pushing to `gh-pages`.
+      #
+      # Note: The git branch is defined in jobs, but not composite actions, so we have to
+      # run `git config` and `git pull` before running normal `git` CLI commands.
+      run: |
+        git config --global user.name ${{ env.gitUserName }}
+        git config --global user.email ${{ env.gitUserEmail }}
+
+        # The gh-pages npm package requires this in CI environments for some reason.
+        # Authenticate git actions by injecting the CI auth token in the 'git remote set-url' command.
+        # This shouldn't be necessary due to the parent job's usage of 'permissions'.
+        #
+        # See:
+        #   - https://github.com/tschaub/gh-pages/issues/384
+        #   - https://github.com/tschaub/gh-pages/issues/359
+        git remote set-url origin "$(echo "${{ github.repositoryUrl }}" | sed -E 's|git://|https://x-access-token:${{ env.GITHUB_TOKEN }}@|')"
+
+        git pull
+
+    # Downloads previous runs' cache of content like node_modules/ for faster re-runs
+    - name: Client Deploy - Download cache
+      id: client-deploy-download-cache
+      uses: actions/cache/restore@v3
+      continue-on-error: true
+      with:
+        path: |
+          node_modules
+          dist
+          package.json
+          package-lock.json
+        key: ${{ env.CLIENT_CACHE_ID }}
+
+    - name: Client Deploy - Re-build
+      # Rebuild the website if cache-miss or if a specific client version for the app was specified (since it needs
+      # to be injected into the source code via Webpack)
+      if: ${{ failure() || steps.client-deploy-download-cache.outputs.cache-hit != 'true' || (env.clientVersion != '' && env.clientVersion != 'false') }}
+      uses: ./.github/workflows/actions/client/build
+      with:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+        gitUserName: ${{ env.gitUserName }}
+        gitUserEmail: ${{ env.gitUserEmail }}
+        nodeVersion: ${{ env.nodeVersion }}
+        clientVersion: ${{ env.clientVersion }}
+
+    # Ignore pre-/post- npm scripts via `npm run --ignore-scripts <my-script>`.
+    # This could be useful for, e.g. scripts like `deploy` since `predeploy` (`npm run build`)
+    # was already run in CI.
+    #
+    # Set `user.name` and `user.email` for ~/.gitconfig inline via the `--user` flag for `gh-pages`:
+    #   npm run --ignore-scripts deploy -- --user "${{ env.gitUserName }} <${{ env.gitUserEmail }}>"
+    - name: Client Deploy - Deploy application to gh-pages
+      shell: bash
+      run: |
+        newAppVersion="$(jq -r '.version' package.json)"
+
+        echo "Deploying client version ${newAppVersion}..."
+
+        npm run --ignore-scripts deploy
+
+        # Manual deployment if gh-pages npm package doesn't work
+        # git checkout gh-pages
+        #
+        # ( for path in $(ls --ignore=dist --ignore=.git --ignore=package.json); do echo "Deleting $path"; rm -rf "$path"; done; )
+        #
+        # cp -R dist/* .
+        #
+        # ( for path in dist/*; do git add "$(echo "$path" | sed -E 's/dist/./')"; done; )
+        #
+        # rm -rf dist
+
+    # TODO
+    #   - Find out proper way to npm-login for publishing npm package to GitHub registry
+    #   - Update .npmrc and these job steps accordingly
+    # Alternative for gh-pages: A custom action provided by GitHub
+    #   - https://github.com/actions/upload-pages-artifact
+    #   - From: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#creating-a-custom-github-actions-workflow-to-publish-your-site
+    - name: Client Deploy - Publish package
+      if: ${{ env.publishPackage == 'true' }}
+      shell: bash
+      run: |
+        if [[ -z "${{ env.publishPackage }}" ]] || [[ "${{ env.publishPackage }}" == 'false' ]]; then
+          exit
+        fi
+
+        echo "Publishing package to ${{ env.clientRegistryUrl }}"
+        echo TODO

@@ -74,7 +74,7 @@ export const appRoutes = [
  */
 function Router({
     routes,
-    ReactRouter = Router.Types.SLASH,
+    ReactRouter = Router.Types.HASH,
     routerProps = {},
     RouterWrapper = 'div',
     wrapperProps = {},

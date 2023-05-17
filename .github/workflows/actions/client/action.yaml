@@ -30,8 +30,11 @@ description: Installs, tests, and builds the front-end
 #     required: false
 #     default: bash
 inputs:
-  githubToken:
-    description: GitHub token required for acting on repo within pipelines.
+  # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
+  # See:
+  #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
+  GITHUB_TOKEN:
+    description: GitHub token required for acting on repo within pipelines (modifying branches, publishing artifacts, etc.).
     required: true
   clientVersion:
     description: "Sets (or increments if 'true') client app version"

@@ -34,7 +34,8 @@ on:
   workflow_dispatch:
     inputs:
       clientVersion:
-        description: "Sets (or increments if 'true') client app version"
+        description: Custom version for the app rather than what's in the local config file (package.json, build.gradle, etc.); increments if 'true' is passed.
+        type: string
         required: false
         default: ""
   # Publish your release in GitHub and have your pipeline react to deploy the package

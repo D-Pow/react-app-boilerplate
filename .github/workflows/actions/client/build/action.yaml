@@ -4,10 +4,10 @@ description: Builds the front-end
 
 inputs:
   GITHUB_TOKEN:
-    description: GitHub token required for pushing code with incremented app version.
+    description: GitHub token required for acting on repo within pipelines (modifying branches, publishing artifacts, etc.).
     required: true
   clientVersion:
-    description: "Sets (or increments if 'true') client app version"
+    description: Sets (or increments if 'true') client app version.
     required: false
     default: ""
 
@@ -60,14 +60,6 @@ runs:
     - name: Client - Build and optionally increment app version
       id: client-build
       shell: bash
-      # env:
-      #   # Would normally be `secrets.GITHUB_TOKEN` but composite actions don't inherit secrets.
-      #   # See:
-      #   #   - https://stackoverflow.com/questions/70098241/using-secrets-in-composite-actions-github/70111134#70111134
-      #   GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-      #   WORKFLOW_RUN_ID: ${{ github.run_id }}
-      #   clientVersion: ${{ inputs.clientVersion }}
-
       # We need to either cache the build output after the version is incremented, or re-run
       # `npm run build` so the version is injected into the code where needed.
       #

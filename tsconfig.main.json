@@ -66,6 +66,7 @@
         "dist"
     ],
 
+    // TODO Use swc: https://typestrong.org/ts-node/docs/transpilers#bundled-swc-integration
     /**
      * Configuring `ts-node` for running TypeScript files
      * --------------------------------------------------
@@ -94,8 +95,11 @@
      * This is needed for ts-node regardless of how it's called (see .npmrc for a list of ways to call ts-node).
      * Alternatively, we could add `-r tsconfig-paths/register` in the command line, but putting it here
      * ensures it works all the time, making npm scripts more DRY.
+     *
+     * @see [ts-node config schema]{@link https://unpkg.com/browse/ts-node@10.9.1/tsconfig.schema.json}
+     *
+     * @type {import('ts-node/dist/tsconfig-schema.d.ts').TsConfigSchema['ts-node']}
      */
-    // TODO Use swc: https://typestrong.org/ts-node/docs/transpilers#bundled-swc-integration
     "ts-node": {
         "require": [
             "tsconfig-paths/register"

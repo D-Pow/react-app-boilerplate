@@ -48,6 +48,7 @@ runs:
 
     - name: Client Deploy - Set env vars
       shell: bash
+      continue-on-error: true
       run: |
         echo "GITHUB_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> $GITHUB_ENV
         echo "gitUserName=${{ inputs.gitUserName }}" >> $GITHUB_ENV
@@ -58,7 +59,9 @@ runs:
         echo "clientRegistryUrl=${{ inputs.client-registry-url }}" >> $GITHUB_ENV
         echo "clientRegistryScope=${{ inputs.client-registry-scope }}" >> $GITHUB_ENV
 
-        [[ -z "${{ env.CLIENT_CACHE_ID }}" ]] && echo "CLIENT_CACHE_ID=${{ needs.client-deploy-cache-names.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
+        [[ -z "${{ env.CLIENT_CACHE_ID }}" ]] && echo "CLIENT_CACHE_ID=${{ steps.client-deploy-cache-names.outputs.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
+
+        exit 0
 
     - name: Client Deploy - Set NodeJS version
       uses: actions/setup-node@v3

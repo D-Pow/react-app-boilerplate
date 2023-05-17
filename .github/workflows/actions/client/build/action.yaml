@@ -46,12 +46,18 @@ runs:
       shell: bash
       # Only set env vars if they were specified in `inputs`.
       # This lets us fallback to vars already present in `env`.
+      # Since the `[[ -n "$var" ]]` test will produce an exit status of 1
+      # if `$var` is empty due, don't fail the pipeline in order to fallback
+      # to vars already present in `env`.
+      continue-on-error: true
       run: |
         [[ -n "${{ inputs.GITHUB_TOKEN }}" ]] && echo "GITHUB_TOKEN=${{ inputs.GITHUB_TOKEN }}" >> $GITHUB_ENV
         [[ -n "${{ inputs.gitUserName }}" ]] && echo "gitUserName=${{ inputs.gitUserName }}" >> $GITHUB_ENV
         [[ -n "${{ inputs.gitUserEmail }}" ]] && echo "gitUserEmail=${{ inputs.gitUserEmail }}" >> $GITHUB_ENV
         [[ -n "${{ inputs.nodeVersion }}" ]] && echo "nodeVersion=${{ inputs.nodeVersion }}" >> $GITHUB_ENV
         [[ -n "${{ inputs.clientVersion }}" ]] && echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
+
+        exit 0
 
     # See:
     #   - Cache GitHub Workflow action docs: https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#example-using-the-cache-action

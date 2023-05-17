@@ -249,7 +249,7 @@ function getCachedCert(): typeof certFileInfo {
  *
  * @param certInfo - Certificate to save.
  */
-function setCachedCert(certInfo: Omit<SelfSignedCertFileContents, 'created'>): void {
+function setCachedCert(certInfo: Partial<Omit<SelfSignedCertFileContents, 'created'>>): void {
     const today = new Date();
     const created = today.toLocaleString();
     const certCache = {

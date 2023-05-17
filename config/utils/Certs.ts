@@ -257,7 +257,7 @@ function setCachedCert(certInfo: Partial<Omit<SelfSignedCertFileContents, 'creat
         created,
     };
 
-    fs.writeFileSync(certFile, JSON.stringify(certCache, undefined, 4));
+    fs.writeFileSync(certFile, JSON.stringify(certCache, undefined, 4) + '\n');
 
     console.log(
         `Saved local dev-server HTTPS certificate to "${certFile}".`,

@@ -112,6 +112,7 @@
 //        "project": "./tsconfig.json", // Or from env var/in .npmrc: TS_NODE_PROJECT=./tsconfig.json
         "preferTsExts": true,
         "experimentalReplAwait": true,
+        "experimentalResolver": true, // Add support for `baseUrl`, `paths`, `rootDir`, etc. from vanilla tsconfig options
 
         /**
          * Makes ts-node run faster by skipping type checking (see: https://github.com/TypeStrong/ts-node/discussions/1276).
@@ -123,7 +124,7 @@
         "moduleTypes": { // Activate this to override file types to be
 //            "**/*.json": "esm",
 //            "**/*.ts": "esm",
-//            "**/*.js": "esm",
+//            "**/*.js": "cjs",
 //            "**/*": "esm",
 //            "**/*.mjs": "esm",
             "**/*.cjs": "cjs"
@@ -134,6 +135,7 @@
             // Remove isolatedModules since ts-node scripts aren't being parsed by Babel, Webpack, or another parser
             "isolatedModules": false
         },
+        "pretty": true,  // Don't minify compiled output since `ts-node` isn't for compiling, rather it's for running
         "include": [
             "./**/*"
         ]

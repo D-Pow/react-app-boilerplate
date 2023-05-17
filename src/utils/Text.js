@@ -493,6 +493,39 @@ export function replaceStringsContent(stringsToModify, toReplaceMatcher, replace
 }
 
 
+/**
+ * Parses string content from template strings into a single, final string.
+ *
+ * @example Sample usage
+ * const parsedString = parseStringTemplate`My string that I want to parse for ${reasons}`;
+ *
+ * @param {String[]} templateStrings - Template string that was split into an array of parts from JS engine parsing.
+ * @param {String[]} substitutions - String content added to the template string via `${}`.
+ * @returns {String} - Final parsed string.
+ *
+ * @see [Example: Creating data URIs via template strings]{@link https://2ality.com/2019/10/eval-via-import.html#creating-data-uris-via-tagged-templates}
+ */
+function parseStringTemplate(templateStrings, ...substitutions) {
+    /**
+     * The template string array always has 1 more entry in it than the substitutions array,
+     * where the first and last entry in `templateStrings.raw` are the first/last non-substituted
+     * (i.e. not string values injected via `${}`) string content.
+     *
+     * e.g.
+     *      myTemplate`templateEntry1 ${subEntry1} templateEntry2 ${subEntry2} templateEntry3`
+     * produces
+     *      templateStrings.raw = [ 'templateEntry1 ', 'templateEntry2 ', 'templateEntry3' ]
+     *      substitutions = [ subEntry1, subEntry2 ]
+     *
+     * @see [Template strings breakdown]{@link https://exploringjs.com/impatient-js/ch_template-literals.html#template-strings-cooked-vs-raw}
+     * @see [Example `import()` call using template strings]{@link https://2ality.com/2019/10/eval-via-import.html#creating-data-uris-via-tagged-templates}
+     */
+    const parsedAndEscapedString = templateStrings.raw[0] + substitutions.map((sub, i) => sub + templateStrings.raw[i+1]);
+
+    return parsedAndEscapedString;
+}
+
+
 /*
  * Useful description of RegExp flags: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#advanced_searching_with_flags
  * d - Generate indices for substring matches. (RegExp.prototype.hasIndices)

@@ -26,6 +26,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Checkout repository branch
+      uses: actions/checkout@v3
+
     # Downloads previous runs' cache of content like node_modules/ for faster re-runs
     - name: Client - Download cache
       id: client-build-download-cache

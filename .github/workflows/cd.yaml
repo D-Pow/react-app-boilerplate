@@ -107,12 +107,10 @@ jobs:
       #   - "Release" event and object info: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#release
       - name: CD:Client - Set version number
         run: |
-          if [[ -n "${{ env.clientVersion }}" ]] || [[ -n "${{ inputs.clientVersion }}" ]] || [[ "$GITHUB_EVENT_NAME" == 'release' ]]; then
-              if [[ "$GITHUB_EVENT_NAME" == 'release' ]]; then
-                  echo "clientVersion=$GITHUB_REF_NAME" >> $GITHUB_ENV
-              elif [[ -n "${{ inputs.clientVersion }}" ]]; then
-                  echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
-              fi
+          if [[ "$GITHUB_EVENT_NAME" == 'release' ]]; then
+              echo "clientVersion=$GITHUB_REF_NAME" >> $GITHUB_ENV
+          elif [[ -n "${{ inputs.clientVersion }}" ]]; then
+              echo "clientVersion=${{ inputs.clientVersion }}" >> $GITHUB_ENV
           fi
 
       # It seems strangely difficult to link different workflows together without re-running them.

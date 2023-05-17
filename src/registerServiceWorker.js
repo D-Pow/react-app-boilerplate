@@ -17,11 +17,18 @@ const isLocalhost = Boolean(
     ),
 );
 
-export default function registerServiceWorker() {
+export default async function registerServiceWorker() {
     if (
         (process.env.NODE_ENV !== 'production')
         || !('serviceWorker' in navigator)
+        || !(self.location.protocol.match(/https/i))
     ) {
+        const serviceWorkerRegistrations = await navigator?.serviceWorker?.getRegistrations();
+
+        serviceWorkerRegistrations?.forEach?.(registration => {
+            registration.unregister();
+        });
+
         return;
     }
 

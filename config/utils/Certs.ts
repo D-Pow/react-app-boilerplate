@@ -346,7 +346,7 @@ export async function getServerHttpsCredentials({
 
     setCachedCert({
         ...certInfo,
-        validityDays: certOptions.validityDays!,
+        validityDays: certOptions.validityDays || defaultCertOptions.validityDays,
     });
 
     return certInfo;

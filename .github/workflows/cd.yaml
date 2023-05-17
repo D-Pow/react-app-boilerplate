@@ -91,6 +91,15 @@ jobs:
     #   - https://stackoverflow.com/questions/66205887/only-run-github-actions-step-if-not-a-pull-request/66206183#66206183
     # if: ${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && (github.event.pull_request.merged || github.event.workflow_run.conclusion == 'success') }}
     steps:
+      - name: CD - Abort run if CI failed
+        if: ${{ github.event.workflow_run.conclusion != null && github.event.workflow_run.conclusion != 'success' }}
+        # See:
+        #   - Docs: https://docs.github.com/en/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_run
+        #   - Example (SO post): https://stackoverflow.com/questions/67516571/github-action-triggered-by-success-of-a-different-action
+        run: |
+          echo "${{ github.event.workflow_run.name }} had conclusion of ${{ github.event.workflow_run.conclusion }}. Aborting..." >&2
+          exit 1
+
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 

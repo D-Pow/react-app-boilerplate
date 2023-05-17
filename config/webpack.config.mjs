@@ -26,6 +26,8 @@ import manifestJson from '../src/manifest.json' assert { type: 'json' };
 
 // TODO Make import aliases available to npm scripts
 //  Best option is likely through ts-node: https://www.npmjs.com/package/ts-node
+//      Webpack docs explain how to do this:
+//          https://webpack.js.org/configuration/configuration-languages/#typescript
 //      Will it work with native npm scripts? See:
 //          https://jonjam.medium.com/writing-npm-scripts-using-typescript-a09b8712dc6b
 //          https://www.typescriptlang.org/tsconfig#module

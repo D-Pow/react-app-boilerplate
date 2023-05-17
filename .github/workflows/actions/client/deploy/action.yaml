@@ -134,8 +134,6 @@ runs:
         newAppVersion="$(jq -r '.version' package.json)"
 
         echo "Deploying client version ${newAppVersion}..."
-        ls -FlAh
-        find . -iname '*' -maxdepth 3
 
         npm run --ignore-scripts deploy
 

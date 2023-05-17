@@ -135,6 +135,7 @@ jobs:
       - name: CD:Client - Output cache ID
         id: cd-client-output-cache-id
         run: |
+          echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_ENV
           echo "CLIENT_CACHE_ID=${{ env.CLIENT_CACHE_ID }}" >> $GITHUB_OUTPUT
 
       - name: CD:Client - Build - Download CI cache

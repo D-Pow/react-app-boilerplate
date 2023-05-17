@@ -78,8 +78,11 @@ runs:
         WORKFLOW_RUN_ID: ${{ github.run_id }}
       run: |
         CACHES_API_URL="https://api.github.com/repos/$(gh repo view --json owner --jq '.owner.login')/$(gh repo view --json name --jq '.name')/actions/caches"
+
         cacheIds=($(gh api "${CACHES_API_URL}" --jq ".actions_caches[] | select(.key | contains(\"${{ env.CLIENT_CACHE_ID }}\")) | .id"))
+
         echo "Deleting cache IDs: ${cacheIds[@]}..."
+
         ( for cacheId in ${cacheIds[@]}; do gh api --method DELETE "${CACHES_API_URL}/$cacheId"; done; )
 
     - name: Client - Build and optionally increment app version
@@ -100,11 +103,16 @@ runs:
       #   ref: refs/pull/7/merge  or  refs/head/<branch-name>
       #   ref_name: 7/merge  or  <branch-name>
       #   workflow_ref: D-Pow/react-app-boilerplate/.github/workflows/ci.yaml@refs/pull/7/merge
-
+      #
       # See:
       #   - Conditionals docs: https://docs.github.com/en/actions/learn-github-actions/expressions
       #   - Conditionals example: https://stackoverflow.com/questions/59882715/use-environment-variable-in-github-action-if
       #   - `npm version` docs: https://docs.npmjs.com/cli/v8/commands/npm-version#description
+      #
+      # npm versioning notes:
+      #   - `npm version` returns the version string (with "v" in it).
+      #   - Simple command: `npm version patch; git commit --amend -m "Patch to v$(jq -r '.version' package.json)"`
+      #   - Without git commit or tag: `newAppVersion=$(npm version --no-git-tag-version patch); git commit -am "Patch to ${newAppVersion}"`
       run: |
         gitBranch=
         if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
@@ -113,20 +121,29 @@ runs:
             gitBranch="${{ github.ref_name }}"
         fi
 
-        git config --global user.name ${{ env.gitUserName }}
-        git config --global user.email ${{ env.gitUserEmail }}
-        # HEAD is in detached state at `pull/<PR-number>/merge` in pull-requests,
-        # git pull origin $gitBranch
-
         if [[ "${{ env.clientVersion }}" == 'false' ]] || [[ -z "${{ env.clientVersion }}" ]]; then
-            :  # Don't change the version
-        elif [[ "${{ env.clientVersion }}" == 'true' ]]; then
-            npm version --no-git-tag-version patch -m "Patch to %s"
-        else
-            npm version --no-git-tag-version "${{ env.clientVersion }}" -m "Upgrade client version to %s"
+          exit  # Don't change the version
         fi
 
+        if [[ "${{ env.clientVersion }}" == 'true' ]]; then
+          npm version --no-git-tag-version patch -m "Upgrade client version to %s"
+        else
+          npm version --no-git-tag-version "${{ env.clientVersion }}" -m "Upgrade client version to %s"
+        fi
+
+        git config --global user.name ${{ env.gitUserName }}
+        git config --global user.email ${{ env.gitUserEmail }}
+        git remote set-url origin "$(echo "${{ github.repositoryUrl }}" | sed -E 's|git://|https://x-access-token:${{ env.GITHUB_TOKEN }}@|')"
+
+        # HEAD is in detached state at `pull/<PR-number>/merge` in pull-requests,
+        git pull origin $gitBranch
+
+        git commit -am "Update version to v${newAppVersion}"
+        git push
+
         npm run build
+
+        echo "Created new app version: $(jq '.version' package.json)"
 
     - name: Client - Cache build artifacts
       id: client-build-cache

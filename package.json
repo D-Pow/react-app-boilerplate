@@ -2,7 +2,8 @@
   "name": "react-app-boilerplate",
   "version": "0.1.0",
   "description": "A simpler React boilerplate than CRA with more useful built-in features",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "browser": "./dist/index.html",
   "types": "types/index.d.ts",
   "author": "D-Pow",
   "license": "MIT",
@@ -14,6 +15,9 @@
     "node": ">=16.20.0",
     "npm": ">=8"
   },
+  "files": [
+    "./dist"
+  ],
   "config": {
     "buildOutputDir": "dist",
     "eslintExtensions": ".tsx,.ts,.jsx,.js,.mjs,.cjs",

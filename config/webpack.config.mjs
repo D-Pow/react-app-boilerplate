@@ -538,13 +538,14 @@ function getWebpackConfig(webpackArgs) {
                 'ServiceWorker.js',
                 /urlsToCache ?= ?\[\]/g,
                 relativeEmittedFilePaths => {
-                    const pathsWithoutServiceWorkerOrFonts = relativeEmittedFilePaths
-                        .filter(path => !path.includes('ServiceWorker.js') && !path.includes('fonts'));
                     // CNAME (and similar files) aren't accessible via URL, and `cache.addAll(urls)` will fail if any
-                    // of the URLs isn't available, so remove them from the build output file list
-                    const pathsWithoutConfigOrLicenseFiles = pathsWithoutServiceWorkerOrFonts
-                        .filter(url => !url.match(/CNAME|LICENSE/));
-                    const fileUrlsToCache = pathsWithoutConfigOrLicenseFiles.map(path => `"./${path}"`); // ServiceWorker exists at root level
+                    // of the URLs isn't available, so remove them from the build output file list.
+                    // Likewise, service workers ignore `fetch()` requests to themselves, so no need to cache it either.
+                    const pathsWithoutUncacheableFiles = relativeEmittedFilePaths.filter(path => (
+                        !path.includes('ServiceWorker.js')
+                        && !path.match(/CNAME|LICENSE/)
+                    ));
+                    const fileUrlsToCache = pathsWithoutUncacheableFiles.map(path => `"./${path}"`); // ServiceWorker exists at root level
 
                     // `/` isn't a file but is routed to /index.html automatically.
                     // Add it manually so the URL can be mapped to a file.

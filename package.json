@@ -26,6 +26,7 @@
   "scripts": {
     "start": "webpack serve --config ./config/webpack.config.mjs",
     "start:allowCorsAccess": "cross-env ALLOW_CORS_ACCESS=true npm start --",
+    "start:serviceWorkerDev": "cross-env SW_DEV=true npm run start --",
     "mock": "cross-env MOCK=true npm start --",
     "mock:allowCorsAccess": "cross-env ALLOW_CORS_ACCESS=true npm run mock --",
     "test": "jest",

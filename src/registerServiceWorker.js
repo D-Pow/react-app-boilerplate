@@ -19,9 +19,11 @@ const isLocalhost = Boolean(
 
 export default async function registerServiceWorker() {
     if (
-        (process.env.NODE_ENV !== 'production')
-        || !('serviceWorker' in navigator)
-        || !(self.location.protocol.match(/https/i))
+        (process.env.SW_DEV !== 'true') && (
+            (process.env.NODE_ENV !== 'production')
+            || !('serviceWorker' in navigator)
+            || !(self.location.protocol.match(/https/i))
+        )
     ) {
         const serviceWorkerRegistrations = await navigator?.serviceWorker?.getRegistrations();
 

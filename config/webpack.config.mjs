@@ -40,6 +40,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const allowAccessFromAllOrigins = Boolean(process.env.ALLOW_CORS_ACCESS);
 const useHttps = Boolean(process.env.HTTPS) || process.argv.includes('--https');
 const useCustomHttpsCert = Boolean(process.env.CUSTOM_CERT);
+const activateServiceWorker = isProduction || (publicEnv.SW_DEV === 'true');
 // If this app is a library to be consumed by other apps instead of a standalone website
 // TODO Update output configs to consider this option
 const isLibrary = false;
@@ -553,7 +554,7 @@ function getWebpackConfig(webpackArgs) {
 
                     return `urlsToCache=[${fileUrlsToCache.join(',')}]`;
                 },
-                isProduction,
+                activateServiceWorker,
             ),
             new AlterFilePostBuildPlugin(
                 'ServiceWorker.js',
@@ -562,19 +563,19 @@ function getWebpackConfig(webpackArgs) {
                     .map(url => url instanceof RegExp ? url : `"./${url}"`)
                     .join(',')
                 }]`,
-                isProduction,
+                activateServiceWorker,
             ),
             new AlterFilePostBuildPlugin(
                 'ServiceWorker.js',
                 'VERSION',
                 packageJson.version,
-                isProduction,
+                activateServiceWorker,
             ),
             new AlterFilePostBuildPlugin(
                 'ServiceWorker.js',
                 'BRD_CHANNEL',
                 broadcastChannel,
-                isProduction,
+                activateServiceWorker,
             ),
         ],
         optimization: {

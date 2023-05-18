@@ -30,6 +30,7 @@ const publicEnv = {
     PUBLIC_URL: process.env.PUBLIC_URL,
     BROADCAST_CHANNEL: broadcastChannel,
     MOCK: process.env.MOCK,
+    SW_DEV: process.env.SW_DEV,
     SUPPORT_IE: !!process?.env?.npm_package_config_supportIe,
 };
 

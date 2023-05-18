@@ -644,11 +644,13 @@ export function useTimedArrayToggle(arrayLength, intervalTimeMs, allowBackwardsT
  * Creates a new {@code BroadcastChannel} with the given name and attaches the
  * passed event listener to the channel's 'message' event.
  *
- * @param {function} messageEventListener - 'message' event listener added to BroadcastChannel.
+ * @param {(messageEvent: Parameters<NonNullable<BroadcastChannel['onmessage']>>[0]) => void} messageEventListener - 'message' event listener added to BroadcastChannel.
  * @param {string} [channelName=process.env.BROADCAST_CHANNEL] - Name of BroadcastChannel.
  * @returns {BroadcastChannel} - A new BroadcastChannel with the respective event listener and channel name.
  */
-export function useServiceWorkerBroadcastChannel(messageEventListener, channelName = process.env.BROADCAST_CHANNEL) {
+export function useServiceWorkerBroadcastChannel(messageEventListener, {
+    channelName = process.env.BROADCAST_CHANNEL,
+} = {}) {
     const eventName = 'message';
     let broadcastChannel;
 

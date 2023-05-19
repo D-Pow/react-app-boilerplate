@@ -4,6 +4,11 @@ var urlsNotToCache = [];
 var BROADCAST_CHANNEL = 'BRD_CHANNEL';
 var UPDATE_BROADCAST = 'UPDATE';
 
+
+function urlWithOptionalTrailingSlashesMatches(urlToCheck, urlToMatch) {
+    return urlToCheck.match(new RegExp(`${urlToMatch}/*$`, 'i'));
+}
+
 function removeOldCaches() {
     return caches.keys()
         .then(function(cacheNames) {
@@ -18,19 +23,31 @@ function removeOldCaches() {
         });
 }
 
-function clearCache(cache, onlyUrls) {
-    if (typeof onlyUrls === typeof '') {
-        onlyUrls = [ onlyUrls ];
-    } else if (onlyUrls == null) {
-        onlyUrls = [];
-    }
+function clearCache(cache, {
+    onlyUrls = [],
+    exceptUrls = [],
+} = {}) {
+    onlyUrls = typeof onlyUrls === typeof ''
+        ? [ onlyUrls ]
+        : onlyUrls == null
+            ? []
+            : onlyUrls;
+    exceptUrls = typeof exceptUrls === typeof ''
+        ? [ exceptUrls ]
+        : exceptUrls == null
+            ? []
+            : exceptUrls;
 
     function clearCacheEntries(cacheObj) {
         return cacheObj.keys().then(function(requests) {
             return Promise.all(
                 requests.filter(function(request) {
+                    if (exceptUrls.find(url => urlWithOptionalTrailingSlashesMatches(url, request.url))) {
+                        return false;
+                    }
+
                     if (onlyUrls.length) {
-                        return onlyUrls.includes(request.url);
+                        return onlyUrls.find(url => urlWithOptionalTrailingSlashesMatches(url, request.url));
                     }
 
                     return request;
@@ -158,7 +175,7 @@ self.addEventListener('fetch', event => {
                                      * loads before the cache is cleared when the user visits the site.
                                      */
                                     setTimeout(() => {
-                                        clearCache(cache, url)
+                                        clearCache(cache, { exceptUrls: url })
                                             .then(function () {
                                                 return newIndexHtmlResponse.then(function (newIndexHtmlResponseObject) {
                                                     return cache

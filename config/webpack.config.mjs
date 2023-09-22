@@ -24,6 +24,8 @@ import babelConfig from './babel.config.js';
 import packageJson from '../package.json' assert { type: 'json' };
 import manifestJson from '../src/manifest.json' assert { type: 'json' };
 
+// TODO: https://webpack.js.org/guides/caching
+
 // TODO Make import aliases available to npm scripts
 //  Best option is likely through ts-node: https://www.npmjs.com/package/ts-node
 //      Webpack docs explain how to do this:
@@ -147,6 +149,7 @@ function getWebpackConfig(webpackArgs) {
                 },
                 {
                     test: Styles,
+                    // TODO: Hot reloading doesn't seem to work given these and/or `optimization` configs
                     use: [
                         MiniCssExtractPlugin.loader,
                         {

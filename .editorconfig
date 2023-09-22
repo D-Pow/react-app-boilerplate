@@ -17,3 +17,13 @@ spaces_around_brackets = none
 
 [{package.json,.yaml,.yml}]
 indent_size = 2
+
+# Ignored directories
+# See:
+#   - https://stackoverflow.com/questions/30310396/possible-to-ignore-exclude-file-folder-from-editorconfig
+[*public*]
+ij_formatter_enabled = false
+indent_style = unset
+indent_size = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset

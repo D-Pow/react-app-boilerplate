@@ -535,6 +535,11 @@ function getWebpackConfig(webpackArgs) {
                         from: `${Paths.SRC.REL}/ServiceWorker.js`,
                         to: '[name].[ext]',
                     },
+                    // Use this if using Ionic or similar that doesn't automatically copy favicons from `module.rules.Binaries`
+                    // {
+                    //     from: `${Paths.SRC.REL}/assets/favicon*`,
+                    //     to: '[name].[ext]',
+                    // },
                     {
                         // Ensures CNAME is copied to the build-output dir for gh-pages and similar deployments
                         // CopyWebpackPlugin uses globs, so make CNAME optional via `?(filename)`

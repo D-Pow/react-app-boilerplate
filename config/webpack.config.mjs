@@ -57,6 +57,10 @@ const indexHtmlMetaTagData = {
     // Could also include `minimum-scale=1`, `maximum-scale=1`, and `user-scalable=no` to prevent user scaling.
     // Note: `viewport-fit` isn't yet supported, but it has a similar effect to `width=device-width`, so add it preemptively for when support is added. See: https://udn.realityripple.com/docs/Web/CSS/@viewport/viewport-fit
     viewport: 'viewport-fit=cover, width=device-width, initial-scale=1, shrink-to-fit=no',
+    'color-scheme': 'dark light',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-title': indexHtmlTitle,
+    'apple-mobile-web-app-status-bar-style': 'black-translucent', // Maintain background color in top time/notification status bar. See: https://stackoverflow.com/questions/39749015/apple-mobile-web-app-status-bar-style-in-ios-10/40786240#40786240
 };
 
 

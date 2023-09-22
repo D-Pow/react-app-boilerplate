@@ -52,7 +52,7 @@ const indexHtmlTitle = manifestJson.short_name;
 // TODO See if index.html <link> entries can be moved here
 const indexHtmlMetaTagData = {
     description: packageJson.description,
-    keywords: packageJson.keywords.join(', '),
+    keywords: packageJson.keywords?.join(', '),
     'theme-color': manifestJson.theme_color,
     // Could also include `minimum-scale=1`, `maximum-scale=1`, and `user-scalable=no` to prevent user scaling.
     // Note: `viewport-fit` isn't yet supported, but it has a similar effect to `width=device-width`, so add it preemptively for when support is added. See: https://udn.realityripple.com/docs/Web/CSS/@viewport/viewport-fit

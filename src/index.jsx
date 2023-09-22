@@ -1,16 +1,9 @@
 import { createRoot } from 'react-dom/client';
 
-import App from '@/components/App';
-import AppContext from '@/utils/AppContext';
+import AppWithProvider from '@/components/App';
 import registerServiceWorker from '@/registerServiceWorker';
 import '@/styles/index.scss';
 
-
-const renderedApp = (
-    <AppContext.Provider>
-        <App />
-    </AppContext.Provider>
-);
 
 /**
  * React v18 distinguishes between client-side and server-side rendering.
@@ -20,13 +13,13 @@ const renderedApp = (
 const rootDiv = document.getElementById('root');
 const reactRoot = createRoot(rootDiv);
 
-reactRoot.render(renderedApp);
+reactRoot.render(<AppWithProvider />);
 
 registerServiceWorker();
 
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     console.log('hot reloading active');
     module.hot.accept('@/components/App', () => {
-        reactRoot.render(renderedApp);
+        reactRoot.render(<AppWithProvider />);
     });
 }

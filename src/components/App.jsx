@@ -31,4 +31,13 @@ function App() {
     );
 }
 
-export default App;
+function AppWithProvider() {
+    return (
+        <AppContext.Provider>
+            <App />
+        </AppContext.Provider>
+    );
+}
+
+export default AppWithProvider;
+export { App };

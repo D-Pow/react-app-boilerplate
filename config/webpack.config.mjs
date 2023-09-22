@@ -154,7 +154,7 @@ function getWebpackConfig(webpackArgs) {
                             options: {
                                 modules: {
                                     // Don't default to CSS-Modules; parse as normal CSS
-                                    compileType: 'icss',
+                                    mode: 'icss',
                                 },
                                 importLoaders: 2,
                                 sourceMap,

@@ -396,8 +396,12 @@ module.exports = {
                          * Babel config file used by source code since it's [already included in `@babel/preset-env`]{@link https://babeljs.io/docs/en/babel-preset-env#shippedproposals}.
                          *
                          * @see [Related StackOverflow post]{@link https://stackoverflow.com/questions/71090960/is-there-a-way-to-make-eslint-understand-the-new-import-assertion-syntax-without/71128316#71128316}
+                         * @see [Related bug]{@link https://github.com/storybookjs/storybook/issues/23063}
+                         * @see [Babel plugin docs]{@link https://babeljs.io/docs/babel-plugin-syntax-import-attributes#deprecatedassertsyntax}
                          */
-                        '@babel/plugin-syntax-import-assertions',
+                        [ '@babel/plugin-syntax-import-attributes', {
+                            deprecatedAssertSyntax: true,
+                        }],
                     ],
                 },
             },

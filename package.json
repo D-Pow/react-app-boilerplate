@@ -44,8 +44,8 @@
     "prebuild": "npm run clean --",
     "pretsBuild": "npm run clean --",
     "tsBuild": "tsc",
-    "createComponent": "node scripts/createComponent.js --",
-    "changeName": "node scripts/change-name.mjs --",
+    "createComponent": "./scripts/createComponent.js --",
+    "changeName": "./scripts/change-name.mjs --",
     "deploy": "gh-pages -d $npm_package_config_buildOutputDir",
     "predeploy": "npm run build --"
   },

@@ -36,10 +36,10 @@ import manifestJson from '../src/manifest.json' assert { type: 'json' };
 //      https://github.com/nodejs/node/pull/41552
 //      https://github.com/nodejs/node/discussions/41711
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.IS_PRODUCTION;
 const allowAccessFromAllOrigins = Boolean(process.env.ALLOW_CORS_ACCESS);
-const useHttps = Boolean(process.env.HTTPS) || process.argv.includes('--https');
-const useCustomHttpsCert = Boolean(process.env.CUSTOM_CERT);
+const useHttps = process.env.HTTPS;
+const useCustomHttpsCert = process.env.CUSTOM_CERT;
 const activateServiceWorker = isProduction || (publicEnv.SW_DEV === 'true');
 // If this app is a library to be consumed by other apps instead of a standalone website
 // TODO Update output configs to consider this option
@@ -79,7 +79,7 @@ const {
     Fonts,
 } = FileTypeRegexes;
 
-const hotReloading = false; // process.env.NODE_ENV === 'development';
+const hotReloading = process.env.HOT_RELOADING;
 
 const svgDefaultExportReactComponent = false;
 
@@ -504,7 +504,7 @@ function getWebpackConfig(webpackArgs) {
             new MockRequestsWebpackPlugin(
                 Paths.MOCKS.REL,
                 'MockConfig.js',
-                process.env.MOCK === 'true',
+                publicEnv.MOCK === 'true',
             ),
             // splits CSS out from the rest of the code
             new MiniCssExtractPlugin({

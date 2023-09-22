@@ -21,7 +21,11 @@ process.env = {
     ...process.env,
     ...env,
     NODE_ENV: process.env.NODE_ENV || 'development',
+    IS_PRODUCTION: !!(process.env.NODE_ENV?.match(/prod(uction)?/i)),
     PUBLIC_URL: Paths.BUILD_OUTPUT.REL,
+    HTTPS: Boolean(process.env.HTTPS) || process.argv.includes('--https'),
+    CUSTOM_CERT: Boolean(process.env.CUSTOM_CERT),
+    HOT_RELOADING: Boolean(process.env.HOT_RELOADING) || process.argv.includes('--hot'),
 };
 
 const broadcastChannel = packageJson.name;

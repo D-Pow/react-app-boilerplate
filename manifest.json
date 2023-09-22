@@ -1,6 +1,12 @@
 {
     "short_name": "React App Boilerplate",
     "name": "A better create-react-app",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "theme_color": "#3800FF",
+    "background_color": "#3800FF",
+    "iconUrl": "/favicon.png",
     "icons": [
         {
             "src": "favicon-144.png",
@@ -17,11 +23,5 @@
             "sizes": "512x512",
             "type": "image/png"
         }
-    ],
-    "iconUrl": "/favicon.png",
-    "start_url": "/",
-    "scope": "/",
-    "display": "standalone",
-    "theme_color": "#3800FF",
-    "background_color": "#3800FF"
+    ]
 }

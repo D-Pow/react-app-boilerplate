@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_app_boilerplate=self.webpackChunkreact_app_boilerplate||[]).push([[320],{1320:function(p,e,a){p.exports=a.p+"apple-touch-icon.png"}}]);

@@ -54,7 +54,9 @@ const indexHtmlMetaTagData = {
     description: packageJson.description,
     keywords: packageJson.keywords.join(', '),
     'theme-color': manifestJson.theme_color,
-    viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+    // Could also include `minimum-scale=1`, `maximum-scale=1`, and `user-scalable=no` to prevent user scaling.
+    // Note: `viewport-fit` isn't yet supported, but it has a similar effect to `width=device-width`, so add it preemptively for when support is added. See: https://udn.realityripple.com/docs/Web/CSS/@viewport/viewport-fit
+    viewport: 'viewport-fit=cover, width=device-width, initial-scale=1, shrink-to-fit=no',
 };
 
 

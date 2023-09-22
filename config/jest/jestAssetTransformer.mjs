@@ -73,6 +73,12 @@ const jestAssetTransformer = {
         }
 
         if (FileTypeRegexes.Styles.test(srcAbsPath)) {
+            /*
+             * If you want to disable all imports (e.g. if calling `@use '~@dependency/sub-package'` is causing issues),
+             * activate the code below.
+             */
+            // srcFileContents = srcFileContents.replace(/@(use|import)\s+[^\s;]+;?/g, '');
+
             /**
              * `jest-css-modules-transform` has a bug where they [don't support jest@>=27]{@link https://github.com/Connormiha/jest-css-modules-transform/issues/39}.
              * So nest its call here to get the config option they are supposed to use until the bug is fixed.

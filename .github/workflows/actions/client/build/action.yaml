@@ -70,10 +70,13 @@ runs:
       if: ${{ failure() || steps.client-build-download-cache.outputs.cache-hit != 'true' }}
       uses: ./.github/workflows/actions/client/init
 
-    # Ensure old cache is deleted so that the build step's cache request isn't ignored
+    # Ensure old cache is deleted so that the build step's cache request isn't ignored.
+    # Requires read/write permissions in:
+    #   repo -> Settings -> Actions -> General -> Workflow Permissions
     #
     # See:
     #   - https://stackoverflow.com/questions/63521430/clear-cache-in-github-actions/64819132#64819132
+    #   - Permissions docs: https://docs.github.com/en/rest/actions/permissions
     - name: Client - Clear caches
       shell: bash
       env:

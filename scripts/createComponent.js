@@ -164,23 +164,23 @@ Note - The format for using the script changes slightly based on how it's called
         removeNodeAndScriptFromArgs: !argv,
         helpMessage: usage,
         optionsConfigs: {
-            functionalComponent: {
+            func: {
                 description: 'Make the component a functional component (default: class component).',
-                aliases: [ 'f', 'func' ],
+                aliases: [ 'f' ],
             },
-            dirName: {
+            dir: {
                 description: 'Directory under `src/components/` to place your component.',
                 numArgs: 1,
                 defaultValue: '.',
-                aliases: [ 'd', 'dir' ],
+                aliases: [ 'd' ],
             },
             javascript: {
                 description: 'Use JavaScript to create the component (default: TypeScript).',
                 aliases: [ 'j' ],
             },
-            soloComponent: {
+            solo: {
                 description: 'Create the component file only without nesting it in a new directory.',
-                aliases: [ 's', 'solo' ],
+                aliases: [ 's' ],
             },
             help: {
                 description: 'Print this message and exit.',
@@ -190,10 +190,10 @@ Note - The format for using the script changes slightly based on how it's called
     });
 
     const {
-        functionalComponent,
-        dirName,
+        func: functionalComponent,
+        dir: dirName,
         javascript,
-        soloComponent,
+        solo: soloComponent,
     } = parsedArgs;
     const componentName = parsedArgs._?.[0];
 

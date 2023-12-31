@@ -15,12 +15,14 @@ import type {
  *                                                or an object to convert to a search+hash string.
  * @param [options]
  * @param [options.delimiter] - Delimiter to use for multi-value query param keys; if unspecified, multiple keys will be used (e.g. '?a=A&a=B').
+ * @param [options.stripNull] - Remove entries whose values are null, undefined, or empty strings.
  * @returns All query param key-value pairs, including the hash entry (if input is a string or array) or URL search+hash string (if input is an object).
  */
 export function getQueryParams<Input extends string | Indexable | Array<Array<string>> = string>(
     input?: Input,
     options?: {
         delimiter?: string;
+        stripNull?: boolean;
     },
 ): Input extends string | null | undefined | never
     ? Indexable
@@ -29,6 +31,7 @@ export function getQueryParams(
     input: Parameters<typeof getQueryParams>[0] = self.location.search + self.location.hash,
     {
         delimiter,
+        stripNull,
     }: Parameters<typeof getQueryParams>[1] = {},
 ) {
     let fromString!: string;
@@ -54,7 +57,9 @@ export function getQueryParams(
 
         const getEncodedKeyValStr = (key: string, val: string) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
 
-        const queryParamEntries = Object.entries(fromObj);
+        const queryParamEntries = stripNull
+            ? Object.entries(fromObj).filter(([ key, val ]) => val != null && `${val}`.length > 0)
+            : Object.entries(fromObj);
         const queryString = queryParamEntries.length > 0
             ? `?${
                 queryParamEntries

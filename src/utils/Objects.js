@@ -896,6 +896,10 @@ export function isObject(variable, {
  * @returns {Object} - Deep-copied object.
  */
 export function deepCopy(obj) {
+    try {
+        return structuredClone(obj);
+    } catch (e) {}
+
     const circularReferenceMap = arguments[1] || new WeakMap();
 
     if (circularReferenceMap.has(obj)) {

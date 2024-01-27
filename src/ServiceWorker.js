@@ -105,9 +105,11 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-    event.waitUntil(
-        removeOldCaches(),
-    );
+    event.waitUntil(removeOldCaches());
+    // Activate service worker immediately rather than waiting for page reload.
+    // See:
+    //  - https://betterprogramming.pub/turning-your-existing-application-into-a-pwa-776d65b0aa12#2a44
+    event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', event => {

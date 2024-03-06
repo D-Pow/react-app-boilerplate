@@ -679,7 +679,7 @@ function getWebpackConfig(webpackArgs) {
             loggingDebug: [ 'sass-loader' ],
         },
         devtool: sourceMap ? 'source-map' : false,
-        /** @type {import('@types/webpack-dev-server').Configuration} */
+        /** @type {import('webpack-dev-server').Configuration} */
         devServer: {
             /*
              * NOTE: You must allow incoming traffic and/or Webpack through your firewall to access the dev-server
@@ -714,7 +714,7 @@ function getWebpackConfig(webpackArgs) {
                      * If you want to log every attempt to connect to '/' and/or '/index.html'.
                      *
                      * @param {import('express')} app
-                     * @param {import('webpack-dev-server/lib/Server.js').Server} server
+                     * @param {import('webpack-dev-server')} server
                      * @param compiler
                      */
                     // before: (app, server, compiler) => {

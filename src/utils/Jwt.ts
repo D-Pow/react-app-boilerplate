@@ -51,12 +51,12 @@ export function decodeJwt(jwt: string, {
                 let code = matchGroup.charCodeAt(0).toString(16).toUpperCase();
 
                 if (code.length < 2) {
-                    code = "0" + code;
+                    code = '0' + code;
                 }
 
-                return "%" + code;
+                return '%' + code;
             }));
-        } catch(decodeURIComponentError) {
+        } catch (decodeURIComponentError) {
             try {
                 jwtWithValidChars = atob(jwtWithValidChars);
             } catch (atobError) {}
@@ -85,10 +85,10 @@ export function decodeJwt(jwt: string, {
         .filter(Boolean);
 
     if (jwtParsedFilteredByDesiredParts.length === 1) {
-        return jwtParsedFilteredByDesiredParts[0];
+        return <string> jwtParsedFilteredByDesiredParts[0];
     }
 
-    return jwtParsedFilteredByDesiredParts;
+    return <string[]> jwtParsedFilteredByDesiredParts;
 }
 
 
@@ -99,7 +99,7 @@ export function decodeJwt(jwt: string, {
  * @see [NodeJS walkthrough](https://stackoverflow.com/questions/67432096/generating-jwt-tokens/67432483#67432483)
  * @see [Browser walkthrough](https://stackoverflow.com/questions/47329132/how-to-get-hmac-with-crypto-web-api/47332317#47332317)
  */
-export async function encodeJwt(text, {
+export async function encodeJwt(text: string, {
     alg = 'HS256',
     typ = 'JWT',
     secret = '',
@@ -144,14 +144,14 @@ export async function encodeJwt(text, {
             },
         },
         false,
-        [ 'sign', 'verify' ]
+        [ 'sign', 'verify' ],
     );
     const signedPayload = await self.crypto.subtle.sign(
         'HMAC',
         signingKey,
         new TextEncoder().encode(
             `${encodedHeader}.${encodedPayload}`,
-        ).buffer
+        ).buffer,
     );
     const hmac = byteArrayToHexString(new Uint8Array(signedPayload));
     const encodedSignature = base64UrlEncode(hmac);

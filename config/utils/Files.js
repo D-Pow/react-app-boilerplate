@@ -140,7 +140,7 @@ const Paths = (() => {
 function getFileCallStack() {
     const errStr = new Error().stack;
     // TODO - Replace extension check with "at /file/path:line:column"
-    const fileCallStack = errStr.match(/[^\s\(]+\.[mc]?[tj]s[x]?\b/gi);
+    const fileCallStack = errStr.match(/[^\s(]+\.[mc]?[tj]s[x]?\b/gi);
     const fileCallStackNormalizedPaths = fileCallStack.map(file => {
         try {
             return new URL(file).pathname;
@@ -180,7 +180,7 @@ function getMain() {
         //     requireMain: require.main,
         // });
 
-        if (absolutePathToFirstJsFileCalled?.match(/[\/\\]node(.exe)?/)) {
+        if (absolutePathToFirstJsFileCalled?.match(/[/\\]node(.exe)?/)) {
             return getFileCallStack().pop();
         }
 

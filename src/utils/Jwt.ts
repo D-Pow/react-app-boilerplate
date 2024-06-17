@@ -48,7 +48,7 @@ export function decodeJwt(jwt: string, {
 
         try {
             jwtWithValidChars = decodeURIComponent(atob(jwtWithValidChars).replace(/(.)/g, (fullStringMatch, matchGroup) => {
-                let code = matchGroup.charCodeAt(0).toString(16).toUpperCase();
+                let code = matchGroup.charCodeAt(0).toString(16);
 
                 if (code.length < 2) {
                     code = '0' + code;

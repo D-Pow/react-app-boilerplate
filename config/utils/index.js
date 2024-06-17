@@ -6,6 +6,7 @@ const {
 const {
     Paths,
     FileTypeRegexes,
+    getFileCallStack,
     getMain,
     isMain,
     getOutputFileName,

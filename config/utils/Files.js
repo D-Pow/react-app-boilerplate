@@ -129,6 +129,29 @@ const Paths = (() => {
 })();
 
 
+/**
+ * Generates error stack, scans for JS files, and returns the normalized paths
+ * of said files.
+ *
+ * Works as long as top-level file has a JS-esque extension, i.e. {@code [mc]?[tj]s[x]?}.
+ *
+ * @see [Getting file execution order via Error stack](https://stackoverflow.com/questions/4981891/node-js-equivalent-of-pythons-if-name-main)
+ */
+function getFileCallStack() {
+    const errStr = new Error().stack;
+    // TODO - Replace extension check with "at /file/path:line:column"
+    const fileCallStack = errStr.match(/[^\s\(]+\.[mc]?[tj]s[x]?\b/gi);
+    const fileCallStackNormalizedPaths = fileCallStack.map(file => {
+        try {
+            return new URL(file).pathname;
+        } catch (invalidUrl) {
+            return file;
+        }
+    });
+
+    return fileCallStackNormalizedPaths;
+}
+
 function getMain() {
     if (typeof __filename !== typeof undefined) {
         const { argv } = process;
@@ -156,6 +179,10 @@ function getMain() {
         //     module,
         //     requireMain: require.main,
         // });
+
+        if (absolutePathToFirstJsFileCalled?.match(/[\/\\]node(.exe)?/)) {
+            return getFileCallStack().pop();
+        }
 
         return absolutePathToFirstJsFileCalled;
 
@@ -933,6 +960,7 @@ class ImportAliases {
 module.exports = {
     Paths,
     FileTypeRegexes,
+    getFileCallStack,
     getMain,
     isMain,
     getOutputFileName,

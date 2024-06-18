@@ -60,6 +60,10 @@
     "website",
     "webpack"
   ],
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  },
   "dependencies": {
     "prop-types": "^15.7.2",
     "react": "^18.1.0",

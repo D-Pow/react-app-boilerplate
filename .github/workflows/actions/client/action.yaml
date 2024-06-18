@@ -67,7 +67,7 @@ runs:
 
     - name: Client Init
       id: client-init
-      uses: ./.github/workflows/actions/client/init
+      uses: ./.github/workflows/actions/init
 
     - name: Client Verify
       id: client-verify

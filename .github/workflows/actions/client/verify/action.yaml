@@ -74,7 +74,7 @@ runs:
 
     - name: Client - Re-init
       if: ${{ failure() || steps.client-verify-download-cache.outputs.cache-hit != 'true' }}
-      uses: ./.github/workflows/actions/client/init
+      uses: ./.github/workflows/actions/init
 
     - name: Client Verify
       id: client-verify

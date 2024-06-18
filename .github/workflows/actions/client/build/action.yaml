@@ -68,7 +68,7 @@ runs:
     # Instead, use `failure()` as suggested here: http://chamindac.blogspot.com/2020/08/how-to-run-github-actions-step-when.html#:~:text=run%20on%20failure-,if%3A%20%24%7B%7B%20failure()%20%7D%7D,-run%3A%20%7C
     - name: Client - Re-init
       if: ${{ failure() || steps.client-build-download-cache.outputs.cache-hit != 'true' }}
-      uses: ./.github/workflows/actions/client/init
+      uses: ./.github/workflows/actions/init
 
     # Ensure old cache is deleted so that the build step's cache request isn't ignored.
     # Requires read/write permissions in:

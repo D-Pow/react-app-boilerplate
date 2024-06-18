@@ -44,7 +44,7 @@ runs:
 
     - name: Client Deploy - Cache names
       id: client-deploy-cache-names
-      uses: ./.github/workflows/actions/client/init
+      uses: ./.github/workflows/actions/init
 
     - name: Client Deploy - Set env vars
       shell: bash

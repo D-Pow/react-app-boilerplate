@@ -133,7 +133,7 @@ jobs:
       #
       # Note that we can't use the `needs` object here since this job needs to remain dependency-free.
       - name: CD:Client CD - Init
-        uses: ./.github/workflows/actions/client/init
+        uses: ./.github/workflows/actions/init
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
           gitUserName: ${{ env.gitUserName }}

@@ -70,10 +70,8 @@ jobs:
       - name: CI:Client - Checkout repository branch
         uses: actions/checkout@v3
 
-      - name: CI:Client - Set NodeJS version
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.nodeVersion }}
+      - name: CI:Cache name - Init
+        uses: ./.github/workflows/actions/init
 
       - name: CI:Client - Run all
         id: ci-client-all
@@ -129,10 +127,8 @@ jobs:
       - name: CI:Server - Checkout repository branch
         uses: actions/checkout@v3
 
-      - name: CI:Server - Set NodeJS version
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.nodeVersion }}
+      - name: CI:Cache name - Init
+        uses: ./.github/workflows/actions/init
 
       - name: CI:Server - TODO
         id: ci-server-todo

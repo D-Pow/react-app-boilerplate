@@ -103,10 +103,8 @@ jobs:
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 
-      - name: CD:Client - Set NodeJS version
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.nodeVersion }}
+      - name: CD:Cache name - Init
+        uses: ./.github/workflows/actions/init
 
       # Consolidate any source of the new client version into one place, `env.clientVersion`, for ease of use
       # throughout all other workflows/jobs/actions/steps.
@@ -165,10 +163,8 @@ jobs:
       - name: CD:Client - Checkout repository branch
         uses: actions/checkout@v3
 
-      - name: CD:Client - Set NodeJS version
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.nodeVersion }}
+      - name: CI:Cache name - Init
+        uses: ./.github/workflows/actions/init
 
       - name: CD:Client - Deploy website
         uses: ./.github/workflows/actions/client/deploy

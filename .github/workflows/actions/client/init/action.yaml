@@ -75,3 +75,8 @@ runs:
         # restore-keys: |
         #   ${{ inputs.client-cache-name-prefix }}-${{ runner.os }}-
         #   ${{ inputs.client-cache-name-prefix }}-
+
+    - name: Install NodeJS version
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.nodeVersion }}

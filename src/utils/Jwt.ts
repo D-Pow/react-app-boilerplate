@@ -31,7 +31,9 @@ export function decodeJwt(jwt: string, {
     signature = false,
 } = {}): string | Indexable | (string | Indexable)[] {
     function base64UrlDecode(str: string) {
-        let jwtWithValidChars = str.replace(/-/g, '+').replace(/_/g, '/');
+        let jwtWithValidChars = str
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
 
         switch (jwtWithValidChars.length % 4 ) {
             case 0:
@@ -82,7 +84,7 @@ export function decodeJwt(jwt: string, {
                 return jwtPart;
             }
         })
-        .filter(Boolean);
+        .filter(Boolean) as string[];
 
     if (jwtParsedFilteredByDesiredParts.length === 1) {
         return <string> jwtParsedFilteredByDesiredParts[0];

@@ -108,11 +108,11 @@ export async function encodeJwt(text: string, {
         return btoa(str)
             .replace(/\+/g, '-')
             .replace(/\//g, '_')
-            .replace(/=+$/, '');
+            .replace(/=+/g, '');
     }
 
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
-    const encodedPayload = base64UrlEncode(JSON.stringify(text));
+    const encodedPayload = base64UrlEncode(text);
     let algorithm = alg
         .replace(/^hs/i, 'sha')
         .replace(/^\D+/gi, match => match.toLowerCase());
@@ -123,8 +123,8 @@ export async function encodeJwt(text: string, {
 
         hmacCipher.update(`${encodedHeader}.${encodedPayload}`);
 
-        const hmac = hmacCipher.digest('hex');
-        const encodedSignature = base64UrlEncode(hmac);
+        const hmac = hmacCipher.digest('base64url');
+        const encodedSignature = hmac;
         const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
 
         return jwt;
@@ -133,29 +133,37 @@ export async function encodeJwt(text: string, {
     }
 
     algorithm = algorithm.replace(/^sha/i, 'SHA-');
+    const algoInfo = {
+        name: 'HMAC',
+        hash: algorithm,
+    };
 
     const signingKey = await self.crypto.subtle.importKey(
         'raw',
-        new TextEncoder().encode(secret).buffer,
-        {
-            name: 'HMAC',
-            hash: {
-                name: algorithm,
-            },
-        },
+        new TextEncoder().encode(secret),
+        algoInfo,
         false,
         [ 'sign', 'verify' ],
     );
-    const signedPayload = await self.crypto.subtle.sign(
-        'HMAC',
+    const signature = await self.crypto.subtle.sign(
+        algoInfo.name,
         signingKey,
         new TextEncoder().encode(
             `${encodedHeader}.${encodedPayload}`,
-        ).buffer,
+        ),
     );
-    const hmac = byteArrayToHexString(new Uint8Array(signedPayload));
-    const encodedSignature = base64UrlEncode(hmac);
-    const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+    /*
+     * For some reason, `byteArrayToHexString()` doesn't work but a standard `fromCharCode()` does.
+     * Likewise, these don't work either:
+     *  - byteArrayToHexString(new Uint8Array(signature));
+     *  - byteArrayToHexString(new Uint8Array(signature));
+     *  - base64UrlEncode(byteArrayToHexString(new Uint8Array(signature)));
+     * See:
+     *  - https://stackoverflow.com/questions/9267899/arraybuffer-to-base64-encoded-string/11562550#11562550
+     */
+    const hmacStr = base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+
+    const jwt = `${encodedHeader}.${encodedPayload}.${hmacStr}`;
 
     return jwt;
 }

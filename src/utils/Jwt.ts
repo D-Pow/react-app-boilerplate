@@ -1,5 +1,3 @@
-import { byteArrayToHexString } from '@/utils/Text';
-
 import type {
     Indexable,
 } from '@/types';

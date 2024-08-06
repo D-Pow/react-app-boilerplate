@@ -48,7 +48,7 @@ export function hash(input: BinaryLike, {
     algo = 'SHA256',
     outputFormat = 'hex',
 }: HashOptions = {}) {
-    const cipher = createHash(algo);
+    const cipher = createHash(algo as string);
 
     cipher.update(input);
 

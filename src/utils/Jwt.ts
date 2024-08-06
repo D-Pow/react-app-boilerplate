@@ -125,9 +125,8 @@ export async function encodeJwt(text: string, {
 
         hmacCipher.update(`${encodedHeader}.${encodedPayload}`);
 
-        const hmac = hmacCipher.digest('base64url');
-        const encodedSignature = hmac;
-        const jwt = `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+        const hmacStr = hmacCipher.digest('base64url');
+        const jwt = `${encodedHeader}.${encodedPayload}.${hmacStr}`;
 
         return jwt;
     } catch (notNodeJs) {

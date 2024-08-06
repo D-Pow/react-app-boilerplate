@@ -94,10 +94,8 @@ export function decodeJwt(jwt: string, {
 
 /**
  * Creates a JWT token.
- * Works with either NodeJS or modern browsers.
  *
- * @see [NodeJS walkthrough](https://stackoverflow.com/questions/67432096/generating-jwt-tokens/67432483#67432483)
- * @see [Browser walkthrough](https://stackoverflow.com/questions/47329132/how-to-get-hmac-with-crypto-web-api/47332317#47332317)
+ * @see [Browser walkthrough]{@link https://stackoverflow.com/questions/47329132/how-to-get-hmac-with-crypto-web-api/47332317#47332317}
  */
 export async function encodeJwt(text: string, {
     alg = 'HS256',
@@ -116,20 +114,6 @@ export async function encodeJwt(text: string, {
     let algorithm = alg
         .replace(/^hs/i, 'sha')
         .replace(/^\D+/gi, match => match.toLowerCase());
-
-    try {
-        const crypto = await import('node:crypto');
-        const hmacCipher = crypto.createHmac(algorithm, secret);
-
-        hmacCipher.update(`${encodedHeader}.${encodedPayload}`);
-
-        const hmacStr = hmacCipher.digest('base64url');
-        const jwt = `${encodedHeader}.${encodedPayload}.${hmacStr}`;
-
-        return jwt;
-    } catch (notNodeJs) {
-        // Attempt to use web crypto API below
-    }
 
     algorithm = algorithm.replace(/^sha/i, 'SHA-');
     const algoInfo = {

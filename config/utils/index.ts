@@ -8,3 +8,4 @@ export * from './Network';
 
 // TS
 export * from './Certs';
+export * from './Crypto';

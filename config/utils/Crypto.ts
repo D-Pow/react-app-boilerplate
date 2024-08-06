@@ -1,5 +1,6 @@
 import {
     createHash,
+    createHmac,
     type BinaryLike,
     type BinaryToTextEncoding,
 } from 'node:crypto';
@@ -56,4 +57,38 @@ export function hash(input: BinaryLike, {
     }
 
     return cipher.digest(outputFormat as BinaryToTextEncoding);
+}
+
+
+
+/**
+ * @see [NodeJS docs]{@link https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options}
+ * @see [NodeJS walkthrough]{@link https://stackoverflow.com/questions/67432096/generating-jwt-tokens/67432483#67432483}
+ */
+export function encodeJwt(text: string, {
+    alg = 'HS256',
+    typ = 'JWT',
+    secret = '',
+} = {}) {
+    function base64UrlEncode(str: string) {
+        return btoa(str)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+/g, '');
+    }
+
+    const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
+    const encodedPayload = base64UrlEncode(text);
+    let algorithm = alg
+        .replace(/^hs/i, 'sha')
+        .replace(/^\D+/gi, match => match.toLowerCase());
+
+    const hmacCipher = createHmac(algorithm, secret);
+
+    hmacCipher.update(`${encodedHeader}.${encodedPayload}`);
+
+    const hmacStr = hmacCipher.digest('base64url');
+    const jwt = `${encodedHeader}.${encodedPayload}.${hmacStr}`;
+
+    return jwt;
 }

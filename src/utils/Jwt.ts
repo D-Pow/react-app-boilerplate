@@ -111,3 +111,42 @@ export async function encodeJwt(text: string, {
 
     return jwt;
 }
+
+
+/**
+ * Verifies a JWT token.
+ * Note: This shouldn't be done client-side as it exposes the secret.
+ */
+export async function verifyJwt(jwt: string, signature: Parameters<Crypto['subtle']['verify']>[2], {
+    alg = 'HS256',
+    typ = 'JWT',
+    secret = '',
+} = {}) {
+    const [ encodedHeader, encodedPayload, signatureStr ] = jwt.split('.');
+
+    let algorithm = alg
+        .replace(/^hs/i, 'sha')
+        .replace(/^\D+/gi, match => match.toLowerCase());
+    algorithm = algorithm.replace(/^sha/i, 'SHA-');
+    const algoInfo = {
+        name: 'HMAC',
+        hash: algorithm,
+    };
+
+    const signingKey = await self.crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        algoInfo,
+        false,
+        [ 'verify' ],
+    );
+
+    return await self.crypto.subtle.verify(
+        'HMAC',
+        signingKey,
+        signature,
+        new TextEncoder().encode(
+            `${encodedHeader}.${encodedPayload}`,
+        ),
+    );
+}

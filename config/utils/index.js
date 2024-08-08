@@ -47,6 +47,7 @@ module.exports = {
     readStdin,
     Paths,
     FileTypeRegexes,
+    getFileCallStack,
     getMain,
     isMain,
     getOutputFileName,

@@ -5,6 +5,8 @@ import {
     type BinaryToTextEncoding,
 } from 'node:crypto';
 
+import { base64UrlEncode } from '@/utils/Text';
+
 import type {
     UppercaseOrLowercase,
 } from '@/types';
@@ -70,16 +72,9 @@ export function encodeJwt(text: string, {
     typ = 'JWT',
     secret = '',
 } = {}) {
-    function base64UrlEncode(str: string) {
-        return btoa(str)
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+/g, '');
-    }
-
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
     const encodedPayload = base64UrlEncode(text);
-    let algorithm = alg
+    const algorithm = alg
         .replace(/^hs/i, 'sha')
         .replace(/^\D+/gi, match => match.toLowerCase());
 

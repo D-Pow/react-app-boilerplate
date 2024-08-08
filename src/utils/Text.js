@@ -62,6 +62,63 @@ export function base64Decode(str, {
 
 
 /**
+ * Encodes a string with Base64-URL encoding.
+ *
+ * @param {string} str
+ * @returns {string}
+ */
+export function base64UrlEncode(str) {
+    return btoa(str)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+/g, '');
+}
+
+/**
+ * Decodes a Base64-URL-encoded string.
+ *
+ * @param {string} str
+ * @returns {string}
+ */
+export function base64UrlDecode(str) {
+    let strWithValidChars = str
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    switch (strWithValidChars.length % 4 ) {
+        case 0:
+            break;
+        case 2:
+            strWithValidChars += '==';
+            break;
+        case 3:
+            strWithValidChars += '=';
+            break;
+        default:
+            break;
+    }
+
+    try {
+        strWithValidChars = decodeURIComponent(atob(strWithValidChars).replace(/(.)/g, (fullStringMatch, matchGroup) => {
+            let code = matchGroup.charCodeAt(0).toString(16);
+
+            if (code.length < 2) {
+                code = '0' + code;
+            }
+
+            return '%' + code;
+        }));
+    } catch (decodeURIComponentError) {
+        try {
+            strWithValidChars = atob(strWithValidChars);
+        } catch (atobError) {}
+    }
+
+    return strWithValidChars;
+}
+
+
+/**
  * Extracts the content string from a Base64 data URL.
  * Optionally, decode the content string for direct usage.
  *

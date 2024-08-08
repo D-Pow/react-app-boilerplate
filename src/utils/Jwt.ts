@@ -1,3 +1,8 @@
+import {
+    base64UrlEncode,
+    base64UrlDecode,
+} from '@/utils/Text';
+
 import type {
     Indexable,
 } from '@/types';
@@ -28,43 +33,6 @@ export function decodeJwt(jwt: string, {
     payload = true,
     signature = false,
 } = {}): string | Indexable | (string | Indexable)[] {
-    function base64UrlDecode(str: string) {
-        let jwtWithValidChars = str
-            .replace(/-/g, '+')
-            .replace(/_/g, '/');
-
-        switch (jwtWithValidChars.length % 4 ) {
-            case 0:
-                break;
-            case 2:
-                jwtWithValidChars += '==';
-                break;
-            case 3:
-                jwtWithValidChars += '=';
-                break;
-            default:
-                break;
-        }
-
-        try {
-            jwtWithValidChars = decodeURIComponent(atob(jwtWithValidChars).replace(/(.)/g, (fullStringMatch, matchGroup) => {
-                let code = matchGroup.charCodeAt(0).toString(16);
-
-                if (code.length < 2) {
-                    code = '0' + code;
-                }
-
-                return '%' + code;
-            }));
-        } catch (decodeURIComponentError) {
-            try {
-                jwtWithValidChars = atob(jwtWithValidChars);
-            } catch (atobError) {}
-        }
-
-        return jwtWithValidChars;
-    }
-
     const jwtParsedList: string[] = jwt.split(/\./g)
         .map(str => {
             return base64UrlDecode(str);
@@ -102,13 +70,6 @@ export async function encodeJwt(text: string, {
     typ = 'JWT',
     secret = '',
 } = {}): Promise<string> {
-    function base64UrlEncode(str: string) {
-        return btoa(str)
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+/g, '');
-    }
-
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
     const encodedPayload = base64UrlEncode(text);
     let algorithm = alg

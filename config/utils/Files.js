@@ -772,6 +772,72 @@ function stripJsComments(jsStr) {
 }
 
 
+function copyToClipboard(str) {
+    let osInfo;
+
+    try {
+        osInfo = childProcess
+            .execSync('uname -a', { stdio: 'pipe' })
+            .toString()
+            .replace(/\n/g, '');
+    } catch (unameNotDefinedError) {}
+
+    let copyCommand;
+    let pasteCommand;
+    let isWindows = false;
+
+    if (!osInfo || osInfo.match(/not recognized as an internal or external command/i) || osInfo.match(/^MSYS_/i)) {
+        // Windows Command Prompt or Powershell
+        copyCommand = 'C:\\Windows\\System32\\cmd.exe /C clip';
+        pasteCommand = 'C:\\Windows\\System32\\cmd.exe /C powershell Get-Clipboard';
+        isWindows = true;
+    } else if (osInfo.match(/microsoft/i)) {
+        // Windows WSL
+        copyCommand = '/mnt/c/Windows/System32/cmd.exe /C clip';
+        pasteCommand = '/mnt/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
+    } else if (osInfo.match(/^MINGW/i)) {
+        // Windows Git Bash
+        copyCommand = 'clip';
+        pasteCommand = 'powershell Get-Clipboard';
+    } else if (osInfo.match(/mac|darwin|osx/i)) {
+        // Mac
+        copyCommand = 'pbcopy';
+        pasteCommand = 'pbpaste';
+    } else {
+        // Linux
+        const xclipPath = childProcess
+            .execSync('which xclip')
+            .toString()
+            .replace(/\n/g, '');
+
+        if (xclipPath) {
+            // xclip is a user-friendly util for managing the clipboard, but isn't installed by default
+            copyCommand = 'xclip -sel clipboard';
+            pasteCommand = 'xclip -sel clipboard -o';
+        } else {
+            copyCommand = 'xsel --clipboard -i';
+            pasteCommand = 'xsel --clipboard -0';
+        }
+    }
+
+    if (copyCommand) {
+        let echoPipePrefix = `echo -n "${str}" | `;
+
+        if (isWindows) {
+            // Remove quotes since CMD doesn't parse them in a user-friendly way
+            echoPipePrefix = `echo -n ${str} | `;
+        }
+
+        const commandToExecute = `${echoPipePrefix} ${copyCommand}`;
+
+        return childProcess
+            .execSync(commandToExecute)
+            .toString()
+            .replace(/\n/g, '');
+    }
+}
+
+
 /**
  * Object containing a mapping of import aliases to their respective path matches,
  * as well as some util functions.
@@ -970,6 +1036,7 @@ module.exports = {
     convertPathsToRegex,
     convertPathsToGlobs,
     stripJsComments,
+    copyToClipboard,
     gitignoreFiles,
     gitignoreFilesRegex,
     gitignoreFilesGlobs,

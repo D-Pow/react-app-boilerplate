@@ -81,14 +81,14 @@ export async function encodeJwt(text: string, secret: string, {
         hash: algorithm,
     };
 
-    const signingKey = await self.crypto.subtle.importKey(
+    const signingKey = await globalThis.crypto.subtle.importKey(
         'raw',
         new TextEncoder().encode(secret),
         algoInfo,
         false,
         [ 'sign', 'verify' ],
     );
-    const signature = await self.crypto.subtle.sign(
+    const signature = await globalThis.crypto.subtle.sign(
         algoInfo.name,
         signingKey,
         new TextEncoder().encode(
@@ -132,7 +132,7 @@ export async function verifyJwt(jwt: string, signature: Parameters<Crypto['subtl
         hash: algorithm,
     };
 
-    const signingKey = await self.crypto.subtle.importKey(
+    const signingKey = await globalThis.crypto.subtle.importKey(
         'raw',
         new TextEncoder().encode(secret),
         algoInfo,
@@ -140,7 +140,7 @@ export async function verifyJwt(jwt: string, signature: Parameters<Crypto['subtl
         [ 'verify' ],
     );
 
-    return await self.crypto.subtle.verify(
+    return await globalThis.crypto.subtle.verify(
         'HMAC',
         signingKey,
         signature,

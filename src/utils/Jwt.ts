@@ -65,10 +65,9 @@ export function decodeJwt(jwt: string, {
  *
  * @see [Browser walkthrough]{@link https://stackoverflow.com/questions/47329132/how-to-get-hmac-with-crypto-web-api/47332317#47332317}
  */
-export async function encodeJwt(text: string, {
+export async function encodeJwt(text: string, secret: string, {
     alg = 'HS256',
     typ = 'JWT',
-    secret = '',
 } = {}): Promise<string> {
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
     const encodedPayload = base64UrlEncode(text);

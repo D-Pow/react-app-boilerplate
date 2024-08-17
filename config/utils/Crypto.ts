@@ -67,10 +67,9 @@ export function hash(input: BinaryLike, {
  * @see [NodeJS docs]{@link https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options}
  * @see [NodeJS walkthrough]{@link https://stackoverflow.com/questions/67432096/generating-jwt-tokens/67432483#67432483}
  */
-export function encodeJwt(text: string, {
+export function encodeJwt(text: string, secret: string, {
     alg = 'HS256',
     typ = 'JWT',
-    secret = '',
 } = {}) {
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
     const encodedPayload = base64UrlEncode(text);

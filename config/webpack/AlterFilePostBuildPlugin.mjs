@@ -155,10 +155,16 @@ class AlterFilePostBuildPlugin {
 
     replaceTextInFileBeforeEmit(compilation, origSrcFileName, oldText, newText) {
         const fileToModify = compilation.getAsset(origSrcFileName);
+        let fileContents = fileToModify.source.source();
+
+        if (typeof fileContents !== typeof '') {
+            // File contents is an ArrayBuffer when using dev-server
+            fileContents = new TextDecoder().decode(fileContents);
+        }
 
         compilation.updateAsset(
             origSrcFileName,
-            new sources.RawSource(fileToModify.source.source().replace(oldText, newText)),
+            new sources.RawSource(fileContents.replace(oldText, newText)),
         );
     }
 

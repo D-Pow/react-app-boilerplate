@@ -113,8 +113,8 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.open(CACHE_NAME).then(function(cache) {
+    event.respondWith(caches.open(CACHE_NAME)
+        .then(function(cache) {
             return cache.match(event.request).then(function(response) {
                 var url = event.request.url;
                 var fileRequested = url.split('/').pop();

@@ -1,6 +1,7 @@
 import {
     memo,
     type Ref,
+    type ReactNode,
 } from 'react';
 
 import Anchor from '@/components/ui/Anchor';
@@ -98,7 +99,7 @@ function ResourceViewer({
                     type={mimeType}
                 />
             )}
-            {children}
+            {children as unknown as ReactNode}
         </object>
     );
 }

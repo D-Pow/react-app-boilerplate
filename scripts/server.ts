@@ -318,6 +318,7 @@ async function getIncomingMessageBody<
 async function runVanillaNodeServer() {
     // See: https://www.digitalocean.com/community/tutorials/how-to-create-a-web-server-in-node-js-with-the-http-module
     try {
+        // @ts-ignore - TS doesn't like setting the value of createServer dynamically
         const server = createServer(async (request, res) => {
             const req = request as Required<IncomingMessage>;
 
@@ -698,6 +699,7 @@ async function runNextJsServer() {
 
     const appRequestHandler = nextJsServer.getRequestHandler();
 
+    // @ts-ignore - TS doesn't like setting the value of createServer dynamically
     const server = createServer((request, res) => {
         const req = request as Required<IncomingMessage>;
 

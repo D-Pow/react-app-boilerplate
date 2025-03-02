@@ -363,7 +363,7 @@ export function createXmlFromJson(json, xmlDeclarationProperties = {}) {
  * byteArrayToHexString(myData, { hexPrefix: '0x', hexDelimiter: ' ' });
  * // Output: '0xAA 0xBB 0xCC'
  *
- * @param {ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
+ * @param {Array | ArrayLike | ArrayBuffer | ArrayBufferLike} uint8Array - Buffer to convert to a hex string.
  * @param {Object} [options]
  * @param {string} [options.hexPrefix] - Prefix to add to each hex entry (e.g. `0x`, `%00`, etc.).
  * @param {string} [options.hexDelimiter] - Delimiter to use when joining all hex entries as a string (is not prepended to the first hex entry).

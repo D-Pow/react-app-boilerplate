@@ -57,13 +57,10 @@ export function uuid() {
 }
 
 
-export function decodeJwt(jwt: string, { header = true, payload = false, signature = false }): string | Indexable;
-export function decodeJwt(jwt: string, { header = false, payload = true, signature = false }): string | Indexable;
-export function decodeJwt(jwt: string, { header = false, payload = false, signature = true }): string | Indexable;
-export function decodeJwt(jwt: string, { header = true, payload = true, signature = false }): Array<string | Indexable>;
-export function decodeJwt(jwt: string, { header = true, payload = false, signature = true }): Array<string | Indexable>;
-export function decodeJwt(jwt: string, { header = false, payload = true, signature = true }): Array<string | Indexable>;
-export function decodeJwt(jwt: string, { header = true, payload = true, signature = true }): Array<string | Indexable>;
+export function decodeJwt(jwt: string, opts?: { header: false, payload: true, signature: false }): string | Indexable;
+export function decodeJwt(jwt: string, opts?: { header: true, payload: false, signature: false }): string | Indexable;
+export function decodeJwt(jwt: string, opts?: { header: false, payload: false, signature: true }): string | Indexable;
+export function decodeJwt(jwt: string, opts?: Record<string, boolean>): Array<string | Indexable>;
 /**
  * Decodes a JWT.
  *

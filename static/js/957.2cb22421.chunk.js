@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkreact_app_boilerplate=self.webpackChunkreact_app_boilerplate||[]).push([[957],{5957:function(e,p,a){e.exports=a.p+"favicon.png"}}]);

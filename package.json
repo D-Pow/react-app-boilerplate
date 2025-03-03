@@ -12,7 +12,7 @@
     "url": "git+https://github.com/D-Pow/react-app-boilerplate.git"
   },
   "engines": {
-    "node": ">=21",
+    "node": ">=20",
     "npm": ">=8"
   },
   "files": [

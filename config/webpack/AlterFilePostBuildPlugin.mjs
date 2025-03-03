@@ -3,10 +3,8 @@ import path from 'node:path';
 
 import Webpack from 'webpack';
 
-const { NormalModule } = await import('webpack');
-
 // Must do this due to how Webpack is bundled and the resulting CJS/MJS conflicts
-const { sources } = Webpack;
+const { NormalModule, sources } = Webpack;
 
 
 /** @typedef {import('webpack/types').WebpackPluginInstance} WebpackPluginInstance */

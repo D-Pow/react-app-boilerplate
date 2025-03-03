@@ -1,7 +1,7 @@
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import TerserJSPlugin from 'terser-webpack-plugin';
+import TerserWebpackPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import MockRequestsWebpackPlugin from 'mock-requests/bin/MockRequestsWebpackPlugin.js';
@@ -21,8 +21,8 @@ import {
 } from './utils/index.js';
 import babelConfig from './babel.config.js';
 
-import packageJson from '../package.json' assert { type: 'json' };
-import manifestJson from '../src/manifest.json' assert { type: 'json' };
+import packageJson from '../package.json' with { type: 'json' };
+import manifestJson from '../src/manifest.json' with { type: 'json' };
 
 // TODO: https://webpack.js.org/guides/caching
 
@@ -525,15 +525,15 @@ function getWebpackConfig(webpackArgs) {
                 patterns: [
                     {
                         from: `${Paths.ROOT.ABS}/package.json`,
-                        to: '[name].[ext]',
+                        to: '[name][ext]',
                     },
                     {
                         from: `${Paths.SRC.REL}/manifest.json`,
-                        to: '[name].[ext]',
+                        to: '[name][ext]',
                     },
                     {
                         from: `${Paths.SRC.REL}/ServiceWorker.js`,
-                        to: '[name].[ext]',
+                        to: '[name][ext]',
                     },
                     // Use this if using Ionic or similar that doesn't automatically copy favicons from `module.rules.Binaries`
                     // {
@@ -544,7 +544,7 @@ function getWebpackConfig(webpackArgs) {
                         // Ensures CNAME is copied to the build-output dir for gh-pages and similar deployments
                         // CopyWebpackPlugin uses globs, so make CNAME optional via `?(filename)`
                         from: `${Paths.ROOT.ABS}/CNAME`,
-                        to: '[name].[ext]',
+                        to: '[name][ext]',
                         noErrorOnMissing: true,
                     },
                 ],
@@ -597,7 +597,7 @@ function getWebpackConfig(webpackArgs) {
             minimize: isProduction,
             usedExports: true, // Tree-shaking of unused exports based on Terser's ability to parse exported functions and their usage. True by default in 'production' mode.
             minimizer: [
-                new TerserJSPlugin(),
+                new TerserWebpackPlugin(),
                 new CssMinimizerPlugin({
                     minimizerOptions: {
                         preset: 'default', // discards non-important comments, removes duplicates, etc.

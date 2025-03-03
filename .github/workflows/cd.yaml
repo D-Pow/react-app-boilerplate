@@ -70,7 +70,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   gitUserName: ${{ github.actor }}
   gitUserEmail: ${{ github.actor }}@users.noreply.github.com
-  nodeVersion: 18
+  nodeVersion: 21
   clientVersion: ""  # Can be declared via `env`, `workflow_dispatch.inputs`, or `release` -> `github.ref_name`
 
 

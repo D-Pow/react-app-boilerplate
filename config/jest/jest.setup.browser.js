@@ -1,3 +1,5 @@
+import { BroadcastChannel } from 'worker_threads';
+
 import { CustomizableObject } from '@/utils/Objects';
 
 import { mockObjProperty } from '~/config/jest/jest.setup.testUtils';
@@ -62,6 +64,9 @@ beforeEach(() => {
     global.localStorage.clear();
     global.sessionStorage.clear();
 });
+
+
+global.BroadcastChannel = BroadcastChannel;
 
 
 // See: https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom

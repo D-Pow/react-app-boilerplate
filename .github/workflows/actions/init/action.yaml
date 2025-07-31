@@ -57,6 +57,9 @@ runs:
       id: client-install
       if: ${{ failure() || steps.client-init-download-cache.outputs.cache-hit != 'true' }}
       shell: bash
+      # For reading NPM_TOKEN env var in .npmrc (e.g. private registry)
+      # env:
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         npm install
 

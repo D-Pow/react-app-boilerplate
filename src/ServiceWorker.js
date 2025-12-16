@@ -99,6 +99,7 @@ self.addEventListener('install', function(event) {
             })
             .then(removeOldCaches)
             .then(function() {
+                postMessageToClient('Install complete');
                 return self.skipWaiting(); // needed to force new service workers to overwrite old ones
             }),
     );

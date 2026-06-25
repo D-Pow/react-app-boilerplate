@@ -340,12 +340,12 @@ export function useWindowEvent(
         return () => {
             self.removeEventListener(eventType, eventListener);
         };
-    }, [ // eslint-disable-line react-hooks/exhaustive-deps
+    }, [
         eventType,
         nestedEventField,
         eventListenerOptionsChanged,
         isUsingOwnEventHandler,
-        ...useEffectInputs, // eslint-disable-line react-hooks/exhaustive-deps
+        ...useEffectInputs,
     ]);
 
     return [ eventState, setEventState ];

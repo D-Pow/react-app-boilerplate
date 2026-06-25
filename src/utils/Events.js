@@ -78,6 +78,8 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
 
     return (...args) => {
         if (!bindThis) {
+            // Needs current reference to `this` for future calls
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
             self = this;
         }
 
@@ -124,6 +126,8 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
             wasCalled = true;
 
             if (!bindThis) {
+                // Needs current reference to `this` for future calls
+                // eslint-disable-next-line @typescript-eslint/no-this-alias
                 self = this;
             }
 

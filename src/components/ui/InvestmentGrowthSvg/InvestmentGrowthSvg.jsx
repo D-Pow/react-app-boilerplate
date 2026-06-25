@@ -165,13 +165,13 @@ class InvestmentGrowthSvg extends React.Component {
                 {Object.entries(previousSvgProps).map(([ elemTag, attributesToAnimate ]) => {
                     return Object.entries(attributesToAnimate).map(([ attrName, oldAttrVal ]) => (
                         <animate
+                            key={`${elemTag}-${attrName}`}
                             {...animateProps}
                             xlinkHref={`#${this.animatedSvgChildIds[elemTag]}`}
                             attributeName={attrName}
                             from={oldAttrVal}
                             to={currentSvgProps[elemTag][attrName]}
                             ref={ref => this.triggerSvgAnimation(ref)}
-                            key={`${elemTag}-${attrName}`}
                         />
                     ));
                 })}

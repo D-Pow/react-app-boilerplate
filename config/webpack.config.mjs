@@ -81,6 +81,8 @@ const {
     TypeScript,
     JsAndTs,
     Styles,
+    StylesModule,
+    StylesGlobal,
     Svg,
     Binaries,
     Text,
@@ -162,8 +164,20 @@ function getWebpackConfig(webpackArgs) {
                             loader: 'css-loader',
                             options: {
                                 modules: {
-                                    // Don't default to CSS-Modules; parse as normal CSS
-                                    mode: 'icss',
+                                    // Default to global (S)CSS but use CSS-Modules for `.module.(s)css`
+                                    mode: (resourcePath) => {
+                                        if (StylesModule.test(resourcePath)) {
+                                            return 'local';
+                                        }
+
+                                        if (StylesGlobal.test(resourcePath)) {
+                                            return 'icss';
+                                        }
+
+                                        return 'icss';
+                                    },
+                                    // Export CSS-Module classNames as camelCase instead of kebab-case
+                                    exportLocalsConvention: 'camel-case',
                                 },
                                 importLoaders: 2,
                                 sourceMap,

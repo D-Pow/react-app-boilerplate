@@ -286,7 +286,11 @@ const FileTypeRegexes = {
     TypeScript: /\.tsx?$/,
     JsAndTs: /\.[tj]sx?$/,
     MjsAndCjs: /\.[mc]js$/,
-    Styles: /\.s?css$/,
+    StylesGlobal: /(?<!\.module)\.s?css$/,
+    StylesModule: /(?<=\.module)\.s?css$/,
+    get Styles() {
+        return this.combineRegexes(this.StylesGlobal, this.StylesModule);
+    },
     get SourceCode() {
         const codeFiles = [
             FileTypeRegexes.JsAndTs,

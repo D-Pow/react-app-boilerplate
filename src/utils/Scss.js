@@ -2,8 +2,7 @@ import { COLORS } from '@/utils/Constants';
 import { asNumber, randomNumber } from '@/utils/Numbers';
 import { camelCaseToHyphenOrSnakeCase } from '@/utils/Text';
 
-import CommonStyles from '@/styles/Common.scss';
-
+import * as CommonStyles from '@/styles/Common.scss';
 
 const { themeColors, gridBreakpoints } = CommonStyles;
 

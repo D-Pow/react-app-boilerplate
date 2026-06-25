@@ -30,6 +30,44 @@ export function mockObjProperty(
     property = '',
     mockDescriptor,
 ) {
+    /*
+     * `jsdom` (v22+, bundled with `jest-environment-jsdom@v30`) defines `window.location` as a
+     * non-configurable accessor, so it can't be replaced via `Object.defineProperty`/`delete`
+     * (both throw "Cannot redefine property: location"). Instead, set the URL through the History
+     * API, which updates `location.(href|origin|pathname|search|hash)` in place without triggering
+     * `jest-environment-jsdom`'s unimplemented navigation. Keeps the [`mockObjProperty(window, 'location', { value })`]{@link import('./jest.setup.testUtils.js').mockObjProperty}
+     * API intact.
+     *
+     * Note: `history.replaceState` is same-origin only, so the mock URL must share the
+     * document's origin (configured via [`testEnvironmentOptions.url`]{@link import('./jest.config.mjs').testEnvironmentOptions.url}).
+     */
+    const targetIsWindow = obj === globalThis || obj === globalThis.window;
+    const propertyIsLocation = property === 'location';
+    const existingIsConfigurable = Object.getOwnPropertyDescriptor(obj, property)?.configurable ?? true;
+    const shouldShimForTestWindowLocationNotConfigurable = (
+        targetIsWindow
+        && propertyIsLocation
+        && !existingIsConfigurable
+    );
+
+    // Shim for when `window.location` is not configurable
+    if (shouldShimForTestWindowLocationNotConfigurable) {
+        const originalHref = obj?.location?.href;
+        const mockValue = (
+            mockDescriptor != null
+            && typeof mockDescriptor === typeof {}
+            && 'value' in mockDescriptor
+        )
+            ? mockDescriptor.value
+            : mockDescriptor;
+        const nextHref = mockValue?.href
+            ?? `${obj.location.origin}${obj.location.pathname}${mockValue?.search ?? ''}${mockValue?.hash ?? ''}`;
+
+        obj.history.replaceState({}, '', nextHref);
+
+        return () => obj.history.replaceState({}, '', originalHref);
+    }
+
     const originalDescriptor = {
         // Default the value in case it was never defined in the first place
         value: undefined,

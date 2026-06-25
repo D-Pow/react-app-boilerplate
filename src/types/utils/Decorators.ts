@@ -115,7 +115,7 @@ export type Decorator = (
  * const myClass = new MyClass();
  * myClass.sayHi('A', 'B', 7);
  *
- * @see [`reflect-metadata` in action blog]{@link http://blog.wolksoftware.com/decorators-metadata-reflection-in-typescript-from-novice-to-expert-part-4}
+ * @see [`reflect-metadata` in action blog]{@link https://www.wolksoftware.com/blog/decorators-metadata-reflection-in-typescript-from-novice-to-expert-part-4}
  * @see [TypeScript decorator docs]{@link https://www.typescriptlang.org/docs/handbook/decorators.html#metadata}
  */
 export const DecoratorMetadataKeys = {

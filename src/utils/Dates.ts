@@ -61,7 +61,7 @@ export const DayMonthFormatOptions: Record<Uppercase<DayMonthFormatOptionTypes>,
  * Day and month names in `long`, `short`, and `narrow` formats according to the user's language/locale setting.
  *
  * @see [`new Intl.DateTimeFormat()` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat}
- * @see [Related StackOverflow post]{@link }https://stackoverflow.com/questions/24998624/day-name-from-date-in-js}
+ * @see [Related StackOverflow post]{@link https://stackoverflow.com/questions/24998624/day-name-from-date-in-js}
  */
 export const DayMonthFormats: DayMonthFormatsType = ([ 'long', 'short', 'narrow' ] as DayMonthFormatOptionTypes[])
     .reduce((names, nameType) => {

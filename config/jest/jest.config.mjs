@@ -31,6 +31,14 @@ const jestConfig = {
     ...defaults,
     rootDir: Paths.ROOT.ABS,
     testEnvironment: 'jsdom',
+    /**
+     * jsdom v22+ makes `window.location` non-configurable, so tests mock it via `history.replaceState`
+     * (see [mockObjProperty()]{@link import('./jest.setup.testUtils.js').mockObjProperty}). That API is same-origin only, so set the
+     * document's origin to match the test fixtures' origin.
+     */
+    testEnvironmentOptions: {
+        url: 'https://localhost.com/',
+    },
     setupFilesAfterEnv: [
         Paths.getFileAbsPath(Paths.CONFIG.JEST.ABS, 'jestSetup.js'),
         Paths.getFileAbsPath(Paths.MOCKS.ABS, 'MockConfig.js'), // Mock network requests using default MockRequests configuration in mocks/MockConfig.js

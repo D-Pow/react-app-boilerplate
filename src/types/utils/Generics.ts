@@ -90,8 +90,8 @@ export type Indexable<ValueTypes = unknown> = Record<IndexSignature, ValueTypes>
  * @see [StackOverflow post 3]{@link https://stackoverflow.com/questions/65799316/why-cant-an-interface-be-assigned-to-recordstring-unknown}
  * @see [Similar issue's fix using `Omit<MyType, never>`]{@link https://github.com/microsoft/TypeScript/issues/15300#issuecomment-913193035}
  * @see [DefinitivelyTyped GitHub issue]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/27805}
- * @see [Related NextJS GitHub issue 1]{@link @link https://github.com/vercel/next.js/issues/36019}
- * @see [Related NextJS GitHub issue 2]{@link @link https://github.com/vercel/next.js/issues/35986}
+ * @see [Related NextJS GitHub issue 1]{@link https://github.com/vercel/next.js/issues/36019}
+ * @see [Related NextJS GitHub issue 2]{@link https://github.com/vercel/next.js/issues/35986}
  * @see [`{} is not assignable to ReactNode` error]{@link https://stackoverflow.com/questions/71852153/type-is-not-assignable-to-type-reactnode}
  * @see [Forcing dependencies' versions of nested dependencies in npm via `overrides` package.json field]{@link https://github.com/facebook/react/issues/24304}
  * @see [Respective npm docs]{@link https://docs.npmjs.com/cli/v8/configuring-npm/package-json#overrides}

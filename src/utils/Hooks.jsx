@@ -671,6 +671,9 @@ export function useServiceWorkerBroadcastChannel(messageEventListener, {
 
         return () => {
             broadcastChannel.removeEventListener(eventName, messageEventListener);
+            // Close the channel so its underlying MessagePort is released. Without this, the
+            // channel keeps the event loop alive (and Jest won't exit) and leaks across renders.
+            broadcastChannel.close();
         };
     }, [ channelName, broadcastChannel, messageEventListener ]);
 

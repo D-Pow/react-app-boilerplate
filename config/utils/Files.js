@@ -215,7 +215,7 @@ function isMain(filePath = require.main.filename) {
     return getMain() === filePath;
 }
 
-
+const gitignorePath = path.resolve(Paths.ROOT.ABS, '.gitignore');
 const gitignoreFiles = getGitignorePaths();
 const gitignoreFilesRegex = convertPathsToRegex(gitignoreFiles);
 const gitignoreFilesGlobs = convertPathsToGlobs(gitignoreFiles);
@@ -1037,6 +1037,7 @@ module.exports = {
     convertPathsToGlobs,
     stripJsComments,
     copyToClipboard,
+    gitignorePath,
     gitignoreFiles,
     gitignoreFilesRegex,
     gitignoreFilesGlobs,

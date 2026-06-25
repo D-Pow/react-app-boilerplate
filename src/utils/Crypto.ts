@@ -116,11 +116,10 @@ export async function encodeJwt(text: string, secret: string, {
 } = {}): Promise<string> {
     const encodedHeader = base64UrlEncode(JSON.stringify({ alg, typ }));
     const encodedPayload = base64UrlEncode(text);
-    let algorithm = alg
+    const algorithm = alg
         .replace(/^hs/i, 'sha')
-        .replace(/^\D+/gi, match => match.toLowerCase());
-
-    algorithm = algorithm.replace(/^sha/i, 'SHA-');
+        .replace(/^\D+/gi, match => match.toLowerCase())
+        .replace(/^sha/i, 'SHA-');
     const algoInfo = {
         name: 'HMAC',
         hash: algorithm,
@@ -167,10 +166,10 @@ export async function verifyJwt(jwt: string, signature: Parameters<Crypto['subtl
 } = {}) {
     const [ encodedHeader, encodedPayload, signatureStr ] = jwt.split('.');
 
-    let algorithm = alg
+    const algorithm = alg
         .replace(/^hs/i, 'sha')
-        .replace(/^\D+/gi, match => match.toLowerCase());
-    algorithm = algorithm.replace(/^sha/i, 'SHA-');
+        .replace(/^\D+/gi, match => match.toLowerCase())
+        .replace(/^sha/i, 'SHA-');
     const algoInfo = {
         name: 'HMAC',
         hash: algorithm,

@@ -692,7 +692,12 @@ function getWebpackConfig(webpackArgs) {
             // Allow SCSS debugging output: https://webpack.js.org/loaders/sass-loader/#how-to-enable-debug-output
             loggingDebug: [ 'sass-loader' ],
         },
-        devtool: sourceMap ? 'source-map' : false,
+        devtool: sourceMap
+            ? [{
+                type: 'all',
+                use: 'source-map',
+            }]
+            : false,
         /** @type {import('webpack-dev-server').Configuration} */
         devServer: {
             /*

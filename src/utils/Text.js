@@ -577,7 +577,7 @@ function parseStringTemplate(templateStrings, ...substitutions) {
      * @see [Template strings breakdown]{@link https://exploringjs.com/impatient-js/ch_template-literals.html#template-strings-cooked-vs-raw}
      * @see [Example `import()` call using template strings]{@link https://2ality.com/2019/10/eval-via-import.html#creating-data-uris-via-tagged-templates}
      */
-    const parsedAndEscapedString = templateStrings.raw[0] + substitutions.map((sub, i) => sub + templateStrings.raw[i+1]);
+    const parsedAndEscapedString = templateStrings.raw[0] + substitutions.map((sub, i) => sub + templateStrings.raw[i + 1]);
 
     return parsedAndEscapedString;
 }

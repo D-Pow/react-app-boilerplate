@@ -898,7 +898,7 @@ export function isObject(variable, {
 export function deepCopy(obj) {
     try {
         // `structuredClone()` is a relatively new function and isn't recognized by ESLint
-        // eslint-disable-next-line no-undef
+
         return structuredClone(obj);
     } catch (e) {}
 

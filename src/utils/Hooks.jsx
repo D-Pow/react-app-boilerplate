@@ -622,7 +622,7 @@ export function useTimedArrayToggle(arrayLength, intervalTimeMs, allowBackwardsT
         setTimeoutTriggered(true);
 
         for (let i = 0; i < arrayLength; i++) {
-            const timeToShow = intervalTimeMs*i;
+            const timeToShow = intervalTimeMs * i;
 
             setTimeout(() => {
                 dispatchToggleEntry(i);

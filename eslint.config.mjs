@@ -166,7 +166,7 @@ export default tseslint.config([
                 nonwords: false, // Allow spaces around operators, e.g. `!foo` or `foo++`
             }],
             // TODO Find a rule that only affects equals operator, nothing else
-            // 'space-infix-ops': 'error', // Enforce spaces between all infix operators (non-unary, non-ternary), e.g. `x = 1`, `1 + 2`, etc.
+            'space-infix-ops': 'error', // Enforce spaces between all infix operators (non-unary, non-ternary), e.g. `x = 1`, `1 + 2`, etc.
             'object-curly-spacing': [ 'error', 'always', { // Enforce spacing between curly braces except for nested objects
                 arraysInObjects: false, // e.g. `x = { a: [ 3 ]}`
                 objectsInObjects: false, // e.g. `x = { a: { b: 3 }}`

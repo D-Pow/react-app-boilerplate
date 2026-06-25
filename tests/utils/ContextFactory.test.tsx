@@ -128,7 +128,7 @@ describe('ContextFactory util', () => {
         letters.split('').forEach((letter, i) => {
             fireEvent.click(getContextValueChangers(rootWithFuncComp));
 
-            expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, a: letters.slice(0, i+1) }));
+            expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, a: letters.slice(0, i + 1) }));
         });
     });
 
@@ -147,7 +147,7 @@ describe('ContextFactory util', () => {
         Array.from({ length: 5 }).forEach((nul, i) => {
             fireEvent.click(getContextValueChangers(rootWithClassComp));
 
-            expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, b: initialContextState.b + (i+1) }));
+            expect(elemContainingContextValue.textContent).toEqual(JSON.stringify({ ...initialContextState, b: initialContextState.b + (i + 1) }));
         });
     });
 
@@ -194,8 +194,8 @@ describe('ContextFactory util', () => {
             elemsContainingContextValue.forEach((elem: Node) => {
                 expect(elem.textContent).toEqual(JSON.stringify({
                     ...initialContextState,
-                    a: letters.slice(0, i+1),
-                    b: initialContextState.b + (i+1),
+                    a: letters.slice(0, i + 1),
+                    b: initialContextState.b + (i + 1),
                 }));
             });
         }

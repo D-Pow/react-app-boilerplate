@@ -123,7 +123,7 @@ self.addEventListener('fetch', event => {
                 var responseIsHtmlFile = Boolean(responseContentType && responseContentType.match(/(text|application)\/html/i));
                 var isIndexHtml = (
                     (
-                        url[url.length-1] === '/'
+                        url[url.length - 1] === '/'
                         || fileRequested === 'index.html'
                         || (new URL(location.href).origin === url)
                         || responseIsHtmlFile

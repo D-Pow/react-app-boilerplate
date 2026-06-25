@@ -84,7 +84,7 @@ export function median(...nums) {
         return sortedNums[mid];
     }
 
-    return (sortedNums[mid-1] + sortedNums[mid]) / 2;
+    return (sortedNums[mid - 1] + sortedNums[mid]) / 2;
 }
 
 
@@ -185,7 +185,7 @@ export function numberToBaseX(num, base, {
  * @see [lerp, normalize, mapRanges, and clamp source]{@link https://www.trysmudford.com/blog/linear-interpolation-functions}
  */
 export function lerp(start, end, factor) {
-    return start + (end - start)*factor;
+    return start + (end - start) * factor;
 }
 
 
@@ -269,7 +269,7 @@ export function distributeValuesEvenlyBetween(start, end, numValues) {
  * @returns {number} - Factorial of the number.
  */
 export function factorial(num) {
-    return Array.from({ length: num }).reduce((fact, nul, i) => fact*(i+1), 1);
+    return Array.from({ length: num }).reduce((fact, nul, i) => fact * (i + 1), 1);
 }
 
 

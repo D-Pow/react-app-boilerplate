@@ -332,7 +332,7 @@ const FileTypeRegexes = {
      */
     regexToString(regex) {
         const regexStr = regex.toString();
-        const regexStrWithoutSurroundingSlashes = regexStr.substring(1, regexStr.length-1);
+        const regexStrWithoutSurroundingSlashes = regexStr.substring(1, regexStr.length - 1);
 
         return regexStrWithoutSurroundingSlashes;
     },

@@ -10,11 +10,11 @@ export function celsiusFahrenheit({
     }
 
     if (c) {
-        return (c * 9/5) + 32;
+        return (c * 9 / 5) + 32;
     }
 
     if (f) {
-        return (f - 32) * 5/9;
+        return (f - 32) * 5 / 9;
     }
 
     return NaN;

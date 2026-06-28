@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_app_boilerplate=self.webpackChunkreact_app_boilerplate||[]).push([[411],{1411(e,a,p){e.exports=p.p+"static/assets/react_logo.16ea806a.svg"}}]);

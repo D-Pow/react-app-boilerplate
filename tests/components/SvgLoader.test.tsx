@@ -22,7 +22,7 @@ function SvgRenders() {
 
 describe('SVG loader', () => {
     it('should show SVGs', async () => {
-        const svgRenderer = renderWithWrappingParent(<SvgRenders />);
+        const svgRenderer = await renderWithWrappingParent(<SvgRenders />);
         const importedSvg = 'react_logo.svg';
 
         const defaultImportElem = await waitForElementVisible(svgRenderer, '#default');

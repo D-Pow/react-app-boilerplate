@@ -114,7 +114,7 @@ describe('ContextFactory util', () => {
     });
 
     it('should work with functional components via `useContext()`', async () => {
-        const rootWithFuncComp = renderWithWrappingParent(
+        const rootWithFuncComp = await renderWithWrappingParent(
             <FunctionalComponent />,
             {
                 wrapper: MyApp,
@@ -133,7 +133,7 @@ describe('ContextFactory util', () => {
     });
 
     it('should work with class components via `static contextType`', async () => {
-        const rootWithClassComp = renderWithWrappingParent(
+        const rootWithClassComp = await renderWithWrappingParent(
             <ClassComponent />,
             {
                 wrapper: MyApp,
@@ -152,7 +152,7 @@ describe('ContextFactory util', () => {
     });
 
     it('should permeate state changes amongst multiple components', async () => {
-        const rootWithBothFuncAndClassComps = renderWithWrappingParent(
+        const rootWithBothFuncAndClassComps = await renderWithWrappingParent(
             (
                 <>
                     <FunctionalComponent />

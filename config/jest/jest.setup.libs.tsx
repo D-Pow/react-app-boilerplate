@@ -94,7 +94,7 @@ export function stripColorsFromString(str: string): string {
 
 
 
-export function renderWithWrappingParent(...args: Parameters<typeof render>): ReturnType<typeof render>;
+export async function renderWithWrappingParent(...args: Parameters<typeof render>): Promise<ReturnType<typeof render>>;
 /**
  * Renders your component with the specified parent wrapper.
  * Useful for testing components using context from a provider, ReactRouter, etc.
@@ -104,17 +104,22 @@ export function renderWithWrappingParent(...args: Parameters<typeof render>): Re
  * @param [options.wrapper=AppProviderWithRouter] - Component with which to wrap `component`.
  * @returns - Rendered component with the provider as its parent.
  */
-export function renderWithWrappingParent(
+export async function renderWithWrappingParent(
     component: ComponentInstance,
     {
         wrapper = AppProviderWithRouter,
         ...renderOptions
     }: RenderOptions = {},
 ) {
-    return render(component as ReactElement, {
+    const rendered = render(component as ReactElement, {
         ...renderOptions,
         wrapper,
     });
+
+    // Await any `useEffect()` and side effects after initial mount
+    await waitForUpdate(() => {});
+
+    return rendered;
 }
 
 

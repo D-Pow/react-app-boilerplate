@@ -20,7 +20,7 @@ describe('<AnimeSearch/>', () => {
      * @returns {Promise<import('../index.js').RenderedComponent>} - Async function containing all the actual tests to be run when verifying network calls are successful.
      */
     async function testAnimeSearchWorksForNaruto(fireEventToTriggerNetworkCall) {
-        const animeSearchComponent = renderWithWrappingParent(<AnimeSearch />);
+        const animeSearchComponent = await renderWithWrappingParent(<AnimeSearch />);
         const inputElement = document.querySelector('input[type="search"]');
 
         const getSearchResultsTitle = getElementMaybe(() => animeSearchComponent.getByText('Results'));

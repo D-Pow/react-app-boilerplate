@@ -43,31 +43,42 @@ const jestAssetTransformer = {
         if (FileTypeRegexes.Svg.test(srcAbsPath)) {
             if (/url$/.test(srcAbsPath)) {
                 /**
-                 * Mimic query (URL) export from `@svgr/webpack`.
+                 * Mimic the URL-only export from `*.svg?url` (webpack's asset/resource loader):
+                 * a single default export of the file URL.
                  */
                 return {
                     code: `
-                        module.exports = new String(${srcFileName});
+                        module.exports = ${srcFileName};
                     `,
                 };
             }
 
             /**
-             * Mimic named and default exports from `@svgr/webpack`.
+             * Mimic the named and default exports from `@svgr/webpack`:
+             *  - `default` and `SvgUrl` -> the file URL (a plain string)
+             *  - `ReactComponent` -> the SVG rendered as a React component
              *
-             * Note that the String constructor must be used so that we can set new fields on it in order
-             * to have both default/named exports because you can't set new fields on string primitives.
-             * i.e. let str = 'Hi'; str.myField = 'Bye'; --> str.myField == null
+             * Emit a proper ES-module-interop shape (`__esModule` + `default`).
              */
             return {
+                /*
+                 * A Jest (sync) transformer's output is executed directly as CommonJS — it is NOT
+                 * re-processed by Babel — so this MUST use `require`/`module.exports`, not ESM
+                 * `import`/`export` (which would throw "Cannot use import statement outside a module").
+                 * The `__esModule` + `default` shape lets Babel-compiled test code do
+                 * `import SvgUrl from '...'` and receive the URL string itself.
+                 */
                 code: `
                     const React = require('react');
 
-                    const SvgUrl = new String(${srcFileName});
+                    const SvgUrl = ${srcFileName};
 
-                    module.exports = SvgUrl;
-                    module.exports.SvgUrl = SvgUrl;
-                    module.exports.ReactComponent = React.memo(React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props })));
+                    module.exports = {
+                        __esModule: true,
+                        default: SvgUrl,
+                        SvgUrl,
+                        ReactComponent: React.memo(React.forwardRef((props, ref) => React.createElement('svg', { ref, ...props }))),
+                    };
                 `,
             };
         }
@@ -80,15 +91,23 @@ const jestAssetTransformer = {
             // srcFileContents = srcFileContents.replace(/@(use|import)\s+[^\s;]+;?/g, '');
 
             /**
-             * `jest-css-modules-transform` has a bug where they [don't support jest@>=27]{@link https://github.com/Connormiha/jest-css-modules-transform/issues/39}.
-             * So nest its call here to get the config option they are supposed to use until the bug is fixed.
+             * Transpile (S)CSS into a JS module so tests can `import` it. `jest-css-modules-transform`
+             * outputs both the class-name map and any ICSS `:export { ... }` values, which covers:
+             *  - `.module.(s)css` -> CSS-Modules: `import * as styles from './X.module.scss'` resolves
+             *    `styles.myClass` (mirrors webpack's css-loader `mode: 'local'`).
+             *  - global `.(s)css` -> exposes `:export` values, e.g. `import * as CommonStyles from '@/styles/Common.scss'`
+             *    (mirrors webpack's `mode: 'icss'`); plain side-effect imports like `import '@/styles/index.scss'` also work.
              *
+             * Note: `jest-css-modules-transform` has a bug where they [don't support jest@>=27]{@link https://github.com/Connormiha/jest-css-modules-transform/issues/39}.
              * Another possible option: [postcss-modules-scope]{@link https://www.npmjs.com/package/postcss-modules-scope}
              */
             const allTranspiledCssCode = JestCssModulesTransformer.process(srcFileContents, srcAbsPath, jestConfigs);
 
             return {
-                code: allTranspiledCssCode,
+                // `process()` returns a `{ code }` object (jest@>=28 format); older versions returned a raw string.
+                code: typeof allTranspiledCssCode === 'string'
+                    ? allTranspiledCssCode
+                    : allTranspiledCssCode.code,
             };
         }
 

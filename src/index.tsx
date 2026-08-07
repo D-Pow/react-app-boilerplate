@@ -6,20 +6,27 @@ import '@/styles/index.scss';
 
 
 /**
- * React v18 distinguishes between client-side and server-side rendering.
+ * React >= v18 distinguishes between client-side and server-side rendering.
+ * Use `createRoot()` from 'react-dom/client' for client-side.
  *
  * @see [Guide on upgrading to v18]{@link https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis}
  */
-const rootDiv = document.getElementById('root');
+const rootDiv = document.getElementById('root')!;
 const reactRoot = createRoot(rootDiv);
 
 reactRoot.render(<AppWithProvider />);
 
 registerServiceWorker();
 
-if (process.env.NODE_ENV !== 'production' && module.hot) {
+type HotReloadingModule = typeof module & {
+    hot: {
+        accept: (importPath: string, renderFunc: () => void) => void;
+    }
+}
+
+if (process.env.NODE_ENV !== 'production' && (module as HotReloadingModule).hot) {
     console.log('hot reloading active');
-    module.hot.accept('@/components/App', () => {
+    (module as HotReloadingModule).hot.accept('@/components/App', () => {
         reactRoot.render(<AppWithProvider />);
     });
 }

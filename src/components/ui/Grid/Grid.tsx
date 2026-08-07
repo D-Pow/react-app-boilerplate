@@ -1,22 +1,32 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type HTMLAttributes, type ReactElement } from 'react';
 
-import { childIsOfType, getChildName } from '@/utils/ReactParsing';
-
-import Row from './Row';
+import Row, { type RowProps } from './Row';
 import Column from './Column';
 
-class Grid extends React.Component {
+type RowElement = ReactElement<RowProps>;
+
+interface GridProps {
+  children: RowElement | RowElement[];
+  className?: string
+  aria?: HTMLAttributes<HTMLDivElement>
+}
+
+class Grid extends React.Component<GridProps> {
     static Row = Row;
     static Column = Column;
 
+    static defaultProps = {
+        className: '',
+        aria: {},
+    };
+
     generateGridNames() {
-        const gridAreaNamesUsed = [];
+        const gridAreaNamesUsed: string[][] = [];
         const gridTemplateAreasText = React.Children.map(this.props.children, (row, rowIndex) => {
-            const rowAreaNamesUsed = [];
+            const rowAreaNamesUsed: string[] = [];
             const rowAreaNamesText = React.Children.map(row.props.children, (column, colIndex) => {
                 const columnAreaName = `grid-cell-${rowIndex}-${colIndex}`;
-                const columnAreaNames = Array.from({ length: column.props.colSpan }, () => {
+                const columnAreaNames = Array.from({ length: column.props.colSpan ?? 1 }, () => {
                     return columnAreaName;
                 });
 
@@ -39,7 +49,7 @@ class Grid extends React.Component {
             return React.cloneElement(row, { gridTemplateAreas: gridAreaNamesUsed[index] });
         });
 
-        const { aria: { style: ariaStyle, ...aria }} = this.props;
+        const { aria: { style: ariaStyle, ...aria } = {}} = this.props;
         const style = {
             ...ariaStyle,
             gridTemplateAreas: gridTemplateAreasText,
@@ -52,22 +62,5 @@ class Grid extends React.Component {
         );
     }
 }
-
-Grid.propTypes = {
-    children: props => {
-        for (const child of React.Children.toArray(props.children)) {
-            if (!childIsOfType(child, Row)) {
-                return new Error(`Invalid child ${getChildName(child)} passed to Grid. Expected Row.`);
-            }
-        }
-    },
-    className: PropTypes.string,
-    aria: PropTypes.object,
-};
-
-Grid.defaultProps = {
-    className: '',
-    aria: {},
-};
 
 export default Grid;

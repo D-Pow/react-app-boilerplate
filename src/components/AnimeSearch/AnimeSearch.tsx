@@ -3,19 +3,18 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchKitsuTitleSearch } from '@/services/KitsuAnimeSearchService';
 import { useKeyboardEvent } from '@/utils/Hooks';
 
-function AnimeSearch(props) {
+function AnimeSearch() {
     const [ searchText, setSearchText ] = useState('');
     const [ keyDown, setKeyDown ] = useKeyboardEvent();
-    const [ searchResults, setSearchResults ] = useState([]);
-    const inputRef = useRef();
+    const [ searchResults, setSearchResults ] = useState<string[]>([]);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleTyping = ({ target: { value }}) => {
+    const handleTyping = ({ target: { value }}: { target: { value: string; }}) => {
         setSearchText(value);
     };
 
     const handleSubmit = async () => {
-        const response = await fetchKitsuTitleSearch(searchText.toLowerCase());
-        const titles = response.data.map(result => result.attributes.canonicalTitle);
+        const titles = await fetchKitsuTitleSearch(searchText.toLowerCase());
 
         setSearchResults(titles);
     };

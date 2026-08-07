@@ -89,7 +89,7 @@ const {
     Fonts,
 } = FileTypeRegexes;
 
-const hotReloading = process.env.HOT_RELOADING;
+const hotReloading = true; // process.env.HOT_RELOADING;
 
 const svgDefaultExportReactComponent = false;
 
@@ -459,7 +459,7 @@ function getWebpackConfig(webpackArgs) {
                 import: [
                     // If supporting IE, ensure `core-js` polyfills are loaded before source/vendor code
                     ...(process?.env?.npm_package_config_supportIe ? [ 'core-js' ] : []),
-                    Paths.getFileAbsPath(Paths.SRC.ABS, 'index.jsx'),
+                    Paths.getFileAbsPath(Paths.SRC.ABS, 'index.tsx'),
                 ],
                 dependOn: 'common',
             },

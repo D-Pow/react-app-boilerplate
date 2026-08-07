@@ -2,16 +2,14 @@ export interface AboutProps {
     className?: string;
 }
 
-function About(props: AboutProps) {
+function About({
+    className = 'font-size-2em',
+}: AboutProps) {
     return (
         <>
-            <div className={props.className}>About</div>
+            <div className={className}>About</div>
         </>
     );
 }
-
-About.defaultProps = {
-    className: 'font-size-2em',
-};
 
 export default About;

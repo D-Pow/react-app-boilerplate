@@ -1,7 +1,6 @@
 import { fireEvent } from '@testing-library/react';
 
 import Home from '@/components/Home';
-import About from '@/components/About';
 
 import { renderWithWrappingParent, waitForRedirect, getDomFromRender } from '~/tests';
 
@@ -38,7 +37,7 @@ describe('<Home/>', () => {
         const { element, html } = getDomFromRender(rootWithHomeComponent, { fromParent: true });
 
         expect(html.includes('Home')).toBe(false);
-        expect(element.querySelector(`div.${About.defaultProps.className}`)).toBeDefined();
+        expect(element.querySelector('div.font-size-2em')).toBeDefined();
         expect(location.href).toEqual(newUrl);
         expect(location.href).not.toEqual(originalUrl);
         expect(location.href.match(/\/about$/)?.length).toBeGreaterThanOrEqual(1);

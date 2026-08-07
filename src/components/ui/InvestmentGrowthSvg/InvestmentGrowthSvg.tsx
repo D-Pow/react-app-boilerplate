@@ -1,7 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { type RefObject } from 'react';
 
 import { objEquals } from '@/utils/Objects';
+
+import type { Mutable, ValueOf } from '@/types';
 
 const STARTING_POSITION = 'STARTING_POSITION';
 
@@ -9,7 +10,7 @@ const Frequencies = {
     WEEKLY: 'WEEKLY',
     MONTHLY: 'MONTHLY',
     NEVER: 'NEVER',
-};
+} as const;
 
 const FrequencySvgPropsMapping = {
     [STARTING_POSITION]: {
@@ -50,8 +51,21 @@ const FrequencySvgPropsMapping = {
     },
 };
 
-class InvestmentGrowthSvg extends React.Component {
+export interface InvestmentGrowthSvgProps {
+    frequency: ValueOf<typeof Frequencies>;
+    animationProps?: object;
+    className?: string;
+    responsiveSize?: boolean;
+}
+
+class InvestmentGrowthSvg extends React.Component<InvestmentGrowthSvgProps> {
     static Frequencies = Frequencies;
+    static defaultProps = {
+        animationProps: {},
+        className: '',
+        frequency: Frequencies.WEEKLY,
+        responsiveSize: true,
+    };
 
     animatedSvgChildIds = {
         path: 'growth-plot',
@@ -67,9 +81,10 @@ class InvestmentGrowthSvg extends React.Component {
 
     // Track previous props (i.e. "state" of the SVG's <animate.from> attribute)
     // using a ref with shouldComponentUpdate()
-    previousFrequency = React.createRef();
+    previousFrequency: Mutable<RefObject<ValueOf<typeof Frequencies> | typeof STARTING_POSITION>> =
+        React.createRef<ValueOf<typeof Frequencies> | typeof STARTING_POSITION>();
 
-    constructor(props) {
+    constructor(props: InvestmentGrowthSvgProps) {
         super(props);
 
         // TODO See if this can be put in class property
@@ -93,7 +108,7 @@ class InvestmentGrowthSvg extends React.Component {
      *
      * @returns {boolean} - If the component should update.
      */
-    shouldComponentUpdate(nextProps) {
+    shouldComponentUpdate(nextProps: InvestmentGrowthSvgProps) {
         if (this.props.frequency !== nextProps.frequency) {
             this.previousFrequency.current = this.props.frequency;
         }
@@ -112,19 +127,19 @@ class InvestmentGrowthSvg extends React.Component {
      *
      * @param {(React.Ref|null)} animateElemRef - Ref to the <animate> element
      */
-    triggerSvgAnimation = animateElemRef => {
+    triggerSvgAnimation = (
+        animateElemRef: SVGElement & { beginElement?: () => void; },
+    ) => {
         // Inline ref callbacks are called twice, first with null, then with element.
         // See: https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
-        if (animateElemRef != null && animateElemRef.beginElement) {
-            animateElemRef.beginElement();
-        }
+        animateElemRef?.beginElement?.();
     };
 
     render() {
         const { className, frequency, responsiveSize, animationProps } = this.props;
         const cls = className + (responsiveSize ? ' img-responsive' : '');
         const currentSvgProps = FrequencySvgPropsMapping[frequency];
-        const previousSvgProps = FrequencySvgPropsMapping[this.previousFrequency.current];
+        const previousSvgProps = FrequencySvgPropsMapping[this.previousFrequency.current!];
         const animateProps = { ...this.animationDefaultProps, ...animationProps };
 
         return (
@@ -167,11 +182,11 @@ class InvestmentGrowthSvg extends React.Component {
                         <animate
                             key={`${elemTag}-${attrName}`}
                             {...animateProps}
-                            xlinkHref={`#${this.animatedSvgChildIds[elemTag]}`}
+                            xlinkHref={`#${this.animatedSvgChildIds[elemTag as keyof typeof this.animatedSvgChildIds]}`}
                             attributeName={attrName}
-                            from={oldAttrVal}
-                            to={currentSvgProps[elemTag][attrName]}
-                            ref={ref => this.triggerSvgAnimation(ref)}
+                            from={oldAttrVal as string}
+                            to={currentSvgProps[elemTag as keyof typeof currentSvgProps][attrName as keyof ValueOf<typeof currentSvgProps>]}
+                            ref={ref => this.triggerSvgAnimation(ref!)}
                         />
                     ));
                 })}
@@ -179,19 +194,5 @@ class InvestmentGrowthSvg extends React.Component {
         );
     }
 }
-
-InvestmentGrowthSvg.propTypes = {
-    animationProps: PropTypes.object,
-    className: PropTypes.string,
-    frequency: PropTypes.oneOf(Object.values(Frequencies)),
-    responsiveSize: PropTypes.bool,
-};
-
-InvestmentGrowthSvg.defaultProps = {
-    animationProps: {},
-    className: '',
-    frequency: Frequencies.WEEKLY,
-    responsiveSize: true,
-};
 
 export default InvestmentGrowthSvg;

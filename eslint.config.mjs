@@ -43,7 +43,7 @@ export default tseslint.config([
                 ...globals.serviceworker,
                 ...globals.browser,
                 process: 'writable', // `webpack.DefinePlugin` injects `process.env` object into `src/` files.
-                module: 'writable', // TODO Only used for src/index.jsx hot reloading, but that block might not be needed anymore
+                module: 'writable', // TODO Only used for src/index.tsx hot reloading, but that block might not be needed anymore
             },
             parserOptions: {
                 /* ESLint root options - See: https://eslint.org/docs/user-guide/configuring/language-options#specifying-parser-options */

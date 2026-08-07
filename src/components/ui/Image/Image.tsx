@@ -1,11 +1,21 @@
-import { useState, useEffect, useContext } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect, useContext, type ReactEventHandler } from 'react';
 
 import { importAssetAsync } from '@/utils/Events';
 import { extractFinalPathnameSegmentFromUrl, isUrl } from '@/utils/BrowserNavigation';
-import AppContext, { AppContextFields } from '@/utils/AppContext';
+import AppContext, { AppContextFields, type AppContextState } from '@/utils/AppContext';
 
 // TODO Don't reload images that have already been loaded
+
+export interface ImageProps {
+  className?: string
+  src?: string
+  alt?: string
+  fluidImage?: boolean
+  updateAppContext?: boolean
+  onLoad?(...args: unknown[]): unknown
+  aria?: object
+}
+
 function Image({
     className = '',
     src = '',
@@ -14,7 +24,7 @@ function Image({
     updateAppContext = false,
     onLoad = () => {},
     aria = {},
-}) {
+}: ImageProps) {
     const [ imageSrc, setImageSrc ] = useState('');
     const { setContextState } = useContext(AppContext);
 
@@ -41,14 +51,14 @@ function Image({
         if (updateAppContext) {
             const contextField = finishedLoading ? AppContextFields.LOADED : AppContextFields.REQUESTED;
 
-            setContextState(prevState => ({
+            setContextState((prevState: AppContextState) => ({
                 ...prevState,
                 [contextField]: prevState[contextField] + 1,
             }));
         }
     }
 
-    function handleLoad(e) {
+    function handleLoad(e: Event) {
         incrementAppContextField(true);
         onLoad(e);
     }
@@ -58,20 +68,10 @@ function Image({
             className={`${fluidImage ? 'img-fluid' : ''} ${className}`}
             src={imageSrc}
             alt={alt || extractFinalPathnameSegmentFromUrl(src)}
-            onLoad={handleLoad}
+            onLoad={handleLoad as unknown as ReactEventHandler<HTMLImageElement>}
             {...aria}
         />
     );
 }
-
-Image.propTypes = {
-    className: PropTypes.string,
-    src: PropTypes.string,
-    alt: PropTypes.string,
-    fluidImage: PropTypes.bool,
-    updateAppContext: PropTypes.bool,
-    onLoad: PropTypes.func,
-    aria: PropTypes.object,
-};
 
 export default Image;

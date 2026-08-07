@@ -12,7 +12,9 @@ const initialState = {
     [AppContextFields.LOADED]: 0,
 };
 
-const AppContext = ContextFactory({
+export type AppContextState = typeof initialState;
+
+const AppContext = ContextFactory<AppContextState>({
     initialState,
     displayName: 'AppContext',
 });

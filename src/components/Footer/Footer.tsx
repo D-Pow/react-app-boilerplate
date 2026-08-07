@@ -1,4 +1,4 @@
-function Footer(props) {
+function Footer() {
     return (
         <div>Footer</div>
     );

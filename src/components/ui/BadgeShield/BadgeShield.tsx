@@ -1,7 +1,5 @@
 import { LINKS } from '@/utils/Constants';
-import Image from '@/components/ui/Image';
-
-import type { InferProps } from '@/types';
+import Image, { type ImageProps } from '@/components/ui/Image';
 
 
 function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor: string) {
@@ -14,16 +12,13 @@ function getBadgeShieldImageUrl(leftText: string, rightText: string, rightColor:
 }
 
 
-// Segment type declarations for better IDE quick-documentation
-type ImagePropTypesInitial = InferProps<typeof Image.propTypes>;
-type ImagePropTypes = Omit<ImagePropTypesInitial, 'src' | 'className' | 'updateAppContext'>
-
 export interface BadgeShieldProps {
     label: string;
     message: string;
     color: string;
     className?: string;
-    imageProps?: Partial<ImagePropTypes>;
+    // Omit fields that are  type declarations for better IDE quick-documentation
+    imageProps?: Partial<Omit<ImageProps, 'src' | 'className' | 'updateAppContext'>>;
 }
 
 function BadgeShield({

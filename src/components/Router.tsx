@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {
     BrowserRouter,
     HashRouter,
@@ -7,6 +6,7 @@ import {
     Route,
     Navigate,
 } from 'react-router-dom';
+import { type RouteProps } from 'react-router';
 
 import SpinnerCircle from '@/components/ui/SpinnerCircle';
 
@@ -40,7 +40,7 @@ const AnimeSearch = React.lazy(() => animeSearchImportPromise);
  * @see [react-router v5 docs]{@link https://github.com/remix-run/react-router/tree/v5.3.1/packages/react-router/docs/api}
  * @see [Upgrading from v5 to v6]{@link https://gist.github.com/mjackson/b5748add2795ce7448a366ae8f8ae3bb}
  */
-export const appRoutes = [
+export const appRoutes: RouteProps[] = [
     {
         path: '/',
         element: <Navigate to="/home" />,
@@ -59,6 +59,17 @@ export const appRoutes = [
     },
 ];
 
+export interface RouterProps {
+    routes: RouteProps[];
+    ReactRouter?: React.ElementType;
+    routerProps?: object;
+    RouterWrapper?: React.ElementType;
+    wrapperProps?: object;
+    suspenseProps?: {
+        fallback?: React.ReactNode;
+    }
+    children?: React.ReactNode;
+}
 
 /**
  * Router for automatically rendering `<Route>` entries in a react-router nested in `<React.Suspense>`.
@@ -82,7 +93,7 @@ function Router({
         fallback: (<SpinnerCircle show />),
     },
     children,
-}) {
+}: RouterProps) {
     return (
         <React.Suspense {...suspenseProps}>
             <RouterWrapper {...wrapperProps}>
@@ -102,16 +113,6 @@ function Router({
 Router.Types = {
     SLASH: BrowserRouter,
     HASH: HashRouter,
-};
-
-Router.propTypes = {
-    routes: PropTypes.arrayOf(PropTypes.object).isRequired,
-    ReactRouter: PropTypes.elementType,
-    routerProps: PropTypes.object,
-    RouterWrapper: PropTypes.elementType,
-    wrapperProps: PropTypes.object,
-    suspenseProps: PropTypes.shape({ fallback: PropTypes.node }),
-    children: PropTypes.node,
 };
 
 export default Router;

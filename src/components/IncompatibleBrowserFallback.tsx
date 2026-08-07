@@ -1,4 +1,4 @@
-function IncompatibleBrowserFallback(props) {
+function IncompatibleBrowserFallback() {
     return (
         <div className={'text-center absolute-center top-20 w-100'}>
             <h1 className={'w-80 m-auto'}>

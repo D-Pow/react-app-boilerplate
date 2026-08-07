@@ -1,4 +1,4 @@
-function Header(props) {
+function Header() {
     return (
         <div>Header</div>
     );

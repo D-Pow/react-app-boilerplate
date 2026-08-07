@@ -168,6 +168,14 @@ export type Nullable<T, OnlyNull = false> = OnlyNull extends false
 
 
 /**
+ * Removes readonly from all keys.
+ */
+export type Mutable<T> = {
+    -readonly [K in keyof T]?: Mutable<T[K]>;
+};
+
+
+/**
  * Companion to built-in `keyof` except gets all value types of an Object
  * instead of keys.
  *

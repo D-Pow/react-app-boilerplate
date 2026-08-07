@@ -16,14 +16,10 @@ import type {
     ReactElement,
     JSXElementConstructor,
 } from 'react';
-import type {
-    InferProps as PropTypesInferProps,
-} from 'prop-types';
 
 import type {
     Indexable,
     Obj,
-    OmitValues,
 } from '@/types';
 
 
@@ -36,23 +32,10 @@ export type ReactComponent<Props = ComponentProps> = ComponentDeclaration<Props>
 /**
  * Extracts the types of any class/functional component's props.
  * Useful for HOCs and related components that wish to forward child props to the parent.
- *
- * Alternatively, a JSX component's `MyComponent.propTypes` object defined using PropTypes
- * can be passed to get the types.
- *
- * Note: `PropTypes.InferProps` has a bug where they inject `null` as a possible type for
- * JSX `propTypes` (e.g. `type | null | undefined`) but non-required types can only
- * be `type | undefined`.
- *
- * This fixes the bug by stripping out the `null` values from the resulting
- * `PropTypes.InferProps` call.
- * Note: It must be done for each key-value pair separately so the pairing is maintained.
- *
- * @see [PropTypes.InferProps bug]{@link https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45094}
  */
 export type InferProps<C extends ComponentType<any> | Indexable> = (
     C extends Record<string, unknown>
-        ? OmitValues<PropTypesInferProps<C>, null>
+        ? C
         : C extends ComponentClass | (new (props: any, context?: any) => ComponentInstance)
             ? ConstructorParameters<C>[0]
             : C extends FunctionComponent | ((props: any, context?: any) => ComponentInstance)

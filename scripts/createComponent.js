@@ -70,7 +70,7 @@ ${componentName}.${getPropTypesText(false, typescript)}`;
 }
 
 
-function getComponentText(componentName, { functionalComponent = false, typescript = false } = {}) {
+function getComponentText(componentName, { functionalComponent = false, typescript = true } = {}) {
     let propTypesImport = `import PropTypes from 'prop-types';`;
 
     if (typescript) {

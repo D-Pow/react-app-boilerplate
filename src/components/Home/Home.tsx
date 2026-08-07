@@ -10,7 +10,7 @@ import SvgUrl, {
 import * as styles from './Home.module.scss';
 
 function Home() {
-    const [ redirect, setRedirect ] = useState();
+    const [ redirect, setRedirect ] = useState<string>();
 
     const broadcastChannel = useServiceWorkerBroadcastChannel(messageEvent => {
         const { data: message } = messageEvent;

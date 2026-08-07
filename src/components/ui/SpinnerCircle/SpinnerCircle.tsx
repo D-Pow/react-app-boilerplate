@@ -1,17 +1,15 @@
-import PropTypes from 'prop-types';
+export interface SpinnerCircleProps {
+  show?: boolean
+}
 
-function SpinnerCircle(props) {
+function SpinnerCircle(props: SpinnerCircleProps) {
     if (!props.show) {
-        return '';
+        return <></>;
     }
 
     return (
         <div className={'spinner-border spinner-border-sm'} />
     );
 }
-
-SpinnerCircle.propTypes = {
-    show: PropTypes.bool,
-};
 
 export default SpinnerCircle;

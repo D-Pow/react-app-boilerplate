@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 import stylisticPlugin from '@stylistic/eslint-plugin';
 import ReactPlugin from '@eslint-react/eslint-plugin';
 // TODO: Use `eslint-plugin-import-x` instead since it supports ESLint@10
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import importAliasPlugin from 'eslint-plugin-import-alias';
 import importUnusedPlugin from 'eslint-plugin-unused-imports';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
@@ -73,10 +73,10 @@ export default tseslint.config([
             'react-x': { // Migrated from `eslint-plugin-react` to `@eslint-react/eslint-plugin`. Docs: https://eslint-react.xyz/docs/configuration/configure-analyzer
                 version: 'detect', // Automatically detect React version
             },
-            'import/extensions': [ ...extensions, '.json' ],
+            'import-x/extensions': [ ...extensions, '.json' ],
             // Mark import aliases' keys as part of the internal-imports group for `import/order` since they're our code
-            'import/internal-regex': `^(${Object.keys(ImportAliases).map(alias => `${ImportAliases.stripTrailingSlash(alias)}/`).filter(Boolean).join('|')})`,
-            'import/resolver': {
+            'import-x/internal-regex': `^(${Object.keys(ImportAliases).map(alias => `${ImportAliases.stripTrailingSlash(alias)}/`).filter(Boolean).join('|')})`,
+            'import-x/resolver': {
                 typescript: createTypeScriptImportResolver({
                     project: tsconfigDevPath,
                 }),
@@ -231,11 +231,11 @@ export default tseslint.config([
                 }))),
             }],
             // Prevent different import lines from importing from the same file (e.g. `import { x } from 'file'; import { y } from 'file'`)
-            'import/no-duplicates': [ 'error', {
+            'import-x/no-duplicates': [ 'error', {
                 considerQueryString: true, // Allow import queries of different values to coexist (e.g. `import 'file?a'` works with `import 'file?b'`)
             }],
             // Sort imports by type with(out) newlines between them: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
-            'import/order': [ 'error', {
+            'import-x/order': [ 'error', {
                 groups: [
                     'builtin', // native
                     'external', // third-party installed libs
@@ -276,19 +276,19 @@ export default tseslint.config([
                 pathGroupsExcludedImportTypes: [ 'builtin', 'external', 'type' ], // Don't apply `pathGroups` sorting to these types of imports; allows type-imports to be in any order (otherwise aliased are forced before `builtin`/`external`)
             }],
             // Ensure there is at least one newline between imports and file logic
-            'import/newline-after-import': [ 'error', {
+            'import-x/newline-after-import': [ 'error', {
                 count: 1,
             }],
             // Ensure all imports resolve/exist
-            'import/no-unresolved': [ 'error', {
+            'import-x/no-unresolved': [ 'error', {
                 // `no-unresolved` has a different set of rules for what files trigger errors (see: https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-unresolved.md#ignore)
                 // which means import aliases aren't being honored by this rule and need to be added in manually.
                 ignore: Object.keys(ImportAliases).map(alias => `^${ImportAliases.stripTrailingSlash(alias)}/.*`),
             }],
             // Prevent circular dependencies
-            'import/no-cycle': [ 'error', { commonjs: true, amd: true }],
+            'import-x/no-cycle': [ 'error', { commonjs: true, amd: true }],
             // Ensure imports are at the top of the file, not sprinkled throughout the body of the file
-            'import/first': 'error',
+            'import-x/first': 'error',
             // Remove unused imports (since `no-unused-vars` is only `warn` for now)
             'unused-imports/no-unused-imports': 'error',
 
@@ -304,7 +304,7 @@ export default tseslint.config([
              */
             'no-redeclare': 'off',
             'no-dupe-class-members': 'off',
-            'import/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
+            'import-x/export': 'off', // Allow exporting namespaces with the same name as functions for setting properties on the function
             '@typescript-eslint/no-empty-object-type': 'off', // Allow re-importing/re-declaration of types for simplicity within a file
             '@typescript-eslint/no-unused-vars': [ 'off', { // Allow unused variables in function definition typedefs
                 args: 'none',

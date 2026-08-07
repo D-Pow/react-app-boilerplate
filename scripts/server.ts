@@ -619,7 +619,7 @@ async function runWebpackServer() {
 async function runNextJsServer() {
     const { parse } = await import('url');
     // @ts-ignore - Unrecognized import b/c this boilerplate isn't based on NextJS
-    // eslint-disable-next-line import/no-unresolved
+    // eslint-disable-next-line import-x/no-unresolved
     const createNextServer = (await import('next')).default;
     // @ts-ignore - Same unrecognized import except for your custom NextJS config file
 

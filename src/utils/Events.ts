@@ -2,6 +2,11 @@ import { fetchAsBase64 } from '@/utils/Network';
 import { MimeTypes } from '@/utils/Constants';
 import { getMimeTypeFromDataUrl } from '@/utils/Text';
 
+import type {
+    Nullable,
+    Optional,
+} from '@/types';
+
 
 /**
  * Asynchronously imports the specified binary asset from the 'assets/' folder.
@@ -11,11 +16,11 @@ import { getMimeTypeFromDataUrl } from '@/utils/Text';
  * Since this uses dynamic imports, results are cached, so multiple calls
  * for the same asset don't need to be memoized.
  *
- * @param {string} assetRelPath - Relative path to the asset file under 'assets/'.
- * @param {boolean} [base64=false] - Return Base64-encoded data instead of the `src` url.
- * @returns {Promise<string>} - Path of the asset (base64=false) or Base64-encoded asset data (base64=true)
+ * @param assetRelPath - Relative path to the asset file under 'assets/'.
+ * @param [base64=false] - Return Base64-encoded data instead of the `src` url.
+ * @returns Path of the asset (base64=false) or Base64-encoded asset data (base64=true)
  */
-export async function importAssetAsync(assetRelPath, base64 = false) {
+export async function importAssetAsync(assetRelPath: string, base64 = false): Promise<string> {
     if (assetRelPath != null && assetRelPath !== '') {
         const pathIsFromAssetsDirRegex = new RegExp(`^${location.origin}/.*/?${process.env.PUBLIC_URL}/assets/`, 'i');
 
@@ -31,10 +36,12 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
             // - https://stackoverflow.com/questions/42908116/webpack-critical-dependency-the-request-of-a-dependency-is-an-expression
             // - Actual solution: https://webpack.js.org/plugins/context-replacement-plugin/
             const module = await import(`@/assets/${assetRelPath}`);
-            const assetSrc = module.default;
+            const assetSrc: string = module.default;
 
             if (base64) {
-                return await fetchAsBase64(assetSrc);
+                // `FileReader.result` is typed `string | ArrayBuffer | null`, but `readAsDataURL()`
+                // (which `fetchAsBase64()` uses) always resolves to a string
+                return await fetchAsBase64(assetSrc) as string;
             }
 
             return assetSrc;
@@ -56,21 +63,45 @@ export async function importAssetAsync(assetRelPath, base64 = false) {
 
 
 /**
+ * Any function that can be wrapped by {@link debounce}/{@link throttle}.
+ */
+export type AnyFunction<Args extends unknown[] = never[], Return = unknown> = (...args: Args) => Return;
+
+/**
+ * A {@link debounce}d/{@link throttle}d function; returns the wrapped function's value
+ * only on the calls that actually invoke it.
+ */
+export type RateLimitedFunction<Args extends unknown[], Return> = (...args: Args) => Optional<Return>;
+
+export interface DebounceOptions {
+    /**
+     * Allow `func` to be called on first debounced function call.
+     */
+    callOnFirstFuncCall?: boolean;
+    /**
+     * Binds the value of `this` to the specified value.
+     */
+    bindThis?: unknown;
+}
+
+/**
  * Higher-order function that restricts `func` calls to only fire once per `delay` milliseconds.
  * Optionally, bind the value of `this` to its value when `debounce()` is called.
  * Optionally, call `func` when its first called instead of waiting `delay` milliseconds before its first call;
  * will still debounce subsequent calls.
  *
- * @param {function} func - Function to debounce
- * @param {number} delay - Milliseconds to wait before calling `func`
- * @param {Object} [options] - Options for debounced function
- * @param {boolean} [options.callOnFirstFuncCall=false] - Allow `func` to be called on first debounced function call
- * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value
- * @returns {function(...[*]=)}
+ * @param func - Function to debounce
+ * @param delay - Milliseconds to wait before calling `func`
+ * @param [options] - Options for debounced function
+ * @returns The debounced function.
  */
-export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } = {}) {
-    let timeout;
-    let self;
+export function debounce<Args extends unknown[], Return>(
+    func: AnyFunction<Args, Return>,
+    delay: number,
+    { callOnFirstFuncCall = false, bindThis }: DebounceOptions = {},
+): RateLimitedFunction<Args, Return> {
+    let timeout: Nullable<ReturnType<typeof setTimeout>>;
+    let self: unknown;
 
     if (bindThis) {
         self = bindThis;
@@ -79,6 +110,7 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
     return (...args) => {
         if (!bindThis) {
             // Needs current reference to `this` for future calls
+            // @ts-ignore - `this` will be the context this returned function is called in unless `bindThis = true`
             // eslint-disable-next-line @typescript-eslint/no-this-alias
             self = this;
         }
@@ -87,7 +119,8 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
         // so this is false on subsequent calls
         const isFirstCall = callOnFirstFuncCall && timeout == null;
 
-        clearTimeout(timeout);
+        // `?? undefined` only normalizes the type; `clearTimeout()` no-ops on both `null` and `undefined`
+        clearTimeout(timeout ?? undefined);
 
         timeout = setTimeout(() => {
             timeout = null;
@@ -104,18 +137,28 @@ export function debounce(func, delay, { callOnFirstFuncCall = false, bindThis } 
 }
 
 
+export interface ThrottleOptions {
+    /**
+     * Binds the value of `this` to the specified value.
+     */
+    bindThis?: unknown;
+}
+
 /**
  * Throttles a function to only be called once per time limit.
  *
- * @param {function} func - Function to throttle.
- * @param {number} timeLimit - Milliseconds to wait before allowing `func` to be called again.
- * @param {Object} [options]
- * @param {Object} [options.bindThis] - Binds the value of `this` to the specified value.
- * @returns {function} - Decorated, throttled function.
+ * @param func - Function to throttle.
+ * @param timeLimit - Milliseconds to wait before allowing `func` to be called again.
+ * @param [options]
+ * @returns Decorated, throttled function.
  */
-export function throttle(func, timeLimit, { bindThis } = {}) {
+export function throttle<Args extends unknown[], Return>(
+    func: AnyFunction<Args, Return>,
+    timeLimit: number,
+    { bindThis }: ThrottleOptions = {},
+): RateLimitedFunction<Args, Return> {
     let wasCalled = false;
-    let self;
+    let self: unknown;
 
     if (bindThis) {
         self = bindThis;
@@ -127,6 +170,7 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
 
             if (!bindThis) {
                 // Needs current reference to `this` for future calls
+                // @ts-ignore - `this` will be the context this returned function is called in unless `bindThis = true`
                 // eslint-disable-next-line @typescript-eslint/no-this-alias
                 self = this;
             }
@@ -144,23 +188,39 @@ export function throttle(func, timeLimit, { bindThis } = {}) {
 
 
 /**
+ * A single entry in a click path: an element, or the `document`/`window` roots appended to its end.
+ */
+export type ClickPathElement = HTMLElement | Document | Window;
+
+/**
+ * Path from a clicked element to the root, including `document` and `window`/`self`.
+ */
+export type ClickPath = ClickPathElement[];
+
+/**
  * Gets the path from the clicked element to the root.
  *
- * @param {Object} event - Click Event
- * @returns {[HTMLElement]} - Path from clicked element to the root, including `document` and `window`/`self`
+ * @param [event] - Click Event, or an already-generated click path.
+ * @returns Path from clicked element to the root, including `document` and `window`/`self`
  */
-export function getClickPath(event) {
+export function getClickPath(event?: Nullable<MouseEvent | ClickPath>): ClickPath {
     if (!event || (Array.isArray(event) && event.length === 0)) {
         return [];
     }
 
-    if (event.path) {
-        return event.path;
+    /*
+     * `Event.path` is a non-standard, Chromium-only alias of the standard `Event.composedPath()`.
+     * It's absent from the DOM typedefs, and from arrays passed in place of an event, so read it defensively.
+     */
+    const { path, target } = event as Partial<{ path: ClickPath; target: Nullable<HTMLElement> }>;
+
+    if (path) {
+        return path;
     }
 
     // support for browsers without clickEvent.path
-    const clickPath = [];
-    let element = event.target;
+    const clickPath: ClickPath = [];
+    let element = target;
 
     while (element) {
         clickPath.push(element);
@@ -174,23 +234,27 @@ export function getClickPath(event) {
 
 
 /**
- * HTML element properties object used in searching for an element
- *
- * @global
- * @typedef {Object} ElementProps
- * @property {string} attribute - Attribute of HTML element to compare the value to
- * @property {string} value - Value of the desired HTML element to search for
+ * HTML element properties object used in searching for an element.
  */
+export interface ElementProps {
+    /**
+     * Attribute of HTML element to compare the value to.
+     */
+    attribute: string;
+    /**
+     * Value of the desired HTML element to search for.
+     */
+    value: string;
+}
 
 /**
  * Determines if a click-path generated by an onClick event contains a given element.
  *
- * @param {string} attribute - Attribute of HTML element to compare the value to
- * @param {string} value - Value of the desired HTML element to search for
- * @param {[HTMLElement]} clickPath - onClick event's `path` value
- * @returns {boolean} - If the element described by `attribute` and `value` exists in the click-path
+ * @param elementProps - Attribute/value of the HTML element to search for
+ * @param clickPath - onClick event's `path` value
+ * @returns If the element described by `attribute` and `value` exists in the click-path
  */
-export function elementIsInClickPath({ attribute, value }, clickPath) {
+export function elementIsInClickPath({ attribute, value }: ElementProps, clickPath: ClickPath): boolean {
     let elementIsInPath = false;
 
     for (const element of clickPath) {
@@ -209,30 +273,65 @@ export function elementIsInClickPath({ attribute, value }, clickPath) {
 
 
 /**
+ * An element's position and size.
+ */
+export interface ElementDimensions {
+    x: number;
+    width: number;
+    y: number;
+    height: number;
+}
+
+/**
+ * The "real" file dimensions of elements supporting `natural(Width|Height)` (e.g. `<img/>`).
+ */
+export interface ElementIntrinsicDimensions {
+    width: number;
+    height: number;
+}
+
+/**
+ * Both the displayed and actual dimensions of an element, plus its intrinsic
+ * dimensions if the element supports them.
+ */
+export interface AllElementDimensions {
+    displayed: ElementDimensions;
+    actual: ElementDimensions;
+    intrinsic?: ElementIntrinsicDimensions;
+}
+
+export interface GetElementDimensionsOptions {
+    /**
+     * Include the displayed dimensions of the element.
+     */
+    displayed?: boolean;
+    /**
+     * Include the actual dimensions of the element.
+     */
+    actual?: boolean;
+    /**
+     * Make inline elements with children larger than they are take the size of the children
+     * (e.g. make anchors with images as children take the size of the image, `<a><img></a>`).
+     */
+    ensureElementSizeIncludesSizeOfChildren?: boolean;
+}
+
+/**
  * Gets an element's dimensions, either as displayed (e.g. what's shown with `overflow: hidden`) or the
  * true/actual dimensions (e.g. what's shown + not shown with `overflow: hidden`).
  *
  * Will attempt to add intrinsic (i.e. "real" file dimensions) of elements that support `natural(Width|Height)`,
  * namely `<img/>` elements and some others.
  *
- * @param {HTMLElement} element - Element for which dimensions should be obtained.
- * @param {Object} [options]
- * @param {boolean} [options.displayed] - Include the displayed dimensions of the element.
- * @param {boolean} [options.actual] - Include the actual dimensions of the element.
- * @param {boolean} [options.ensureElementSizeIncludesSizeOfChildren] - Make inline elements with children larger than they are take the size of the children (e.g. make anchors with images as children take the size of the image, `<a><img></a>`).
- * @returns {
- *      {
- *          displayed: { x: number, width: number, y: number, height: number },
- *          actual: { x: number, width: number, y: number, height: number },
- *      }
- *      | { x: number, width: number, y: number, height: number }
- * } - The dimensions of the element (either displayed/actual or both).
+ * @param element - Element for which dimensions should be obtained.
+ * @param [options]
+ * @returns The dimensions of the element (either displayed/actual or both).
  */
-export function getElementDimensions(element, {
+export function getElementDimensions(element: HTMLElement, {
     displayed = true,
     actual = true,
     ensureElementSizeIncludesSizeOfChildren = true,
-} = {}) {
+}: GetElementDimensionsOptions = {}): AllElementDimensions | ElementDimensions {
     const cssStyles = getComputedStyle(element);
     const origDisplay = element.style.display;
     const actualDisplay = cssStyles.display;
@@ -264,9 +363,14 @@ export function getElementDimensions(element, {
 
     /*
      * "Real" dimensions of the element if supported (e.g. native dimensions of an image).
+     *
+     * `natural(Width|Height)` only exist on a few element types (e.g. `<img/>`), not on `HTMLElement`
+     * as a whole, so read them off an optional-property view of the element.
      */
-    const intrinsicWidth = element.naturalWidth;
-    const intrinsicHeight = element.naturalHeight;
+    const {
+        naturalWidth: intrinsicWidth,
+        naturalHeight: intrinsicHeight,
+    } = element as HTMLElement & Partial<HTMLImageElement>;
 
     /*
      * "Real" width/height, including all content not visible due to overflow
@@ -289,7 +393,7 @@ export function getElementDimensions(element, {
         element.style.display = origDisplay;
     }
 
-    const elementDimensions = {
+    const elementDimensions: AllElementDimensions = {
         actual: {
             x: absoluteXCoordinateOnPage,
             y: absoluteYCoordinateOnPage,
@@ -323,6 +427,13 @@ export function getElementDimensions(element, {
 }
 
 
+export interface IsElementVisibleOptions {
+    /**
+     * If the visibility check should be `false` when the element is obscured from the view by another one.
+     */
+    includeBehindOtherElements?: boolean;
+}
+
 /**
  * Determines whether or not an element is visible.
  *
@@ -335,17 +446,15 @@ export function getElementDimensions(element, {
  * Optionally, and by default, also checks if the element is hidden behind another element,
  * e.g. a modal or underneath a nav-bar.
  *
- * @param {HTMLElement} element - Element to check.
+ * @param element - Element to check.
  * @param [options]
- * @param [options.includeBehindOtherElements] - If the visibility check should be `false` when the element is obscured from the view by another one.
- * @returns {boolean}
  *
  * @see [Determining if an element is behind another]{@link https://stackoverflow.com/questions/49751396/determine-if-element-is-behind-another/49833666#49833666}
  */
-export function isElementVisible(element, {
+export function isElementVisible(element: HTMLElement, {
     includeBehindOtherElements = true,
-} = {}) {
-    function isElementVisibleByStyles(element) {
+}: IsElementVisibleOptions = {}): boolean {
+    function isElementVisibleByStyles(element: HTMLElement) {
         const styles = window.getComputedStyle(element);
 
         return (
@@ -355,7 +464,7 @@ export function isElementVisible(element, {
         );
     }
 
-    function isBehindOtherElement(element) {
+    function isBehindOtherElement(element: HTMLElement) {
         // We can use `getBoundingClientRect()` directly since `elementFromPoint()`
         // returns null if not in the viewport
         const boundingRect = element.getBoundingClientRect();
@@ -365,17 +474,20 @@ export function isElementVisible(element, {
          * Otherwise, it's possible the element is hidden but its
          * border aligns with the element covering it, resulting in
          * a false positive.
+         *
+         * Note: `DOMRect`'s `left`/`right`/`top`/`bottom` are read-only getters, so the
+         * shrunken values are held in local variables rather than mutating the rect in place.
          */
-        boundingRect.left++;
-        boundingRect.right--;
-        boundingRect.top++;
-        boundingRect.bottom--;
+        const left = boundingRect.left + 1;
+        const right = boundingRect.right - 1;
+        const top = boundingRect.top + 1;
+        const bottom = boundingRect.bottom - 1;
 
         return (
-            document.elementFromPoint(boundingRect.left, boundingRect.top) !== element
-            && document.elementFromPoint(boundingRect.right, boundingRect.top) !== element
-            && document.elementFromPoint(boundingRect.left, boundingRect.bottom) !== element
-            && document.elementFromPoint(boundingRect.right, boundingRect.bottom) !== element
+            document.elementFromPoint(left, top) !== element
+            && document.elementFromPoint(right, top) !== element
+            && document.elementFromPoint(left, bottom) !== element
+            && document.elementFromPoint(right, bottom) !== element
         );
     }
 
@@ -391,7 +503,7 @@ export function isElementVisible(element, {
 /**
  * Resets the window scroll location to the top of the screen
  */
-export function scrollWindowToTop() {
+export function scrollWindowToTop(): void {
     // scrollTo() is supported on all browsers
     self.scrollTo(0, 0);
 }
@@ -407,24 +519,45 @@ export function scrollWindowToTop() {
  *
  * @param allowScrolling
  */
-export function setDocumentScrolling(allowScrolling = true) {
+export function setDocumentScrolling(allowScrolling = true): void {
     document.body.style.overflow = allowScrolling ? 'auto' : 'hidden';
 }
 
 
 /**
+ * `Navigator` including the non-standard, IE/Edge-only blob-saving API, which is
+ * absent from the standard DOM typedefs.
+ *
+ * @see [`msSaveOrOpenBlob` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Navigator/msSaveOrOpenBlob}
+ */
+interface NavigatorWithMsSaveOrOpenBlob extends Navigator {
+    msSaveOrOpenBlob?: (blob: Blob | string, defaultName?: string) => boolean;
+}
+
+export interface DownloadDataAsFileOptions {
+    /**
+     * Filename for the download.
+     */
+    fileName?: string;
+    /**
+     * MIME type of the download content.
+     */
+    mimeType?: string;
+}
+
+/**
  * Downloads the specified data with the desired filename and MIME type.
  *
- * @param {(string | Blob)} data - Data to download.
- * @param {string} [fileName] - Filename for the download.
- * @param {string} [mimeType] - MIME type of the download content.
+ * @param data - Data to download.
+ * @param [options]
  */
-export function downloadDataAsFile(data, {
+export function downloadDataAsFile(data: string | Blob, {
     fileName = 'download',
-    mimeType = getMimeTypeFromDataUrl(data) || MimeTypes.TEXT,
-} = {}) {
-    let downloadData = data;
-    const isBase64Data = data?.match?.(/^data(:[^;]*);base64/i);
+    // Returns null for non-string data (e.g. a `Blob`), in which case the default MIME type is used
+    mimeType = getMimeTypeFromDataUrl(data as string) || MimeTypes.TEXT,
+}: DownloadDataAsFileOptions = {}): void {
+    let downloadData = data as string;
+    const isBase64Data = (data as string)?.match?.(/^data(:[^;]*);base64/i);
 
     if (!isBase64Data) {
         const dataBlob = new Blob([ data ], { type: mimeType });
@@ -434,10 +567,12 @@ export function downloadDataAsFile(data, {
     }
 
     // IE & Edge
-    if (self.navigator && navigator.msSaveOrOpenBlob) {
+    const navigatorWithMsSaveOrOpenBlob = navigator as NavigatorWithMsSaveOrOpenBlob;
+
+    if (self.navigator && navigatorWithMsSaveOrOpenBlob.msSaveOrOpenBlob) {
         // Download prompt allows for saving or opening the file
         // navigator.msSaveBlob(dataBlob, fileName) only downloads it
-        navigator.msSaveOrOpenBlob(downloadData, fileName);
+        navigatorWithMsSaveOrOpenBlob.msSaveOrOpenBlob(downloadData, fileName);
 
         return;
     }

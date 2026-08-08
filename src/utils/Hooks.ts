@@ -17,6 +17,10 @@ import { getQueryParams, modifyQueryParams } from '@/utils/BrowserNavigation';
 import { objEquals } from '@/utils/Objects';
 
 import type {
+    ClickPath,
+    ElementProps,
+} from '@/utils/Events';
+import type {
     Indexable,
     JsonPrimitive,
     Nullable,
@@ -537,11 +541,6 @@ export function useKeyboardEvent(type: 'down' | 'up' | 'press' = 'down') {
 
 
 /**
- * Path from a clicked element to the root, including `document` and `window`/`self`.
- */
-export type ClickPath = Array<HTMLElement | Document | Window>;
-
-/**
  * State held by {@link useClickPath}: either the raw click event or a click path
  * (the latter allowing the returned setter to reset the path directly, e.g. `setClickPath([])`).
  */
@@ -559,20 +558,6 @@ export function useClickPath(): [ ClickPath, Dispatch<SetStateAction<ClickPathEv
     return [ clickPath, setEvent ]; // setEvent will be used as setClickPath
 }
 
-
-/**
- * HTML element properties object used in searching for an element.
- */
-export interface ElementProps {
-    /**
-     * Attribute of HTML element to compare the value to.
-     */
-    attribute: string;
-    /**
-     * Value of the desired HTML element to search for.
-     */
-    value: string;
-}
 
 /**
  * A root-close hook that triggers closing an element based on if the user clicks outside the bounds

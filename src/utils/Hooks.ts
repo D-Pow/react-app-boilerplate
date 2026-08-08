@@ -4,49 +4,85 @@ import {
     useCallback,
     useReducer,
     useRef,
+    useMemo,
+    useSyncExternalStore,
+    type Dispatch,
+    type SetStateAction,
+    type RefObject,
+    type ReactNode,
 } from 'react';
 
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/utils/Events';
 import { getQueryParams, modifyQueryParams } from '@/utils/BrowserNavigation';
 import { objEquals } from '@/utils/Objects';
 
+import type {
+    Indexable,
+    JsonPrimitive,
+    Nullable,
+    Optional,
+} from '@/types';
 
-/**
- * @typedef {import('@/types').JsonPrimitive} JsonPrimitive
- */
+
 /**
  * The type of a hook's setState(value) function's {@code value} parameter.
  * Can either be the new state value or a function that takes in the previous
  * state's value and returns the new state value.
- *
- * @typedef {(JsonPrimitive | function(prevState:JsonPrimitive): JsonPrimitive)} HookSetStateParam
  */
+export type HookSetStateParam<T> = T | ((prevState: T) => T);
+
 /**
  * A hook's setState() function, which receives a {@link HookSetStateParam} that
  * is either the new state value or a function that returns the new state value.
- *
- * @typedef {function(value: HookSetStateParam): void} HookSetStateFunction
  */
+export type HookSetStateFunction<T> = (value: HookSetStateParam<T>) => void;
 
 /**
- * @callback hookedChildRenderer
- * @param {(*|Array<*>)} hookReturnVal - Value returned from useMyHook()
- * @returns {React.Component} - Children to render using hookReturnVal
+ * Function that uses the value returned from `useMyHook()` to render children.
  */
+export type HookedChildRenderer<HookReturn> = (hookReturnVal: HookReturn) => ReactNode;
 
+
+export interface HookedProps<HookArgs, HookReturn> {
+    /**
+     * Hook to use within class component.
+     */
+    hook: (hookArgs: HookArgs) => HookReturn;
+    /**
+     * Arguments forwarded to `hook()`.
+     */
+    hookArgs: HookArgs;
+    /**
+     * Function that uses value from `hook()` to render children; passed as React.Component.props.
+     */
+    children: HookedChildRenderer<HookReturn>;
+}
 
 /**
  * Component used when class components want to use hooks.
  *
- * @param {Object} props - Props for returned React.Component
- * @param {function} props.hook - Hook to use within class component
- * @param {hookedChildRenderer} props.children - Function that uses value from hook() to render children; passed as React.Component.props
- * @returns {React.Component} - Children rendered using the hook() return values
+ * @param props - Props for returned React.Component
+ * @returns Children rendered using the hook() return values
  */
-export function Hooked({ hook, hookArgs, children }) {
+export function Hooked<HookArgs, HookReturn>({ hook, hookArgs, children }: HookedProps<HookArgs, HookReturn>) {
     return children(hook(hookArgs));
 }
 
+
+export interface UsePreviousOptions {
+    /**
+     * Max number of times the variable's value will be updated.
+     */
+    maxRefreshes?: number;
+    /**
+     * If the returned previous value should equal the initial value on first call.
+     */
+    initializeWithFirstValue?: boolean;
+    /**
+     * If refreshes should be counted when the previous/current values are equal.
+     */
+    identicalValuesCountAsRefreshes?: boolean;
+}
 
 /**
  * Tracks the previous value of a variable before it was last updated.
@@ -59,19 +95,16 @@ export function Hooked({ hook, hookArgs, children }) {
  * * If using `identicalValuesCountAsRefreshes: true`, it is highly recommended to also use `initializeWithFirstValue: true`
  *   to avoid "wasting" refreshes on initial component load (e.g. when other `useEffect` calls are present).
  *
- * @param {any} value - Value to track.
- * @param {Object} [options]
- * @param {number} [maxRefreshes=Infinity] - Max number of times the variable's value will be updated.
- * @param {boolean} [initializeWithFirstValue=false] - If the returned previous value should equal the initial value on first call.
- * @param {boolean} [identicalValuesCountAsRefreshes=false] - If refreshes should be counted when the previous/current values are equal.
- * @returns {(any|undefined)} Previous value of the variable.
+ * @param value - Value to track.
+ * @param [options]
+ * @returns Previous value of the variable.
  */
-export function usePrevious(value, {
+export function usePrevious<T>(value: T, {
     maxRefreshes = Infinity,
     initializeWithFirstValue = false,
     identicalValuesCountAsRefreshes = false,
-} = {}) {
-    const ref = useRef({
+}: UsePreviousOptions = {}): Optional<T> {
+    const ref = useRef<{ value: Optional<T>; numRefreshes: number }>({
         // Tracks previous values
         value: initializeWithFirstValue ? value : undefined,
         // Tracks how many times the previous value was refreshed (the first value counts as the first refresh)
@@ -115,20 +148,24 @@ export function usePrevious(value, {
  *
  * `initialValue` and `initialValueInit()` must still be synchronous.
  *
- * @param {function} reducer - Async reducer for `useReducer(reducer)`.
- * @param {any} [initialValue] - Initial value for `useReducer(reducer, initialValue)`.
- * @param {function} [initialValueInit] - Initial value generator function for `useReducer(reducer, initialValue, initialValueInit)`.
- * @returns {[ any, function(any): Promise<any> ]} - The `state` value/`dispatch()` function for `useReducer()`.
+ * @param reducer - Async reducer for `useReducer(reducer)`.
+ * @param [initialValue] - Initial value for `useReducer(reducer, initialValue)`.
+ * @param [initialValueInit] - Initial value generator function for `useReducer(reducer, initialValue, initialValueInit)`.
+ * @returns The `state` value/`dispatch()` function for `useReducer()`.
  *
  * @see [Related StackOverflow answer]{@link https://stackoverflow.com/questions/53146795/react-usereducer-async-data-fetch/62554888#62554888}
  */
-export function useReducerAsync(reducer, initialValue, initialValueInit) {
-    const [ state, setState ] = useState(() =>
+export function useReducerAsync<State, Action>(
+    reducer: (state: State, action: Action) => State | Promise<State>,
+    initialValue?: State,
+    initialValueInit?: (initialValue?: State) => State,
+): [ State, (action: Action) => Promise<State> ] {
+    const [ state, setState ] = useState<State>(() =>
         initialValueInit
             ? initialValueInit(initialValue)
-            : initialValue,
+            : initialValue as State,
     );
-    const dispatch = useCallback(async (action) => {
+    const dispatch = useCallback(async (action: Action) => {
         const newState = await reducer(state, action);
 
         setState(newState);
@@ -141,33 +178,39 @@ export function useReducerAsync(reducer, initialValue, initialValueInit) {
 
 
 /**
- * @callback hookModifiedForGlobalState
- * @param {*} origHookParams - Parameters for the original hook, passed by calling component.
- * @param {*} globalHookState - The global state for all hook instances.
- * @param {number} hookCallerId - Unique ID of the parent that is calling the hook.
- * @returns {*} - Value returned from original hook.
+ * The hook passed to {@link withGlobalState}, modified to also receive the global
+ * state shared between all hook instances as well as the unique ID of the calling parent.
  */
-/**
- * @callback setGlobalStateForWrappedHook
- * @param {*} globalHookState - The global state for all hook instances.
- * @param {function} setGlobalHookState - Standard {@link useState} {@code setState} function.
- * @param {*} hookReturnVal - Return value of passed {@code hook}.
- * @param {number} hookCallerId - Unique ID of the parent that is calling the hook.
- * @returns {undefined}
- */
+export type HookModifiedForGlobalState<HookArgs extends unknown[], GlobalState, HookReturn> = (
+    ...args: [ ...origHookParams: HookArgs, globalHookState: GlobalState, hookCallerId: number ]
+) => HookReturn;
 
+/**
+ * {@code setState} function for the global state shared between all instances of a
+ * hook wrapped by {@link withGlobalState}.
+ */
+export type SetGlobalStateForWrappedHook<GlobalState, HookReturn> = (
+    globalHookState: GlobalState,
+    setGlobalHookState: HookSetStateFunction<GlobalState>,
+    hookReturnVal: HookReturn,
+    hookCallerId: number,
+) => void;
 
 /**
  * Wraps a hook such that all hook instances can access a single global
  * state. Returns the original hook that accepts caller arguments
  * as well as global state arguments.
  *
- * @param {hookModifiedForGlobalState} hook - The hook to wrap.
- * @param {setGlobalStateForWrappedHook} setGlobalState - {@code setState} function for global state.
- * @param {*} initialGlobalStateVal - Initial value for global state.
- * @returns {function} - The original hook wrapped with global state functionality.
+ * @param hook - The hook to wrap.
+ * @param setGlobalState - {@code setState} function for global state.
+ * @param initialGlobalStateVal - Initial value for global state.
+ * @returns The original hook wrapped with global state functionality.
  */
-export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
+export function withGlobalState<HookArgs extends unknown[], GlobalState, HookReturn>(
+    hook: HookModifiedForGlobalState<HookArgs, GlobalState, HookReturn>,
+    setGlobalState: SetGlobalStateForWrappedHook<GlobalState, HookReturn>,
+    initialGlobalStateVal: GlobalState,
+): (...hookArgs: HookArgs) => HookReturn {
     /*
      * Mimic `useState` since this isn't a hook.
      * This will still cause React to re-render if `globalHookState` changes because the
@@ -175,15 +218,15 @@ export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
      */
     let globalHookState = initialGlobalStateVal;
 
-    function setGlobalHookState(newState) {
+    function setGlobalHookState(newState: HookSetStateParam<GlobalState>) {
         if (typeof newState === typeof withGlobalState) {
-            globalHookState = newState(globalHookState);
+            globalHookState = (newState as (prevState: GlobalState) => GlobalState)(globalHookState);
         } else {
-            globalHookState = newState;
+            globalHookState = newState as GlobalState;
         }
     }
 
-    return (...hookArgs) => {
+    return (...hookArgs: HookArgs) => {
         // Assign a unique ID to each hook caller in the event
         // that the wrapped hook needs to know which caller it is
         const [ hookCallerId ] = useState(Math.random());
@@ -201,32 +244,43 @@ export function withGlobalState(hook, setGlobalState, initialGlobalStateVal) {
 }
 
 
+export interface UseStorageOptions {
+    /**
+     * Initial value to use if storage lacks the passed key.
+     */
+    initialValue?: JsonPrimitive;
+    /**
+     * Type of window storage to use.
+     */
+    type?: 'local' | 'session';
+}
+
 /**
  * Reads and updates window's localStorage and sessionStorage while allowing
  * React components to re-render based on changes to the value of the stored
  * key.
  *
- * @param {String} key - Key used in storage.
- * @param {Object} [options] - Options for storage handling.
- * @param {(String|Number|Object|Array|boolean|null)} [options.initialValue=null] - Initial value to use if storage lacks the passed key.
- * @param {String} [options.type="local"] - Type of window storage to use ('local' or 'session').
- * @returns {[ JsonPrimitive, HookSetStateFunction ]} - Parsed state value and setState function.
+ * @param key - Key used in storage.
+ * @param [options] - Options for storage handling.
+ * @returns Parsed state value and setState function.
  */
-export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
+export function useStorage(key: string, {
+    initialValue = null,
+    type = 'local',
+}: UseStorageOptions = {}): [ JsonPrimitive, HookSetStateFunction<JsonPrimitive> ] {
     const storage = self[`${type}Storage`];
-    const functionType = typeof (() => {});
 
-    const [ storedState, setStoredState ] = useState(() => {
+    const [ storedState, setStoredState ] = useState<JsonPrimitive>(() => {
         // use stored value in storage before using initial value
         const initialStoredState = storage.getItem(key);
         return initialStoredState ? JSON.parse(initialStoredState) : initialValue;
     });
 
-    const setState = value => {
-        let valueToStore = value;
+    const setState: HookSetStateFunction<JsonPrimitive> = value => {
+        let valueToStore = value as JsonPrimitive;
 
         try {
-            if (typeof value === functionType) {
+            if (typeof value === 'function') {
                 // normal setState functionality if function is passed
                 valueToStore = value(storedState);
             }
@@ -243,22 +297,105 @@ export function useStorage(key, { initialValue = null, type = 'local' } = {}) {
 }
 
 
+export interface SetQueryParamOptions {
+    /**
+     * Use replaceState instead of pushState so the change
+     * does not create a new history entry.
+     */
+    replace?: boolean;
+}
+
+export type SetQueryParamFunc = (
+    key: string,
+    value?: string | string[] | null,
+    options?: SetQueryParamOptions,
+) => void;
+
+/**
+ * Listen to both navigation (for URL changes) and our own event (for
+ * mutations caused by our own state changes). Only listening to navigation
+ * isn't sufficient because the event fires before the URL change,
+ * so `window.location` is the previous URL.
+ */
+const QUERY_CHANGE_EVENT = 'querychange';
+
+/**
+ * Reads and writes URL query params, staying in sync with browser
+ * back / forward navigation.
+ *
+ * @returns `params`      The current {@link URLSearchParams} (read-only snapshot).
+ * @returns `setParam`    Sets a param. An array appends one entry per value
+ *                        (`?tag=a&tag=b`, read back with `params.getAll`);
+ *                        a falsy or empty value removes the param; pass
+ *                        `{ replace: true }` to avoid pushing a history entry.
+ *                        Deletes a param if `value` is unspecified.
+ */
+export function useQueryParams(): {
+    params: URLSearchParams;
+    setParam: SetQueryParamFunc;
+    } {
+    const subscribe = useCallback((cb: () => void) => {
+        window.addEventListener('popstate', cb);
+        window.addEventListener(QUERY_CHANGE_EVENT, cb);
+
+        return () => {
+            window.removeEventListener('popstate', cb);
+            window.removeEventListener(QUERY_CHANGE_EVENT, cb);
+        };
+    }, []);
+
+    const search = useSyncExternalStore(
+        subscribe,
+        () => window.location.search,
+        () => '',
+    );
+
+    const params = useMemo(() => new URLSearchParams(search), [ search ]);
+
+    const setParam = useCallback(
+        (
+            key: string,
+            value?: string | string[] | null,
+            options?: SetQueryParamOptions,
+        ) => {
+            const url = new URL(window.location.href);
+            const values = Array.isArray(value) ? value : [ value ];
+
+            url.searchParams.delete(key);
+
+            for (const entry of values) {
+                if (entry) {
+                    url.searchParams.append(key, entry);
+                }
+            }
+
+            window.history[options?.replace ? 'replaceState' : 'pushState'](
+                null,
+                '',
+                url,
+            );
+            window.dispatchEvent(new Event(QUERY_CHANGE_EVENT));
+        },
+        [],
+    );
+
+    return { params, setParam };
+}
+
 /**
  * Hook to read URL query parameters and update a specific key-value pair.
  *
- * @returns {[ Object, function(key:(string|Object), val:string): void ]} -
- *          Query param key-value map, and respective setState(key, value) function.
+ * @returns Query param key-value map, and respective setState(key, value) function.
  */
-export function useQueryParams() {
-    const functionType = typeof (() => {});
-    const [ queryParamsObj, setQueryParamsObj ] = useState(() => getQueryParams());
+export function useQueryParamsObj(): [ Indexable, (key: string | Indexable, value?: unknown) => void ] {
+    const [ queryParamsObj, setQueryParamsObj ] = useState<Indexable>(() => getQueryParams());
 
-    const setQueryParam = (key, value) => {
+    const setQueryParam = (key: string | Indexable, value?: unknown) => {
         let valueToStore = value;
 
-        if (typeof value === functionType) {
+        if (typeof value === 'function') {
             // normal setState functionality if function is passed
-            valueToStore = value(queryParamsObj[key]);
+            valueToStore = value(queryParamsObj[key as string]);
         }
 
         const newQueryParamsObj = modifyQueryParams(key, valueToStore, {
@@ -282,56 +419,87 @@ export function useQueryParams() {
 
 
 /**
- * Custom state handler function for useWindowEvent()
+ * Custom state handler function for {@link useWindowEvent}.
  *
- * @callback handleWindowEvent
- * @param {*} prevState - Previous state
- * @param {function} setState - setState() React function
- * @param {*} newEvent - New event from window
+ * @param prevState - Previous state
+ * @param setState - setState() React function
+ * @param newEvent - New event from window
  */
+export type HandleWindowEvent<EventState, NewEvent> = (
+    prevState: EventState,
+    setState: Dispatch<SetStateAction<EventState>>,
+    newEvent: NewEvent,
+) => void;
+
+export interface UseWindowEventOptions<EventState, NewEvent> {
+    /**
+     * Nested event field to use as state instead of the event itself.
+     */
+    nestedEventField?: Nullable<string, true>;
+    /**
+     * Initial state to use in event listener.
+     */
+    initialEventState?: EventState;
+    /**
+     * Custom event handler to use instead of standard setEventState.
+     */
+    handleEvent?: Nullable<HandleWindowEvent<EventState, NewEvent>, true>;
+    /**
+     * useEffect optimization inputs: `useEffect(func, useEffectInputs)`.
+     */
+    useEffectInputs?: unknown[];
+    /**
+     * Options for `self.addEventListener()`.
+     */
+    addEventListenerOptions?: Parameters<typeof self.addEventListener>[2];
+}
+
 /**
  * Adds an event listener to the window and returns the associated eventState/setEventState fields.
  * Optional configurations include using a nested event field for state, setting the initial state,
  * and using a custom event handler instead of the standard setEventState(newEventState).
  *
- * @param {string} eventType - Type of event, passed to `window.addEventListener(eventType, ...)`
- * @param {string} [nestedEventField=null] - Nested event field to use as state instead of the event itself
- * @param {*} [initialEventState=null] - Initial state to use in event listener
- * @param {handleWindowEvent} [handleEvent=null] - Custom event handler to use instead of standard setEventState
- * @param {Array<*>} [useEffectInputs=[]] - useEffect optimization inputs: `useEffect(func, useEffectInputs)`
- * @param {Parameters<addEventListener>[2]} [addEventListenerOptions] - Options for `self.addEventListener()`.
- * @returns {[ *, function ]} - event state and respective setState function
+ * @param eventType - Type of event, passed to `window.addEventListener(eventType, ...)`
+ * @param [options]
+ * @returns event state and respective setState function
  */
-export function useWindowEvent(
-    eventType,
+export function useWindowEvent<EventState = Nullable<Event, true>, NewEvent = Event>(
+    eventType: string,
     {
         nestedEventField = null,
-        initialEventState = null,
+        initialEventState = null as EventState,
         handleEvent = null,
         useEffectInputs = [],
         addEventListenerOptions,
-    } = {},
-) {
-    const [ eventState, setEventState ] = useState(initialEventState);
+    }: UseWindowEventOptions<EventState, NewEvent> = {},
+): [ EventState, Dispatch<SetStateAction<EventState>> ] {
+    const [ eventState, setEventState ] = useState<EventState>(initialEventState);
 
     const prevEventListenerOptionsRef = useRef(addEventListenerOptions);
-    const prevEventListenerOptions = prevEventListenerOptionsRef.current;
-    const eventListenerOptionsChanged = Object.keys({ ...prevEventListenerOptions, ...addEventListenerOptions })
+    // `addEventListener()` options may be a boolean, so cast to an indexable type for key-diffing.
+    // Spreading a boolean is a no-op at runtime (`{ ...true }` === `{}`), matching the original behavior.
+    const prevEventListenerOptions = prevEventListenerOptionsRef.current as Optional<Indexable>;
+    const nextEventListenerOptions = addEventListenerOptions as Optional<Indexable>;
+    const eventListenerOptionsChanged = Object.keys({ ...prevEventListenerOptions, ...nextEventListenerOptions })
         .reduce((didChange, key) => (
             didChange
-            || (prevEventListenerOptions?.[key] !== addEventListenerOptions?.[key])
+            || (prevEventListenerOptions?.[key] !== nextEventListenerOptions?.[key])
         ), false);
 
-    const isUsingOwnEventHandler = typeof handleEvent === typeof (() => {});
+    const isUsingOwnEventHandler = typeof handleEvent === 'function';
 
     useEffect(() => {
-        function eventListener(event) {
-            const newEventState = nestedEventField ? event[nestedEventField] : event;
+        function eventListener(event: Event) {
+            const newEventState = (
+                nestedEventField
+                    ? (event as unknown as Indexable)[nestedEventField]
+                    : event
+            ) as NewEvent;
 
             if (isUsingOwnEventHandler) {
-                handleEvent(eventState, setEventState, newEventState);
+                handleEvent?.(eventState, setEventState, newEventState);
             } else {
-                setEventState(newEventState);
+                setEventState(newEventState as unknown as EventState);
             }
         }
 
@@ -358,38 +526,63 @@ export function useWindowEvent(
  * Defaults to the `keydown` event since it works for keys that don't produce output (e.g. `Enter`, `Escape`, etc.)
  * and because `keypress` has been [deprecated]{@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keypress_event}.
  *
- * @param {string} type - Type of key event (e.g. `down`, `up`, or `press`).
- * @returns {[ string, function ]} - The string representing the key interacted with and its respective `setKeyState()` function.
+ * @param type - Type of key event (e.g. `down`, `up`, or `press`).
+ * @returns The string representing the key interacted with and its respective `setKeyState()` function.
  * @see [`keydown` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keydown_event}
  * @see [`KeyboardEvent.key` MDN docs]{@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key}
  */
-export function useKeyboardEvent(type = 'down') {
-    return useWindowEvent(`key${type}`, { nestedEventField: 'key' });
+export function useKeyboardEvent(type: 'down' | 'up' | 'press' = 'down') {
+    return useWindowEvent<Nullable<string, true>, KeyboardEvent['key']>(`key${type}`, { nestedEventField: 'key' });
 }
 
 
 /**
+ * Path from a clicked element to the root, including `document` and `window`/`self`.
+ */
+export type ClickPath = Array<HTMLElement | Document | Window>;
+
+/**
+ * State held by {@link useClickPath}: either the raw click event or a click path
+ * (the latter allowing the returned setter to reset the path directly, e.g. `setClickPath([])`).
+ */
+export type ClickPathEventState = Nullable<MouseEvent | ClickPath, true>;
+
+/**
  * Get a hook state array containing the path from the clicked element to the root.
  *
- * @returns {[ [HTMLElement] | function ]} - The click path and setter function for said path
+ * @returns The click path and setter function for said path
  */
-export function useClickPath() {
-    const [ event, setEvent ] = useWindowEvent('click');
-    const clickPath = getClickPath(event);
+export function useClickPath(): [ ClickPath, Dispatch<SetStateAction<ClickPathEventState>> ] {
+    const [ event, setEvent ] = useWindowEvent<ClickPathEventState, MouseEvent>('click');
+    const clickPath: ClickPath = getClickPath(event);
 
     return [ clickPath, setEvent ]; // setEvent will be used as setClickPath
 }
 
 
 /**
+ * HTML element properties object used in searching for an element.
+ */
+export interface ElementProps {
+    /**
+     * Attribute of HTML element to compare the value to.
+     */
+    attribute: string;
+    /**
+     * Value of the desired HTML element to search for.
+     */
+    value: string;
+}
+
+/**
  * A root-close hook that triggers closing an element based on if the user clicks outside the bounds
  * of the acceptable element or if they press the "Escape" key
  *
- * @param {ElementProps} acceptableElement - Element that marks the bounds of what is acceptable to click on
- * @param {ElementProps} closeElement - Element that marks the bounds of what should trigger the root close
- * @returns {[boolean, function]} - If the user triggered the root close and the function to reset the trigger
+ * @param acceptableElement - Element that marks the bounds of what is acceptable to click on
+ * @param closeElement - Element that marks the bounds of what should trigger the root close
+ * @returns If the user triggered the root close and the function to reset the trigger
  */
-export function useRootClose(acceptableElement, closeElement) {
+export function useRootClose(acceptableElement: ElementProps, closeElement: ElementProps): [ boolean, () => void ] {
     const [ keyDown, setKeyDown ] = useKeyboardEvent();
     const [ clickPath, setClickPath ] = useClickPath();
 
@@ -407,6 +600,20 @@ export function useRootClose(acceptableElement, closeElement) {
 }
 
 
+export interface WindowSizeState {
+    wasResized: boolean;
+    width: number;
+    height: number;
+    widthIgnoringScrollbar: number;
+    heightIgnoringScrollbar: number;
+}
+
+export interface UseWindowResizeReturn {
+    windowSizeState: WindowSizeState;
+    setWindowSizeState: Dispatch<SetStateAction<WindowSizeState>>;
+    resetWasResized: () => void;
+}
+
 /**
  * Hook to get the size of the window after the user has resized it.
  *
@@ -417,21 +624,9 @@ export function useRootClose(acceptableElement, closeElement) {
  *
  * Call `resetWasSized()` to set `windowSizeState.wasResized` to false for logic that
  * needs to check if the window was resized since the component was last rendered.
- *
- * @returns {{
- *      windowSizeState: {
- *          wasResized: boolean;
- *          width: number;
- *          height: number;
- *          widthIgnoringScrollbar: number;
- *          heightIgnoringScrollbar: number;
- *      };
- *      setWindowSizeState: HookSetStateFunction;
- *      resetWasResized: function(): void;
- * }}
  */
-export function useWindowResize() {
-    const initialState = {
+export function useWindowResize(): UseWindowResizeReturn {
+    const initialState: WindowSizeState = {
         wasResized: false,
         width: self.innerWidth,
         height: self.innerHeight,
@@ -446,7 +641,7 @@ export function useWindowResize() {
         heightIgnoringScrollbar: document.documentElement.clientHeight,
     };
 
-    function handleResize(prevState, setState) {
+    const handleResize: HandleWindowEvent<WindowSizeState, UIEvent> = (prevState, setState) => {
         setState({
             wasResized: true,
             width: self.innerWidth,
@@ -454,9 +649,9 @@ export function useWindowResize() {
             widthIgnoringScrollbar: document.documentElement.clientWidth,
             heightIgnoringScrollbar: document.documentElement.clientHeight,
         });
-    }
+    };
 
-    const [ windowSizeState, setWindowSizeState ] = useWindowEvent('resize', {
+    const [ windowSizeState, setWindowSizeState ] = useWindowEvent<WindowSizeState, UIEvent>('resize', {
         initialEventState: initialState,
         handleEvent: handleResize,
         addEventListenerOptions: {
@@ -488,13 +683,21 @@ export function useWindowResize() {
  * calculations will need to be done on the SVG element to convert it from the SVG's
  * viewport to the window's.
  *
- * @param {Object} [overrideBoundingClientRect=null] - Optional `getBoundingClientRect()` result to use instead of the returned ref
- * @returns {[React.ref, boolean]} - The ref to attach to the element watching for a hover and the respective `isHovered` value
+ * @param [overrideBoundingClientRect] - Optional `getBoundingClientRect()` result to use instead of the returned ref
+ * @returns The ref to attach to the element watching for a hover and the respective `isHovered` value
  */
-export function useHover(overrideBoundingClientRect) {
-    const ref = useRef(overrideBoundingClientRect);
+export function useHover<E extends Element = HTMLElement>(
+    overrideBoundingClientRect?: Nullable<DOMRect, true>,
+): [ RefObject<E>, boolean ] {
+    // Populated by React once the returned ref is attached to an element.
+    // `overrideBoundingClientRect` takes precedence over the ref's rect when both are present.
+    const ref = useRef<E>(null);
 
-    function handleMouseMove(prevIsHovered, setIsHovered, newEvent) {
+    function handleMouseMove(
+        prevIsHovered: boolean,
+        setIsHovered: Dispatch<SetStateAction<boolean>>,
+        newEvent: MouseEvent,
+    ) {
         const { pageX, pageY } = newEvent;
 
         if (ref.current) {
@@ -514,7 +717,7 @@ export function useHover(overrideBoundingClientRect) {
         }
     }
 
-    const [ isHovered ] = useWindowEvent('mousemove', {
+    const [ isHovered ] = useWindowEvent<boolean, MouseEvent>('mousemove', {
         initialEventState: false,
         handleEvent: handleMouseMove,
         useEffectInputs: [ ref.current ],
@@ -525,6 +728,19 @@ export function useHover(overrideBoundingClientRect) {
 
 
 /**
+ * Entry tracking whether a single {@link useBlockDocumentScrolling} instance is blocking scrolling.
+ */
+export interface BlockDocumentScrollingEntry {
+    id: number;
+    isBlockingScrolling: boolean;
+}
+
+/**
+ * Determines if scrolling should be disabled for a single {@link useBlockDocumentScrolling} instance.
+ */
+export type ShouldBlockScrolling = () => boolean;
+
+/**
  * Blocks the `document.body` from being scrollable as long as the
  * `shouldBlockScrolling` function returns true.
  *
@@ -532,11 +748,14 @@ export function useHover(overrideBoundingClientRect) {
  * that even if one instance returns false, the `document.body` is still not
  * scrollable if another returns true.
  *
- * @function
- * @param {function(): boolean} shouldBlockScrolling - Function to determine if scrolling should be disabled.
+ * @param shouldBlockScrolling - Function to determine if scrolling should be disabled.
  */
 export const useBlockDocumentScrolling = (function useBlockDocumentScrollingFactory() {
-    function useBlockDocumentScrollingHook(shouldBlockScrolling, allHooksBlockingScrollingGlobalState, id) {
+    function useBlockDocumentScrollingHook(
+        shouldBlockScrolling: ShouldBlockScrolling,
+        allHooksBlockingScrollingGlobalState: BlockDocumentScrollingEntry[],
+        id: number,
+    ) {
         /**
          * Don't return a cleanup function to handle activating scrolling.
          *
@@ -565,7 +784,12 @@ export const useBlockDocumentScrolling = (function useBlockDocumentScrollingFact
         return blockScrolling;
     }
 
-    function setTrackAllHookCallsState(prevGlobalState, setGlobalState, hookReturnVal, id) {
+    function setTrackAllHookCallsState(
+        prevGlobalState: BlockDocumentScrollingEntry[],
+        setGlobalState: HookSetStateFunction<BlockDocumentScrollingEntry[]>,
+        hookReturnVal: boolean,
+        id: number,
+    ) {
         prevGlobalState = [ ...prevGlobalState ];
         const thisHookEntry = prevGlobalState.find(entries => entries.id === id);
 
@@ -578,7 +802,7 @@ export const useBlockDocumentScrolling = (function useBlockDocumentScrollingFact
         }
     }
 
-    return withGlobalState(
+    return withGlobalState<[ shouldBlockScrolling: ShouldBlockScrolling ], BlockDocumentScrollingEntry[], boolean>(
         useBlockDocumentScrollingHook,
         setTrackAllHookCallsState,
         [],
@@ -591,19 +815,23 @@ export const useBlockDocumentScrolling = (function useBlockDocumentScrollingFact
  * according to the specified `intervalTimeMs`.
  * Optionally allows toggling back from true -> false
  *
- * @param {number} arrayLength - How many entries should be in the toggle array
- * @param {number} intervalTimeMs - How much time should pass before toggling the next entry
- * @param {boolean} [allowBackwardsToggle=false] - Allow array toggle to be able to trigger in both directions, false <-> true
- * @returns {[ boolean[], Function ]} - An array of booleans to toggle and a function to initiate array toggling
+ * @param arrayLength - How many entries should be in the toggle array
+ * @param intervalTimeMs - How much time should pass before toggling the next entry
+ * @param [allowBackwardsToggle=false] - Allow array toggle to be able to trigger in both directions, false <-> true
+ * @returns An array of booleans to toggle and a function to initiate array toggling
  */
-export function useTimedArrayToggle(arrayLength, intervalTimeMs, allowBackwardsToggle = false) {
-    const toggleArrayEntryReducer = useCallback((prevArray, index) => {
+export function useTimedArrayToggle(
+    arrayLength: number,
+    intervalTimeMs: number,
+    allowBackwardsToggle = false,
+): [ boolean[], () => void ] {
+    const toggleArrayEntryReducer = useCallback((prevArray: boolean[], index: number) => {
         const toggledEntries = [ ...prevArray ];
         toggledEntries[index] = !toggledEntries[index];
         return toggledEntries;
     }, []);
 
-    const origState = Array.from({ length: arrayLength }).fill(false);
+    const origState = Array.from({ length: arrayLength }, () => false);
 
     const [ toggledEntries, dispatchToggleEntry ] = useReducer(toggleArrayEntryReducer, origState);
     const [ shouldToggleEntries, setShouldToggleEntries ] = useState(false);
@@ -641,18 +869,33 @@ export function useTimedArrayToggle(arrayLength, intervalTimeMs, allowBackwardsT
 
 
 /**
+ * 'message' event listener added to a {@link BroadcastChannel}.
+ */
+export type BroadcastChannelMessageListener = (
+    messageEvent: Parameters<NonNullable<BroadcastChannel['onmessage']>>[0],
+) => void;
+
+export interface UseServiceWorkerBroadcastChannelOptions {
+    /**
+     * Name of BroadcastChannel.
+     */
+    channelName?: string;
+}
+
+/**
  * Creates a new {@code BroadcastChannel} with the given name and attaches the
  * passed event listener to the channel's 'message' event.
  *
- * @param {(messageEvent: Parameters<NonNullable<BroadcastChannel['onmessage']>>[0]) => void} messageEventListener - 'message' event listener added to BroadcastChannel.
- * @param {string} [channelName=process.env.BROADCAST_CHANNEL] - Name of BroadcastChannel.
- * @returns {BroadcastChannel} - A new BroadcastChannel with the respective event listener and channel name.
+ * @param messageEventListener - 'message' event listener added to BroadcastChannel.
+ * @param [options]
+ * @returns A new BroadcastChannel with the respective event listener and channel name.
  */
-export function useServiceWorkerBroadcastChannel(messageEventListener, {
-    channelName = process.env.BROADCAST_CHANNEL,
-} = {}) {
+export function useServiceWorkerBroadcastChannel(messageEventListener: BroadcastChannelMessageListener, {
+    // Injected as a string literal at build time by webpack's `DefinePlugin`
+    channelName = process.env.BROADCAST_CHANNEL as string,
+}: UseServiceWorkerBroadcastChannelOptions = {}): Optional<BroadcastChannel> {
     const eventName = 'message';
-    let broadcastChannel;
+    let broadcastChannel: Optional<BroadcastChannel>;
 
     try {
         broadcastChannel = new BroadcastChannel(channelName);

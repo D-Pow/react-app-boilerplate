@@ -97,7 +97,13 @@ function Router({
     return (
         <React.Suspense {...suspenseProps}>
             <RouterWrapper {...wrapperProps}>
-                <ReactRouter {...routerProps}>
+                <ReactRouter
+                    future={{
+                        v7_relativeSplatPath: true,
+                        v7_startTransition: true,
+                    }}
+                    {...routerProps}
+                >
                     <Routes>
                         {routes.map(routeProps => (
                             <Route key={routeProps.path} {...routeProps}  />

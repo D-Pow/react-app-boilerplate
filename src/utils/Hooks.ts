@@ -367,11 +367,9 @@ export function useQueryParams(): {
 
             url.searchParams.delete(key);
 
-            for (const entry of values) {
-                if (entry) {
-                    url.searchParams.append(key, entry);
-                }
-            }
+            (values.filter(Boolean) as string[]).forEach((entry) => {
+                url.searchParams.append(key, entry);
+            });
 
             window.history[options?.replace ? 'replaceState' : 'pushState'](
                 null,
@@ -384,6 +382,63 @@ export function useQueryParams(): {
     );
 
     return { params, setParam };
+}
+
+/**
+ * Hook to listen to query param changes using new "navigate" event.
+ * Fires before the URL actually changes, so could lead to out-of-sync results
+ * if another hook listens to "navigate" but blocks navigation via `.preventDefault()`.
+ *
+ * Not yet supported in testing environments as of 2026.
+ *
+ * @see [Navigate event]{@link https://developer.mozilla.org/en-US/docs/Web/API/Navigation/navigate_event}
+ */
+export function useQueryParamsNavigation() {
+    const [ params, setParams ] = useState<URLSearchParams>(() => new URLSearchParams(self.location.search));
+
+    // NavigateEvent isn't yet added to TypeScript's lib.dom
+    const navigateListener = useCallback((event: Event & { destination: { url: string }}) => {
+        const newUrl = new URL(event.destination.url);
+
+        setParams(newUrl.searchParams);
+    }, []);
+
+    useEffect(() => {
+        // Navigation isn't yet added to TypeScript's lib.dom
+        const { navigation } = window as any;
+
+        navigation?.addEventListener('navigate', navigateListener);
+
+        return () => {
+            navigation?.removeEventListener('navigate', navigateListener);
+        };
+    }, [ navigateListener ]);
+
+    const setParam = useCallback(
+        (
+            key: string,
+            value?: string | string[] | null,
+            options?: SetQueryParamOptions,
+        ) => {
+            const url = new URL(self.location.href);
+            const values = Array.isArray(value) ? value : [ value ];
+
+            url.searchParams.delete(key);
+
+            (values.filter(Boolean) as string[]).forEach((entry) => {
+                url.searchParams.append(key, entry);
+            });
+
+            self.history[options?.replace ? 'replaceState' : 'pushState'](
+                null,
+                '',
+                url,
+            );
+        },
+        [],
+    );
+
+    return [ params, setParam ] as const;
 }
 
 /**

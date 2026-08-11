@@ -18,11 +18,13 @@
                             // to use native class properties instead of TS v3.7 constructor initialization.
         "lib": [
             "ESNext", // modern JS features
-            "DOM", // DOM features like HTMLElement, NodeList, fetch, XMLHttpRequest, etc.
-            "DOM.Iterable" // Additional entries for `[Symbol.iterator]()`, `entries()`, etc. for DOM classes/types
+            "DOM" // DOM features like HTMLElement, NodeList, fetch, XMLHttpRequest, etc. + "DOM.Iterable" (`[Symbol.iterator]()`, `entries()`, etc.)
+        ],
+        "types": [
+            "node"
         ],
         "module": "ESNext", // how resulting tsc output module(s) will be imported by those who install our library; UMD for both node & browsers
-        "moduleResolution": "Node", // use `import` instead of `require`
+        "moduleResolution": "bundler", // use `import` instead of `require`
         "strict": true, // error if there's a type mismatch or dangerous code (e.g. assuming `this` in `function` instead of in `() => {}`).
         "jsx": "react-jsx", // how to handle JSX tags: "react" => `createElement()`,  "react-jsx" => `_jsx()`, "preserve" => `<MyComp />`
         "allowJs": true, // allows .js(x) files instead of only .ts(x)
@@ -46,16 +48,14 @@
 //        "emitDeclarationOnly": true, // Only output `.d.ts` files
 //        "noEmit": true, // don't emit outputs
 //        "listFiles": true, // Prints all files imported by your code as well as your code. "listEmittedFiles" only shows output files.
-//        "rootDir": ".", // Parent directory from which all transpiled code will be relative when outputted within `outDir`.
-                          // e.g. If transpiling `<root>/src/*` with `outDir: dist`, then:
-                          //    `rootDir: .`  =>  dist/src/*
-                          //    `rootDir: undefined`  =>  dist/*
-                          // Not usually needed since the `rootDir` is interpreted by the `include`, `exclude`, and `files` entries.
-                          // Doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
-        "baseUrl": ".", // sets the base dir of source code import path prefixes (typescript's equivalent of NODE_PATH); doesn't affect tsconfig's paths
+        "rootDir": ".", // Parent directory from which all transpiled code will be relative when outputted within `outDir`.
+                        // e.g. If transpiling `<root>/src/*` with `outDir: dist`, then:
+                        //    `rootDir: .`  =>  dist/src/*
+                        //    `rootDir: undefined`  =>  dist/*
+                        // Doesn't impact other path-resolution configs, like `include`, `exclude`, `files`, etc.
         "paths": {
-            "@/*": [ "src/*" ],
-            "~/*": [ "*" ]
+            "@/*": [ "./src/*" ],
+            "~/*": [ "./*" ]
         }
     },
     "include": [
@@ -63,7 +63,7 @@
     ],
     "exclude": [
         "./node_modules",
-        "dist"
+        "./dist"
     ],
 
     // TODO Use swc: https://typestrong.org/ts-node/docs/transpilers#bundled-swc-integration

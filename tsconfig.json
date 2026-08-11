@@ -20,6 +20,12 @@
      * it extends in config files (e.g. webpack.config).
      */
     "extends": "./tsconfig.main.json",
+    "compilerOptions": {
+        "types": [
+            "node",
+            "jest"
+        ]
+    },
     "include": [
         /*
          * Note: We can't use `/?(.)*` to include both b/c that would conflict with JS-only parsing

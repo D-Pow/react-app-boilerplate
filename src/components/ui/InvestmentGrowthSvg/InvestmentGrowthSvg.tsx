@@ -2,7 +2,7 @@ import React, { type RefObject } from 'react';
 
 import { objEquals } from '@/utils/Objects';
 
-import type { Mutable, ValueOf } from '@/types';
+import type { ValueOf } from '@/types';
 
 const STARTING_POSITION = 'STARTING_POSITION';
 
@@ -81,7 +81,7 @@ class InvestmentGrowthSvg extends React.Component<InvestmentGrowthSvgProps> {
 
     // Track previous props (i.e. "state" of the SVG's <animate.from> attribute)
     // using a ref with shouldComponentUpdate()
-    previousFrequency: Mutable<RefObject<ValueOf<typeof Frequencies> | typeof STARTING_POSITION>> =
+    previousFrequency: RefObject<ValueOf<typeof Frequencies> | typeof STARTING_POSITION | null> =
         React.createRef<ValueOf<typeof Frequencies> | typeof STARTING_POSITION>();
 
     constructor(props: InvestmentGrowthSvgProps) {

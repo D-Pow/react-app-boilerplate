@@ -66,7 +66,7 @@ function Image({
     return (
         <img
             className={`${fluidImage ? 'img-fluid' : ''} ${className}`}
-            src={imageSrc}
+            src={imageSrc || undefined}
             alt={alt || extractFinalPathnameSegmentFromUrl(src)}
             onLoad={handleLoad as unknown as ReactEventHandler<HTMLImageElement>}
             {...aria}

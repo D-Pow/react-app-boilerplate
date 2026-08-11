@@ -1,4 +1,5 @@
-import { BroadcastChannel } from 'worker_threads';
+import { TextEncoder, TextDecoder } from 'node:util';
+import { BroadcastChannel } from 'node:worker_threads';
 
 import { CustomizableObject } from '@/utils/Objects';
 
@@ -66,6 +67,8 @@ beforeEach(() => {
 });
 
 
+global.TextEncoder = global.TextEncoder || TextEncoder;
+global.TextDecoder = global.TextDecoder || TextDecoder;
 global.BroadcastChannel = BroadcastChannel;
 
 

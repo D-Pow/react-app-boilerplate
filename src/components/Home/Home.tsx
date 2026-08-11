@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router';
+import { Navigate } from 'react-router-dom';
 
 import Image from '@/components/ui/Image';
 import { useServiceWorkerBroadcastChannel } from '@/utils/Hooks';

@@ -24,7 +24,7 @@ import React, {
 } from 'react';
 import {
     type RouteProps,
-} from 'react-router';
+} from 'react-router-dom';
 import {
     render,
     act,

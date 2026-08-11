@@ -5,8 +5,8 @@ import {
     Routes,
     Route,
     Navigate,
+    type RouteProps,
 } from 'react-router-dom';
-import { type RouteProps } from 'react-router';
 
 import SpinnerCircle from '@/components/ui/SpinnerCircle';
 
@@ -97,13 +97,7 @@ function Router({
     return (
         <React.Suspense {...suspenseProps}>
             <RouterWrapper {...wrapperProps}>
-                <ReactRouter
-                    future={{
-                        v7_relativeSplatPath: true,
-                        v7_startTransition: true,
-                    }}
-                    {...routerProps}
-                >
+                <ReactRouter {...routerProps}>
                     <Routes>
                         {routes.map(routeProps => (
                             <Route key={routeProps.path} {...routeProps}  />

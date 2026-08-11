@@ -728,7 +728,7 @@ export function useWindowResize(): UseWindowResizeReturn {
  */
 export function useHover<E extends Element = HTMLElement>(
     overrideBoundingClientRect?: Nullable<DOMRect, true>,
-): [ RefObject<E>, boolean ] {
+): [ RefObject<E | null>, boolean ] {
     // Populated by React once the returned ref is attached to an element.
     // `overrideBoundingClientRect` takes precedence over the ref's rect when both are present.
     const ref = useRef<E>(null);

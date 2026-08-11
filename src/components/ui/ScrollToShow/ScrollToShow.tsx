@@ -57,14 +57,12 @@ export interface ScrollToShowProps extends PropsWithChildren<Record<string, unkn
 }
 
 interface ScrollToShowState {
-    childRefs: RefObject<HTMLElement>[];
+    childRefs: RefObject<HTMLElement | null>[];
     shownChildren: boolean[];
 }
 
-type ScrollToShowPropsWithDefaults = ScrollToShowProps & typeof ScrollToShow.defaultProps;
 
-
-export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDefaults, ScrollToShowState> {
+export default class ScrollToShow extends PureComponent<ScrollToShowProps, ScrollToShowState> {
     static defaultProps = {
         className: '',
         children: [],
@@ -167,7 +165,7 @@ export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDef
             return false;
         }
 
-        const thresholdScrollPosition = window.innerHeight * this.props.threshold;
+        const thresholdScrollPosition = window.innerHeight * this.props.threshold!;
         const elemTop = this.getTotalOffsetTop(this.state.childRefs[index].current!);
 
         return elemTop <= thresholdScrollPosition;
@@ -231,8 +229,8 @@ export default class ScrollToShow extends PureComponent<ScrollToShowPropsWithDef
             );
         }
 
-        return cloneElement(child as ReactElement, {
-            className: `${(child as ReactElement).props?.className ?? ''} ${this.getClassNames(index)}`,
+        return cloneElement<Record<string, unknown>>(child as ReactElement<Record<string, unknown>>, {
+            className: `${((child as ReactElement).props as Record<string, unknown>)?.className ?? ''} ${this.getClassNames(index)}`,
             key: index,
             ref: this.state.childRefs[index],
         });

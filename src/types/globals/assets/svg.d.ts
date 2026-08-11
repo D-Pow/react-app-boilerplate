@@ -14,7 +14,6 @@ declare module '*.svg' {
     import type {
         SVGAttributes,
         PropsWithChildren,
-        ForwardRefRenderFunction,
     } from 'react';
 
     import type { ComponentDeclaration } from '@/types';
@@ -30,13 +29,9 @@ declare module '*.svg' {
     );
     export type ReactSvgProps = PropsWithChildren<ReactSvgElementProps>;
     export type SvgComponent = ComponentDeclaration<ReactSvgProps>;
-    export type SvgReactComponent = (
-        SvgComponent
-        | ForwardRefRenderFunction<ReactSvgElement, ReactSvgProps>
-    );
 
     // React component of the SVG, injected by SVGR
-    export const ReactComponent: SvgReactComponent;
+    export const ReactComponent: SvgComponent;
     // URL of the actual SVG file
     export const SvgUrl: string;
 

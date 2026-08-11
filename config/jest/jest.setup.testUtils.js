@@ -154,5 +154,5 @@ export function withIgnoredMessages(consoleMethod, ...toIgnoreMatchers) {
     console[consoleMethod] = jest.fn(filteredConsoleMethod);
 }
 
-withIgnoredMessages(console.warn);
-withIgnoredMessages(console.error);
+// withIgnoredMessages(console.warn);
+// withIgnoredMessages(console.error);

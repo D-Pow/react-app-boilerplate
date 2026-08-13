@@ -117,7 +117,7 @@
     "mini-css-extract-plugin": "^2.10.2",
     "mkcert": "^1.5.0",
     "mock-requests": "^1.4.3",
-    "postcss": "^8.5.19",
+    "postcss": "^8.5.16",
     "postcss-loader": "^6.2.1",
     "postcss-preset-env": "^7.2.3",
     "proxy-polyfill": "^0.3.2",

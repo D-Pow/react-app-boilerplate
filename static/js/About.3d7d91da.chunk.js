@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkreact_app_boilerplate=self.webpackChunkreact_app_boilerplate||[]).push([[450],{1315(e,a,r){r.r(a),r.d(a,{default:function(){return n}});var t=r(4848);var n=function({className:e="font-size-2em"}){return(0,t.jsx)(t.Fragment,{children:(0,t.jsx)("div",{className:e,children:"About"})})}}}]);

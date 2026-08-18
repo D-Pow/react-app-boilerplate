@@ -151,7 +151,8 @@ export default tseslint.config([
             }],
 
             /* Spacing rules */
-            indent: [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
+            indent: 'off', // Disabled in favor of `@stylistic/indent` below for TS-aware curly braces/square brackets in function definitions (`function a(): {\n<Indent>properties\n<DE-INDENT>} {<func-code>}`)
+            '@stylistic/indent': [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
                 SwitchCase: 1, // Same for switch-case statements
                 ignoredNodes: [ 'TemplateLiteral' ],
             }],

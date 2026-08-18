@@ -235,10 +235,9 @@ export type StartsEndsWith<Prefix extends string, Suffix extends string, Obj ext
  * @see [Filtering out keys if they extend a type]{@link https://stackoverflow.com/questions/49397567/how-to-remove-properties-via-mapped-type-in-typescript/63990350#63990350}
  */
 export type OmitValues<T, V = never> = {
-    [K in keyof T as Exclude<T[K], V> extends
-        never | null | undefined
-            ? never
-            : K
+    [K in keyof T as Exclude<T[K], V> extends never | null | undefined
+        ? never
+        : K
     ]: Exclude<T[K], V>;
 };
 
@@ -253,10 +252,9 @@ export type OmitValues<T, V = never> = {
  * @see [Filtering out keys if they extend a type]{@link https://stackoverflow.com/questions/49397567/how-to-remove-properties-via-mapped-type-in-typescript/63990350#63990350}
  */
 export type PickValues<T, V> = {
-    [K in keyof T as Extract<T[K], V> extends
-        never | null | undefined
-            ? never
-            : K
+    [K in keyof T as Extract<T[K], V> extends never | null | undefined
+        ? never
+        : K
     ]: Extract<T[K], V>;
 };
 
@@ -400,7 +398,7 @@ export type Union<T, U, DEEP = true> = (
                         ? U[K]
                         : unknown // Technically unreachable, but necessary to appease the TS compiler
             }
-    // Non-indexable types, e.g. string, number, boolean, etc.
+            // Non-indexable types, e.g. string, number, boolean, etc.
             : (T | U)
         : (U | T)
     | XOR<T, U, DEEP>
@@ -564,6 +562,7 @@ export type NumberRestricted<
 ]>, true, N, never>; // If all `And<>` results are true, then return `N`, else `never`
 
 
+/* eslint-disable @stylistic/indent */
 /**
  * Infers the nested type from TypeScript generic types.
  *
@@ -603,6 +602,7 @@ export type InferGenericBuiltin<T, Default = T> =
     : T extends Capitalize<infer I> ? I
     : T extends Uncapitalize<infer I> ? I
     : Default;
+/* eslint-enable @stylistic/indent */
 
 
 /**

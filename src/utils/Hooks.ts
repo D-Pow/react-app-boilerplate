@@ -337,7 +337,7 @@ const QUERY_CHANGE_EVENT = 'querychange';
 export function useQueryParams(): {
     params: URLSearchParams;
     setParam: SetQueryParamFunc;
-    } {
+} {
     const subscribe = useCallback((cb: () => void) => {
         window.addEventListener('popstate', cb);
         window.addEventListener(QUERY_CHANGE_EVENT, cb);

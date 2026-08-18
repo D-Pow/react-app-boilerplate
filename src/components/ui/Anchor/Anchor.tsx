@@ -1,14 +1,14 @@
 import { memo } from 'react';
 
 export interface AnchorProps {
-  className?: string
-  href?: string
-  children?: React.ReactNode
-  underlineText?: boolean
-  rel?: string | string[]
-  target?: string
-  onClick?(...args: unknown[]): unknown
-  aria?: object
+    className?: string
+    href?: string
+    children?: React.ReactNode
+    underlineText?: boolean
+    rel?: string | string[]
+    target?: string
+    onClick?(...args: unknown[]): unknown
+    aria?: object
 }
 
 function Anchor({

@@ -5,8 +5,8 @@ import { type ColumnProps } from './Column';
 type ColumnElement = ReactElement<ColumnProps>;
 
 export interface RowProps {
-  children: ColumnElement | ColumnElement[]
-  gridTemplateAreas?: string[]
+    children: ColumnElement | ColumnElement[]
+    gridTemplateAreas?: string[]
 }
 
 function Row({

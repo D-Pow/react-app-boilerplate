@@ -7,13 +7,13 @@ import AppContext, { AppContextFields, type AppContextState } from '@/utils/AppC
 // TODO Don't reload images that have already been loaded
 
 export interface ImageProps {
-  className?: string
-  src?: string
-  alt?: string
-  fluidImage?: boolean
-  updateAppContext?: boolean
-  onLoad?(...args: unknown[]): unknown
-  aria?: object
+    className?: string
+    src?: string
+    alt?: string
+    fluidImage?: boolean
+    updateAppContext?: boolean
+    onLoad?(...args: unknown[]): unknown
+    aria?: object
 }
 
 function Image({

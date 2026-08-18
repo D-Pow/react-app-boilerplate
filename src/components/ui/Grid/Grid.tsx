@@ -6,9 +6,9 @@ import Column from './Column';
 type RowElement = ReactElement<RowProps>;
 
 interface GridProps {
-  children: RowElement | RowElement[];
-  className?: string
-  aria?: HTMLAttributes<HTMLDivElement>
+    children: RowElement | RowElement[];
+    className?: string
+    aria?: HTMLAttributes<HTMLDivElement>
 }
 
 class Grid extends React.Component<GridProps> {

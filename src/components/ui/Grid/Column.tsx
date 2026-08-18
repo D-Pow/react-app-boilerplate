@@ -1,10 +1,10 @@
 import React from 'react';
 
 export interface ColumnProps {
-  className?: string
-  colSpan?: number
-  gridArea?: string
-  children?: React.ReactNode
+    className?: string
+    colSpan?: number
+    gridArea?: string
+    children?: React.ReactNode
 }
 
 function Column({

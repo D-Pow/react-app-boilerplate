@@ -1,5 +1,5 @@
 export interface SpinnerCircleProps {
-  show?: boolean
+    show?: boolean
 }
 
 function SpinnerCircle(props: SpinnerCircleProps) {

@@ -309,12 +309,6 @@ export interface SetQueryParamOptions {
     replace?: boolean;
 }
 
-export type SetQueryParamFunc = (
-    key: string,
-    value?: string | string[] | null,
-    options?: SetQueryParamOptions,
-) => void;
-
 /**
  * Listen to both navigation (for URL changes) and our own event (for
  * mutations caused by our own state changes). Only listening to navigation
@@ -334,10 +328,7 @@ const QUERY_CHANGE_EVENT = 'querychange';
  *                        `{ replace: true }` to avoid pushing a history entry.
  *                        Deletes a param if `value` is unspecified.
  */
-export function useQueryParams(): {
-    params: URLSearchParams;
-    setParam: SetQueryParamFunc;
-} {
+export function useQueryParams() {
     const subscribe = useCallback((cb: () => void) => {
         window.addEventListener('popstate', cb);
         window.addEventListener(QUERY_CHANGE_EVENT, cb);
@@ -381,7 +372,7 @@ export function useQueryParams(): {
         [],
     );
 
-    return { params, setParam };
+    return [ params, setParam ] as const;
 }
 
 /**
@@ -446,7 +437,7 @@ export function useQueryParamsNavigation() {
  *
  * @returns Query param key-value map, and respective setState(key, value) function.
  */
-export function useQueryParamsObj(): [ Indexable, (key: string | Indexable, value?: unknown) => void ] {
+export function useQueryParamsObj() {
     const [ queryParamsObj, setQueryParamsObj ] = useState<Indexable>(() => getQueryParams());
 
     const setQueryParam = (key: string | Indexable, value?: unknown) => {
@@ -473,7 +464,7 @@ export function useQueryParamsObj(): [ Indexable, (key: string | Indexable, valu
         }
     }, [ self.location.search ]);
 
-    return [ queryParamsObj, setQueryParam ];
+    return [ queryParamsObj, setQueryParam ] as const;
 }
 
 

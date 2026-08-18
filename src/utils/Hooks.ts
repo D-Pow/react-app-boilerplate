@@ -11,6 +11,7 @@ import {
     type RefObject,
     type ReactNode,
 } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { elementIsInClickPath, getClickPath, setDocumentScrolling } from '@/utils/Events';
 import { getQueryParams, modifyQueryParams } from '@/utils/BrowserNavigation';
@@ -321,6 +322,9 @@ const QUERY_CHANGE_EVENT = 'querychange';
  * Reads and writes URL query params, staying in sync with browser
  * back / forward navigation.
  *
+ * Uses react-router-dom's `useSearchParams()` under the hood to keep
+ * URL in sync with the rest of the app
+ *
  * @returns `params`      The current {@link URLSearchParams} (read-only snapshot).
  * @returns `setParam`    Sets a param. An array appends one entry per value
  *                        (`?tag=a&tag=b`, read back with `params.getAll`);
@@ -329,6 +333,40 @@ const QUERY_CHANGE_EVENT = 'querychange';
  *                        Deletes a param if `value` is unspecified.
  */
 export function useQueryParams() {
+    const [ params, setSearchParams ] = useSearchParams();
+
+    const setParam = useCallback(
+        (
+            key: string,
+            value?: string | string[] | null,
+            options?: SetQueryParamOptions,
+        ) => {
+            const values = Array.isArray(value) ? value : [ value ];
+
+            setSearchParams(
+                (previous) => {
+                    const next = new URLSearchParams(previous);
+
+                    next.delete(key);
+
+                    for (const entry of values) {
+                        if (entry) {
+                            next.append(key, entry);
+                        }
+                    }
+
+                    return next;
+                },
+                { replace: options?.replace },
+            );
+        },
+        [ setSearchParams ],
+    );
+
+    return [ params, setParam ] as const;
+}
+
+export function useQueryParamsVanilla() {
     const subscribe = useCallback((cb: () => void) => {
         window.addEventListener('popstate', cb);
         window.addEventListener(QUERY_CHANGE_EVENT, cb);

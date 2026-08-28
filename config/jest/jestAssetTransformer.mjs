@@ -1,6 +1,8 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import JestCssModulesTransformer from 'jest-css-modules-transform';
+import * as sass from 'sass';
 
 import { FileTypeRegexes } from '../utils/index.js';
 
@@ -91,8 +93,27 @@ const jestAssetTransformer = {
             // srcFileContents = srcFileContents.replace(/@(use|import)\s+[^\s;]+;?/g, '');
 
             /**
-             * Transpile (S)CSS into a JS module so tests can `import` it. `jest-css-modules-transform`
-             * outputs both the class-name map and any ICSS `:export { ... }` values, which covers:
+             * Transpile (S)CSS into a JS module so tests can `import` it.
+             *
+             * Compile SCSS ourselves rather than letting `jest-css-modules-transform` do it.
+             * That package still calls the [legacy JS API]{@link https://sass-lang.com/d/legacy-js-api}
+             * (`sass.renderSync()`), which prints a deprecation warning on every transformed file and is
+             * removed in Dart Sass 2.0.0. It was last published in 2022, so no upstream fix is coming.
+             * Using `sass.compileString()` (the modern API, same one `sass-loader` uses in webpack) keeps
+             * the test pipeline aligned with the build and silences the warning at its source.
+             */
+            const isSassFile = /\.s[ac]ss$/i.test(srcAbsPath);
+            // Plain `.css` needs no compilation, so pass it through untouched (as before) rather than round-tripping it through Sass
+            const cssFileContents = !isSassFile ? srcFileContents : sass.compileString(srcFileContents, {
+                // Gives Sass the file's location so relative `@use`/`@forward` resolve exactly as they do in webpack
+                url: pathToFileURL(srcAbsPath),
+                syntax: /\.sass$/i.test(srcAbsPath) ? 'indented' : 'scss',
+            }).css;
+
+            /**
+             * Hand the already-compiled, plain CSS to `jest-css-modules-transform` (hence the `.css`
+             * extension) so it only does the CSS-Modules parsing, never Sass compilation. It outputs both
+             * the class-name map and any ICSS `:export { ... }` values, which covers:
              *  - `.module.(s)css` -> CSS-Modules: `import * as styles from './X.module.scss'` resolves
              *    `styles.myClass` (mirrors webpack's css-loader `mode: 'local'`).
              *  - global `.(s)css` -> exposes `:export` values, e.g. `import * as CommonStyles from '@/styles/Common.scss'`
@@ -101,7 +122,11 @@ const jestAssetTransformer = {
              * Note: `jest-css-modules-transform` has a bug where they [don't support jest@>=27]{@link https://github.com/Connormiha/jest-css-modules-transform/issues/39}.
              * Another possible option: [postcss-modules-scope]{@link https://www.npmjs.com/package/postcss-modules-scope}
              */
-            const allTranspiledCssCode = JestCssModulesTransformer.process(srcFileContents, srcAbsPath, jestConfigs);
+            const allTranspiledCssCode = JestCssModulesTransformer.process(
+                cssFileContents,
+                srcAbsPath.replace(/\.s[ac]ss$/, '.css'),
+                jestConfigs,
+            );
 
             return {
                 // `process()` returns a `{ code }` object (jest@>=28 format); older versions returned a raw string.

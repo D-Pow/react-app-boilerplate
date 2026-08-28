@@ -11,13 +11,17 @@
  * arglist
  *
  * Examples:
- * type-of(asdf)   => string
- * type-of("asdf") => string
- * type-of(true)   => bool
- * type-of(100px)  => number
- * type-of(#fff)   => color
- * type-of(blue)   => color
+ * meta.type-of(asdf)   => string
+ * meta.type-of("asdf") => string
+ * meta.type-of(true)   => bool
+ * meta.type-of(100px)  => number
+ * meta.type-of(#fff)   => color
+ * meta.type-of(blue)   => color
  */
+@use "sass:meta";
+@use "sass:math";
+@use "sass:string";
+
 
 /// Stringifies SCSS variables into JSON for easier JavaScript importing/parsing.
 ///
@@ -33,13 +37,13 @@
 /// @param {*} $var - SCSS variable to stringify.
 /// @return {String} - JSON representation of the variable.
 @function json-stringify($var) {
-    $var-type: type-of($var);
+    $var-type: meta.type-of($var);
     $encode-func-name: '_encode-#{$var-type}';
 
-    @if (function-exists($encode-func-name)) {
-        $encode-func: get-function($encode-func-name);
+    @if (meta.function-exists($encode-func-name)) {
+        $encode-func: meta.get-function($encode-func-name);
 
-        @return call($encode-func, $var);
+        @return meta.call($encode-func, $var);
     }
 
     @return $var; // strings and booleans don't need to be modified
@@ -55,7 +59,7 @@
 }
 
 @function _encode-number($number) {
-    @if (unitless($number)) {
+    @if (math.is-unitless($number)) {
         @return $number;
     }
 
@@ -79,12 +83,12 @@
 }
 
 @function _encode-iterable($iterable) {
-    $is-list: type-of($iterable) == 'list';
-    $is-map: type-of($iterable) == 'map';
+    $is-list: meta.type-of($iterable) == 'list';
+    $is-map: meta.type-of($iterable) == 'map';
 
     $str: '';
-    $opening-bracket: if($is-list, '[', '{');
-    $closing-bracket: if($is-list, ']', '}');
+    $opening-bracket: if(sass($is-list): '['; else: '{');
+    $closing-bracket: if(sass($is-list): ']'; else: '}');
 
     @each $key, $value in $iterable {
         $entry-string: '';
@@ -98,7 +102,7 @@
         $str: $str + ', ' + $entry-string;
     }
 
-    $str: str-slice($str, 3); // remove leading ', ' from ', entry1, entry2'
+    $str: string.slice($str, 3); // remove leading ', ' from ', entry1, entry2'
 
     @return $opening-bracket + $str + $closing-bracket;
 }

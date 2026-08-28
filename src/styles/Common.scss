@@ -1,5 +1,6 @@
 @use "sass:map";
 @use "sass:math";
+@use "sass:string";
 
 @use "utils";
 
@@ -115,7 +116,7 @@ $margin-units: (
 @for $int from 0 through 100 {
     @each $unit-name, $unit in $margin-units {
         $cls-name: $int + $unit-name;
-        $margin-amount: $int + unquote($unit); // unquote() makes it literal CSS
+        $margin-amount: $int + string.unquote($unit); // string.unquote() makes it literal CSS
 
         .mt-#{$cls-name} {
             margin-top: $margin-amount;

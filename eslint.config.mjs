@@ -156,6 +156,7 @@ export default tseslint.config([
                 SwitchCase: 1, // Same for switch-case statements
                 ignoredNodes: [ 'TemplateLiteral' ],
             }],
+            '@stylistic/indent-binary-ops': [ 'error', 4 ],
             'keyword-spacing': 'error', // Enforce spaces around language keywords, e.g. else would error in `if (foo) {...}else{...}`
             'semi-spacing': 'error', // Enforce spacing after semicolons but never before; exception: `for(;;)`, `;func()`, and similar
             'comma-spacing': [ 'error', { // Enforce spaces only after commas
@@ -334,10 +335,6 @@ export default tseslint.config([
 
 
             /* React/JSX rules */
-            '@stylistic/jsx-indent': [ 'error', 4, { // Enforce 4 extra spaces of indentation for nested children
-                checkAttributes: true, // Indent for nested props, e.g. `<App someProp={\n[INDENT] () => 5 \n[DE-INDENT]} />`
-                indentLogicalExpressions: true, // Indent components inside short-circuiting, e.g. `<App>\n {condition && (\n[INDENT] <Child/> \n[DE-INDENT] )} \n </App>`
-            }],
             '@stylistic/jsx-closing-bracket-location': [ 'error', { // Enforce closing tag to be inline with opening tag if on a separate line
                 selfClosing: 'tag-aligned', // Without children, uses `/>`
                 nonEmpty: 'tag-aligned', // With children, uses `>`

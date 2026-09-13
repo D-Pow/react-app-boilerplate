@@ -384,7 +384,7 @@ export type XOR<T, U, DEEP = true> = (
  */
 export type Union<T, U, DEEP = true> = (
     // Indexable types, e.g. objects, arrays, etc.
-    T extends Indexable
+    (T extends Indexable
         ? U extends Indexable
             ? {
                 [K in (OwnKeys<T> | OwnKeys<U>)]?: K extends keyof T
@@ -400,7 +400,7 @@ export type Union<T, U, DEEP = true> = (
             }
             // Non-indexable types, e.g. string, number, boolean, etc.
             : (T | U)
-        : (U | T)
+        : (U | T))
     | XOR<T, U, DEEP>
 );
 

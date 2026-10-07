@@ -72,7 +72,9 @@ export function objKeysToCamelCase(obj, keepPreviousKeys = false) {
  */
 export class CustomizableObject {
     constructor(init = {}) {
-        Object.entries(init).forEach(([ key, value ]) => this[key] = value);
+        Object.entries(init).forEach(([ key, value ]) => {
+            this[key] = value;
+        });
     }
 
 

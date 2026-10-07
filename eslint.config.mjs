@@ -149,6 +149,15 @@ export default tseslint.config([
             'func-style': [ 'error', 'declaration', { // Enforce function declarations instead of expressions, i.e. use `function foo() {...}` instead of `const foo = function () {...}`. Object fields are still allowed: `foo.bar = function () {...}`
                 allowArrowFunctions: true, // Allow arrow functions, i.e. allow `const foo = () => {...}` but not `const foo = function () {...}`
             }],
+            'no-restricted-syntax': [
+                'error',
+                {
+                    // Only allow assignments as their own statement (or in a for-loop header), e.g. error: `map.set(k, (x = []))`
+                    selector:
+                        'AssignmentExpression:not(ExpressionStatement > AssignmentExpression, ForStatement > AssignmentExpression.init, ForStatement > AssignmentExpression.update)',
+                    message: 'Do not use an assignment as a value; assign on its own line, then use the variable.',
+                },
+            ],
 
             /* Spacing rules */
             indent: 'off', // Disabled in favor of `@stylistic/indent` below for TS-aware curly braces/square brackets in function definitions (`function a(): {\n<Indent>properties\n<DE-INDENT>} {<func-code>}`)

@@ -378,6 +378,16 @@ export default tseslint.config([
      * @see [NextJS sample glob for test files]{@link https://github.com/vercel/next.js/blob/f16ee05f599de27e777ac2b736c3bf820a19bd7b/examples/with-jest/.eslintrc.json}
      */
 
+    /* ESLint files */
+    {
+        files: [ 'eslint.config.mjs' ],
+        rules: {
+            // typescript-eslint and eslint-plugin-import-x ship both default and
+            // named exports as documented API; the default-import form is recommended.
+            'import-x/no-named-as-default': 'off',
+            'import-x/no-named-as-default-member': 'off',
+        },
+    },
     /**
      * JS files (both ESM and CJS).
      *

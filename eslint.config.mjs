@@ -163,7 +163,13 @@ export default tseslint.config([
             indent: 'off', // Disabled in favor of `@stylistic/indent` below for TS-aware curly braces/square brackets in function definitions (`function a(): {\n<Indent>properties\n<DE-INDENT>} {<func-code>}`)
             '@stylistic/indent': [ 'error', 4, { // Indent with 4 spaces, not tab or 2 spaces
                 SwitchCase: 1, // Same for switch-case statements
-                ignoredNodes: [ 'TemplateLiteral' ],
+                ignoredNodes: [
+                    'TemplateLiteral',
+                    // Decorators cause vars to indent incorrectly. Fix it by ignoring it.
+                    'FunctionExpression > .params[decorators.length > 0]',
+                    'FunctionExpression > .params > :matches(Decorator, :not(:first-child))',
+                    'ClassBody.body > PropertyDefinition[decorators.length > 0] > .key',
+                ],
             }],
             '@stylistic/indent-binary-ops': [ 'error', 4 ],
             'keyword-spacing': 'error', // Enforce spaces around language keywords, e.g. else would error in `if (foo) {...}else{...}`
